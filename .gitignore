@@ -1,0 +1,72 @@
+# ===============================
+# 1️⃣ Node / React / Frontend
+# ===============================
+node_modules/
+dist/
+build/
+.next/
+coverage/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.local
+.env.development
+.env.production
+
+# ===============================
+# 2️⃣ Python (experiments)
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+.venv/
+venv/
+.env
+.env.*
+
+# ===============================
+# 3️⃣ IDE
+# ===============================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# ===============================
+# 4️⃣ OS
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# 5️⃣ Logs / temp files
+# ===============================
+*.tmp
+*.temp
+*.bak
+
+# ===============================
+# 6️⃣ LLM Secrets / API Keys
+# ===============================
+.env
+experiments/.env
+*.key
+*.pem
+
+# ===============================
+# 7️⃣ Generated AI outputs (optional decision)
+# ===============================
+# 如果你想保存 AI 原始输出用于 research 复现，保留
+# 如果不想 push raw output，大文件可忽略
+
+# CRM/baseline-ai/**/raw-output.txt
+# CRM/baseline-ai/**/backend/
+# CRM/baseline-ai/**/frontend/
