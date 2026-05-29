@@ -69,4 +69,13 @@ experiments/.env
 
 # CRM/baseline-ai/**/raw-output.txt
 # CRM/baseline-ai/**/backend/
-# CRM/baseline-ai/**/frontend/
+# CRM/baseline-ai/**/frontend/venv/
+__pycache__/
+node_modules/
+**/node_modules/
+.env
+venv/
+__pycache__/
+node_modules/
+**/node_modules/
+.env

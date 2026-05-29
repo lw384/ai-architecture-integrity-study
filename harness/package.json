@@ -1,0 +1,16 @@
+{
+  "name": "crm-eval-harness",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CRM architecture integrity evaluation pipeline",
+  "scripts": {
+    "evaluate": "node scripts/evaluate.mjs"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "dependency-cruiser": "^16.10.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.0.0"
+  }
+}

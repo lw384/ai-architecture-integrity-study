@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "description": "CRM backend layered architecture constraints",
+  "layers": {
+    "controller": "**/*.controller.{ts,js,tsx,jsx}",
+    "service":    "**/*.service.{ts,js,tsx,jsx}",
+    "repository": "**/*.repository.{ts,js,tsx,jsx}",
+    "entity":     "**/*.entity.{ts,js,tsx,jsx}",
+    "db":         "**/db/**/*.{ts,js}"
+  },
+  "allowedFlows": [
+    "routes → controller",
+    "controller → service",
+    "service → repository",
+    "repository → entity",
+    "repository → db"
+  ],
+  "forbiddenFlows": [
+    {
+      "rule": "no-controller-to-repository",
+      "severity": "error",
+      "description": "Controller must not directly access repository; must go through service",
+      "from": "controller",
+      "to": "repository"
+    },
+    {
+      "rule": "no-controller-to-db",
+      "severity": "error",
+      "description": "Controller must not bypass service+repository and touch db/entity directly",
+      "from": "controller",
+      "to": ["entity", "db"]
+    },
+    {
+      "rule": "no-reverse-service-to-controller",
+      "severity": "error",
+      "description": "Service must not depend on controllers (no upward dependency)",
+      "from": "service",
+      "to": "controller"
+    },
+    {
+      "rule": "no-reverse-repository-to-controller",
+      "severity": "error",
+      "description": "Repository must not depend on controllers",
+      "from": "repository",
+      "to": "controller"
+    },
+    {
+      "rule": "no-reverse-repository-to-service",
+      "severity": "error",
+      "description": "Repository must not depend on services (no upward dependency)",
+      "from": "repository",
+      "to": "service"
+    },
+    {
+      "rule": "no-circular",
+      "severity": "error",
+      "description": "No circular dependencies allowed anywhere in the codebase"
+    }
+  ]
+}

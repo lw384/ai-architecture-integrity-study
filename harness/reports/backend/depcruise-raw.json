@@ -1,0 +1,194 @@
+{
+  "modules": [
+    {
+      "source": "../CRM/baseline-ai/Gemini/generation-1/backend/contact/contact.entity.ts",
+      "dependencies": [],
+      "dependents": [],
+      "orphan": true,
+      "valid": true
+    },
+    {
+      "source": "../CRM/baseline-ai/Gemini/generation-1/backend/contact/contact.types.ts",
+      "dependencies": [],
+      "dependents": [],
+      "orphan": true,
+      "valid": true
+    },
+    {
+      "source": "../CRM/baseline-ai/Gemini/generation-1/backend/src/middleware/authMiddleware.ts",
+      "dependencies": [],
+      "dependents": [],
+      "orphan": true,
+      "valid": true
+    },
+    {
+      "source": "../CRM/baseline-ai/Gemini/generation-1/backend/src/middleware/validationMiddleware.ts",
+      "dependencies": [
+        {
+          "module": "../utils/appError",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "../CRM/baseline-ai/Gemini/generation-1/backend/src/utils/appError.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../CRM/baseline-ai/Gemini/generation-1/backend/src/utils/appError.ts",
+      "dependencies": [],
+      "dependents": [
+        "../CRM/baseline-ai/Gemini/generation-1/backend/src/middleware/validationMiddleware.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    }
+  ],
+  "summary": {
+    "violations": [],
+    "error": 0,
+    "warn": 0,
+    "info": 0,
+    "ignore": 0,
+    "totalCruised": 5,
+    "totalDependenciesCruised": 1,
+    "optionsUsed": {
+      "baseDir": "/Users/luowei/project/ai-architecture-integrity-study/harness",
+      "combinedDependencies": false,
+      "detectJSDocImports": false,
+      "doNotFollow": {
+        "path": "node_modules"
+      },
+      "enhancedResolveOptions": {
+        "exportsFields": [
+          "exports"
+        ],
+        "conditionNames": [
+          "import",
+          "require",
+          "node",
+          "default"
+        ],
+        "extensions": [
+          ".ts",
+          ".tsx",
+          ".js",
+          ".jsx",
+          ".mjs",
+          ".cjs"
+        ]
+      },
+      "exclude": {
+        "path": "(^|[/\\\\])node_modules[/\\\\]"
+      },
+      "exoticRequireStrings": [],
+      "externalModuleResolutionStrategy": "node_modules",
+      "includeOnly": "\\.(ts|tsx|js|jsx|mjs|cjs)$",
+      "metrics": false,
+      "moduleSystems": [
+        "es6",
+        "cjs",
+        "tsd",
+        "amd"
+      ],
+      "outputTo": "-",
+      "outputType": "json",
+      "preserveSymlinks": false,
+      "reporterOptions": {
+        "dot": {
+          "collapsePattern": "node_modules/[^/]+"
+        }
+      },
+      "rulesFile": "/Users/luowei/project/ai-architecture-integrity-study/harness/scripts/dependency-cruiser.config.cjs",
+      "skipAnalysisNotInRules": false,
+      "tsPreCompilationDeps": false,
+      "args": "../CRM/baseline-ai/Gemini/generation-1/backend"
+    },
+    "ruleSetUsed": {
+      "forbidden": [
+        {
+          "name": "no-controller-to-repository",
+          "severity": "error",
+          "comment": "Controllers must not bypass the service layer and access repositories directly",
+          "from": {
+            "path": "(^|[/\\\\]).*\\.controller\\.(ts|js|tsx|jsx)$"
+          },
+          "to": {
+            "path": "(^|[/\\\\]).*\\.repository\\.(ts|js|tsx|jsx)$"
+          },
+          "scope": "module"
+        },
+        {
+          "name": "no-controller-to-db",
+          "severity": "error",
+          "comment": "Controllers must not bypass service+repository to touch db or entity layers",
+          "from": {
+            "path": "(^|[/\\\\]).*\\.controller\\.(ts|js|tsx|jsx)$"
+          },
+          "to": {
+            "path": "(^|[/\\\\]).*\\.entity\\.(ts|js|tsx|jsx)$|(^|[/\\\\])(db|database)[/\\\\]"
+          },
+          "scope": "module"
+        },
+        {
+          "name": "no-reverse-service-to-controller",
+          "severity": "error",
+          "comment": "Services must not depend on controllers (no upward dependency)",
+          "from": {
+            "path": "(^|[/\\\\]).*\\.service\\.(ts|js|tsx|jsx)$"
+          },
+          "to": {
+            "path": "(^|[/\\\\]).*\\.controller\\.(ts|js|tsx|jsx)$"
+          },
+          "scope": "module"
+        },
+        {
+          "name": "no-reverse-repository-to-controller",
+          "severity": "error",
+          "comment": "Repositories must not depend on controllers",
+          "from": {
+            "path": "(^|[/\\\\]).*\\.repository\\.(ts|js|tsx|jsx)$"
+          },
+          "to": {
+            "path": "(^|[/\\\\]).*\\.controller\\.(ts|js|tsx|jsx)$"
+          },
+          "scope": "module"
+        },
+        {
+          "name": "no-reverse-repository-to-service",
+          "severity": "error",
+          "comment": "Repositories must not depend on services (no upward dependency)",
+          "from": {
+            "path": "(^|[/\\\\]).*\\.repository\\.(ts|js|tsx|jsx)$"
+          },
+          "to": {
+            "path": "(^|[/\\\\]).*\\.service\\.(ts|js|tsx|jsx)$"
+          },
+          "scope": "module"
+        },
+        {
+          "name": "no-circular",
+          "severity": "error",
+          "comment": "No circular dependencies allowed",
+          "from": {},
+          "to": {
+            "circular": true
+          },
+          "scope": "module"
+        }
+      ]
+    }
+  }
+}

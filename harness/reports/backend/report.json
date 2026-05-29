@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "targetDir": "/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline-ai/Gemini/generation-1/backend",
+    "name": "backend",
+    "timestamp": "2026-05-29T16:06:45.270Z",
+    "loc": 100
+  },
+  "architecture": {
+    "violations": 0,
+    "violationsPerKLOC": 0,
+    "cycles": 0,
+    "cyclesPerKLOC": 0,
+    "moduleCount": 5,
+    "dependencyCount": 1,
+    "graphDensity": 0.05
+  },
+  "quality": {
+    "lint": {
+      "errors": 0,
+      "warnings": 5,
+      "errorsPerKLOC": 0,
+      "warningsPerKLOC": 50
+    },
+    "tests": {
+      "error": "vitest unavailable or no tests found",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "passRate": null
+    },
+    "security": {
+      "skipped": true,
+      "reason": "semgrep not installed"
+    }
+  }
+}
