@@ -1,25 +1,25 @@
 {
   "meta": {
-    "targetDir": "/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline-ai/Gemini/generation-1/backend",
+    "targetDir": "/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline/backend",
     "name": "backend",
-    "timestamp": "2026-05-29T16:06:45.270Z",
-    "loc": 100
+    "timestamp": "2026-05-31T15:51:57.159Z",
+    "loc": 1371
   },
   "architecture": {
     "violations": 0,
     "violationsPerKLOC": 0,
     "cycles": 0,
     "cyclesPerKLOC": 0,
-    "moduleCount": 5,
-    "dependencyCount": 1,
-    "graphDensity": 0.05
+    "moduleCount": 36,
+    "dependencyCount": 50,
+    "graphDensity": 0.0397
   },
   "quality": {
     "lint": {
       "errors": 0,
-      "warnings": 5,
+      "warnings": 0,
       "errorsPerKLOC": 0,
-      "warningsPerKLOC": 50
+      "warningsPerKLOC": 0
     },
     "tests": {
       "error": "vitest unavailable or no tests found",

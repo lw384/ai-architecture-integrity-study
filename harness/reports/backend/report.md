@@ -1,8 +1,8 @@
 # Evaluation Report: backend
 
-**Target:** `/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline-ai/Gemini/generation-1/backend`
-**Timestamp:** 2026-05-29T16:06:45.270Z
-**LOC:** 100
+**Target:** `/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline/backend`
+**Timestamp:** 2026-05-31T15:51:57.159Z
+**LOC:** 1,371
 
 ---
 
@@ -12,9 +12,9 @@
 |--------|----:|---------:|
 | Violations | 0 | 0 |
 | Cycles | 0 | 0 |
-| Modules | 5 | — |
-| Dependencies | 1 | — |
-| Graph Density | 0.05 | — |
+| Modules | 36 | — |
+| Dependencies | 50 | — |
+| Graph Density | 0.0397 | — |
 
 ---
 
@@ -25,7 +25,7 @@
 | Metric | Raw | Per KLOC |
 |--------|----:|---------:|
 | Errors | 0 | 0 |
-| Warnings | 5 | 50 |
+| Warnings | 0 | 0 |
 
 ### Tests (Vitest)
 
