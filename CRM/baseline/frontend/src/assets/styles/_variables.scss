@@ -1,0 +1,27 @@
+$color-primary: #4d8af0;
+$color-primary-dark: #2f6fe0;
+$color-secondary: #fa8c16;
+$color-secondary-dark: #d46b08;
+$color-surface: #ffffff;
+$color-surface-subtle: #f5f7fa;
+$color-border: #ebeef5;
+$color-text: #606266;
+$color-text-muted: rgba(0, 0, 0, 0.65);
+$color-title: #ffffff;
+$color-header-background: #ffffff;
+$color-header-border: #ebeef5;
+$color-menu-background: #191a23;
+$color-menu-text: hsla(0, 0%, 100%, 0.95);
+$color-menu-text-muted: hsla(0, 0%, 100%, 0.62);
+$color-menu-text-disabled: hsla(0, 0%, 100%, 0.36);
+$color-menu-active: $color-primary;
+
+$spacing-base: 4px;
+$radius-sm: 12px;
+$radius-md: 18px;
+$radius-lg: 24px;
+
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;

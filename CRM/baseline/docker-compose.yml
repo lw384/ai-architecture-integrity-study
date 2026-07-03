@@ -1,0 +1,75 @@
+services:
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: crm_baseline_db_dev
+    env_file:
+      - .env.development
+    ports:
+      - "5434:5432"
+    volumes:
+      - crm_baseline_postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crm_baseline_network
+
+  postgres-test:
+    profiles: ["test"]
+    image: postgres:15-alpine
+    container_name: crm_baseline_db_test
+    env_file:
+      - .env.test
+    ports:
+      - "5435:5432"
+    volumes:
+      - crm_baseline_postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crm_baseline_network
+
+  backend:
+    build: ./backend
+    container_name: crm_baseline_backend
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+    env_file:
+      - .env.development
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres-dev
+      DB_PORT: 5432
+      PORT: 3101
+    ports:
+      - "3101:3101"
+    networks:
+      - crm_baseline_network
+
+  frontend:
+    build: ./frontend
+    container_name: crm_baseline_frontend
+    depends_on:
+      - backend
+    env_file:
+      - .env.development
+    environment:
+      CRM_BASELINE_BACKEND_PORT: 3101
+    ports:
+      - "8081:80"
+    networks:
+      - crm_baseline_network
+
+networks:
+  crm_baseline_network:
+    driver: bridge
+
+volumes:
+  crm_baseline_postgres_dev_data:
+  crm_baseline_postgres_test_data:

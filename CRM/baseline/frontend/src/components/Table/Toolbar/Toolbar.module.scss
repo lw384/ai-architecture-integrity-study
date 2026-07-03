@@ -1,0 +1,68 @@
+.toolbarShell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.description {
+  margin-top: 0.5rem;
+  max-width: 760px;
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.filtersForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.searchField {
+  min-width: 15rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.submitActions {
+  align-self: flex-start;
+}
+
+@media (min-width: 768px) {
+  .headerRow {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .actions {
+    justify-content: flex-end;
+  }
+
+  .filtersForm {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .searchField {
+    width: 18rem;
+  }
+
+  .submitActions {
+    margin-left: auto;
+  }
+}

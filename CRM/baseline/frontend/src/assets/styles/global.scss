@@ -1,0 +1,160 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+:root {
+  --color-primary: #{$color-primary};
+  --color-primary-dark: #{$color-primary-dark};
+  --color-secondary: #{$color-secondary};
+  --color-secondary-dark: #{$color-secondary-dark};
+  --color-surface: #{$color-surface};
+  --color-surface-subtle: #{$color-surface-subtle};
+  --color-border: #{$color-border};
+  --color-text: #{$color-text};
+  --color-text-muted: #{$color-text-muted};
+  --color-title: #{$color-title};
+  --color-header-background: #{$color-header-background};
+  --color-header-border: #{$color-header-border};
+  --color-menu-background: #{$color-menu-background};
+  --color-menu-text: #{$color-menu-text};
+  --color-menu-text-muted: #{$color-menu-text-muted};
+  --color-menu-text-disabled: #{$color-menu-text-disabled};
+  --color-menu-active: #{$color-menu-active};
+  --spacing-base: #{$spacing-base};
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  background:
+    radial-gradient(circle at top left, rgba(77, 138, 240, 0.1), transparent 22%),
+    linear-gradient(180deg, rgba(245, 247, 250, 0.98), rgba(255, 255, 255, 1));
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+* {
+  @include custom-scrollbar(8px);
+}
+
+.crm-hero {
+  border-radius: 40px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(77, 138, 240, 0.14), rgba(250, 140, 22, 0.1));
+}
+
+.crm-hero-copy {
+  margin-top: 0.3125rem;
+  max-width: 760px;
+  color: var(--color-text-muted);
+}
+
+.crm-loading-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.crm-loading-center-lg {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.crm-loading-stack {
+  align-items: center;
+}
+
+.crm-dialog-actions {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.crm-form-stack {
+  margin-top: 0.25rem;
+}
+
+.crm-empty-state {
+  border-radius: 32px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.crm-empty-state-lg {
+  padding: 2.5rem;
+}
+
+.crm-empty-copy {
+  margin-top: 0.25rem;
+  color: var(--color-text-muted);
+}
+
+.crm-table-shell {
+  overflow: hidden;
+  border-radius: 32px;
+}
+
+.crm-detail-card {
+  border-radius: 40px;
+}
+
+.crm-detail-card-content {
+  padding: 1.5rem;
+}
+
+.crm-detail-subtitle {
+  margin-top: 0.3125rem;
+  color: var(--color-text-muted);
+}
+
+.crm-detail-panel-content {
+  padding: 0;
+}
+
+.crm-detail-panel-body {
+  padding: 1rem;
+}
+
+.crm-timeline {
+  margin: 0;
+  padding: 0;
+}
+
+.crm-timeline-opposite {
+  flex: 0.2;
+}
+
+.crm-timeline-paper {
+  border-radius: 32px;
+  padding: 1.25rem;
+}
+
+.crm-capitalize {
+  text-transform: capitalize;
+}
+
+@media (min-width: 768px) {
+  .crm-hero {
+    padding: 2rem;
+  }
+
+  .crm-detail-card-content {
+    padding: 2rem;
+  }
+
+  .crm-detail-panel-body {
+    padding: 1.5rem;
+  }
+}

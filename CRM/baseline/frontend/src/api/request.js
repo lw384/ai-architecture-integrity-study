@@ -1,7 +1,7 @@
 const BASE = '/api';
 
 export async function request(path, opts = {}) {
-  const response = await fetch(BASE + path, {
+  const response = await fetch(buildUrl(path, opts.query), {
     headers: {
       'Content-Type': 'application/json',
       ...(opts.headers ?? {}),
@@ -29,4 +29,24 @@ export async function request(path, opts = {}) {
   }
 
   return response.json();
+}
+
+function buildUrl(path, query) {
+  if (!query) {
+    return BASE + path;
+  }
+
+  const searchParams = new URLSearchParams();
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') {
+      return;
+    }
+
+    searchParams.set(key, String(value));
+  });
+
+  const serializedQuery = searchParams.toString();
+
+  return serializedQuery ? `${BASE}${path}?${serializedQuery}` : BASE + path;
 }

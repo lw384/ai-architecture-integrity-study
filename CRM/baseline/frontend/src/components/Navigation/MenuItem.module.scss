@@ -1,0 +1,30 @@
+.menuItem {
+  color: inherit;
+}
+
+.menuItemExpanded {
+  justify-content: initial;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.menuItemCollapsed {
+  justify-content: center;
+  padding-left: 0.3125rem;
+  padding-right: 0.3125rem;
+}
+
+.menuItemIcon {
+  min-width: 0;
+  justify-content: center;
+  color: inherit;
+}
+
+.menuItemIconExpanded {
+  min-width: 36px;
+  margin-right: 0.375rem;
+}
+
+.menuItemIconCollapsed {
+  margin-right: 0;
+}

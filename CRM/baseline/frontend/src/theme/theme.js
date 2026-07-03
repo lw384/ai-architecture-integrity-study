@@ -3,28 +3,39 @@ import { alpha, createTheme } from '@mui/material/styles';
 export const crmTheme = createTheme({
   palette: {
     primary: {
-      main: '#0f4c5c',
-      dark: '#092f38',
-      light: '#5d8893',
+      main: '#4d8af0',
+      dark: '#2f6fe0',
+      light: '#7aa7f5',
     },
     secondary: {
-      main: '#c8553d',
-      dark: '#903726',
-      light: '#dd8e7d',
+      main: '#fa8c16',
+      dark: '#d46b08',
+      light: '#ffb15c',
     },
     background: {
-      default: '#f6f1e8',
-      paper: '#fffaf2',
+      default: '#f5f7fa',
+      paper: '#ffffff',
     },
     success: {
-      main: '#2d6a4f',
+      main: '#52c41a',
     },
     warning: {
-      main: '#bc6c25',
+      main: '#faad14',
+    },
+    text: {
+      primary: '#303133',
+      secondary: '#606266',
+    },
+    sidebar: {
+      textPrimary: 'var(--color-menu-text)',
+      textSecondary: 'var(--color-menu-text-muted)',
+      textDisabled: 'var(--color-menu-text-disabled)',
+      backgroundHover: 'rgba(255, 255, 255, 0.08)',
+      backgroundSelected: 'var(--color-menu-active)',
     },
   },
   shape: {
-    borderRadius: 18,
+    borderRadius: 3,
   },
   typography: {
     fontFamily: '"IBM Plex Sans", sans-serif',
@@ -61,8 +72,11 @@ export const crmTheme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundImage:
-            'linear-gradient(120deg, rgba(15,76,92,0.94), rgba(200,85,61,0.9))',
+          backgroundColor: '#ffffff',
+          backgroundImage: 'none',
+          color: '#303133',
+          borderBottom: '1px solid #ebeef5',
+          backdropFilter: 'blur(10px)',
           boxShadow: 'none',
         },
       },
@@ -70,8 +84,8 @@ export const crmTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          border: '1px solid rgba(15, 76, 92, 0.08)',
-          boxShadow: '0 18px 40px rgba(15, 76, 92, 0.08)',
+          border: '1px solid #ebeef5',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
         },
       },
     },
@@ -79,23 +93,59 @@ export const crmTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage:
-            'radial-gradient(circle at top right, rgba(200,85,61,0.05), transparent 34%)',
+            'radial-gradient(circle at top right, rgba(77,138,240,0.06), transparent 34%)',
         },
       },
     },
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#132a31',
-          color: '#f8f5ef',
+          backgroundColor: '#191a23',
+          color: 'hsla(0, 0%, 100%, 0.95)',
           borderRight: 'none',
         },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: ({ ownerState, theme }) => ({
+          minHeight: 46,
+          borderRadius: theme.shape.borderRadius * 2,
+          color: theme.palette.sidebar.textPrimary,
+          transition: theme.transitions.create(['background-color', 'color'], {
+            duration: theme.transitions.duration.shorter,
+          }),
+          '&:hover': {
+            backgroundColor: theme.palette.sidebar.backgroundHover,
+          },
+          '& .MuiListItemText-primary': {
+            color: 'inherit',
+          },
+          '& .MuiListItemText-secondary': {
+            color: theme.palette.sidebar.textSecondary,
+          },
+          '&.Mui-disabled': {
+            color: theme.palette.sidebar.textDisabled,
+          },
+          '&.Mui-selected': {
+            backgroundColor: theme.palette.sidebar.backgroundSelected,
+            color: theme.palette.common.white,
+            '&:hover': {
+              backgroundColor: theme.palette.primary.dark,
+            },
+          },
+          ...(ownerState.selected
+            ? {
+              boxShadow: `0 8px 18px ${alpha(theme.palette.primary.main, 0.28)}`,
+            }
+            : {}),
+        }),
       },
     },
     MuiTableCell: {
       styleOverrides: {
         head: {
-          backgroundColor: alpha('#0f4c5c', 0.08),
+          backgroundColor: alpha('#4d8af0', 0.08),
           fontWeight: 600,
         },
       },

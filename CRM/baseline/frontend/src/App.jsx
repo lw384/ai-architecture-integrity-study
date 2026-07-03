@@ -2,7 +2,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 
-import { router } from './app/router';
+import { router } from './routes/router';
 import { crmTheme } from './theme/theme';
 
 const queryClient = new QueryClient({
