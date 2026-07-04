@@ -1,0 +1,8 @@
+# Monorepo workspace declaration
+# Each entry is a directory containing a valid package.json
+packages:
+  - 'baseline/backend'
+  - 'baseline/frontend'
+  - 'harness'
+  - 'experiment'
+  - 'docs'

@@ -41,7 +41,6 @@ Thumbs.db
 harness/reports/
 
 # --- Experiment run artifacts (see docs/methodology/run-artifact-policy.md) ---
-# 大制品通过 GitHub Release 或 Zenodo 发布,不入主分支
 experiment/runs/*/agent_output/
 experiment/runs/*/*.tar.gz
 

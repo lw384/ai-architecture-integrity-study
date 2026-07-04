@@ -1,16 +1,15 @@
 {
-  "name": "crm-eval-harness",
-  "version": "1.0.0",
+  "name": "harness",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static analysis + evaluation pipeline for NestJS/React codebases",
   "type": "module",
-  "description": "CRM architecture integrity evaluation pipeline",
   "scripts": {
-    "evaluate": "node scripts/evaluate.mjs"
+    "eval": "node scripts/evaluate.mjs",
+    "test": "echo 'harness has no unit tests yet; smoke test via eval' && exit 0",
+    "lint": "find scripts -type f \\( -name '*.mjs' -o -name '*.js' -o -name '*.cjs' \\) -print0 | xargs -0 -n1 node --check"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "dependency-cruiser": "^16.10.0",
-    "eslint": "^8.57.0",
-    "typescript": "^5.0.0"
+    "dependency-cruiser": "^16.0.0"
   }
 }

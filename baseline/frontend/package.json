@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "echo 'crm-baseline-frontend has no automated tests yet' && exit 0",
+    "lint": "echo 'crm-baseline-frontend has no lint configuration yet' && exit 0"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

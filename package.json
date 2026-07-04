@@ -1,0 +1,24 @@
+{
+  "name": "ai-architecture-integrity-study",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MSc dissertation research on architectural integrity in LLM-generated code (WMG, University of Warwick)",
+  "author": "Wei Luo",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "install:all": "pnpm install && cd experiment && [ -f requirements.txt ] && python -m venv venv && ./venv/bin/pip install -r requirements.txt || echo 'No Python deps to install'",
+    "build": "pnpm -r --if-present --parallel build",
+    "test": "pnpm -r --if-present --parallel test",
+    "test:baseline": "pnpm --filter backend test && pnpm --filter crm-baseline-frontend --if-present test",
+    "test:harness": "pnpm --filter harness test",
+    "lint": "pnpm -r --if-present --parallel lint",
+    "lint:baseline": "pnpm --filter backend lint && pnpm --filter crm-baseline-frontend --if-present lint",
+    "eval": "pnpm --filter harness eval",
+    "clean": "pnpm -r --if-present --parallel clean && rm -rf node_modules"
+  }
+}

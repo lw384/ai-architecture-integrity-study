@@ -1,0 +1,14 @@
+{
+  "name": "baseline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CRM baseline implementation (backend NestJS + frontend React); serves as the measurement instrument for LLM agent evaluation",
+  "scripts": {
+    "test": "pnpm --dir backend test && pnpm --dir frontend --if-present test",
+    "test:backend": "pnpm --dir backend test",
+    "test:frontend": "pnpm --dir frontend --if-present test",
+    "lint": "pnpm --dir backend lint && pnpm --dir frontend --if-present lint",
+    "lint:backend": "pnpm --dir backend lint",
+    "lint:frontend": "pnpm --dir frontend --if-present lint"
+  }
+}

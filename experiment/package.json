@@ -1,0 +1,10 @@
+{
+  "name": "experiment",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Experimental orchestration: prompts, agent run bundles, analysis scripts",
+  "scripts": {
+    "test": "echo 'experiment has no JS tests; primary artifacts are prompts and Python scripts' && exit 0",
+    "lint": "echo 'experiment has no JS lint step yet' && exit 0"
+  }
+}
