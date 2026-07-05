@@ -17,27 +17,25 @@ import { useState } from 'react';
 
 import { DataTablePagination } from '../../components/Table/Pagination/Pagination';
 import { DataTableShell } from '../../components/Table/Shell/Shell';
-import { ContactFormDialog } from './ContactFormDialog';
-import { ContactTable } from './contactTable';
-
+// import { CustomerFormDialog } from './CustomerFormDialog';
 import {
-  useContactList,
-  useCreateContact,
-  useDeleteContact,
-  useUpdateContact,
-} from './contactQueries';
-
+  useCreateCompany,
+  useCompanyList,
+  useDeleteCompany,
+  useUpdateCompany,
+} from './companyQueries';
+import { CompanyTable } from './CompanyTable';
 
 function extractErrorMessage(error, fallbackMessage) {
   return error?.message || fallbackMessage;
 }
 
-export function ContactsPage() {
+export function CompaniesPage() {
   const navigate = useNavigate();
-  const createContact = useCreateContact();
-  const updateContact = useUpdateContact();
-  const deleteContact = useDeleteContact();
-  const [formState, setFormState] = useState({ open: false, mode: 'create', contact: null });
+  const createCompany = useCreateCompany();
+  const updateCompany = useUpdateCompany();
+  const deleteCompany = useDeleteCompany();
+  const [formState, setFormState] = useState({ open: false, mode: 'create', company: null });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [feedback, setFeedback] = useState({ open: false, severity: 'success', message: '' });
   const [searchInput, setSearchInput] = useState('');
@@ -46,38 +44,38 @@ export function ContactsPage() {
     page: 1,
     pageSize: 10,
   });
-  const contactsQuery = useContactList(listQuery);
+  const companiesQuery = useCompanyList(listQuery);
 
-  const handleFormSubmit = async (payload) => {
-    try {
-      if (formState.mode === 'create') {
-        await createContact.mutateAsync(payload);
-        setFeedback({
-          open: true,
-          severity: 'success',
-          message: 'Contact created.',
-        });
-      } else {
-        await updateContact.mutateAsync({
-          id: formState.contact.id,
-          data: payload,
-        });
-        setFeedback({
-          open: true,
-          severity: 'success',
-          message: 'Contact updated.',
-        });
-      }
+//   const handleFormSubmit = async (payload) => {
+//     try {
+//       if (formState.mode === 'create') {
+//         await createCompany.mutateAsync(payload);
+//         setFeedback({
+//           open: true,
+//           severity: 'success',
+//           message: 'Company  created.',
+//         });
+//       } else {
+//         await updateCompany.mutateAsync({
+//           id: formState.company.id,
+//           data: payload,
+//         });
+//         setFeedback({
+//           open: true,
+//           severity: 'success',
+//           message: 'Company updated.',
+//         });
+//       }
 
-      setFormState({ open: false, mode: 'create', contact: null });
-    } catch (error) {
-      setFeedback({
-        open: true,
-        severity: 'error',
-        message: extractErrorMessage(error, 'Contact request failed.'),
-      });
-    }
-  };
+//       setFormState({ open: false, mode: 'create', company: null });
+//     } catch (error) {
+//       setFeedback({
+//         open: true,
+//         severity: 'error',
+//         message: extractErrorMessage(error, 'Company request failed.'),
+//       });
+//     }
+//   };
 
   const handleDelete = async () => {
     if (!deleteTarget) {
@@ -85,12 +83,12 @@ export function ContactsPage() {
     }
 
     try {
-      await deleteCustomer.mutateAsync(deleteTarget.id);
+      await deleteCompany.mutateAsync(deleteTarget.id);
       setDeleteTarget(null);
       setFeedback({
         open: true,
         severity: 'success',
-        message: 'Customer deleted.',
+        message: 'Company deleted.',
       });
     } catch (error) {
       setFeedback({
@@ -125,13 +123,13 @@ export function ContactsPage() {
     setListQuery((current) => ({ ...current, page: 1, pageSize }));
   };
 
-  const contactPage = contactsQuery.data;
-  const contactItems = contactPage?.items ?? [];
+  const companyPage = companiesQuery.data;
+  const companyItems = companyPage?.items ?? [];
 
   return (
     <Stack spacing={3}>
       <DataTableShell
-        title="Customers"
+        title="Companies"
         searchValue={searchInput}
         onSearchChange={setSearchInput}
         onSearchSubmit={handleSearchSubmit}
@@ -159,60 +157,60 @@ export function ContactsPage() {
               setFormState({
                 open: true,
                 mode: 'create',
-                customer: null,
+                company: null,
               })
             }
           >
-            Create customer
+            Add Company
           </Button>
         )}
-        loading={contactsQuery.isLoading}
+        loading={companiesQuery.isLoading}
         error={
-          contactsQuery.isError
-            ? extractErrorMessage(contactsQuery.error, 'Failed to load contacts.')
+          companiesQuery.isError
+            ? extractErrorMessage(companiesQuery.error, 'Failed to load companies.')
             : null
         }
-        isEmpty={!contactsQuery.isLoading && !contactsQuery.isError && contactItems.length === 0}
-        emptyTitle="No matching contacts"
+        isEmpty={!companiesQuery.isLoading && !companiesQuery.isError && companyItems.length === 0}
+        emptyTitle="No matching companies"
         emptyDescription="Try broadening the search or clearing the current filters."
         pagination={
-          contactPage && contactPage.total > 0 ? (
+          companyPage && companyPage.total > 0 ? (
             <DataTablePagination
-              page={contactPage.page}
-              pageSize={contactPage.pageSize}
-              total={contactPage.total}
-              totalPages={contactPage.totalPages}
+              page={companyPage.page}
+              pageSize={companyPage.pageSize}
+              total={companyPage.total}
+              totalPages={companyPage.totalPages}
               onPageChange={handlePageChange}
               onPageSizeChange={handlePageSizeChange}
             />
           ) : null
         }
       >
-        <ContactTable
-          contacts={contactItems}
+        <CompanyTable
+          companies={companyItems}
           onDelete={setDeleteTarget}
-          onEdit={(contact) =>
+          onEdit={(company) =>
             setFormState({
               open: true,
               mode: 'edit',
-              contact,
+              company,
             })
           }
-          onView={(contact) => navigate(`/contacts/${contact.id}`)}
+          onView={(company) => navigate(`/companies/${company.id}`)}
         />
       </DataTableShell>
 
-      <ContactFormDialog
+      {/* <CompanyFormDialog
         open={formState.open}
         mode={formState.mode}
-        initialValues={formState.contact}
-        isPending={createContact.isPending || updateContact.isPending}
-        onClose={() => setFormState({ open: false, mode: 'create', contact: null })}
+        initialValues={formState.company}
+        isPending={createCompany.isPending || updateCompany.isPending}
+        onClose={() => setFormState({ open: false, mode: 'create', company: null })}
         onSubmit={handleFormSubmit}
       />
 
       <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)}>
-        <DialogTitle>Delete contact</DialogTitle>
+        <DialogTitle>Delete company</DialogTitle>
         <DialogContent>
           <Typography>
             Delete {deleteTarget?.name}? This helps verify that backend delete
@@ -225,7 +223,7 @@ export function ContactsPage() {
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
 
       <Snackbar
         open={feedback.open}

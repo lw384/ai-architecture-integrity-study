@@ -1,20 +1,19 @@
 import { request } from '../../api/request';
 
 export const contactApi = {
-  list: (customerId, query) => request(`/customers/${customerId}/contacts`, { query }),
-  create: (customerId, data) =>
-    request(`/customers/${customerId}/contacts`, {
+  list: (companyId, query) =>
+    request('/contacts', {
+      query: companyId ? { ...query, companyId } : query,
+    }),
+  create: (companyId, data) =>
+    request('/contacts', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, companyId }),
     }),
   get: (id) => request(`/contacts/${id}`),
   update: (id, data) =>
     request(`/contacts/${id}`, {
-      method: 'PUT',
+      method: 'POST',
       body: JSON.stringify(data),
-    }),
-  delete: (id) =>
-    request(`/contacts/${id}`, {
-      method: 'DELETE',
     }),
 };

@@ -18,13 +18,15 @@ import { useState } from 'react';
 import { DataTablePagination } from '../../components/Table/Pagination/Pagination';
 import { DataTableShell } from '../../components/Table/Shell/Shell';
 import { CustomerFormDialog } from './CustomerFormDialog';
-import {
-  useCreateCustomerMutation,
-  useCustomersQuery,
-  useDeleteCustomerMutation,
-  useUpdateCustomerMutation,
-} from './customerQueries';
 import { CustomerTable } from './CustomerTable';
+
+import {
+  useCompanyList,
+  useCreateCompany,
+  useDeleteCompany,
+  useUpdateCompany,
+} from './customerQueries';
+
 
 function extractErrorMessage(error, fallbackMessage) {
   return error?.message || fallbackMessage;
@@ -32,9 +34,9 @@ function extractErrorMessage(error, fallbackMessage) {
 
 export function CustomersPage() {
   const navigate = useNavigate();
-  const createCustomer = useCreateCustomerMutation();
-  const updateCustomer = useUpdateCustomerMutation();
-  const deleteCustomer = useDeleteCustomerMutation();
+  const createCompany = useCreateCompany();
+  const updateCompany = useUpdateCompany();
+  const deleteCompany = useDeleteCompany();
   const [formState, setFormState] = useState({ open: false, mode: 'create', customer: null });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [feedback, setFeedback] = useState({ open: false, severity: 'success', message: '' });
@@ -130,7 +132,6 @@ export function CustomersPage() {
     <Stack spacing={3}>
       <DataTableShell
         title="Customers"
-        description="Manage the CRM backbone here. This list is also the fastest place to confirm backend rules like default status, 404 detail handling, and lastContactedAt updates after interactions."
         searchValue={searchInput}
         onSearchChange={setSearchInput}
         onSearchSubmit={handleSearchSubmit}

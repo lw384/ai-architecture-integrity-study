@@ -3,8 +3,8 @@ import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
 import SellRoundedIcon from '@mui/icons-material/SellRounded';
 
 import { AppLayout } from '../layout/AppLayout';
-import { CustomerDetailPage } from '../pages/customers/CustomerDetailPage';
-import { CustomersPage } from '../pages/customers/CustomersPage';
+import { CompaniesPage } from '../pages/companies/CompanyPage';
+import { ContactsPage } from '../pages/contacts/ContactsPanel';
 
 const appRoutes = [
   {
@@ -13,28 +13,45 @@ const appRoutes = [
     children: [
       {
         index: true,
-        element: <Navigate to="/customers" replace />,
+        element: <Navigate to="/contacts" replace />,
       },
       {
-        path: 'customers',
-        element: <CustomersPage />,
+        path: 'contacts',
+        element: <ContactsPage />,
         handle: {
           navigation: {
-            id: 'customers',
-            label: 'Customers',
+            id: 'contacts',
+            label: 'Contacts',
             caption: 'List, detail, contacts, interactions and deals',
-            to: '/customers',
+            to: '/contacts',
             icon: PeopleAltRoundedIcon,
           },
         },
       },
-      {
-        path: 'customers/:customerId',
-        element: <CustomerDetailPage />,
+      // {
+      //   path: 'customers/:companyId',
+      //   element: <CustomerDetailPage />,
+      // },
+         {
+        path: 'companies',
+        element: <CompaniesPage />,
+        handle: {
+          navigation: {
+            id: 'companies',
+            label: 'Companies',
+            caption: 'List, detail, contacts, interactions and deals',
+            to: '/companies',
+            icon: SellRoundedIcon,
+          },
+        },
       },
+      //  {
+      //   path: 'companies/:companyId',
+      //   element: <CompanyDetailPage />,
+      // },
       {
         path: '*',
-        element: <Navigate to="/customers" replace />,
+        element: <Navigate to="/companies" replace />,
       },
     ],
   },

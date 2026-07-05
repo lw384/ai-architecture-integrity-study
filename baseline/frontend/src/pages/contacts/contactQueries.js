@@ -7,58 +7,51 @@ import {
 import { contactApi } from './contactApi';
 
 export const contactKeys = {
-  lists: (customerId) => ['contacts', 'customer', customerId, 'list'],
-  byCustomer: (customerId) => ['contacts', 'customer', customerId],
-  list: (customerId, query) => ['contacts', 'customer', customerId, 'list', query],
-  detail: (contactId) => ['contacts', 'detail', contactId],
+  all: ['contacts'],
+  lists: () => [...contactKeys.all, 'list'],
+  list: (companyId, query) => [...contactKeys.lists(), { companyId: companyId ?? 'all', query }],
+  details: () => [...contactKeys.all, 'detail'],
+  detail: (contactId) => [...contactKeys.details(), contactId],
 };
 
-export function useContactsByCustomerQuery(customerId, query) {
+export function useContactList(params = {}) {
+  const { companyId, ...query } = params;
   return useQuery({
-    queryKey: contactKeys.list(customerId, query),
-    queryFn: () => contactApi.list(customerId, query),
-    enabled: Boolean(customerId),
+    queryKey: contactKeys.list(companyId, query),
+    queryFn: () => contactApi.list(companyId, query),
   });
 }
 
-export function useCreateContactMutation(customerId) {
+export function useCreateContact() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data) => contactApi.create(customerId, data),
+    mutationFn: (data) => contactApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: contactKeys.lists(customerId),
-      });
+      queryClient.invalidateQueries({ queryKey: contactKeys.lists() });
     },
   });
 }
 
-export function useUpdateContactMutation(customerId) {
+export function useUpdateContact(contactId) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }) => contactApi.update(id, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: contactKeys.lists(customerId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: contactKeys.detail(variables.id),
-      });
+      queryClient.invalidateQueries({ queryKey: contactKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: contactKeys.detail(variables.id) });
     },
   });
 }
 
-export function useDeleteContactMutation(customerId) {
+export function useDeleteContact(contactId) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: contactApi.delete,
+    mutationFn: () => contactApi.delete(contactId),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: contactKeys.lists(customerId),
-      });
+      queryClient.invalidateQueries({ queryKey: contactKeys.lists() });
     },
   });
 }
