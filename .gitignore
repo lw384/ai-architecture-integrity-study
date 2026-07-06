@@ -43,6 +43,7 @@ harness/reports/
 # --- Experiment run artifacts (see docs/methodology/run-artifact-policy.md) ---
 experiment/runs/*/agent_output/
 experiment/runs/*/*.tar.gz
+experiment/workspace/
 
 # --- Temporary / working files ---
 *.tmp
