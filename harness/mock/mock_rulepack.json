@@ -1,0 +1,33 @@
+{
+  "rulepack_id": "rp_ts_react_nest_v1",
+  "version": "1.0.0",
+  "language": "typescript",
+  "frameworks": ["react", "nestjs"],
+  "provides": {
+    "constraints": [
+      "eslint-strict-react",
+      "tsc-no-emit",
+      "prettier-check"
+    ],
+    "metrics": [
+      "cyclomatic-complexity",
+      "maintainability-index",
+      "test-coverage-jest"
+    ],
+    "judgments": [
+      "architecture-compliance-llm",
+      "component-coupling-llm"
+    ]
+  },
+  "entry_points": {
+    "constraints": "bin/run-constraints.sh",
+    "metrics": "bin/run-metrics.js",
+    "judgments": "bin/run-judgments.py"
+  },
+  "tool_versions": {
+    "eslint": "8.56.0",
+    "typescript": "5.3.3",
+    "jest": "29.7.0",
+    "prettier": "3.2.4"
+  }
+}

@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
-import { runCommand, perKLOC } from './util.mjs';
+import { runCommand, perKLOC } from './probes/util.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const HARNESS_DIR = path.resolve(__dirname, '../..');
@@ -25,7 +25,7 @@ async function runLint(targetDir, loc) {
   // Detect which eslint config style the target uses
   const v9Files = ['eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs'];
   const v8Files = ['.eslintrc', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.json',
-                   '.eslintrc.yaml', '.eslintrc.yml'];
+    '.eslintrc.yaml', '.eslintrc.yml'];
 
   const hasV9Config = v9Files.some(f => existsSync(path.join(targetDir, f)));
   const hasV8Config = v8Files.some(f => existsSync(path.join(targetDir, f)));
@@ -70,7 +70,7 @@ function parseLintOutput(result, loc) {
     const data = JSON.parse(result.stdout);
     let errors = 0, warnings = 0;
     for (const file of data) {
-      errors   += file.errorCount   ?? 0;
+      errors += file.errorCount ?? 0;
       warnings += file.warningCount ?? 0;
     }
     return { errors, warnings, errorsPerKLOC: perKLOC(errors, loc), warningsPerKLOC: perKLOC(warnings, loc) };
@@ -96,13 +96,13 @@ async function runTests(targetDir, loc) {
   // Try parsing stdout; fall back to stderr scan for summary line
   try {
     const data = JSON.parse(result.stdout);
-    const numTotal  = data.numTotalTests  ?? 0;
+    const numTotal = data.numTotalTests ?? 0;
     const numPassed = data.numPassedTests ?? 0;
     const numFailed = data.numFailedTests ?? 0;
     return {
-      total:    numTotal,
-      passed:   numPassed,
-      failed:   numFailed,
+      total: numTotal,
+      passed: numPassed,
+      failed: numFailed,
       passRate: numTotal > 0 ? parseFloat((numPassed / numTotal * 100).toFixed(1)) : null
     };
   } catch {

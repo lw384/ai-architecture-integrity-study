@@ -1,0 +1,9 @@
+
+{
+  "status": "ready_for_evaluation",
+  "events": ["agent_started", "agent_completed", "evaluation_completed"],
+  "task_id": "T0_python_pipeline_test",
+  "baseline_commit": "baseline-sha-123",
+  "pre_commit": "pre-sha-456",
+  "rulepack_id": "rp_ts_react_nest_v1"
+}

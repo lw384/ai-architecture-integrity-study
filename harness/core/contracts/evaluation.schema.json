@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Harness Evaluation Result",
+  "description": "The standardized output contract for the evaluation harness.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic versioning of the schema, e.g., '0.1.0'"
+    },
+    "run_id": { "type": "string" },
+    "trajectory_id": { "type": "string" },
+    "task_id": { "type": "string" },
+    "rulepack_id": { "type": "string" },
+    "target": {
+      "type": "object",
+      "properties": {
+        "workspace_path": { "type": "string" },
+        "pre_commit": { "type": "string" },
+        "post_commit": { "type": "string" },
+        "baseline_commit": { "type": "string" }
+      },
+      "required": ["workspace_path", "pre_commit", "post_commit", "baseline_commit"]
+    },
+    "env_snapshot": {
+      "type": "object",
+      "properties": {
+        "node_version": { "type": "string" },
+        "pnpm_version": { "type": "string" },
+        "harness_commit": { "type": "string" },
+        "os": { "type": "string" },
+        "tool_versions": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "required": ["node_version", "pnpm_version", "harness_commit", "os"]
+    },
+    "layers": {
+      "type": "object",
+      "properties": {
+        "constraints": { "$ref": "#/definitions/layer_array" },
+        "metrics": { "$ref": "#/definitions/layer_array" },
+        "judgments": { "$ref": "#/definitions/layer_array" }
+      },
+      "required": ["constraints", "metrics", "judgments"]
+    },
+    "deltas": {
+      "type": "object",
+      "properties": {
+        "run_local": { "type": "object", "additionalProperties": true },
+        "trajectory_cumulative": { "type": "object", "additionalProperties": true }
+      },
+      "required": ["run_local", "trajectory_cumulative"]
+    },
+    "duration_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "partial", "failed"]
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "layer": { "type": "string", "enum": ["constraints", "metrics", "judgments", "system"] },
+          "name": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "required": ["layer", "message"]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "trajectory_id",
+    "task_id",
+    "rulepack_id",
+    "target",
+    "env_snapshot",
+    "layers",
+    "deltas",
+    "duration_ms",
+    "status"
+  ],
+  "definitions": {
+    "layer_array": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["pass", "fail", "error", "skipped"]
+          },
+          "findings": { "type": "array", "items": { "type": "string" } },
+          "score": { "type": "number" },
+          "raw_artifact_path": { "type": "string" }
+        },
+        "required": ["name", "version", "status", "raw_artifact_path"]
+      }
+    }
+  }
+}

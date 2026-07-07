@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task Evaluation Configuration",
+  "description": "Defines rulepack mapping, enabled rules, thresholds, and boundaries for a specific task.",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Unique identifier for the task, e.g., 'T1_auth_refactor'"
+    },
+    "rulepack_id": {
+      "type": "string",
+      "description": "The ID of the rulepack to use for this task."
+    },
+    "enabled": {
+      "type": "object",
+      "properties": {
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "metrics": { "type": "array", "items": { "type": "string" } },
+        "judgments": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["constraints", "metrics", "judgments"],
+      "description": "Subset of rules from the rulepack to enable for this task."
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "warn": { "type": "number" },
+          "fail": { "type": "number" }
+        }
+      },
+      "description": "Optional warn/fail thresholds for specific metrics. Keys must match metric rule IDs."
+    },
+    "judgment_config": {
+      "type": "object",
+      "properties": {
+        "model": { "type": "string" },
+        "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+        "sampling_times": { "type": "integer", "minimum": 1 }
+      },
+      "required": ["model", "temperature", "sampling_times"],
+      "description": "Configuration for the LLM judge."
+    },
+    "expected_diff_scope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Glob patterns defining allowed file modifications. Helps detect agent hallucinations or out-of-bounds edits."
+    }
+  },
+  "required": [
+    "task_id",
+    "rulepack_id",
+    "enabled",
+    "judgment_config"
+  ]
+}

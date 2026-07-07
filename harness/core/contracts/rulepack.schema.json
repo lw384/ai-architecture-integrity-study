@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Harness Rulepack Manifest",
+  "description": "Defines the structure and capabilities of a language/framework specific rulepack.",
+  "type": "object",
+  "properties": {
+    "rulepack_id": {
+      "type": "string",
+      "description": "Unique identifier for this rulepack, e.g., 'rp_ts_react_nest_v1'"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary programming language, e.g., 'typescript'"
+    },
+    "frameworks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Frameworks supported by this rulepack, e.g., ['react', 'nestjs']"
+    },
+    "provides": {
+      "type": "object",
+      "properties": {
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "metrics": { "type": "array", "items": { "type": "string" } },
+        "judgments": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["constraints", "metrics", "judgments"]
+    },
+    "entry_points": {
+      "type": "object",
+      "properties": {
+        "constraints": { "type": "string" },
+        "metrics": { "type": "string" },
+        "judgments": { "type": "string" }
+      },
+      "required": ["constraints", "metrics", "judgments"],
+      "description": "Relative paths to the executable scripts for each evaluation layer."
+    },
+    "tool_versions": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Specific versions of underlying tools (e.g., eslint, tsc) this rulepack expects."
+    },
+    "extends": {
+      "type": "string",
+      "description": "Optional parent rulepack ID to inherit rules from."
+    }
+  },
+  "required": [
+    "rulepack_id",
+    "version",
+    "language",
+    "frameworks",
+    "provides",
+    "entry_points",
+    "tool_versions"
+  ]
+}

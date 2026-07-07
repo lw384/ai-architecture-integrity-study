@@ -1,0 +1,29 @@
+{
+  "task_id": "T1_auth_refactor",
+  "rulepack_id": "rp_ts_react_nest_v1",
+  "enabled": {
+    "constraints": ["eslint-strict-react", "tsc-no-emit"],
+    "metrics": ["cyclomatic-complexity", "test-coverage-jest"],
+    "judgments": ["architecture-compliance-llm"]
+  },
+  "thresholds": {
+    "cyclomatic-complexity": {
+      "warn": 10,
+      "fail": 15
+    },
+    "test-coverage-jest": {
+      "warn": 80,
+      "fail": 70
+    }
+  },
+  "judgment_config": {
+    "model": "gpt-4-0125-preview",
+    "temperature": 0.2,
+    "sampling_times": 3
+  },
+  "expected_diff_scope": [
+    "src/auth/**/*",
+    "src/users/**/*",
+    "!**/*.spec.ts"
+  ]
+}

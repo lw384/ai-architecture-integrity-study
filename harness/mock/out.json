@@ -1,0 +1,63 @@
+{
+  "schema_version": "0.1.0",
+  "run_id": "run_test_001",
+  "trajectory_id": "traj_test_001",
+  "task_id": "T1_auth_refactor",
+  "rulepack_id": "rp_ts_react_nest_v1",
+  "target": {
+    "workspace_path": "/tmp/test-workspace",
+    "pre_commit": "pre-sha-111",
+    "post_commit": "post-sha-222",
+    "baseline_commit": "baseline-sha-000"
+  },
+  "env_snapshot": {
+    "node_version": "v20.20.2",
+    "pnpm_version": "8.15.4",
+    "harness_commit": "stub_commit_sha",
+    "os": "darwin",
+    "tool_versions": {}
+  },
+  "layers": {
+    "constraints": [
+      {
+        "name": "stub-constraint",
+        "version": "1.0",
+        "status": "pass",
+        "findings": [],
+        "raw_artifact_path": "logs/c.log"
+      }
+    ],
+    "metrics": [
+      {
+        "name": "stub-metric",
+        "version": "1.0",
+        "status": "pass",
+        "score": 100,
+        "raw_artifact_path": "logs/m.json"
+      }
+    ],
+    "judgments": [
+      {
+        "name": "stub-judgment",
+        "version": "1.0",
+        "status": "pass",
+        "score": 95,
+        "findings": [
+          "Looks good"
+        ],
+        "raw_artifact_path": "logs/j.json"
+      }
+    ]
+  },
+  "deltas": {
+    "run_local": {
+      "stub_metric_delta": 2.5
+    },
+    "trajectory_cumulative": {
+      "stub_metric_delta": 5
+    }
+  },
+  "duration_ms": 1250,
+  "status": "completed",
+  "errors": []
+}

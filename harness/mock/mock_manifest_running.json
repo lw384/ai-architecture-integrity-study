@@ -1,0 +1,8 @@
+
+{
+  "status": "agent_running",
+  "events": ["agent_started"],
+  "task_id": "T0_python_pipeline_test",
+  "baseline_commit": "baseline-sha-123",
+  "rulepack_id": "rp_ts_react_nest_v1"
+}

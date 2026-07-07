@@ -1,0 +1,8 @@
+{
+  "status": "evaluated",
+  "events": [
+    "agent_started",
+    "evaluation_completed"
+  ],
+  "task_id": "T0_test"
+}
