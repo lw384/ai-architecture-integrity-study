@@ -1,4 +1,4 @@
-```markdown
+
 # AI Architecture Integrity Study
 
 This repository contains an automated empirical study framework designed to evaluate the architectural integrity of software systems iteratively modified by autonomous AI agents.
@@ -72,6 +72,4 @@ Inside this directory, you will find:
 * `manifest.json`: The state-machine record of the run.
 * `evaluation.json`: The atomic, rich data report containing constraint findings, metric deltas, and environment metadata for subsequent statistical analysis.
 
-```
 
-```
