@@ -8,7 +8,7 @@ from pathlib import Path
 from config import get_agent_config
 from prompt_builder import build_mega_prompt
 from docker_runner import setup_and_run_agent
-# from evaluator import run_harness_evaluation
+from evaluator import run_harness_evaluation
 
 def main():
     parser = argparse.ArgumentParser(description="AI 架构完整性对照实验流水线")
@@ -36,8 +36,23 @@ def main():
     # 3. 执行容器沙盒
     setup_and_run_agent(root_dir, workspace_dir, run_id, args.agent, final_prompt, config)
 
+    # =============== 新增/修改的代码段 ===============
     # 4. 运行 Harness 评估
-    # run_harness_evaluation(root_dir, workspace_dir)
+    print("🔍 [4/4] 触发 Harness 自动化评估...")
+
+    # 假设此时 Agent 已经完成了代码修改，这里 mock 两个 commit hash
+    evaluation_result = run_harness_evaluation(
+        root_dir=root_dir,
+        trajectory_dir=workspace_dir,
+        run_id=run_id,
+        task_id=args.task,
+        pre_commit="pre-sha-001",   # 真实情况可以通过 git rev-parse 获取
+        post_commit="post-sha-002"  # 同上
+    )
+
+    status = evaluation_result.get('status', 'unknown (or skipped)')
+    print(f"📊 评估最终状态: {status}")
+    # ===============================================
 
     print(f"🎉 实验全流程结束！产物位于: {workspace_dir}")
 
