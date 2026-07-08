@@ -1,0 +1,7 @@
+rule_id: ARCH-003-no-circular
+tier: 1
+layer: constraints
+evidence_sources:
+  - adapter: dep-cruiser
+    tool_rule_ids: [ARCH-003-no-circular]
+agent_facing_message: "Circular dependency detected. Please break the cycle to maintain modularity."

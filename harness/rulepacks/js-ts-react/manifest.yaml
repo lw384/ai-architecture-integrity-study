@@ -1,0 +1,47 @@
+rulepack_id: js-ts-react
+version: 0.1.0
+
+# 架构元数据
+language: [javascript, typescript]
+frameworks: [nestjs, react]
+
+# 配置适配器映射
+adapters:
+  dep-cruiser:
+    entry_point: adapters/dep-cruiser/adapter.mjs
+    config: adapters/dep-cruiser/config.cjs
+    tier_mapping:
+      - { pattern: '^ARCH-', tier: 1 }
+      - { pattern: '^AI-DEBT-', tier: 2 }
+      - { pattern: '^BG-', tier: 3 }
+  eslint:
+    entry_point: adapters/eslint/adapter.mjs
+    config: adapters/eslint/.eslintrc.json
+    tier_mapping:
+      - { pattern: '^import/', tier: 2 }
+
+# 统一规则聚合 (优化版)
+rules:
+  constraints:
+    tier_1:
+      - rules/constraints/ARCH-001-layer-boundary.yaml
+      - rules/constraints/ARCH-003-no-circular.yaml
+    tier_2:
+      - rules/constraints/AI-DEBT-001-hallucinated-imports.yaml
+      - rules/constraints/AI-DEBT-001-unresolvable.yaml
+  background:
+    tier_3:
+      - rules/background/BG-no-deprecated-core.yaml
+      - rules/background/BG-no-orphans.yaml
+
+# 任务配置示例
+task:
+  enabled:
+    metrics: ['instability', 'propagation-cost', 'complexity']
+  thresholds:
+    instability:
+      warn: 0.5
+      fail: 0.7
+    propagation-cost:
+      warn: 0.15
+      fail: 0.25
