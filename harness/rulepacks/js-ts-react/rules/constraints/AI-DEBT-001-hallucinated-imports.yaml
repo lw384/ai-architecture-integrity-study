@@ -1,0 +1,20 @@
+rule_id: AI-DEBT-001-hallucinated-imports
+version: 0.1.0
+tier: 2
+layer: constraints
+category: ai-specific-debt
+visibility: harness-only
+severity: error
+
+description: >
+  检测无法解析的模块引入。通常是 AI Agent 生成代码时的依赖幻觉。
+
+evidence_sources:
+  - adapter: dep-cruiser
+    tool_rule_ids:
+      - AI-DEBT-001-hallucinated-imports
+    match_condition:
+      event_type: dependency_edge_violation
+    aggregation: any
+
+# Tier 2 简化声明，忽略 methodological_note, sanity_test_cases, references 等字段

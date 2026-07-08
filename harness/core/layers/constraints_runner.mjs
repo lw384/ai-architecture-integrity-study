@@ -1,64 +1,125 @@
+// harness/core/layers/constraints_runner.mjs
+import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { load } from 'js-yaml';
 
 /**
- * 执行 constraints 层面的评估
- * @param {Object} params
- * @param {string} params.targetDir - 待评估的 workspace 路径
- * @param {string} params.rulepackDir - rulepack 的物理路径
- * @param {Object} params.taskConfig - 任务配置 (包含 enabled.constraints)
- * @returns {Promise<Array>} 符合契约的 layer findings
+ * 模板字符串替换：生成面向 Agent 的反馈信息
  */
+function templateMessage(template, payload) {
+    if (!template) return 'Architecture violation detected.';
+    let msg = template;
+    if (payload.from_module) msg = msg.replace('{from_module}', payload.from_module);
+    if (payload.to_module) msg = msg.replace('{to_module}', payload.to_module);
+    return msg.trim();
+}
+
 export async function runConstraints({ targetDir, rulepackDir, taskConfig }) {
-    const enabledRules = taskConfig.enabled?.constraints || [];
-    const results = [];
+    const manifestPath = path.join(rulepackDir, 'manifest.yaml');
+    if (!fs.existsSync(manifestPath)) {
+        throw new Error(`[Harness Error] Rulepack manifest not found at ${manifestPath}`);
+    }
 
-    for (const ruleName of enabledRules) {
-        const ruleModulePath = path.resolve(rulepackDir, 'constraints', `${ruleName}.mjs`);
+    const manifest = load(fs.readFileSync(manifestPath, 'utf8'));
+    const activeRules = [];
+    const ruleDeclarations = {};
 
-        // 默认的 fallback 结果结构
-        const resultTemplate = {
-            name: ruleName,
-            version: 'unknown',
-            status: 'error',
-            findings: [],
-            raw_artifact_path: `artifacts/constraints/${ruleName}.log`
-        };
+    // 1. 加载所有层级的规则
+    const loadRules = (rulePaths, tier) => {
+        for (const relativePath of (rulePaths || [])) {
+            const fullPath = path.join(rulepackDir, relativePath);
+            if (fs.existsSync(fullPath)) {
+                const ruleDef = load(fs.readFileSync(fullPath, 'utf8'));
+                ruleDef._tier = tier;
+                activeRules.push(ruleDef);
+                ruleDeclarations[ruleDef.rule_id] = ruleDef;
+            } else {
+                console.warn(`[Harness Warning] Rule declaration missing at ${fullPath}`);
+            }
+        }
+    };
 
+    loadRules(manifest.rules?.constraints?.tier_1, 1);
+    loadRules(manifest.rules?.constraints?.tier_2, 2);
+    loadRules(manifest.rules?.background?.tier_3, 3);
+
+    // 2. 动态并行执行所有适配器
+    const all_events = [];
+    const adapter_meta = {};
+
+    for (const [toolName, adapterManifest] of Object.entries(manifest.adapters || {})) {
         try {
-            // 动态导入规则模块 (使用 pathToFileURL 兼容 Windows 环境的绝对路径)
-            const moduleUrl = pathToFileURL(ruleModulePath).href;
-            const ruleModule = await import(moduleUrl);
+            const adapterPath = path.resolve(rulepackDir, adapterManifest.entry_point);
+            const module = await import(adapterPath);
 
-            if (typeof ruleModule.run !== 'function') {
-                throw new Error(`Rule module ${ruleName} does not export an async 'run' function.`);
+            if (typeof module.runAdapter !== 'function') {
+                throw new Error(`[Harness Error] Adapter at ${adapterPath} does not export runAdapter function.`);
             }
 
-            // 获取规则模块自带的版本号，如果未提供则默认为 1.0.0
-            resultTemplate.version = ruleModule.VERSION || '1.0.0';
-
-            // 执行实际的验证逻辑
-            const executionResult = await ruleModule.run({ targetDir });
-
-            results.push({
-                ...resultTemplate,
-                status: executionResult.status,
-                findings: executionResult.findings || [],
+            const { normalized_events, execution_meta } = await module.runAdapter({
+                targetDir,
+                adapterConfig: {
+                    configPath: path.join(rulepackDir, adapterManifest.config),
+                    ...adapterManifest
+                },
+                toolVersion: adapterManifest.version || 'unknown',
+                tierMapping: adapterManifest.tier_mapping
             });
 
-        } catch (error) {
-            // 错误隔离：捕获异常，记录状态为 error，但不阻断其他 rule 的运行
-            results.push({
-                ...resultTemplate,
-                status: 'error',
-                findings: [{
-                    rule: ruleName,
-                    severity: 'fatal',
-                    message: `Runner crashed while executing rule: ${error.message}`
-                }]
-            });
+            all_events.push(...(normalized_events || []));
+            adapter_meta[toolName] = execution_meta;
+        } catch (err) {
+            console.error(`[Harness Error] Adapter ${toolName} failed: ${err.message}`);
+            adapter_meta[toolName] = { status: 'error', error: err.message };
         }
     }
 
-    return results;
+    // 3. 证据分流与 Findings 组装
+    const findings = [];
+    const findings_by_rule = {};
+    const background_findings = [];
+    const background_by_rule = {};
+
+    for (const event of all_events) {
+        if (event.tier === 3) {
+            background_findings.push(event);
+            if (!background_by_rule[event.source_rule_id]) background_by_rule[event.source_rule_id] = [];
+            background_by_rule[event.source_rule_id].push(event);
+            continue;
+        }
+
+        for (const rule of activeRules) {
+            for (const source of (rule.evidence_sources || [])) {
+                if (source.adapter === event.source_tool && source.tool_rule_ids.includes(event.source_rule_id)) {
+                    const finding = {
+                        rule_id: rule.rule_id,
+                        rule_version: rule.version,
+                        tier: rule._tier,
+                        severity: rule.severity,
+                        location: event.location,
+                        message: templateMessage(rule.agent_facing_message, event.payload),
+                        evidence: {
+                            source_tool: event.source_tool,
+                            source_rule_id: event.source_rule_id,
+                            payload: event.payload
+                        }
+                    };
+                    findings.push(finding);
+                    if (!findings_by_rule[rule.rule_id]) findings_by_rule[rule.rule_id] = [];
+                    findings_by_rule[rule.rule_id].push(finding);
+                }
+            }
+        }
+    }
+
+    return {
+        layer: 'constraints',
+        status: findings.length > 0 ? 'fail' : 'ok',
+        rules_evaluated: activeRules.length,
+        findings,
+        findings_by_rule,
+        background_findings,
+        background_by_rule,
+        adapter_meta
+    };
 }
