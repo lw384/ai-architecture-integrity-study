@@ -12,9 +12,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import DeleteOutlined from '@ant-design/icons/DeleteOutlined';
+import EditOutlined from '@ant-design/icons/EditOutlined';
+import EyeOutlined from '@ant-design/icons/EyeOutlined';
 
 function formatDate(value) {
   if (!value) {
@@ -27,13 +27,24 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+const statusColors = {
+  "1": 'success',
+  "0": 'default',
+  "2": 'warning',
+};
+
+const statusLabels = {
+  "1": 'Active',
+  "0": 'Inactive',
+  "2": 'Pending',
+};
+
 export function CompanyTable({ companies, onDelete, onEdit, onView }) {
   return (
     <TableContainer component={Paper} className="crm-table-shell">
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
             <TableCell>Company</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Status</TableCell>
@@ -49,16 +60,15 @@ export function CompanyTable({ companies, onDelete, onEdit, onView }) {
                 <Stack spacing={0.5}>
                   <Typography fontWeight={600}>{company.name}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Company #{company.id}
+                    {company.id}
                   </Typography>
                 </Stack>
               </TableCell>
-              <TableCell>{company.company || '—'}</TableCell>
               <TableCell>{company.email || '—'}</TableCell>
               <TableCell>
                 <Chip
-                  label={company.status}
-                  color={company.status === 'active' ? 'success' : 'default'}
+                  label={statusLabels[company.status]}
+                  color={statusColors[company.status]}
                   size="small"
                 />
               </TableCell>
@@ -68,16 +78,16 @@ export function CompanyTable({ companies, onDelete, onEdit, onView }) {
                 <Stack direction="row" spacing={1} justifyContent="flex-end">
                   <Button
                     size="small"
-                    startIcon={<VisibilityRoundedIcon />}
+                    startIcon={<EyeOutlined />}
                     onClick={() => onView(company)}
                   >
                     View
                   </Button>
                   <IconButton onClick={() => onEdit(company)}>
-                    <EditRoundedIcon />
+                    <EditOutlined />
                   </IconButton>
                   <IconButton color="error" onClick={() => onDelete(company)}>
-                    <DeleteOutlineRoundedIcon />
+                    <DeleteOutlined />
                   </IconButton>
                 </Stack>
               </TableCell>

@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -11,19 +12,24 @@
     "lint": "echo 'crm-baseline-frontend has no lint configuration yet' && exit 0"
   },
   "dependencies": {
+    "@ant-design/colors": "^8.0.1",
+    "@ant-design/icons": "^6.3.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@fontsource/ibm-plex-sans": "^5.2.6",
-    "@fontsource/space-grotesk": "^5.2.7",
-    "@mui/icons-material": "^7.1.1",
-    "@mui/lab": "^7.0.0-beta.14",
+    "@fontsource/public-sans": "^5.2.7",
     "@mui/material": "^7.1.1",
-    "@tanstack/react-query": "^5.80.7",
-    "clsx": "^2.1.1",
+    "@mui/x-charts": "^9.8.0",
+    "@tanstack/react-query": "^5.101.2",
+    "framer-motion": "^12.42.2",
+    "lodash-es": "^4.18.1",
+    "notistack": "^3.0.2",
+    "prop-types": "^15.8.1",
     "react": "^19.1.0",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^19.1.0",
+    "react-number-format": "^5.4.5",
     "react-router-dom": "^7.6.1",
-    "tailwind-merge": "^3.3.1"
+    "simplebar-react": "^3.3.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.5.2",

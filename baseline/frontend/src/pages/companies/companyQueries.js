@@ -4,7 +4,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 
-import { companyApi } from './companyApi';
+import { companyApi } from '../../api/companyApi';
 
 export const companyKeys = {
     all: ['companies'],
@@ -22,14 +22,21 @@ export function useCompanyList(companyId, query) {
     });
 }
 
-export function useCreateCompany(companyId) {
-    const queryClient = useQueryClient();
+export function useCompany(id) {
+    return useQuery({
+        queryKey: companyKeys.detail(id),
+        queryFn: () => companyApi.get(id),
+        enabled: Boolean(id),
+    });
+}
 
+export function useCreateCompany() {
+    const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (data) => companyApi.create(companyId, data),
+        mutationFn: (data) => companyApi.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: companyKeys.lists(companyId),
+                queryKey: companyKeys.lists(),
             });
         },
     });

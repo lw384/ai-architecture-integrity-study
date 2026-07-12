@@ -1,0 +1,191 @@
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+
+
+const emptyValues = {
+  name: '',
+  email: '',
+  phone: '',
+  role: '',
+  lastContactedAt: '',
+};
+
+
+const formatForDatetimeLocal = (isoString) => {
+  if (!isoString) return '';
+  return isoString.slice(0, 16);
+};
+
+export function ContactFormDialog({
+  initialValues,
+  isPending,
+  mode,
+  onClose,
+  onSubmit,
+  open,
+}) {
+  const [values, setValues] = useState(emptyValues);
+  const [touched, setTouched] = useState({ name: false, email: false, phone: false });
+
+  const phoneDigits = values.phone?.replace(/[^0-9]/g, '') || '';
+
+  // 校验逻辑：只针对姓名、邮箱、手机号三项必填项
+  const errors = {
+    name: !values.name?.trim() ? 'Name is required.' : '',
+    email: !values.email?.trim()
+      ? 'Email is required.'
+      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)
+        ? 'Invalid email format.'
+        : '',
+    phone: !values.phone?.trim()
+      ? 'Phone is required.'
+      : !values.phone.trim().startsWith('+')
+        ? 'Must start with "+" and country code (e.g., +86).'
+        : phoneDigits.length < 8 || phoneDigits.length > 15
+          ? 'Invalid phone number length (8-15 digits required).'
+          : '',
+  };
+
+  const isFormValid = !errors.name && !errors.email && !errors.phone;
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setValues({
+      ...emptyValues,
+      ...initialValues,
+      lastContactedAt: formatForDatetimeLocal(initialValues?.lastContactedAt),
+    });
+    setTouched({ name: false, email: false, phone: false });
+  }, [initialValues, open]);
+
+  const handleChange = (field) => (event) => {
+    setValues((current) => ({ ...current, [field]: event.target.value }));
+  };
+
+  const handleBlur = (field) => () => {
+    setTouched((current) => ({ ...current, [field]: true }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setTouched({ name: true, email: true, phone: true });
+
+    if (!isFormValid) {
+      return;
+    }
+
+    const payload = {
+      name: values.name.trim(),
+      email: values.email.trim(),
+      phone: values.phone.trim(),
+      role: values.role?.trim() || null,
+      lastContactedAt: values.lastContactedAt ? new Date(values.lastContactedAt).toISOString() : null,
+
+      ...(initialValues?.companyId ? { companyId: initialValues.companyId } : {})
+    };
+
+    await onSubmit(payload);
+  };
+
+  return (
+    <Dialog open={open} onClose={isPending ? undefined : onClose} fullWidth maxWidth="sm">
+      <DialogTitle>
+        {mode === 'create' ? 'Create contact' : 'Edit contact'}
+      </DialogTitle>
+
+      <DialogContent className="!p-5">
+        <Stack component="form" spacing={2.5} onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <TextField
+            autoFocus
+            required
+            label="Name"
+            value={values.name}
+            onBlur={handleBlur('name')}
+            onChange={handleChange('name')}
+            error={touched.name && Boolean(errors.name)}
+            helperText={touched.name ? errors.name : undefined}
+          />
+
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <TextField
+              required
+              fullWidth
+              label="Email"
+              type="email"
+              value={values.email}
+              onBlur={handleBlur('email')}
+              onChange={handleChange('email')}
+              error={touched.email && Boolean(errors.email)}
+              helperText={touched.email ? errors.email : undefined}
+            />
+            <TextField
+              required
+              fullWidth
+              label="Phone"
+              type="tel"
+              placeholder="+00 00000000000"
+              value={values.phone}
+              onBlur={handleBlur('phone')}
+              onChange={handleChange('phone')}
+              error={touched.phone && Boolean(errors.phone)}
+              helperText={touched.phone ? errors.phone : undefined}
+            />
+          </Stack>
+
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <TextField
+              fullWidth
+              label="Role"
+              value={values.role || ''}
+              onChange={handleChange('role')}
+              placeholder="e.g. Manager, User, Admin"
+            />
+
+            <TextField
+              fullWidth
+              label="Last Contacted At"
+              type="datetime-local"
+              InputLabelProps={{ shrink: true }}
+              value={values.lastContactedAt}
+              onChange={handleChange('lastContactedAt')}
+            />
+          </Stack>
+
+          {/* 创建时间：仅在编辑模式下可见且不可更改 */}
+          {mode === 'edit' && initialValues?.createdAt && (
+            <TextField
+              disabled
+              label="Created At"
+              value={new Intl.DateTimeFormat('en', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+              }).format(new Date(initialValues.createdAt))}
+            />
+          )}
+
+          <button type="submit" hidden />
+        </Stack>
+      </DialogContent>
+
+      <DialogActions className="crm-dialog-actions">
+        <Button onClick={onClose} disabled={isPending}>
+          Cancel
+        </Button>
+        <Button variant="contained" onClick={handleSubmit} disabled={isPending}>
+          {mode === 'create' ? 'Create' : 'Save'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}

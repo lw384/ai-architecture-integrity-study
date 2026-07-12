@@ -7,8 +7,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import styles from './Pagination.module.scss';
-
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 export function DataTablePagination({
@@ -20,39 +18,37 @@ export function DataTablePagination({
   onPageSizeChange,
 }) {
   return (
-    <div className={styles.pagination}>
-      <Typography variant="body2" className={styles.summary}>
+    <div className="flex items-center justify-center gap-3 border-border pt-4">
+      <Typography variant="body2" className="text-text-muted">
         {total === 0
           ? 'No matching records'
           : `Showing page ${page} of ${Math.max(totalPages, 1)} · ${total} records`}
       </Typography>
 
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="center">
-        <FormControl size="small" className={styles.pageSizeControl}>
-          <Select
-            value={String(pageSize)}
-            onChange={(event) => onPageSizeChange(Number(event.target.value))}
-          >
-            {PAGE_SIZE_OPTIONS.map((option) => (
-              <MenuItem key={option} value={String(option)}>
-                {option} / page
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <FormControl size="small" className="min-w-[8.5rem]">
+        <Select
+          value={String(pageSize)}
+          onChange={(event) => onPageSizeChange(Number(event.target.value))}
+        >
+          {PAGE_SIZE_OPTIONS.map((option) => (
+            <MenuItem key={option} value={String(option)}>
+              {option} / page
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-        <Stack direction="row" spacing={1}>
-          <Button disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-            Previous
-          </Button>
-          <Button
-            disabled={totalPages === 0 || page >= totalPages}
-            variant="contained"
-            onClick={() => onPageChange(page + 1)}
-          >
-            Next
-          </Button>
-        </Stack>
+      <Stack direction="row" spacing={1}>
+        <Button disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+          Previous
+        </Button>
+        <Button
+          disabled={totalPages === 0 || page >= totalPages}
+          variant="contained"
+          onClick={() => onPageChange(page + 1)}
+        >
+          Next
+        </Button>
       </Stack>
     </div>
   );

@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { contactApi } from './contactApi';
+import { contactApi } from '../../api/contactApi';
 
 export const contactKeys = {
   all: ['contacts'],
@@ -19,6 +19,14 @@ export function useContactList(params = {}) {
   return useQuery({
     queryKey: contactKeys.list(companyId, query),
     queryFn: () => contactApi.list(companyId, query),
+  });
+}
+
+export function useContact(id) {
+  return useQuery({
+    queryKey: contactKeys.detail(id),
+    queryFn: () => contactApi.get(id),
+    enabled: Boolean(id),
   });
 }
 

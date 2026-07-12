@@ -1,52 +1,65 @@
-const BASE = '/api';
+const API_BASE_PATH = '/api';
 
-export async function request(path, opts = {}) {
-  const response = await fetch(buildUrl(path, opts.query), {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(opts.headers ?? {}),
-    },
-    ...opts,
-  });
-
-  if (!response.ok) {
-    let message = `${response.status}`;
-
-    try {
-      const payload = await response.json();
-      message = payload.message ?? payload.error ?? message;
-    } catch {
-      // Keep the status code when the server does not return JSON.
-    }
-
-    const error = new Error(message);
-    error.status = response.status;
-    throw error;
+// Thrown by request() for both network failures (status undefined) and non-2xx
+// HTTP responses (status set). isTransportError() below is the single source of
+// truth for "infra-level failure the global interceptor should toast" vs.
+// "business error the calling page should handle and display itself".
+export class RequestError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = 'RequestError';
+    this.status = status;
   }
+}
 
-  if (response.status === 204) {
-    return null;
-  }
-
-  return response.json();
+// Network failures (fetch itself rejected, no HTTP response at all) and 5xx
+// server errors aren't meaningful to a specific page/action, so the global
+// interceptor (see App.jsx) shows a generic toast for these. Every other
+// status (400/401/403/404/409/422/...) is treated as a business error and
+// left to the calling component to interpret and display.
+export function isTransportError(error) {
+  return !error?.status || error.status >= 500;
 }
 
 function buildUrl(path, query) {
-  if (!query) {
-    return BASE + path;
+  const url = new URL(`${API_BASE_PATH}${path}`, window.location.origin);
+
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        url.searchParams.set(key, value);
+      }
+    });
   }
 
-  const searchParams = new URLSearchParams();
+  return `${url.pathname}${url.search}`;
+}
 
-  Object.entries(query).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') {
-      return;
-    }
+// vite.config.js proxies /api/* to CRM_BASELINE_API_ORIGIN (backend mounts everything
+// under app.setGlobalPrefix('api')), so callers pass paths like '/companies' and this
+// prepends the /api prefix + serializes the `query` object as a querystring.
+export async function request(path, { query, headers, ...options } = {}) {
+  let response;
 
-    searchParams.set(key, String(value));
-  });
+  try {
+    response = await fetch(buildUrl(path, query), {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+    });
+  } catch (networkError) {
+    throw new RequestError('Network error, please check your connection and try again.', undefined);
+  }
 
-  const serializedQuery = searchParams.toString();
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
 
-  return serializedQuery ? `${BASE}${path}?${serializedQuery}` : BASE + path;
+  if (!response.ok) {
+    const message = data?.message || response.statusText || 'Request failed';
+    throw new RequestError(Array.isArray(message) ? message.join(', ') : message, response.status);
+  }
+
+  return data;
 }

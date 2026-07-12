@@ -1,4 +1,5 @@
 import {
+  Button,
   IconButton,
   Paper,
   Stack,
@@ -10,8 +11,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteOutlined from '@ant-design/icons/DeleteOutlined';
+import EditOutlined from '@ant-design/icons/EditOutlined';
+import EyeOutlined from '@ant-design/icons/EyeOutlined';
 
 function formatDate(value) {
   return new Intl.DateTimeFormat('en', {
@@ -20,7 +22,7 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
-export function ContactTable({ contacts, onDelete, onEdit }) {
+export function ContactTable({ contacts, onView, onDelete, onEdit }) {
   return (
     <TableContainer component={Paper} className="crm-table-shell">
       <Table size="small">
@@ -30,6 +32,8 @@ export function ContactTable({ contacts, onDelete, onEdit }) {
             <TableCell>Email</TableCell>
             <TableCell>Phone</TableCell>
             <TableCell>Role</TableCell>
+
+            <TableCell>Last Contacted</TableCell>
             <TableCell>Created</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
@@ -41,14 +45,22 @@ export function ContactTable({ contacts, onDelete, onEdit }) {
               <TableCell>{contact.email || '—'}</TableCell>
               <TableCell>{contact.phone || '—'}</TableCell>
               <TableCell>{contact.role || '—'}</TableCell>
+              <TableCell>{formatDate(contact.lastContactedAt)}</TableCell>
               <TableCell>{formatDate(contact.createdAt)}</TableCell>
               <TableCell align="right">
                 <Stack direction="row" spacing={1} justifyContent="flex-end">
+                  <Button
+                    size="small"
+                    startIcon={<EyeOutlined />}
+                    onClick={() => onView(contact)}
+                  >
+                    View
+                  </Button>
                   <IconButton onClick={() => onEdit(contact)}>
-                    <EditRoundedIcon />
+                    <EditOutlined />
                   </IconButton>
                   <IconButton color="error" onClick={() => onDelete(contact)}>
-                    <DeleteOutlineRoundedIcon />
+                    <DeleteOutlined />
                   </IconButton>
                 </Stack>
               </TableCell>
