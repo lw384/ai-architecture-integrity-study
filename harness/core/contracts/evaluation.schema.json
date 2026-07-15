@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Harness Evaluation Result",
-  "description": "The standardized output contract for the evaluation harness.",
+  "description": "The standardized output contract for the multi-subject evaluation harness.",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "schema_version": {
       "type": "string",
@@ -39,12 +40,36 @@
     },
     "layers": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "constraints": { "$ref": "#/definitions/layer_array" },
         "metrics": { "$ref": "#/definitions/layer_array" },
         "judgments": { "$ref": "#/definitions/layer_array" }
       },
       "required": ["constraints", "metrics", "judgments"]
+    },
+    "subjects": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/subject_result" }
+    },
+    "cross_stack": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "#/definitions/cross_stack_result" }
+      ]
+    },
+    "task_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject_count": { "type": "integer", "minimum": 0 },
+        "cross_stack_enabled": { "type": "boolean" },
+        "execution": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": ["subject_count", "cross_stack_enabled", "execution"]
     },
     "deltas": {
       "type": "object",
@@ -61,6 +86,10 @@
     "status": {
       "type": "string",
       "enum": ["completed", "partial", "failed"]
+    },
+    "re_evaluated_from": {
+      "type": "string",
+      "format": "date-time"
     },
     "errors": {
       "type": "array",
@@ -84,15 +113,163 @@
     "target",
     "env_snapshot",
     "layers",
+    "subjects",
+    "cross_stack",
+    "task_summary",
     "deltas",
     "duration_ms",
-    "status"
+    "status",
+    "errors"
   ],
   "definitions": {
+    "constraint_finding": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "rule_id": { "type": "string" },
+        "rule_version": { "type": ["string", "null"] },
+        "tier": { "type": ["integer", "null"] },
+        "severity": { "type": ["string", "null"] },
+        "location": {
+          "type": ["object", "null"],
+          "additionalProperties": true
+        },
+        "message": { "type": "string" },
+        "evidence": {
+          "type": ["object", "null"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["message"]
+    },
+    "constraints_layer_result": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "layer": { "type": "string" },
+        "status": { "type": "string", "enum": ["ok", "fail", "error"] },
+        "rules_evaluated": { "type": "integer", "minimum": 0 },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/constraint_finding" }
+        },
+        "findings_by_rule": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/constraint_finding" }
+          }
+        },
+        "background_findings": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true }
+        },
+        "background_by_rule": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          }
+        },
+        "adapter_meta": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": ["status", "findings"]
+    },
+    "metric_or_judgment_result": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["pass", "fail", "error", "skipped"]
+        },
+        "findings": { "type": "array", "items": { "type": "string" } },
+        "score": {
+          "anyOf": [
+            { "type": "number" },
+            { "type": "object", "additionalProperties": true },
+            { "type": "null" }
+          ]
+        },
+        "delta_vs_baseline": {
+          "type": ["number", "null"]
+        },
+        "kappa": {
+          "type": ["number", "null"]
+        },
+        "per_sample_results": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true }
+        },
+        "raw_artifact_path": { "type": "string" }
+      },
+      "required": ["name", "version", "status", "raw_artifact_path"]
+    },
+    "subject_layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "constraints": { "$ref": "#/definitions/constraints_layer_result" },
+        "metrics": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/metric_or_judgment_result" }
+        },
+        "judgments": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/metric_or_judgment_result" }
+        }
+      },
+      "required": ["constraints", "metrics", "judgments"]
+    },
+    "subject_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject_id": { "type": "string" },
+        "subject_root": { "type": "string" },
+        "rulepack_id": { "type": "string" },
+        "rulepack_version": { "type": "string" },
+        "adapters": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["completed", "failed", "error"]
+        },
+        "layers": { "$ref": "#/definitions/subject_layers" }
+      },
+      "required": [
+        "subject_id",
+        "subject_root",
+        "rulepack_id",
+        "rulepack_version",
+        "adapters",
+        "status",
+        "layers"
+      ]
+    },
+    "cross_stack_result": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "plan_id": { "type": "string" },
+        "rulepack_id": { "type": "string" },
+        "status": { "type": "string", "enum": ["skipped", "completed", "failed", "error"] },
+        "reason": { "type": "string" }
+      },
+      "required": ["plan_id", "rulepack_id", "status"]
+    },
     "layer_array": {
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": true,
         "properties": {
           "name": { "type": "string" },
           "version": { "type": "string" },
@@ -101,7 +278,23 @@
             "enum": ["pass", "fail", "error", "skipped"]
           },
           "findings": { "type": "array", "items": { "type": "string" } },
-          "score": { "type": "number" },
+          "score": {
+            "anyOf": [
+              { "type": "number" },
+              { "type": "object", "additionalProperties": true },
+              { "type": "null" }
+            ]
+          },
+          "delta_vs_baseline": {
+            "type": ["number", "null"]
+          },
+          "kappa": {
+            "type": ["number", "null"]
+          },
+          "per_sample_results": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
           "raw_artifact_path": { "type": "string" }
         },
         "required": ["name", "version", "status", "raw_artifact_path"]

@@ -1,81 +1,220 @@
 // core/layers/metrics_runner.mjs
+// Input: target workspace path, baseline path, rulepack directory, and enabled metric selection.
+// Output: a list of normalized metric results produced from manifest-declared metric rules.
+import fs from 'node:fs';
 import path from 'node:path';
+import { load } from 'js-yaml';
 import { pathToFileURL } from 'node:url';
 
-/**
- * 执行 metrics 层面的评估 (v2)
- */
-export async function runMetrics({ targetDir, baselineDir, rulepackDir, taskConfig }) {
-    const enabledRules = taskConfig.enabled?.metrics || [];
+function readManifest(rulepackDir) {
+    const manifestPath = path.join(rulepackDir, 'manifest.yaml');
+
+    if (!fs.existsSync(manifestPath)) {
+        throw new Error(`[Harness Error] Rulepack manifest not found at ${manifestPath}`);
+    }
+
+    return load(fs.readFileSync(manifestPath, 'utf8'));
+}
+
+function pickMetricPaths(manifest, taskConfig) {
+    const allPaths = manifest.rules?.metrics ?? [];
+    const enabled = taskConfig.enabled?.metrics ?? [];
+
+    if (!enabled.length) {
+        return allPaths;
+    }
+
+    return allPaths.filter((rulePath) => {
+        const name = path.basename(rulePath, '.yaml');
+        return enabled.some((ruleId) => name === ruleId || name.startsWith(`${ruleId}-`));
+    });
+}
+
+function loadMetricDefs(rulepackDir, rulePaths) {
+    return rulePaths.flatMap((rulePath) => {
+        const fullPath = path.resolve(rulepackDir, rulePath);
+
+        if (!fs.existsSync(fullPath)) {
+            console.warn(`[Harness Warning] Metric rule declaration missing at ${fullPath}`);
+            return [];
+        }
+
+        return [{ ...load(fs.readFileSync(fullPath, 'utf8')), rule_path: rulePath }];
+    });
+}
+
+function pickAdapters(adapters = {}) {
+    return Object.entries(adapters).filter(([, adapter]) => adapter.emits?.includes('metrics'));
+}
+
+function pickAdapterForRule(ruleDef, adapters) {
+    if (adapters.length === 0) {
+        return null;
+    }
+
+    if (ruleDef.adapter) {
+        return adapters.find(([adapterId]) => adapterId === ruleDef.adapter) ?? null;
+    }
+
+    if (adapters.length === 1) {
+        return adapters[0];
+    }
+
+    throw new Error(
+        `[Harness Error] Metric rule ${ruleDef.rule_id || ruleDef.rule_path} must declare adapter when multiple metric adapters exist.`,
+    );
+}
+
+async function loadMetricRun(rulepackDir, ruleDef) {
+    const baseName = path.basename(ruleDef.rule_path ?? `${ruleDef.rule_id}.yaml`, '.yaml');
+    const relPath = ruleDef.runner || ruleDef.run || ruleDef.implementation || `rules/metrics/${baseName}.mjs`;
+    const modulePath = path.resolve(rulepackDir, relPath);
+
+    if (!fs.existsSync(modulePath)) {
+        throw new Error(`Metric runner not found at ${modulePath}`);
+    }
+
+    const moduleUrl = pathToFileURL(modulePath).href;
+    const mod = await import(moduleUrl);
+    const run = mod.run;
+
+    if (typeof run !== 'function') {
+        throw new Error(`Metric runner ${modulePath} does not export run.`);
+    }
+
+    return { run, version: mod.VERSION || ruleDef.version || '1.0.0' };
+}
+
+async function runMetricAdapter({ targetDir, baselineDir, rulepackDir, ruleDef, adapterEntry, adapterRegistry }) {
+    const [adapterId, adapter] = adapterEntry;
+    const reg = adapterRegistry?.get(adapterId);
+    let run = reg?.run;
+    let configPath = reg?.configPath;
+
+    if (!run) {
+        const modulePath = adapter.source.includes('/')
+            ? path.resolve(rulepackDir, adapter.source)
+            : path.resolve(rulepackDir, '..', '..', 'adapters', adapter.source || adapterId, 'adapter.mjs');
+        const mod = await import(pathToFileURL(modulePath).href);
+        run = mod.runAdapter || mod.run;
+        configPath = path.resolve(rulepackDir, adapter.config);
+    }
+
+    if (typeof run !== 'function') {
+        throw new Error(`Adapter ${adapterId} does not export runAdapter or run.`);
+    }
+
+    const result = await run({
+        targetDir,
+        baselineDir,
+        rule: ruleDef,
+        adapterConfig: {
+            configPath,
+            ...(adapter.options ?? {}),
+        },
+        toolVersion: adapter.version ?? 'unknown',
+    });
+
+    return {
+        execResult: result.metric_result ?? result,
+        version: result.execution_meta?.implementation_version ?? adapter.version ?? ruleDef.version ?? 'unknown',
+    };
+}
+
+function readThreshold(ruleId, thresholds = {}) {
+    return thresholds[ruleId] ?? {};
+}
+
+function judgeMetric(score, threshold, baseFindings = []) {
+    const nextFindings = [...baseFindings];
+    const value = typeof score?.value === 'number' ? score.value : null;
+    const direction = score?.direction || 'lower_is_better';
+    const warn = threshold.warn ?? threshold.warn_at;
+    const fail = threshold.fail ?? threshold.fail_at;
+
+    if (value === null) {
+        return { status: 'pass', findings: nextFindings };
+    }
+
+    if (direction === 'higher_is_better') {
+        if (fail !== undefined && value <= fail) {
+            nextFindings.push(`Value ${value} dropped below FAIL threshold of ${fail}`);
+            return { status: 'fail', findings: nextFindings };
+        }
+
+        if (warn !== undefined && value <= warn) {
+            nextFindings.push(`Value ${value} dropped below WARN threshold of ${warn}`);
+        }
+
+        return { status: 'pass', findings: nextFindings };
+    }
+
+    if (fail !== undefined && value >= fail) {
+        nextFindings.push(`Value ${value} exceeded FAIL threshold of ${fail}`);
+        return { status: 'fail', findings: nextFindings };
+    }
+
+    if (warn !== undefined && value >= warn) {
+        nextFindings.push(`Value ${value} exceeded WARN threshold of ${warn}`);
+    }
+
+    return { status: 'pass', findings: nextFindings };
+}
+
+function makeMetricResult(ruleDef, execResult, status, findings, version) {
+    const score = execResult.score || null;
+    const baseName = path.basename(ruleDef.rule_path ?? `${ruleDef.rule_id}.yaml`, '.yaml');
+
+    return {
+        name: ruleDef.rule_id || baseName,
+        version,
+        status,
+        score,
+        delta_vs_baseline: execResult.delta_vs_baseline ?? null,
+        findings,
+        raw_artifact_path: execResult.raw_artifact_path || `artifacts/metrics/${baseName}.json`,
+    };
+}
+
+export async function runMetrics({ targetDir, baselineDir, rulepackDir, taskConfig, adapterRegistry }) {
+    const manifest = readManifest(rulepackDir);
+    const rulePaths = pickMetricPaths(manifest, taskConfig);
+    const defs = loadMetricDefs(rulepackDir, rulePaths);
     const thresholds = taskConfig.thresholds || {};
+    const adapters = pickAdapters(manifest.adapters);
     const results = [];
 
-    for (const ruleName of enabledRules) {
-        const ruleModulePath = path.resolve(rulepackDir, 'metrics', `${ruleName}.mjs`);
-        const ruleThresholds = thresholds[ruleName] || {};
-
-        const resultTemplate = {
-            name: ruleName,
-            version: 'unknown',
-            status: 'error',
-            score: null,
-            delta_vs_baseline: null,
-            findings: [],
-            raw_artifact_path: `artifacts/metrics/${ruleName}.json`
-        };
-
+    for (const ruleDef of defs) {
         try {
-            const moduleUrl = pathToFileURL(ruleModulePath).href;
-            const ruleModule = await import(moduleUrl);
+            const adapterEntry = pickAdapterForRule(ruleDef, adapters);
+            const { execResult, version } = adapterEntry
+                ? await runMetricAdapter({
+                    targetDir,
+                    baselineDir,
+                    rulepackDir,
+                    ruleDef,
+                    adapterEntry,
+                    adapterRegistry,
+                })
+                : await (async () => {
+                    const { run, version } = await loadMetricRun(rulepackDir, ruleDef);
+                    const execResult = await run({ targetDir, baselineDir, rule: ruleDef });
 
-            if (typeof ruleModule.run !== 'function') {
-                throw new Error(`Rule module ${ruleName} does not export an async 'run' function.`);
-            }
+                    return { execResult, version };
+                })();
+            const threshold = readThreshold(ruleDef.rule_id, thresholds);
+            const judged = judgeMetric(execResult.score, threshold, execResult.findings || []);
 
-            resultTemplate.version = ruleModule.VERSION || '1.0.0';
-
-            // 【核心改动 1】向底层模块同时注入 targetDir 和 baselineDir
-            const executionResult = await ruleModule.run({ targetDir, baselineDir });
-
-            // 【核心改动 2】解析富结构的 score 对象和 delta
-            const scoreObj = executionResult.score || { value: 0, unit: 'none', direction: 'lower_is_better' };
-            const scoreValue = scoreObj.value;
-            const delta = executionResult.delta_vs_baseline;
-
-            let status = 'pass';
-            let findings = executionResult.findings || [];
-
-            // 【核心改动 3】根据 direction 动态判定阈值逻辑
-            if (scoreObj.direction === 'lower_is_better') {
-                if (ruleThresholds.fail !== undefined && scoreValue >= ruleThresholds.fail) {
-                    status = 'fail';
-                    findings.push(`Value ${scoreValue} exceeded FAIL threshold of ${ruleThresholds.fail}`);
-                } else if (ruleThresholds.warn !== undefined && scoreValue >= ruleThresholds.warn) {
-                    findings.push(`Value ${scoreValue} exceeded WARN threshold of ${ruleThresholds.warn}`);
-                }
-            } else if (scoreObj.direction === 'higher_is_better') {
-                if (ruleThresholds.fail !== undefined && scoreValue <= ruleThresholds.fail) {
-                    status = 'fail';
-                    findings.push(`Value ${scoreValue} dropped below FAIL threshold of ${ruleThresholds.fail}`);
-                } else if (ruleThresholds.warn !== undefined && scoreValue <= ruleThresholds.warn) {
-                    findings.push(`Value ${scoreValue} dropped below WARN threshold of ${ruleThresholds.warn}`);
-                }
-            }
-
-            results.push({
-                ...resultTemplate,
-                status: status,
-                score: scoreObj, // 直接存储完整的富对象
-                delta_vs_baseline: delta,
-                findings: findings,
-                raw_artifact_path: executionResult.raw_artifact_path || resultTemplate.raw_artifact_path
-            });
-
+            results.push(makeMetricResult(ruleDef, execResult, judged.status, judged.findings, version));
         } catch (error) {
             results.push({
-                ...resultTemplate,
+                name: ruleDef.rule_id || path.basename(ruleDef.rule_path ?? 'unknown', '.yaml'),
+                version: ruleDef.version || 'unknown',
                 status: 'error',
-                findings: [`Runner crashed: ${error.message}`]
+                score: null,
+                delta_vs_baseline: null,
+                findings: [`Runner crashed: ${error.message}`],
+                raw_artifact_path: `artifacts/metrics/${path.basename(ruleDef.rule_path ?? 'unknown', '.yaml')}.json`,
             });
         }
     }

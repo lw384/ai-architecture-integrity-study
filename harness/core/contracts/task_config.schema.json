@@ -1,58 +1,222 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Task Evaluation Configuration",
-  "description": "Defines rulepack mapping, enabled rules, thresholds, and boundaries for a specific task.",
+  "description": "Defines the evaluation plan for a task across multiple subjects and optional cross-stack checks.",
   "type": "object",
-  "properties": {
-    "task_id": {
-      "type": "string",
-      "description": "Unique identifier for the task, e.g., 'T1_auth_refactor'"
-    },
-    "rulepack_id": {
-      "type": "string",
-      "description": "The ID of the rulepack to use for this task."
-    },
-    "enabled": {
+  "additionalProperties": false,
+  "definitions": {
+    "ruleSelection": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "constraints": { "type": "array", "items": { "type": "string" } },
-        "metrics": { "type": "array", "items": { "type": "string" } },
-        "judgments": { "type": "array", "items": { "type": "string" } }
-      },
-      "required": ["constraints", "metrics", "judgments"],
-      "description": "Subset of rules from the rulepack to enable for this task."
-    },
-    "thresholds": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "properties": {
-          "warn": { "type": "number" },
-          "fail": { "type": "number" }
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Enabled constraint rule IDs for this scope."
+        },
+        "metrics": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Enabled metric rule IDs for this scope."
+        },
+        "judgments": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Enabled judgment rule IDs for this scope."
         }
       },
-      "description": "Optional warn/fail thresholds for specific metrics. Keys must match metric rule IDs."
+      "required": ["constraints", "metrics", "judgments"]
+    },
+    "metricThreshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "warn_at": {
+          "type": "number",
+          "description": "Warning threshold for the metric."
+        },
+        "fail_at": {
+          "type": "number",
+          "description": "Failure threshold for the metric."
+        }
+      },
+      "minProperties": 1
+    },
+    "thresholdMap": {
+      "type": "object",
+      "description": "Threshold configuration keyed by metric rule ID.",
+      "additionalProperties": {
+        "$ref": "#/definitions/metricThreshold"
+      }
+    },
+    "subjectConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable identifier for this evaluation subject, e.g. backend or frontend."
+        },
+        "root_path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Workspace-relative path to the subject root."
+        },
+        "rulepack_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rulepack selected for this subject."
+        },
+        "rulepack_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Optional version pin for the selected rulepack."
+        },
+        "enabled": {
+          "$ref": "#/definitions/ruleSelection"
+        },
+        "thresholds": {
+          "$ref": "#/definitions/thresholdMap"
+        },
+        "expected_diff_scope": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Allowed file globs for modifications within this subject."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional subject-scoped metadata for auditing or experimentation.",
+          "additionalProperties": true
+        }
+      },
+      "required": ["subject_id", "root_path", "rulepack_id", "enabled"]
+    },
+    "crossStackConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rulepack_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cross-stack rulepack selected for contract checks across subjects."
+        },
+        "rulepack_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Optional version pin for the cross-stack rulepack."
+        },
+        "enabled": {
+          "$ref": "#/definitions/ruleSelection"
+        },
+        "thresholds": {
+          "$ref": "#/definitions/thresholdMap"
+        },
+        "expected_diff_scope": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Allowed file globs for cross-stack modifications."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional cross-stack metadata.",
+          "additionalProperties": true
+        }
+      },
+      "required": ["rulepack_id", "enabled"]
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version for the task configuration document."
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique task identifier, e.g. T1."
+    },
+    "task_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Version of the evaluation task definition."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the evaluation task."
+    },
+    "subjects": {
+      "type": "array",
+      "description": "Evaluation subjects processed independently by the orchestrator.",
+      "items": {
+        "$ref": "#/definitions/subjectConfig"
+      },
+      "minItems": 1
+    },
+    "cross_stack": {
+      "$ref": "#/definitions/crossStackConfig"
     },
     "judgment_config": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "model": { "type": "string" },
-        "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
-        "sampling_times": { "type": "integer", "minimum": 1 }
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "LLM model identifier used for judgment runs."
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Sampling temperature for the LLM judge."
+        },
+        "samples_per_rubric": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of repeated samples collected for each rubric."
+        },
+        "min_kappa": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum acceptable inter-sample agreement before a judgment is considered trustworthy."
+        }
       },
-      "required": ["model", "temperature", "sampling_times"],
-      "description": "Configuration for the LLM judge."
+      "required": ["model", "temperature", "samples_per_rubric", "min_kappa"]
     },
-    "expected_diff_scope": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "Glob patterns defining allowed file modifications. Helps detect agent hallucinations or out-of-bounds edits."
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fail_fast": {
+          "type": "boolean",
+          "description": "Whether the orchestrator should abort on the first subject or rule failure."
+        },
+        "max_duration_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum total evaluation duration allowed for this task."
+        },
+        "parallel_subjects": {
+          "type": "boolean",
+          "description": "Whether subjects may be processed in parallel."
+        }
+      },
+      "required": ["fail_fast", "max_duration_ms", "parallel_subjects"]
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional task-level metadata for audit and experiment bookkeeping.",
+      "additionalProperties": true
     }
   },
   "required": [
+    "schema_version",
     "task_id",
-    "rulepack_id",
-    "enabled",
+    "task_version",
+    "subjects",
     "judgment_config"
   ]
 }

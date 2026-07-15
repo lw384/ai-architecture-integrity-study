@@ -1,0 +1,37 @@
+rulepack_id: ts-nestjs-backend
+version: 0.1.0
+kind: subject
+language: [typescript]
+frameworks: [nestjs]
+
+adapters:
+  dep-cruiser:
+    source: dep-cruiser
+    version: 0.1.0
+    config: tool-configs/dep-cruiser.config.cjs
+    emits: [constraints]
+  eslint:
+    source: eslint
+    version: 0.1.0
+    config: tool-configs/eslint.config.js
+    emits: [constraints]
+  computed-metrics:
+    source: computed-metrics
+    version: 0.1.0
+    config: tool-configs/metrics.config.json
+    emits: [metrics]
+
+rules:
+  constraints:
+    - rules/structure/BE-STRUCT-C-001-layer-distribution.yaml
+    - rules/structure/BE-STRUCT-C-002-no-explicit-any.yaml
+    - rules/structure/BE-STRUCT-C-003-no-restricted-paths.yaml
+  metrics:
+    - rules/dependencies/BE-DEP-M-001-dependency-graph-size.yaml
+  judgments: []
+
+metadata:
+  migration_status: minimal-schema-valid
+  notes:
+    - Uses only rule and configs that currently exist on disk.
+    - Metrics are currently experimental and only wired through computed-metrics.

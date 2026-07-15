@@ -1,62 +1,154 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Harness Rulepack Manifest",
-  "description": "Defines the structure and capabilities of a language/framework specific rulepack.",
+  "description": "Declares adapters, subject-specific tool configs, and rule matrices for a reusable rulepack.",
   "type": "object",
-  "properties": {
-    "rulepack_id": {
-      "type": "string",
-      "description": "Unique identifier for this rulepack, e.g., 'rp_ts_react_nest_v1'"
-    },
-    "version": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
-    },
-    "language": {
-      "type": "string",
-      "description": "Primary programming language, e.g., 'typescript'"
-    },
-    "frameworks": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "Frameworks supported by this rulepack, e.g., ['react', 'nestjs']"
-    },
-    "provides": {
+  "additionalProperties": false,
+  "definitions": {
+    "adapterDeclaration": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "constraints": { "type": "array", "items": { "type": "string" } },
-        "metrics": { "type": "array", "items": { "type": "string" } },
-        "judgments": { "type": "array", "items": { "type": "string" } }
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path or logical identifier of the shared adapter implementation."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Expected adapter contract version."
+        },
+        "config": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rulepack-relative path to the primary config consumed by this adapter."
+        },
+        "options": {
+          "type": "object",
+          "description": "Adapter-specific configuration that does not belong in the tool config file.",
+          "additionalProperties": true
+        },
+        "emits": {
+          "type": "array",
+          "description": "Logical harness layers this adapter can feed.",
+          "items": {
+            "type": "string",
+            "enum": ["constraints", "metrics", "judgments", "cross-stack"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": ["source", "config", "emits"]
+    },
+    "ruleList": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^rules\\/[^/]+\\\/(BE|FE|CROSS)-.+-(C|M|J)-[0-9]{3}-[a-z0-9-]+\\.yaml$"
+      }
+    },
+    "ruleMatrixEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "constraints": {
+          "$ref": "#/definitions/ruleList"
+        },
+        "metrics": {
+          "$ref": "#/definitions/ruleList"
+        },
+        "judgments": {
+          "$ref": "#/definitions/ruleList"
+        }
       },
       "required": ["constraints", "metrics", "judgments"]
     },
-    "entry_points": {
+    "layerRulePaths": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "constraints": { "type": "string" },
-        "metrics": { "type": "string" },
-        "judgments": { "type": "string" }
-      },
-      "required": ["constraints", "metrics", "judgments"],
-      "description": "Relative paths to the executable scripts for each evaluation layer."
+        "constraints": {
+          "$ref": "#/definitions/ruleList"
+        },
+        "metrics": {
+          "$ref": "#/definitions/ruleList"
+        },
+        "judgments": {
+          "$ref": "#/definitions/ruleList"
+        }
+      }
+    }
+  },
+  "properties": {
+    "rulepack_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for this rulepack, e.g. js-ts-nestjs-backend."
     },
-    "tool_versions": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the rulepack contract."
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["subject", "cross-stack"],
+      "description": "Whether this rulepack is evaluated against a single subject or across multiple subjects."
+    },
+    "language": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "description": "Primary languages supported by this rulepack."
+    },
+    "frameworks": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Frameworks or stacks targeted by this rulepack."
+    },
+    "adapters": {
       "type": "object",
-      "additionalProperties": { "type": "string" },
-      "description": "Specific versions of underlying tools (e.g., eslint, tsc) this rulepack expects."
+      "description": "Adapter declarations keyed by logical adapter ID.",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/adapterDeclaration"
+      }
+    },
+    "rules_matrix": {
+      "type": "object",
+      "description": "Concern-oriented rule groups expanded by the orchestrator and layer runners. Each key should match a directory under rules/.",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/ruleMatrixEntry"
+      }
+    },
+    "rules": {
+      "$ref": "#/definitions/layerRulePaths",
+      "description": "Optional explicit layer-to-rule path mapping for rulepacks that do not use rules_matrix."
     },
     "extends": {
       "type": "string",
-      "description": "Optional parent rulepack ID to inherit rules from."
+      "minLength": 1,
+      "description": "Optional parent rulepack ID for inheritance or composition."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional descriptive metadata for the rulepack.",
+      "additionalProperties": true
     }
   },
   "required": [
     "rulepack_id",
     "version",
+    "kind",
     "language",
-    "frameworks",
-    "provides",
-    "entry_points",
-    "tool_versions"
+    "adapters"
+  ],
+  "anyOf": [
+    { "required": ["rules_matrix"] },
+    { "required": ["rules"] }
   ]
 }

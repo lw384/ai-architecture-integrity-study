@@ -1,10 +1,35 @@
 // harness/core/io/evaluation_writer.mjs
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import fs from 'node:fs';
 import path from 'node:path';
 
+const ajv = new Ajv({ allErrors: true, strict: false });
+addFormats(ajv);
+const evaluationSchema = JSON.parse(
+    fs.readFileSync(new URL('../contracts/evaluation.schema.json', import.meta.url), 'utf8'),
+);
+const validateEvaluationSchema = ajv.compile(evaluationSchema);
+
+function formatSchemaErrors(errors = []) {
+    return errors
+        .map((error) => `${error.instancePath || '/'} ${error.message}`.trim())
+        .join('; ');
+}
+
+function assertEvaluationSchema(evaluationData) {
+    const isValid = validateEvaluationSchema(evaluationData);
+
+    if (!isValid) {
+        throw new Error(
+            `[Harness Error] Evaluation failed schema validation: ${formatSchemaErrors(validateEvaluationSchema.errors)}`,
+        );
+    }
+}
+
 /**
- * 辅助函数：原子性写入 JSON 文件
- * 机制：先写一个随机后缀的 temp 文件，写完后瞬间 rename 覆盖目标文件。
+ * Atomically writes a JSON file.
+ * Writes to a temp file first, then renames it into place.
  */
 function writeAtomically(filePath, dataObj) {
     const tempPath = `${filePath}.tmp.${Date.now()}`;
@@ -14,27 +39,27 @@ function writeAtomically(filePath, dataObj) {
         fs.mkdirSync(dir, { recursive: true });
     }
 
-    // 1. 完整写入临时文件
+    // Write the full temp file first.
     fs.writeFileSync(tempPath, JSON.stringify(dataObj, null, 2), 'utf-8');
 
-    // 2. 操作系统级别的原子重命名 (覆盖原文件)
+    // Atomically replace the target file.
     fs.renameSync(tempPath, filePath);
 }
 
 /**
- * 写入评估结果并更新 Manifest
+ * Writes the evaluation result and updates the manifest.
  *
  * @param {Object} params
- * @param {string} params.evaluationPath - 目标 evaluation.json 路径
- * @param {Object} params.evaluationData - 准备写入的评估结果对象
- * @param {string} params.manifestPath - 对应的 manifest.json 路径
+ * @param {string} params.evaluationPath - Target evaluation.json path.
+ * @param {Object} params.evaluationData - Evaluation payload to write.
+ * @param {string} params.manifestPath - Matching manifest.json path.
  */
 export function writeEvaluation({ evaluationPath, evaluationData, manifestPath }) {
-    // --- 1. 处理 Re-evaluation (覆盖写入) 逻辑 ---
+    // Handle re-evaluation overwrites.
     if (fs.existsSync(evaluationPath)) {
         try {
             const oldStat = fs.statSync(evaluationPath);
-            // 打上重评测标记，记录旧文件的修改时间戳，捍卫实验数据的可追溯性
+            // Keep the previous timestamp for traceability.
             evaluationData.re_evaluated_from = oldStat.mtime.toISOString();
             console.log(`[Harness] Overwriting existing evaluation. Marking re_evaluated_from: ${evaluationData.re_evaluated_from}`);
         } catch (err) {
@@ -42,7 +67,9 @@ export function writeEvaluation({ evaluationPath, evaluationData, manifestPath }
         }
     }
 
-    // --- 2. 原子写入 evaluation.json ---
+    assertEvaluationSchema(evaluationData);
+
+    // Write evaluation.json atomically.
     try {
         writeAtomically(evaluationPath, evaluationData);
         console.log(`[Harness] Successfully wrote evaluation report to ${evaluationPath}`);
@@ -51,16 +78,16 @@ export function writeEvaluation({ evaluationPath, evaluationData, manifestPath }
         process.exit(1);
     }
 
-    // --- 3. 原子更新 Manifest 状态 ---
+    // Update the manifest atomically.
     if (manifestPath && fs.existsSync(manifestPath)) {
         try {
             const manifestRaw = fs.readFileSync(manifestPath, 'utf-8');
             const manifest = JSON.parse(manifestRaw);
 
-            // 状态扭转
+            // Mark the manifest as evaluated.
             manifest.status = 'evaluated';
 
-            // 幂等追加事件
+            // Append the event only once.
             manifest.events = manifest.events || [];
             if (!manifest.events.includes('evaluation_completed')) {
                 manifest.events.push('evaluation_completed');

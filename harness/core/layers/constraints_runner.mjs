@@ -1,125 +1,169 @@
 // harness/core/layers/constraints_runner.mjs
+// Input: target workspace path, rulepack directory, enabled constraint selection,
+// and an optional adapter registry built by the orchestrator.
+// Output: one normalized constraints layer result with findings, findings_by_rule,
+// adapter_meta, and a final layer status.
 import fs from 'node:fs';
 import path from 'node:path';
 import { load } from 'js-yaml';
 
-/**
- * 模板字符串替换：生成面向 Agent 的反馈信息
- */
-function templateMessage(template, payload) {
-    if (!template) return 'Architecture violation detected.';
-    let msg = template;
-    if (payload.from_module) msg = msg.replace('{from_module}', payload.from_module);
-    if (payload.to_module) msg = msg.replace('{to_module}', payload.to_module);
-    return msg.trim();
+function fillMsg(template, payload = {}) {
+    if (!template) {
+        return 'Architecture violation detected.';
+    }
+
+    return template.replace(/\{([^}]+)\}/g, (_, key) => payload[key] ?? `{${key}}`).trim();
 }
 
-export async function runConstraints({ targetDir, rulepackDir, taskConfig }) {
+function readManifest(rulepackDir) {
     const manifestPath = path.join(rulepackDir, 'manifest.yaml');
+
     if (!fs.existsSync(manifestPath)) {
         throw new Error(`[Harness Error] Rulepack manifest not found at ${manifestPath}`);
     }
 
-    const manifest = load(fs.readFileSync(manifestPath, 'utf8'));
-    const activeRules = [];
-    const ruleDeclarations = {};
+    return load(fs.readFileSync(manifestPath, 'utf8'));
+}
 
-    // 1. 加载所有层级的规则
-    const loadRules = (rulePaths, tier) => {
-        for (const relativePath of (rulePaths || [])) {
-            const fullPath = path.join(rulepackDir, relativePath);
-            if (fs.existsSync(fullPath)) {
-                const ruleDef = load(fs.readFileSync(fullPath, 'utf8'));
-                ruleDef._tier = tier;
-                activeRules.push(ruleDef);
-                ruleDeclarations[ruleDef.rule_id] = ruleDef;
-            } else {
-                console.warn(`[Harness Warning] Rule declaration missing at ${fullPath}`);
-            }
+function pickRulePaths(manifest, taskConfig) {
+    const allPaths = manifest.rules?.constraints ?? [];
+    const enabled = taskConfig.enabled?.constraints ?? [];
+
+    if (!enabled.length) {
+        return allPaths;
+    }
+
+    return allPaths.filter((rulePath) => {
+        const name = path.basename(rulePath, '.yaml');
+        return enabled.some((ruleId) => name === ruleId || name.startsWith(`${ruleId}-`));
+    });
+}
+
+function loadRules(rulepackDir, rulePaths) {
+    return rulePaths.flatMap((rulePath) => {
+        const fullPath = path.resolve(rulepackDir, rulePath);
+
+        if (!fs.existsSync(fullPath)) {
+            console.warn(`[Harness Warning] Rule declaration missing at ${fullPath}`);
+            return [];
         }
-    };
 
-    loadRules(manifest.rules?.constraints?.tier_1, 1);
-    loadRules(manifest.rules?.constraints?.tier_2, 2);
-    loadRules(manifest.rules?.background?.tier_3, 3);
+        return [{ ...load(fs.readFileSync(fullPath, 'utf8')), rule_path: rulePath }];
+    });
+}
 
-    // 2. 动态并行执行所有适配器
-    const all_events = [];
-    const adapter_meta = {};
+function pickAdapters(adapters = {}) {
+    return Object.entries(adapters).filter(([, adapter]) => adapter.emits?.includes('constraints'));
+}
 
-    for (const [toolName, adapterManifest] of Object.entries(manifest.adapters || {})) {
+async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry }) {
+    const events = [];
+    const meta = {};
+
+    for (const [adapterId, adapter] of adapters) {
         try {
-            const adapterPath = path.resolve(rulepackDir, adapterManifest.entry_point);
-            const module = await import(adapterPath);
+            const reg = adapterRegistry?.get(adapterId);
+            let run = reg?.run;
+            let configPath = reg?.configPath;
 
-            if (typeof module.runAdapter !== 'function') {
-                throw new Error(`[Harness Error] Adapter at ${adapterPath} does not export runAdapter function.`);
+            if (!run) {
+                const modulePath = adapter.source.includes('/')
+                    ? path.resolve(rulepackDir, adapter.source)
+                    : path.resolve(rulepackDir, '..', '..', 'adapters', adapter.source || adapterId, 'adapter.mjs');
+                const mod = await import(modulePath);
+                run = mod.runAdapter || mod.run;
+                configPath = path.resolve(rulepackDir, adapter.config);
             }
 
-            const { normalized_events, execution_meta } = await module.runAdapter({
+            if (typeof run !== 'function') {
+                throw new Error(`Adapter ${adapterId} does not export runAdapter or run.`);
+            }
+
+            const result = await run({
                 targetDir,
                 adapterConfig: {
-                    configPath: path.join(rulepackDir, adapterManifest.config),
-                    ...adapterManifest
+                    configPath,
+                    ...(adapter.options ?? {}),
                 },
-                toolVersion: adapterManifest.version || 'unknown',
-                tierMapping: adapterManifest.tier_mapping
+                toolVersion: adapter.version ?? 'unknown',
             });
 
-            all_events.push(...(normalized_events || []));
-            adapter_meta[toolName] = execution_meta;
-        } catch (err) {
-            console.error(`[Harness Error] Adapter ${toolName} failed: ${err.message}`);
-            adapter_meta[toolName] = { status: 'error', error: err.message };
+            events.push(...(result.normalized_events ?? []));
+            meta[adapterId] = result.execution_meta ?? { status: 'ok' };
+        } catch (error) {
+            console.error(`[Harness Error] Adapter ${adapterId} failed: ${error.message}`);
+            meta[adapterId] = { status: 'error', error: error.message };
         }
     }
 
-    // 3. 证据分流与 Findings 组装
-    const findings = [];
-    const findings_by_rule = {};
-    const background_findings = [];
-    const background_by_rule = {};
+    return { events, meta };
+}
 
-    for (const event of all_events) {
-        if (event.tier === 3) {
-            background_findings.push(event);
-            if (!background_by_rule[event.source_rule_id]) background_by_rule[event.source_rule_id] = [];
-            background_by_rule[event.source_rule_id].push(event);
-            continue;
-        }
+function hitRule(rule, events) {
+    return (rule.evidence_sources ?? []).flatMap((source) =>
+        events.filter((event) => {
+            const sameAdapter = source.adapter === event.source_tool;
+            const sameRule = (source.tool_rule_ids ?? []).includes(event.source_rule_id);
+            const sameType = !source.match_condition?.event_type
+                || source.match_condition.event_type === event.event_type;
 
-        for (const rule of activeRules) {
-            for (const source of (rule.evidence_sources || [])) {
-                if (source.adapter === event.source_tool && source.tool_rule_ids.includes(event.source_rule_id)) {
-                    const finding = {
-                        rule_id: rule.rule_id,
-                        rule_version: rule.version,
-                        tier: rule._tier,
-                        severity: rule.severity,
-                        location: event.location,
-                        message: templateMessage(rule.agent_facing_message, event.payload),
-                        evidence: {
-                            source_tool: event.source_tool,
-                            source_rule_id: event.source_rule_id,
-                            payload: event.payload
-                        }
-                    };
-                    findings.push(finding);
-                    if (!findings_by_rule[rule.rule_id]) findings_by_rule[rule.rule_id] = [];
-                    findings_by_rule[rule.rule_id].push(finding);
-                }
-            }
-        }
-    }
+            return sameAdapter && sameRule && sameType;
+        }),
+    );
+}
+
+function makeFindings(rule, events) {
+    return events.map((event) => ({
+        rule_id: rule.rule_id,
+        rule_version: rule.version ?? null,
+        tier: null,
+        severity: rule.severity ?? null,
+        location: event.location ?? null,
+        message: fillMsg(rule.agent_facing_message, event.payload),
+        evidence: {
+            source_tool: event.source_tool,
+            source_rule_id: event.source_rule_id,
+            payload: event.payload,
+        },
+    }));
+}
+
+function sumResult(rules, findings, findingsByRule, meta) {
+    const hasError = Object.values(meta).some((entry) => entry?.status === 'error');
 
     return {
         layer: 'constraints',
-        status: findings.length > 0 ? 'fail' : 'ok',
-        rules_evaluated: activeRules.length,
+        status: hasError ? 'error' : findings.length > 0 ? 'fail' : 'ok',
+        rules_evaluated: rules.length,
         findings,
-        findings_by_rule,
-        background_findings,
-        background_by_rule,
-        adapter_meta
+        findings_by_rule: findingsByRule,
+        background_findings: [],
+        background_by_rule: {},
+        adapter_meta: meta,
     };
+}
+
+export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapterRegistry }) {
+    const manifest = readManifest(rulepackDir);
+    const rulePaths = pickRulePaths(manifest, taskConfig);
+    const rules = loadRules(rulepackDir, rulePaths);
+    const adapters = pickAdapters(manifest.adapters);
+    const { events, meta } = await runAdapters({
+        targetDir,
+        rulepackDir,
+        adapters,
+        adapterRegistry,
+    });
+    const findings = [];
+    const findingsByRule = {};
+
+    for (const rule of rules) {
+        const hits = hitRule(rule, events);
+        const ruleFindings = makeFindings(rule, hits);
+
+        findings.push(...ruleFindings);
+        findingsByRule[rule.rule_id] = ruleFindings;
+    }
+
+    return sumResult(rules, findings, findingsByRule, meta);
 }

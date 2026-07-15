@@ -1,0 +1,8 @@
+{
+  "metrics": {
+    "BE-DEP-M-001-dependency-graph-size": {
+      "report_path": "reports/depcruise-raw.json",
+      "raw_artifact_path": "artifacts/metrics/dependency-graph-size.json"
+    }
+  }
+}

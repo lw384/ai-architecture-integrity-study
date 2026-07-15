@@ -1,7 +1,0 @@
-rule_id: AI-DEBT-001-unresolvable
-tier: 2
-layer: constraints
-evidence_sources:
-  - adapter: dep-cruiser
-    tool_rule_ids: [AI-DEBT-001-unresolvable]
-agent_facing_message: "Import error: {to_module} cannot be resolved. Check for AI code generation hallucinations."

@@ -1,0 +1,24 @@
+rule_id: BE-STRUCT-C-002-no-explicit-any
+version: 0.1.0
+layer: constraints
+category: code-quality
+visibility: agent-visible
+severity: warning
+
+description: >
+  TypeScript code in this subject should avoid explicit any.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - "@typescript-eslint/no-explicit-any"
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Avoid explicit any in this file. Replace it with a narrower type.
+
+research_tags:
+  drift_type: erosion
+  severity_class: soft_constraint
