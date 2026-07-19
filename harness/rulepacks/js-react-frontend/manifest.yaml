@@ -1,0 +1,24 @@
+rulepack_id: js-react-frontend
+version: 0.1.0
+kind: subject
+language: [javascript]
+frameworks: [react]
+
+adapters:
+  eslint:
+    source: eslint
+    version: 0.1.0
+    config: tool-configs/eslint.config.js
+    emits: [constraints]
+
+rules:
+  constraints:
+    - rules/components/FE-COM-C-001-component-file-max-lines.yaml
+    - rules/components/FE-COM-C-002-jsx-max-depth.yaml
+    - rules/states/FE-STATE-C-001-no-usestate-in-deep-child-components.yaml
+    - rules/states/FE-STATE-C-002-context-provider-only-in-controlled-locations.yaml
+  metrics: []
+  judgments: []
+
+metadata:
+  migration_status: minimal-schema-valid

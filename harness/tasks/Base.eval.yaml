@@ -1,0 +1,69 @@
+schema_version: "0.1.0"
+task_id: Base
+task_version: "0.1.0"
+description: >
+  Baseline-only evaluation of the untouched project before any agent intervention.
+  Covers backend, frontend, and cross-stack contracts.
+
+subjects:
+  - subject_id: backend
+    root_path: backend/
+    rulepack_id: ts-nestjs-backend
+    rulepack_version: "0.1.0"
+    enabled:
+      constraints:
+        - BE-STRUCT-C-001
+        - BE-STRUCT-C-002
+        - BE-STRUCT-C-003
+      metrics:
+        - BE-DEP-M-001
+      judgments: []
+    thresholds:
+      BE-DEP-M-001:
+        warn_at: 2
+        fail_at: 3
+    expected_diff_scope: []
+
+  - subject_id: frontend
+    root_path: frontend/
+    rulepack_id: js-react-frontend
+    rulepack_version: "0.1.0"
+    enabled:
+      constraints:
+        - FE-STRUCT-C-001
+        - FE-STATE-C-001
+      metrics:
+        - FE-DEP-M-001
+      judgments: []
+    thresholds:
+      FE-DEP-M-001:
+        warn_at: 5
+        fail_at: 10
+    expected_diff_scope: []
+
+cross_stack:
+  rulepack_id: cross
+  rulepack_version: "0.1.0"
+  enabled:
+    constraints:
+      - CROSS-TYPE-C-001
+      - CROSS-EP-C-001
+    metrics: []
+    judgments: []
+
+judgment_config:
+  model: claude-sonnet-4-6
+  temperature: 0.0
+  samples_per_rubric: 5
+  min_kappa: 0.6
+
+execution:
+  fail_fast: false
+  max_duration_ms: 600000
+  parallel_subjects: false
+
+metadata:
+  purpose: baseline-evaluation
+  notes: >
+    This task evaluates the untouched baseline workspace and records the
+    pre-intervention architecture state.

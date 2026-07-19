@@ -1,0 +1,27 @@
+rule_id: FE-COM-C-002-jsx-max-depth
+version: 0.1.0
+layer: constraints
+category: component-structure
+visibility: agent-visible
+severity: warning
+
+description: >
+  JSX nesting should stay within 5 levels to avoid unreadable render trees and
+  overly complex component bodies.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - architecture/jsx-max-depth
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  JSX nesting is too deep in this component. Flatten the render tree or extract
+  nested sections into child components.
+
+research_tags:
+  drift_type: erosion
+  severity_class: soft_constraint
+  erosion_dimension: component-complexity

@@ -1,564 +1,457 @@
-# Deal API
+# Deal
 
-> **Resource**: `/api/v1/deals`
->
-> **Available in**: `baseline-v1` **only**. `baseline-v0` does not include this
-> resource — implementing it end-to-end is the L1 experimental task
-> (`CRM_Scope §5.1`: 'Deal is NOT included so L1/L4 can use its implementation
-> as the experimental task').
->
-> **Prerequisites**: [principles.md](./principles.md), [company.md](./company.md),
-> [contact.md](./contact.md), [cross-entity.md](./cross-entity.md).
->
-> **Source lineage**: `PRD_v2.docx §2.5` (Deal row); `CRM_Scope_v2_Task_Design.docx
-> §2.1` (Deal row, unchanged by the v2 naming migration — Deal did not carry
-> "Customer" in its own name); `§4.1` (L1 task specification);
-> `T1_minimal.md`, `T1_structured.md`.
->
-> **Real-world CRM equivalent**: Salesforce Opportunity, HubSpot Deal,
-> Twenty Opportunity.
->
-> **Naming note (v2)**: the FK field is `companyId` (v1 called it
-> `customerId`). See `PRD_v2 §1.2.1` for the migration rationale and
-> [company.md](./company.md) for the entity this FK now points to.
+> **Resource**: `/api/deals`
+> 
+> **Implementation source**: `baseline/backend/src/module/deal/*` (introduced in T1)
+> 
+> **Status**: this document describes the **target Deal API for T1 completion**
 
 ---
 
-## 1. Domain Description
+## 1. Scope
 
-A **Deal** is a **sales opportunity** — a potential unit of revenue in some
-stage of the pipeline. Deals link to one Company (required) and optionally
-one Contact at that Company. They carry a monetary value and progress through
-pipeline stages.
+The Deal module is added in T1 and exposes endpoints under the global `/api`
+prefix (there is **no `/api/v1` prefix** — baseline convention). Following the
+pattern established in Contact and Company, T1 does **not** ship a delete
+endpoint.
 
-**Why Deal matters to the study**: without a Deal entity the CRM cannot
-support pipeline reporting, revenue forecasting, deal-stage automation, or
-company health scoring (`T1_minimal.md §3`). All downstream experimental
-tasks (L2 state machine, L3 health score, L4 sequence) depend on Deal being a
-first-class entity.
+Implemented endpoints:
 
-**Baseline-v1 posture on `stage`**: `stage` is a **free string** with default
-`'lead'`. **No state machine is implemented in the baseline.** L2 introduces
-the state machine (`lead → qualified → proposal → negotiation →
-closed-won | closed-lost` with preconditions); if the baseline pre-implements
-it, L2 loses its experimental content (`CRM_Scope §4.2`, `T1_minimal.md §4`,
-[cross-entity.md X-5](./cross-entity.md#x-5-dealstage-state-machine)).
+- create
+- list with pagination, filtering, and sorting
+- get by id (with embedded Company summary)
+- partial update via `POST /deals/:id`
+
+Cross-module dependencies introduced in T1:
+
+- Deal creation and update call `CompanyService.getCompanyById(...)` and
+  (when `contactId` is present) `ContactService.getContactById(...)` to validate
+  referenced ids. No Contact or Company public API changes are required.
+
+Divergence from baseline error envelope:
+
+- The T1 requirements specify domain codes (`NOT_FOUND`, `VALIDATION_ERROR`) in
+  the response `code` field, whereas Contact and Company currently return
+  numeric HTTP status. See §6 for the two implementation paths that satisfy T1.
 
 ---
 
-## 2. Entity Schema (baseline v1)
+## 2. Entity Schema
 
-| Field | Type | Constraints | Mutability | Semantics |
-|---|---|---|---|---|
-| `id` | `string` (UUID v4) | server-generated | read-only | Primary key |
-| `title` | `string` | 1..200, non-empty after trim | read-write | Deal name |
-| `value` | `number` | ≥ 0, 2 decimals | read-write | Monetary value in the Company's implicit currency |
-| `stage` | `string` | free string, default `'lead'` | read-write | See §4 |
-| `companyId` | `string` (UUID v4) | required, FK → Company | **immutable after create** | The seller sees which Company; changing it = new deal |
-| `contactId` | `string \| null` (UUID v4 or null) | nullable, FK → Contact | read-write | See §5 |
-| `expectedCloseDate` | `string (YYYY-MM-DD) \| null` | date-only (not datetime) | read-write | Optional forecast close |
-| `createdAt` | `string (ISO 8601)` | UTC | read-only | Server-generated |
-| `updatedAt` | `string (ISO 8601)` | UTC | read-only | Server-updated |
+`src/module/deal/deal.entity.ts`
 
-**Currency**: no `currency` field in v1. All values are in the Company's
-implicit currency (in practice, a single-tenant single-currency deployment).
-Multi-currency support is a real-world CRM feature but adds implementation
-weight orthogonal to architectural conformance (`CRM_Scope §6.2` rationale for
-excluded features).
+| Field               | Type                        | Constraints                    | Mutability           | Notes                                                                            |
+| ------------------- | --------------------------- | ------------------------------ | -------------------- | -------------------------------------------------------------------------------- |
+| `id`                | `string` (UUID)             | generated by DB                | read-only            | Primary key                                                                      |
+| `name`              | `string`                    | required, max 255              | read-write           | Deal name                                                                        |
+| `value`             | `number` (decimal)          | required, `>= 0`               | read-write           | Monetary value; single-currency in T1                                            |
+| `stage`             | `string`                    | required, defaults to `'lead'` | read-write           | Free-form string in T1 (constrained by enum in T3)                               |
+| `companyId`         | `string` (UUID)             | required FK                    | read-write on create | Update path rejects changes to a **different** company (mirrors Contact pattern) |
+| `contactId`         | `string \| null` (UUID)     | nullable FK                    | read-write           | Optional; when supplied, the referenced Contact must exist                       |
+| `expectedCloseDate` | `string (ISO 8601) \| null` | nullable timestamp column      | read-write           | Optional                                                                         |
+| `createdAt`         | `string (ISO 8601)`         | generated by DB                | read-only            | Timestamp                                                                        |
+| `updatedAt`         | `string (ISO 8601)`         | generated by DB                | read-only            | Timestamp                                                                        |
+| `deletedAt`         | `string (ISO 8601) \| null` | soft-delete timestamp          | internal             | `select: false`, normally not returned; mirrors Contact/Company baseline         |
 
-**Deliberately absent in baseline-v1** (introduced later):
+Relations:
 
-- `stageChangedAt` — added in **L2** with the state machine.
-- `owner` / `assignedTo` — no ownership in scope.
-- `probability` / `weightedValue` — reporting concepts, out of scope.
+- `company: CompanyEntity` via `@ManyToOne` with `onDelete: 'RESTRICT'`
+  (Deals cannot be orphaned by a Company delete)
+- `contact: ContactEntity | null` via `@ManyToOne`, nullable, with
+  `onDelete: 'SET NULL'` (Deal survives when its Contact is deleted)
+
+Important entity-vs-DTO alignment note:
+
+- unlike Contact (where the DTO requires `email` and `phone` even though the
+  entity allows nulls), Deal's DTO nullability matches the entity — `contactId`
+  and `expectedCloseDate` are optional in the create DTO and nullable in the
+  entity
 
 ---
 
 ## 3. Endpoints
 
-Endpoints match `T1_minimal.md §4` in substance; method shape follows the v2
-POST convention (`principles.md §3.1`) rather than v1's PATCH.
+| Method | Path         | Summary        | Success | Notes                                                                         |
+| ------ | ------------ | -------------- | ------- | ----------------------------------------------------------------------------- |
+| `POST` | `/deals`     | Create a deal  | `201`   | Returns the created entity                                                    |
+| `GET`  | `/deals`     | List deals     | `200`   | Supports filters, sort, and pagination                                        |
+| `GET`  | `/deals/:id` | Get one deal   | `200`   | UUID validated by `ParseUUIDPipe`; returns Deal with embedded Company summary |
+| `POST` | `/deals/:id` | Partial update | `200`   | UUID validated by `ParseUUIDPipe`                                             |
 
-| Method | Path | Summary | Success | Error responses |
-|---|---|---|---|---|
-| `POST` | `/deals` | Create a deal | `201` + `Deal` + `Location` | `400`, `404`, `422` |
-| `GET` | `/deals` | List deals | `200` + `DealList` | `400` |
-| `GET` | `/deals/:id` | Get one deal | `200` + `Deal` | `400`, `404` |
-| `POST` | `/deals/:id` | Partial update | `200` + `Deal` | `400`, `404`, `422` |
-| `DELETE` | `/deals/:id` | Delete a deal | `204` | `400`, `404` |
+Not implemented:
 
-**On the POST double role**: see
-[principles.md §3.1](./principles.md#31-the-post-double-role-convention).
-`POST /deals` (no `:id`) creates; `POST /deals/:id` updates. `T1_minimal.md`
-predates this convention and still shows `PATCH /deals/:id` in its interface
-table — the T1 prompt must be re-frozen to `POST /deals/:id` before the next
-pilot run (see §12 for the full pre-freeze checklist).
-
-**No child entities in baseline-v1**, so `DELETE /deals/:id` never returns
-`409`. (L4.2 adds `Interaction.dealId`; from that point onward, `DELETE
-/deals/:id` acquires child-handling semantics — that is an experimental
-extension, not baseline.)
+- `DELETE /deals/:id`
 
 ---
 
-## 4. `stage` — Free String, With Discipline
+## 4. DTOs
 
-The `stage` field is a free string in baseline-v1. This is a **deliberate
-weakness** — the point of L2 is to observe whether the agent can refactor
-free strings into a state machine cleanly. Two disciplines apply
-nonetheless:
+### 4.1 `CreateDealDto`
 
-1. **Default on create**: if `POST /deals` body omits `stage`, server sets
-   `'lead'`.
-2. **Non-empty on set**: explicit `stage: ""` → `422 EMPTY_STRING`. Explicit
-   `stage: null` → `400 INVALID_TYPE` (stage is required, not nullable).
-
-Baseline **does not** validate `stage` against any enum. `POST /deals {
-stage: "martian-invasion" }` is accepted. This is the L2 experimental
-starting point ([cross-entity.md X-5](./cross-entity.md#x-5-dealstage-state-machine)).
-
----
-
-## 5. `contactId` — The Nullable Cross-Reference
-
-`contactId` is nullable and, when present, must satisfy: `Contact.companyId
-== Deal.companyId`. This is the **canonical cross-entity mismatch case** and
-one of the four T1 behavioural invariants (`T1_minimal.md §4`).
-
-**This is the site where the X-3 rule was first specified** (see
-[cross-entity.md X-3](./cross-entity.md#x-3-nullable-contactid-must-belong-to-parent-companyid)).
-`Interaction.contactId` (introduced in the same v2 migration; see
-[interaction.md §4](./interaction.md#4-the-new-contactid-field-v2-addition))
-applies the identical rule at a structurally distinct site. The two
-occurrences of X-3 form a matched pair used to probe whether an agent that
-correctly implements the rule once (on Deal, in L1) generalises it correctly
-a second time (to Interaction, if a later task requires it) — see
-[cross-entity.md §4.3](./cross-entity.md#43-x-3-as-a-generalisation-probe-creative-extension).
-
-Behaviour matrix:
-
-| Request state | `contactId` value | `Contact.companyId` value | Response |
-|---|---|---|---|
-| POST | absent | — | 201, `contactId: null` |
-| POST | `null` | — | 201, `contactId: null` |
-| POST | valid UUID, Contact exists | == request's `companyId` | 201, `contactId: <uuid>` |
-| POST | valid UUID, Contact exists | ≠ request's `companyId` | 422 `CROSS_ENTITY_MISMATCH` |
-| POST | valid UUID, Contact absent | — | 404 `PARENT_NOT_FOUND` (referencedFrom: `Deal.contactId`) |
-| POST | not a UUID | — | 400 `INVALID_UUID` |
-
-For `POST /deals/:id` (update):
-
-- Explicitly setting `contactId: null` = "clear the contact".
-- Setting `contactId` to a UUID: same matrix as create, cross-check uses the
-  **current stored `companyId`** (recall `companyId` is immutable).
-
-**Externalised interaction with `ContactService.remove`**: when a Contact is
-deleted, `Deal.contactId` referencing it is nulled by
-`DealService.detachContact`, called by `ContactService.remove` alongside the
-symmetric call into `InteractionService.detachContact` — see
-[cross-entity.md X-6](./cross-entity.md#x-6-delete-contact--null-referencing-fks)
-for the full **dual-detach** specification introduced in v2.
-
----
-
-## 6. DTOs
-
-### 6.1 `CreateDealDto`
+`src/module/deal/dto/create.dto.ts`
 
 ```typescript
 class CreateDealDto {
-  @IsString() @Length(1, 200)
-  @Transform(({ value }) => value?.trim())
-  title!: string;
-
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @Min(0)
-  value!: number;
-
-  @IsOptional() @IsString() @Length(1, 100)
-  stage?: string;   // defaults to 'lead' in service if omitted
-
-  @IsUUID('4')
-  companyId!: string;
-
-  @IsOptional() @ValidateIf((_, v) => v !== null) @IsUUID('4')
-  contactId?: string | null;
-
-  @IsOptional() @ValidateIf((_, v) => v !== null)
-  @IsDateString({ strict: true })   // YYYY-MM-DD
-  expectedCloseDate?: string | null;
+  name: string;
+  value: number;
+  companyId: string;
+  contactId?: string;
+  stage?: string;
+  expectedCloseDate?: Date;
 }
 ```
 
-### 6.2 `UpdateDealDto`
+Validation actually enforced by decorators:
+
+- `name`: required string, max 255
+- `value`: required number, `@Min(0)`
+- `companyId`: required UUID v4
+- `contactId`: optional UUID v4
+- `stage`: optional string, max 100; defaults to `'lead'` at the entity layer
+- `expectedCloseDate`: optional ISO date, `@IsDate()` after `class-transformer`
+
+### 4.2 `UpdateDealDto`
+
+`src/module/deal/dto/update.dto.ts`
 
 ```typescript
-class UpdateDealDto {
-  // companyId absent — immutable, see §2 and principles.md §3.1
-
-  @IsOptional() @IsString() @Length(1, 200)
-  @Transform(({ value }) => value?.trim())
-  title?: string;
-
-  @IsOptional() @IsNumber({ maxDecimalPlaces: 2 }) @Min(0)
-  value?: number;
-
-  @IsOptional() @IsString() @Length(1, 100)
-  stage?: string;
-
-  @IsOptional() @ValidateIf((_, v) => v !== null) @IsUUID('4')
-  contactId?: string | null;
-
-  @IsOptional() @ValidateIf((_, v) => v !== null) @IsDateString({ strict: true })
-  expectedCloseDate?: string | null;
-}
+class UpdateDealDto extends PartialType(CreateDealDto) {}
 ```
 
-`UpdateDealDto` is consumed by the `POST /deals/:id` handler (not a separate
-`PATCH` handler — there is only one route per resource-with-id, and its verb
-is `POST`).
+All create fields become optional during update. Update-specific behavior in
+the service:
 
-### 6.3 `DealResponseDto`, `DealListResponseDto`
+- if `companyId` is present and **different** from the existing value, the
+  service throws `422` with message `"The companyId field cannot be updated after creation."` (follows Contact pattern)
+- if `companyId` is present and **equal** to the existing value, it is deleted
+  from the DTO and the update proceeds
+- if `contactId` is present, the service verifies the Contact exists;
+  unknown Contact returns `404`
+- if `contactId` is explicitly `null`, the association is cleared
+- empty body returns `400` (see §5.4 for the empty-body guard)
 
-Mirror the entity and pagination envelope respectively.
+### 4.3 `DealListQueryDto`
+
+`src/module/deal/dto/query.dto.ts`
+
+| Field       | Type                                              | Default     | Behavior                            |
+| ----------- | ------------------------------------------------- | ----------- | ----------------------------------- |
+| `companyId` | UUID v4                                           | none        | Exact filter                        |
+| `stage`     | string                                            | none        | Exact filter                        |
+| `page`      | integer                                           | `1`         | Must be `>= 1`                      |
+| `pageSize`  | integer                                           | `20`        | Must be `1..100`                    |
+| `sort`      | `name \| createdAt \| value \| expectedCloseDate` | `createdAt` | Applied as `deal.<field>`           |
+| `order`     | `asc \| desc`                                     | `desc`      | Converted to upper case for TypeORM |
+
+Validation style follows Contact (strict — invalid values return `400`), **not**
+Company (silent fallback).
+
+Computed accessors used by the repository:
+
+- `offset = (page - 1) * pageSize`
+- `limit = pageSize`
 
 ---
 
-## 7. Endpoint Details
+## 5. Endpoint Details
 
-### 7.1 `POST /deals` (create)
+### 5.1 `POST /deals`
 
-**Request**:
+Creates a deal.
+
+**Request example**:
+
 ```http
-POST /api/v1/deals
+POST /api/deals
 Content-Type: application/json
 
 {
-  "title": "Acme Enterprise Renewal",
-  "value": 25000.00,
-  "companyId": "a3f8c1e2-...",
-  "contactId": "b4e9d2f3-...",
-  "expectedCloseDate": "2026-09-30"
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "companyId": "a3f8c1e2-1234-5678-9abc-def012345678",
+  "contactId": "b4e9d2f3-1234-5678-9abc-def012345678",
+  "stage": "qualified"
 }
 ```
 
 **Response** (`201`):
-```http
-HTTP/1.1 201 Created
-Location: /api/v1/deals/c5f0e3g4-1234-5678-9abc-def012345678
-Content-Type: application/json
 
+```json
 {
   "id": "c5f0e3g4-1234-5678-9abc-def012345678",
-  "title": "Acme Enterprise Renewal",
-  "value": 25000.00,
-  "stage": "lead",
-  "companyId": "a3f8c1e2-...",
-  "contactId": "b4e9d2f3-...",
-  "expectedCloseDate": "2026-09-30",
-  "createdAt": "2026-07-02T10:30:00.000Z",
-  "updatedAt": "2026-07-02T10:30:00.000Z"
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "stage": "qualified",
+  "companyId": "a3f8c1e2-1234-5678-9abc-def012345678",
+  "contactId": "b4e9d2f3-1234-5678-9abc-def012345678",
+  "expectedCloseDate": null,
+  "createdAt": "2026-07-03T10:30:00.000Z",
+  "updatedAt": "2026-07-03T10:30:00.000Z"
 }
 ```
 
-**Errors**:
+Behavior:
 
-| Code | Trigger | HTTP |
-|---|---|---|
-| `MALFORMED_BODY` | Body not JSON | 400 |
-| `INVALID_UUID` | `companyId` or `contactId` not UUID v4 | 400 |
-| `INVALID_TYPE` | Field of wrong type | 400 |
-| `INVALID_DATE_FORMAT` | `expectedCloseDate` not `YYYY-MM-DD` | 400 |
-| `EMPTY_STRING` | `title` trims to empty | 422 |
-| `NEGATIVE_VALUE` | `value < 0` | 422 |
-| `PARENT_NOT_FOUND` | `companyId` valid UUID but Company absent | 404 |
-| `PARENT_NOT_FOUND` | `contactId` valid UUID but Contact absent | 404 |
-| `CROSS_ENTITY_MISMATCH` | Contact exists but belongs to a different Company | 422 |
+- controller returns the saved entity directly (mirrors Contact, not Company's
+  wrapper response)
+- service calls `companyService.getCompanyById(dto.companyId)`; if the company
+  lookup fails, returns `404`
+- if `contactId` is present, service calls
+  `contactService.getContactById(dto.contactId)`; if that Contact does not
+  exist, returns `404`
+- if `stage` is omitted, entity default `'lead'` is applied
 
-### 7.2 `GET /deals`
+Possible errors:
 
-**Query parameters**:
+- `400` for DTO validation failures
+- `404` if the referenced company or contact does not exist
 
-| Param | Type | Default | Values |
-|---|---|---|---|
-| `companyId` | UUID | (no filter) | Filter to one Company's Deals |
-| `stage` | string | (no filter) | Exact match; free string in baseline-v1 |
-| `sort` | enum | `createdAt` | `title`, `value`, `createdAt`, `expectedCloseDate` |
-| `order` | enum | `asc` unfiltered / `desc` filtered | see note below |
-| `limit` | int | `20` | 1..100 |
-| `offset` | int | `0` | ≥ 0 |
+### 5.2 `GET /deals`
 
-**Default order note**: `T1_minimal.md §4` requires "insertion order (by
-`createdAt` ascending) unless filtering is applied". The baseline reconciles
-this with the general list convention (desc default; see
-[principles.md §7](./principles.md#7-pagination-filtering-sorting)) by making
-the default sort direction **task-specific**: unfiltered list = `createdAt
-ASC` (insertion order), filtered list = `createdAt DESC`
-(most-recent-first). This mild inconsistency is intentional and documented;
-`T1_minimal.md` specifies the ASC default explicitly.
+Lists deals with filtering, sorting, and pagination.
 
-Sorting by `expectedCloseDate` places `null` values last regardless of order
-direction (same rule as `Company.lastContactedAt`; see
-[company.md §5.2](./company.md)).
+**Query parameters**: see §4.3.
 
-### 7.3 `GET /deals/:id`
+Repository behavior:
 
-Standard. `INVALID_UUID`, `ENTITY_NOT_FOUND`.
+- default ordering: `deal.createdAt DESC`
+- `companyId` and `stage` are exact filters
+- requesting a page beyond the last returns `{ items: [], total: N, ... }` —
+  not a `404`
 
-### 7.4 `POST /deals/:id` (partial update)
+**Response** (`200`):
 
-Semantics standard (see [principles.md §3.1](./principles.md#31-the-post-double-role-convention)).
+```json
+{
+  "items": [
+    {
+      "id": "c5f0e3g4-1234-5678-9abc-def012345678",
+      "name": "Acme Q3 renewal",
+      "value": 50000,
+      "stage": "qualified",
+      "companyId": "a3f8c1e2-1234-5678-9abc-def012345678",
+      "contactId": null,
+      "expectedCloseDate": null,
+      "createdAt": "2026-07-03T10:30:00.000Z",
+      "updatedAt": "2026-07-03T10:30:00.000Z"
+    }
+  ],
+  "total": 42,
+  "page": 1,
+  "pageSize": 20,
+  "totalPages": 3
+}
+```
 
-`POST /deals/:id` cannot update `companyId` (immutable, `422
-IMMUTABLE_FIELD`). It **can** update `contactId` — either to another valid
-Contact of the same Company (`422 CROSS_ENTITY_MISMATCH` otherwise), or to
-`null` (clear).
+### 5.3 `GET /deals/:id`
 
-**Partial-update discipline** (from `T1_minimal.md §4`): sending only
-`{ "stage": "qualified" }` must not overwrite `title` or `value`. This is a
-critical behavioural invariant — several LLM-generated implementations in
-pilot studies incorrectly used `save()` on a partial DTO, silently nulling
-untouched fields.
+Gets one deal by id, with embedded Company summary.
 
-### 7.5 `DELETE /deals/:id`
+**Response** (`200`):
 
-Standard. Returns `204` on success, `404` if absent.
+```json
+{
+  "id": "c5f0e3g4-1234-5678-9abc-def012345678",
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "stage": "qualified",
+  "companyId": "a3f8c1e2-1234-5678-9abc-def012345678",
+  "contactId": null,
+  "expectedCloseDate": null,
+  "createdAt": "2026-07-03T10:30:00.000Z",
+  "updatedAt": "2026-07-03T10:30:00.000Z",
+  "company": {
+    "id": "a3f8c1e2-1234-5678-9abc-def012345678",
+    "name": "Acme Corp"
+  }
+}
+```
+
+Behavior:
+
+- `ParseUUIDPipe({ version: '4' })` validates the path param
+- invalid UUID returns `400` before service execution
+- missing record returns `404`
+- the embedded `company` summary is populated by calling
+  `CompanyService.getCompanyById(deal.companyId)` — **not** by injecting
+  `CompanyRepository`, and **not** by writing a cross-table join in
+  `DealRepository`. This preserves module boundaries.
+
+Missing-record response shape after the exception filter:
+
+```json
+{
+  "success": false,
+  "code": 404,
+  "message": "Deal with ID <id> not found",
+  "timestamp": "2026-07-19T00:00:00.000Z",
+  "path": "/api/deals/<id>"
+}
+```
+
+### 5.4 `POST /deals/:id`
+
+Partially updates a deal.
+
+**Request example**:
+
+```http
+POST /api/deals/c5f0e3g4-1234-5678-9abc-def012345678
+Content-Type: application/json
+
+{
+  "stage": "proposal",
+  "value": 55000
+}
+```
+
+**Response** (`200`): the updated `DealEntity`.
+
+Behavior:
+
+- service loads the deal first via `getDealById`
+- if the DTO is empty (no allowed fields present), throws `400`
+- if `companyId` is included and differs from the stored value, throws
+  `UnprocessableEntityException` with message
+  `"The companyId field cannot be updated after creation."` (mirrors Contact)
+- if `companyId` is included and matches the stored value, it is ignored
+- if `contactId` is included and non-null, service verifies the Contact exists
+  and returns `404` if not
+- if `contactId` is explicitly `null` in the body, the association is cleared
+- remaining DTO fields are merged and saved
+
+**Different-company error** (`422`):
+
+```json
+{
+  "success": false,
+  "code": 422,
+  "message": "The companyId field cannot be updated after creation.",
+  "timestamp": "2026-07-19T00:00:00.000Z",
+  "path": "/api/deals/<id>"
+}
+```
+
+Other errors:
+
+- `400` for invalid UUID, DTO validation failure, or empty body
+- `404` when the deal, referenced company, or referenced contact does not exist
 
 ---
 
-## 8. Behavioural Invariants
+## 6. Error Envelope
 
-Numbered `I-D-N`. `T1_minimal.md §4` bullets are the authoritative source;
-this table extends them with numbering and testability notes, and marks
-which invariants changed under the v2 migration.
+All `HttpException` responses are transformed by
+`src/common/filter/http-exception.filter.ts` into the shared shape:
 
-| ID | Invariant | Tested by |
-|---|---|---|
-| `I-D-1` | `POST /deals` with non-existent `companyId` → `404 PARENT_NOT_FOUND` | Integration |
-| `I-D-2` | `POST /deals` with `contactId` whose Contact belongs to a different Company → `422 CROSS_ENTITY_MISMATCH` | Integration |
-| `I-D-3` | `POST /deals` with `contactId: null` (explicit) or `contactId` omitted → 201 with `contactId: null` | Unit |
-| `I-D-4` | `POST /deals` with `value: 0` succeeds (low-confidence early deal) | Unit |
-| `I-D-5` | `POST /deals` with `value: -1` → `422 NEGATIVE_VALUE` | Unit |
-| `I-D-6` | `POST /deals` with `value: 25.999` → `400 INVALID_TYPE` (too many decimals) | Unit |
-| `I-D-7` | `POST /deals` omitting `stage` → 201 with `stage: 'lead'` | Unit |
-| `I-D-8` | `POST /deals` with arbitrary `stage: 'martian-invasion'` succeeds in baseline-v1 | Unit |
-| `I-D-9` | `POST /deals/:id` with only `{ stage: 'qualified' }` does not overwrite other fields | Unit + integration |
-| `I-D-10` | `POST /deals/:id` body containing `companyId` → `422 IMMUTABLE_FIELD` | Unit |
-| `I-D-11` | `GET /deals` with no filter returns deals in `createdAt ASC` order | Integration |
-| `I-D-12` | `GET /deals?companyId=<uuid>` returns deals in `createdAt DESC` order by default | Integration |
-| `I-D-13` | Sort by `expectedCloseDate` places `null` last in both directions | Integration |
-| `I-D-14` | `DELETE /deals/:id` succeeds and returns 204 with no body | Integration |
-| `I-D-15` | **(v2)** Deleting a Contact nulls `Deal.contactId` values pointing to it **and simultaneously** nulls `Interaction.contactId` values pointing to it (dual-detach, X-6) | Integration cross-module |
-| `I-D-16` | **(v2)** `POST /deals/:id` on a resource whose only change is a read-only field (e.g. attempting to set `createdAt`) is silently stripped, and if that leaves the body empty → `400 EMPTY_UPDATE` | Unit |
+```json
+{
+  "success": false,
+  "code": 400,
+  "message": "first validation or exception message",
+  "timestamp": "2026-07-19T00:00:00.000Z",
+  "path": "/api/deals"
+}
+```
+
+**T1 spec divergence**. The T1 requirements state that Deal error responses
+carry domain code strings (`NOT_FOUND`, `VALIDATION_ERROR`) in the response.
+The baseline `HttpExceptionFilter` currently emits numeric HTTP status in
+`code`. Two implementation paths satisfy T1:
+
+- **Path A — extend the shared filter (recommended)**. The
+  `HttpExceptionFilter` inspects the thrown exception; when the exception is
+  a domain exception carrying a `code` string field (e.g. an
+  `EntityNotFoundException` with `code: 'NOT_FOUND'`), the filter emits the
+  domain code as `code` and preserves the numeric status alongside (e.g. as
+  `httpStatus`). Uncategorized `HttpException` falls back to numeric code.
+  Contact and Company automatically benefit and evolve toward a unified
+  envelope.
+
+- **Path B — Deal-specific filter (isolated)**. Deal's controller registers
+  its own filter that overrides `code` for domain errors. Contact and Company
+  keep the numeric-code envelope. This creates cross-module envelope drift
+  that is expected to be resolved by T5 (Payoff).
+
+The path chosen in the T1 implementation SHOULD be documented in the PR
+description so downstream sprints can build on the assumed shape.
 
 ---
 
-## 9. Interface Signatures
+## 7. Interface Signatures
 
-Adapted from `T1_minimal.md §5` — the agent's tests will target these exact
-names. **The v1 prompt still lists `update` under a PATCH framing implicitly
-via HTTP-agnostic method names** (`update(id, dto)`), so the TypeScript
-signature itself is unaffected by the v2 HTTP-method migration; only the
-routing decorator changes (`@Patch()` → `@Post(':id')`).
-
-**Controller** — `src/modules/deal/deal.controller.ts`:
+**Controller** — `src/module/deal/deal.controller.ts`
 
 ```typescript
 @Controller('deals')
 class DealController {
   @Post()
-  create(dto: CreateDealDto): Promise<DealResponseDto>
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() dto: CreateDealDto)
 
   @Get()
-  findAll(companyId?: string): Promise<DealResponseDto[]>
+  @HttpCode(HttpStatus.OK)
+  findAll(@Query() query: DealListQueryDto)
 
   @Get(':id')
-  findOne(id: string): Promise<DealResponseDto>
+  @HttpCode(HttpStatus.OK)
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string)
 
-  @Post(':id')                              // v2: was @Patch(':id') in v1
-  update(id: string, dto: UpdateDealDto): Promise<DealResponseDto>
-
-  @Delete(':id')
-  remove(id: string): Promise<void>
+  @Post(':id')
+  @HttpCode(HttpStatus.OK)
+  update(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() dto: UpdateDealDto,
+  )
 }
 ```
 
-> **Note on signature style**: `T1_minimal.md` specifies `findAll(companyId?:
-> string): Promise<DealResponseDto[]>` — array return, not paginated
-> envelope. This is a **deliberate concession to the T1 minimum viable
-> task**; the `T1_structured.md` variant may extend it to a paginated
-> envelope, and L4/L5 may unify all list endpoints. The baseline-v1
-> implementation follows T1 exactly (array return) to serve as the direct
-> reference for L2/L3, and the other three entities' paginated envelopes are
-> documented deviations. L4.8 ("unified error format across ALL endpoints")
-> is a natural moment for the agent to also unify list envelopes — an
-> emergent architectural decision the harness observes but does not directly
-> score.
-
-**Service** — `src/modules/deal/deal.service.ts`:
+**Service** — `src/module/deal/deal.service.ts`
 
 ```typescript
 class DealService {
-  create(dto: CreateDealDto): Promise<Deal>
-  findAll(filter?: { companyId?: string }): Promise<Deal[]>
-  findOne(id: string): Promise<Deal>
-  update(id: string, dto: UpdateDealDto): Promise<Deal>
-  remove(id: string): Promise<void>
-
-  // Called by ContactService.remove — see cross-entity.md X-6
-  detachContact(contactId: string): Promise<void>
+  createDeal(dto: CreateDealDto): Promise<DealEntity>
+  getDealsList(query: DealListQueryDto)
+  getDealById(id: string): Promise<DealEntity & { company: CompanySummary }>
+  updateDeal(
+    id: string,
+    dto: UpdateDealDto & { companyId?: string },
+  ): Promise<DealEntity>
 }
 ```
 
-**Repository** — `src/modules/deal/deal.repository.ts`:
+Where `CompanySummary = Pick<CompanyEntity, 'id' | 'name'>`.
+
+Dependencies injected via the constructor:
+
+- `DealRepository`
+- `CompanyService` (for id-validation and summary population)
+- `ContactService` (for id-validation)
+
+**Repository** — `src/module/deal/deal.repository.ts`
 
 ```typescript
-class DealRepository extends BaseRepository<Deal> {
-  findByCompany(companyId: string): Promise<Deal[]>
-  findByContact(contactId: string): Promise<Deal[]>
-  countByCompany(companyId: string): Promise<number>
+class DealRepository extends BaseRepository<DealEntity> {
+  findWithFilter(query: DealListQueryDto)
 }
 ```
 
-**Entity** — `src/modules/deal/deal.entity.ts`:
-
-```typescript
-@Entity('deals')
-class Deal {
-  @PrimaryGeneratedColumn('uuid') id: string;
-
-  @Column({ length: 200 })
-  title: string;
-
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
-  value: number;
-
-  @Column({ length: 100, default: 'lead' })
-  stage: string;
-
-  @Column('uuid') companyId: string;
-
-  @Column({ type: 'uuid', nullable: true })
-  contactId: string | null;
-
-  @Column({ type: 'date', nullable: true })
-  expectedCloseDate: string | null;
-
-  @ManyToOne(() => Company, { onDelete: 'RESTRICT' })
-  @JoinColumn({ name: 'companyId' })
-  company: Company;
-
-  @ManyToOne(() => Contact, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: 'contactId' })
-  contact: Contact | null;
-
-  @CreateDateColumn() createdAt: Date;
-  @UpdateDateColumn() updatedAt: Date;
-}
-```
-
-Note the ORM-level `onDelete` behaviours: Company → `RESTRICT` mirrors X-1;
-Contact → `SET NULL` mirrors X-6. Both are defence-in-depth; the primary
-mechanism in both cases is the service layer, so the tests exercise the
-service path and treat the DB constraint as a documented fallback rather
-than a separately asserted behaviour.
-
 ---
 
-## 10. Frontend API Client Contract
+## 8. Behavior Summary
 
-`frontend/src/services/api/deal.api.js`:
-
-```javascript
-export const dealsApi = {
-  list: (params) => Promise<Deal[]>,             // → GET /api/v1/deals
-  get: (id) => Promise<Deal>,                     // → GET /api/v1/deals/:id
-  create: (dto) => Promise<Deal>,                 // → POST /api/v1/deals
-  update: (id, dto) => Promise<Deal>,             // → POST /api/v1/deals/:id
-  remove: (id) => Promise<void>,                  // → DELETE /api/v1/deals/:id
-};
-```
-
-The array return of `list` matches T1's controller signature. This may be
-refactored to envelope form in L4.8; the L2 agent should not touch it (its
-scope is the state machine, not list-shape).
-
-Types generated from `openapi.yaml`. The `stage` field is typed as `string`
-in v1 (free string); L2 changes it to a union enum, and the type update is
-part of L2's success criteria. **The `update` function must emit `POST
-/deals/:id`**, not `PATCH` — see the frontend-side PATCH detector described
-in [company.md §9](./company.md#9-frontend-api-client-contract).
-
----
-
-## 11. Test Coverage Requirements
-
-For baseline-v1 (human-written) and as reference standard for the L1 agent:
-
-| Layer | File | Minimum cases |
-|---|---|---|
-| Repository | `deal.repository.spec.ts` | happy, `findByCompany` (with and without matches), `findByContact`, `countByCompany` |
-| Service | `deal.service.spec.ts` | happy per method, `PARENT_NOT_FOUND` for each FK, `CROSS_ENTITY_MISMATCH`, partial update preserves untouched fields, `detachContact` cross-module test |
-| Controller | `deal.controller.spec.ts` | 201/200/204, 404, 422 CROSS_ENTITY_MISMATCH, 400 EMPTY_UPDATE, **assert route decorator is `@Post(':id')` not `@Patch(':id')`** |
-| End-to-end | `deal.e2e-spec.ts` | full CRUD; POST-then-list ordering (`I-D-11`, `I-D-12`); delete Contact nulls `Deal.contactId` **and** `Interaction.contactId` in the same transaction |
-| Frontend | `deal.api.spec.js` | request contracts, `list` returns array, `stage` is `string` in v1, `update` uses POST |
-
-The T1 requirements clause (`T1_minimal.md §4`) requires per endpoint: (a) at
-least one happy path, (b) at least one edge case, (c) at least one error
-case. Baseline test coverage is at or above this floor to serve as the
-standard.
-
----
-
-## 12. Baseline vs. Experimental Task Boundaries
-
-This section catalogues **what the baseline v1 does NOT do**, so that
-prompt-file authors and code reviewers can immediately spot pre-emption.
-
-| Concern | Baseline-v1 posture | Introduced in |
-|---|---|---|
-| `stage` as enum with state machine | Free string only | L2 (`CRM_Scope §4.2`) |
-| Preconditions on stage advance (contact required for `qualified`, value > 0 for `proposal`) | Not enforced | L2 |
-| `stageChangedAt` field | Absent | L2 |
-| `Interaction.dealId` FK | Absent (Interaction has no `dealId`) | L4.2 (`CRM_Scope §4.4`) |
-| `POST /deals/:id/notes` reusing Interaction | Absent | L4.5 |
-| Company `status: 'inactive'` blocks new deal creation | Not enforced | L4.6 (X-4) |
-| `POST /deals/batch-stage` batch operation | Absent | L4.7 |
-| Unified `{ error, code, details }` envelope across all endpoints | **Already implemented in baseline** | L4.8 refines drift, not the envelope shape itself |
-| Health score involving Deal data (`value > 10000`, non-closed deals) | Absent | L3 |
-
-### 12.1 Pre-freeze checklist (v1 → v2 migration)
-
-Before the next `prompts-frozen-v4` tag, `T1_minimal.md` and
-`T1_structured.md` must be updated to reflect:
-
-- [ ] `customerId` → `companyId` throughout Block 3/4/5.
-- [ ] Interface table: `update(id, dto)` route changes from implied `PATCH`
-      to explicit `POST /deals/:id` in any prose that names the HTTP verb.
-- [ ] Block 4 requirements: any bullet naming `PATCH /deals/:id` rewritten to
-      `POST /deals/:id`.
-- [ ] SHA-256 hash of Blocks 3+4+5 recomputed (S1 verification per
-      `prompt_meta_template_v3.md §5`) since content has changed.
-- [ ] `Frozen at:` timestamp reset to `[pending]` until re-review.
-
-This checklist is itself a direct consequence of the `PRD_v2 §1.2`
-migration reaching a prompt file that predates it — a small-scale
-illustration of the "N earlier decisions must be preserved across M later
-steps" pressure that L4's Sequence Continuity block (`prompt_meta_template_v3.md`
-§2, Block 7.c) is designed to test at a larger scale.
-
----
-
-## 13. Traceability
-
-| Item | Trace |
-|---|---|
-| Entity fields | `PRD_v2 §2.5`, `CRM_Scope §2.1` Deal row, `T1_minimal.md §4` |
-| Free-string `stage` | `CRM_Scope §4.1` real-world imperfection, deliberate weakness |
-| Cross-entity `contactId` validation | `T1_minimal.md §4`, [cross-entity.md X-3](./cross-entity.md#x-3-nullable-contactid-must-belong-to-parent-companyid) |
-| Insertion-order list default | `T1_minimal.md §4` |
-| POST-only migration | `PRD_v2 §1.2.2`, [principles.md §3.1](./principles.md#31-the-post-double-role-convention) |
-| Signatures match T1 (method decorator updated) | `T1_minimal.md §5`, §9 above, §12.1 pre-freeze checklist |
-| L2 state-machine pre-emption avoided | `CRM_Scope §4.2`, §4 above |
-| L4.6 inactive-block pre-emption avoided | `CRM_Scope §4.4 T4.6`, §12 above |
-| Dual-detach on Contact delete (v2 change) | [cross-entity.md X-6](./cross-entity.md#x-6-delete-contact--null-referencing-fks) |
+- create requires `name`, `value`, and `companyId`; `contactId`, `stage`, and
+  `expectedCloseDate` are optional
+- create validates the referenced Company (and Contact when supplied) via the
+  respective **service**, not repository — module boundaries preserved
+- list supports `companyId`, `stage`, `sort`, `order`, `page`, `pageSize`;
+  default sort is `createdAt DESC`; strict validation (Contact-style)
+- update uses `POST /:id`, not `PATCH`, following baseline convention
+- `companyId` is only rejected when changing to a **different** value; matching
+  values are silently dropped
+- Deal detail includes an embedded Company summary populated via
+  `CompanyService.getCompanyById` — no cross-module repository access
+- soft-delete metadata exists on the entity, but no delete API is exposed
+- error envelope diverges from Contact/Company on the `code` field; see §6 for
+  the two implementation paths
+- no Contact or Company public API changes are required to implement T1
