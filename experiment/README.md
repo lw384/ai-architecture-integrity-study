@@ -37,15 +37,28 @@ Current entry points:
 - Python pipeline: `instruments/agent-runners/run_pipeline.py`
 - Shell pipeline: `instruments/agent-runners/run_pipeline.sh`
 
-Python example:
+### Run a full experiment
+
+Run from the `experiment/` directory:
 
 ```bash
-cd experiment/instruments/agent-runners
-python run_pipeline.py \
+cd /Users/luowei/project/ai-architecture-integrity-study/experiment
+./venv/bin/python instruments/agent-runners/run_pipeline.py \
 	--agent claude \
 	--task T0 \
 	--strategy minimal
-	--baseline-dir baseline
+```
+
+To stream agent output and print heartbeat messages while the container is running:
+
+```bash
+cd /Users/luowei/project/ai-architecture-integrity-study/experiment
+./venv/bin/python instruments/agent-runners/run_pipeline.py \
+	--agent claude \
+	--task T0 \
+	--strategy minimal \
+	--live-output \
+	--heartbeat-seconds 30
 ```
 
 Optional flags supported by the current Python runner:
@@ -53,13 +66,50 @@ Optional flags supported by the current Python runner:
 - `--model` — override the default model for the selected agent
 - `--interface` — attach one interface document from `docs/interface/`
 - `--baseline-dir` — override the baseline source directory copied into the isolated workspace; supports absolute paths or paths relative to the repository root
+- `--live-output` — stream the container output instead of waiting for the run to finish
+- `--heartbeat-seconds` — when live output is enabled, print periodic workspace heartbeat messages during long quiet periods
+
+### Run the shell wrapper
 
 Shell example:
 
 ```bash
-cd experiment/instruments/agent-runners
+cd /Users/luowei/project/ai-architecture-integrity-study/experiment/instruments/agent-runners
 BASELINE_DIR=/absolute/path/to/other-baseline \
 bash run_pipeline.sh
+```
+
+### Evaluate the current baseline with Harness only
+
+This path skips the agent run and writes the Harness result directly into `baseline/evaluation.json`.
+
+```bash
+cd /Users/luowei/project/ai-architecture-integrity-study && \
+BASELINE_SHA="$(cd baseline && git rev-parse HEAD)" && \
+POST_SHA="$BASELINE_SHA$( [ -n "$(cd baseline && git status --porcelain)" ] && printf '+dirty' )" && \
+cat > baseline/manifest.json <<EOF
+{
+	"status": "ready_for_evaluation",
+	"events": ["agent_started", "agent_completed"],
+	"task_id": "T0",
+	"baseline_commit": "$BASELINE_SHA",
+	"pre_commit": "$BASELINE_SHA",
+	"rulepack_id": "task::T0"
+}
+EOF
+cd harness && \
+node core/evaluate.mjs \
+	--target /Users/luowei/project/ai-architecture-integrity-study/baseline \
+	--manifest /Users/luowei/project/ai-architecture-integrity-study/baseline/manifest.json \
+	--task-config /Users/luowei/project/ai-architecture-integrity-study/harness/tasks/T0.eval.yaml \
+	--rulepack /Users/luowei/project/ai-architecture-integrity-study/harness/rulepacks \
+	--baseline /Users/luowei/project/ai-architecture-integrity-study/baseline \
+	--pre-commit "$BASELINE_SHA" \
+	--post-commit "$POST_SHA" \
+	--run-id baseline_eval_T0 \
+	--trajectory-id baseline_eval_T0 \
+	--output /Users/luowei/project/ai-architecture-integrity-study/baseline/evaluation.json \
+	--mode full
 ```
 
 Before running:
@@ -82,5 +132,21 @@ Typical files written there by the current code path include:
 - `execution_metrics.json`
 - `manifest.json`
 - `evaluation.json`
+
+Useful inspection commands:
+
+```bash
+cd /Users/luowei/project/ai-architecture-integrity-study
+ls -dt experiment/workspace/run_* | head -n 3
+```
+
+```bash
+cd /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/<run_id>
+git status --short
+git diff --stat
+sed -n '1,120p' agent_execution.log
+sed -n '1,120p' execution_metrics.json
+sed -n '1,160p' evaluation.json
+```
 
 `runs/` currently exists as a study data area for curated bundles, but the current Python and shell runners do not automatically write completed runs there.

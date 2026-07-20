@@ -21,7 +21,7 @@ def build_mega_prompt(root_dir: Path, task: str, strategy: str, interface: str) 
             print(f"⚠️ 警告: 找不到接口文档 {interface_file}")
 
     # c. 读取 任务要求 (User Intent)
-    task_file = root_dir / f"experiment/design/tasks/{task}/requirements.md"
+    task_file = root_dir / f"experiment/design/tasks/{task}_{strategy}.md"
     if task_file.exists():
         prompt_parts.append("【具体任务】\n" + task_file.read_text())
     else:

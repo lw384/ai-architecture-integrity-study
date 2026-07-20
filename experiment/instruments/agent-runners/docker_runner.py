@@ -1,9 +1,101 @@
 # experiment/instruments/agent-runners/pipeline/docker_runner.py
 import json
 import re
+import selectors
 import subprocess
 import shutil
+import time
 from pathlib import Path
+
+
+def summarize_workspace_changes(workspace_dir: Path) -> str:
+    result = subprocess.run(
+        ["git", "status", "--short"],
+        cwd=workspace_dir,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    if result.returncode != 0:
+        return "git status unavailable"
+
+    changed_lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+    if not changed_lines:
+        return "no file changes yet"
+
+    preview = ", ".join(changed_lines[:5])
+    extra_count = len(changed_lines) - 5
+    extra_suffix = f" (+{extra_count} more)" if extra_count > 0 else ""
+
+    return f"{len(changed_lines)} changed: {preview}{extra_suffix}"
+
+
+def run_with_live_output(
+    docker_cmd: list[str],
+    workspace_dir: Path,
+    heartbeat_seconds: int,
+) -> subprocess.CompletedProcess[str]:
+    process = subprocess.Popen(
+        docker_cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+
+    if process.stdout is None:
+        raise RuntimeError("Failed to capture Docker process output stream")
+
+    output_chunks: list[str] = []
+    selector = selectors.DefaultSelector()
+    selector.register(process.stdout, selectors.EVENT_READ)
+    started_at = time.monotonic()
+    last_output_at = started_at
+
+    try:
+        while True:
+            events = selector.select(timeout=heartbeat_seconds)
+
+            if events:
+                for key, _ in events:
+                    line = key.fileobj.readline()
+
+                    if line == "":
+                        selector.unregister(key.fileobj)
+                        continue
+
+                    print(f"   [agent] {line}", end="")
+                    output_chunks.append(line)
+                    last_output_at = time.monotonic()
+            elif process.poll() is None:
+                elapsed_seconds = int(time.monotonic() - started_at)
+                quiet_seconds = int(time.monotonic() - last_output_at)
+                workspace_summary = summarize_workspace_changes(workspace_dir)
+                print(
+                    "   [heartbeat] "
+                    f"agent still running | elapsed={elapsed_seconds}s | "
+                    f"quiet={quiet_seconds}s | {workspace_summary}"
+                )
+
+            if process.poll() is not None:
+                break
+
+        remaining_output = process.stdout.read()
+        if remaining_output:
+            print(f"   [agent] {remaining_output}", end="")
+            output_chunks.append(remaining_output)
+    finally:
+        selector.close()
+        process.stdout.close()
+
+    return subprocess.CompletedProcess(
+        args=docker_cmd,
+        returncode=process.wait(),
+        stdout="".join(output_chunks),
+        stderr="",
+    )
 
 
 def setup_and_run_agent(
@@ -13,6 +105,8 @@ def setup_and_run_agent(
     agent_name: str,
     final_prompt: str,
     config: dict,
+    live_output: bool = False,
+    heartbeat_seconds: int = 30,
 ):
     print(f"📁 [2/4] 从 {baseline_dir} 克隆 baseline 到隔离工作区并初始化 Git...")
     shutil.copytree(baseline_dir, workspace_dir)
@@ -57,7 +151,10 @@ def setup_and_run_agent(
     docker_cmd.extend([config["image"], "bash", "-c", exec_command])
 
     print("   [⏳ 等待 Agent 执行完成...]")
-    result = subprocess.run(docker_cmd, capture_output=True, text=True, check=False)
+    if live_output:
+        result = run_with_live_output(docker_cmd, workspace_dir, heartbeat_seconds)
+    else:
+        result = subprocess.run(docker_cmd, capture_output=True, text=True, check=False)
 
     # 1. 把完整的执行日志存盘 (极其珍贵的分析数据)
     log_file = workspace_dir / "agent_execution.log"

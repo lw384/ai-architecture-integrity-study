@@ -28,10 +28,12 @@ subjects:
     root_path: frontend/
     rulepack_id: js-react-frontend
     rulepack_version: "0.1.0"
-    enabled:
+     enabled:
       constraints:
-        - FE-STRUCT-C-001
+        - FE-COM-C-001
+        - FE-COM-C-002
         - FE-STATE-C-001
+        - FE-STATE-C-002
       metrics:
         - FE-DEP-M-001
       judgments: []

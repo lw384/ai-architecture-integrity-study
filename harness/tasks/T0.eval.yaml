@@ -1,0 +1,70 @@
+schema_version: "0.1.0"
+task_id: T0
+task_version: "0.1.0"
+description: >
+  T0 pilot dry-run for the full experiment pipeline. This configuration keeps
+  evaluation limited to currently wired backend/frontend rulepacks so the
+  container -> workspace -> harness handoff can be validated end to end before
+  higher-pressure tasks.
+
+subjects:
+  - subject_id: backend
+    root_path: backend/
+    rulepack_id: ts-nestjs-backend
+    rulepack_version: "0.1.0"
+    enabled:
+      constraints:
+        - BE-STRUCT-C-001
+        - BE-STRUCT-C-002
+        - BE-STRUCT-C-003
+      metrics:
+        - BE-DEP-M-001
+      judgments: []
+    thresholds:
+      BE-DEP-M-001:
+        warn_at: 2
+        fail_at: 3
+    expected_diff_scope:
+      - "backend/src/module/company/**"
+      - "backend/src/common/**"
+      - "backend/src/database/migrations/**"
+      - "backend/src/database/seed/**"
+      - "backend/test/**/*company*"
+
+  - subject_id: frontend
+    root_path: frontend/
+    rulepack_id: js-react-frontend
+    rulepack_version: "0.1.0"
+    enabled:
+      constraints:
+        - FE-COM-C-001
+        - FE-COM-C-002
+        - FE-STATE-C-001
+        - FE-STATE-C-002
+      metrics: []
+      judgments: []
+    expected_diff_scope:
+      - "frontend/src/pages/companies/**"
+      - "frontend/src/api/companyApi.js"
+      - "frontend/src/components/**"
+
+judgment_config:
+  model: claude-sonnet-4-6
+  temperature: 0.0
+  samples_per_rubric: 5
+  min_kappa: 0.6
+
+execution:
+  fail_fast: false
+  max_duration_ms: 600000
+  parallel_subjects: false
+
+metadata:
+  purpose: pipeline-dry-run
+  authored_at: "2026-07-20"
+  notes: >
+    T0 intentionally omits cross_stack for now because the current cross
+    rulepack is not yet schema-valid/wired in the harness. This task is meant
+    to validate prompt assembly, container execution, workspace materialization,
+    manifest writing, subject evaluation, and evaluation artifact output using
+    only rulepacks that exist and resolve successfully on disk.

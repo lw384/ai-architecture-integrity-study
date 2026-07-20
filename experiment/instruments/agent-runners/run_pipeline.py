@@ -91,6 +91,17 @@ def main():
     parser.add_argument("--strategy", choices=["minimal", "structured"], required=True)
     parser.add_argument("--interface", help="接口文档名称，如 company.md")
     parser.add_argument(
+        "--live-output",
+        action="store_true",
+        help="流式打印 Agent 输出，并在静默时输出工作区心跳",
+    )
+    parser.add_argument(
+        "--heartbeat-seconds",
+        type=int,
+        default=30,
+        help="实时模式下，长时间无输出时打印心跳的秒数间隔",
+    )
+    parser.add_argument(
         "--baseline-dir",
         help="baseline 源目录；默认使用仓库根目录下的 baseline",
     )
@@ -116,7 +127,14 @@ def main():
 
     # 3. 执行容器沙盒
     setup_and_run_agent(
-        baseline_dir, workspace_dir, run_id, args.agent, final_prompt, config
+        baseline_dir,
+        workspace_dir,
+        run_id,
+        args.agent,
+        final_prompt,
+        config,
+        live_output=args.live_output,
+        heartbeat_seconds=args.heartbeat_seconds,
     )
 
     # 4. 运行 Harness 评估
