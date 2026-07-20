@@ -9,6 +9,7 @@ import MainCard from 'components/MainCard';
 import IconButton from 'components/IconButton';
 import { isTransportError } from 'api/request';
 import { useContact } from './contactQueries';
+import { useCompany } from '../companies/companyQueries';
 
 function formatDate(value) {
   if (!value) {
@@ -34,6 +35,13 @@ export default function ContactDetail() {
   const { id } = useParams();
   const contactQuery = useContact(id);
   const contact = contactQuery.data;
+  const companyQuery = useCompany(contact?.companyId);
+
+  const companyValue = !contact?.companyId
+    ? '—'
+    : companyQuery.isLoading
+      ? 'Loading...'
+      : companyQuery.data?.name || contact.companyId;
 
   return (
     <Stack spacing={2}>
@@ -55,6 +63,7 @@ export default function ContactDetail() {
         {contact ? (
           <Stack spacing={1.5}>
             <DetailRow label="ID" value={contact.id} />
+            <DetailRow label="Company" value={companyValue} />
             <DetailRow label="Email" value={contact.email} />
             <DetailRow label="Phone" value={contact.phone} />
             <DetailRow label="Role" value={contact.role} />

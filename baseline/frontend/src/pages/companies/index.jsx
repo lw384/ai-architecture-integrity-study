@@ -150,12 +150,10 @@ export default function CompaniesPage() {
         mode={formState.mode}
         initialValues={formState.company}
         onClose={() => setFormState({ open: false, mode: 'create', company: null })}
-        // 成功时关闭弹窗并弹出 Toast
         onSuccess={(message) => {
           setFeedback({ open: true, severity: 'success', message });
           setFormState({ open: false, mode: 'create', company: null });
         }}
-        // 失败时仅弹出 Toast 报错，不关闭弹窗，允许用户修改
         onError={(error) => {
           setFeedback({
             open: true,

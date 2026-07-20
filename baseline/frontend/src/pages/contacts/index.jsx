@@ -222,8 +222,7 @@ export default function ContactsPage() {
         <DialogTitle>Delete contact</DialogTitle>
         <DialogContent>
           <Typography>
-            Delete {deleteTarget?.name}? This helps verify that backend delete
-            behavior is wired correctly.
+             Delete {deleteTarget?.name}? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions className="crm-dialog-actions">

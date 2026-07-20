@@ -53,11 +53,11 @@ export function useUpdateContact(contactId) {
   });
 }
 
-export function useDeleteContact(contactId) {
+export function useDeleteContact() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => contactApi.delete(contactId),
+    mutationFn: (id) => contactApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: contactKeys.lists() });
     },
