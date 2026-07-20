@@ -1,0 +1,12 @@
+{
+  "status": "evaluated",
+  "events": [
+    "agent_started",
+    "agent_completed",
+    "evaluation_completed"
+  ],
+  "task_id": "T0",
+  "baseline_commit": "cb3d13543bea621125837c959ea0af78030cc0b7",
+  "pre_commit": "fed8b4a91250b25a184309a5c4de04fd64d54bee",
+  "rulepack_id": "task::T0"
+}
