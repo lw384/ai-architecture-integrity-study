@@ -31,13 +31,12 @@ export function CompanyFormDialog({
   mode,
   open,
   onClose,
-  onSuccess, // 新增：成功后的回调
-  onError,   // 新增：失败后的回调
+  onSuccess,
+  onError,
 }) {
   const createCompany = useCreateCompany();
   const updateCompany = useUpdateCompany();
 
-  // 表单内部自己掌控 loading 状态
   const isPending = createCompany.isPending || updateCompany.isPending;
 
   const [values, setValues] = useState(emptyValues);
@@ -91,7 +90,6 @@ export function CompanyFormDialog({
       return;
     }
 
-    // 【关键】严格限制 payload 字段，防止脏数据 (如 id, createdAt) 混入请求体导致后端报错
     const payload = {
       name: values.name.trim(),
       email: values.email.trim(),
@@ -124,7 +122,7 @@ export function CompanyFormDialog({
         {mode === 'create' ? 'Create company' : 'Edit company'}
       </DialogTitle>
       <DialogContent className="!p-5">
-        <Stack component="form" spacing={2.5} onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }}  spacing={2} onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             autoFocus
             required

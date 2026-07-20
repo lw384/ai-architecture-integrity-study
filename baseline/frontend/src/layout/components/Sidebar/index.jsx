@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 
 // material-ui
+import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -13,12 +14,26 @@ import useLayoutSettings from 'hooks/useLayoutSettings';
 
 // ==============================|| LAYOUT - SIDEBAR ||============================== //
 
-// Mirrors DRAWER_WIDTH (260px) / MINI_DRAWER_WIDTH (60px) from src/config.js, and MUI's
-// default transition timings (theme.transitions.duration.enteringScreen/leavingScreen,
-// easing.sharp) which this app doesn't customize.
-const drawerTransitionClass = 'overflow-hidden box-border transition-[width] ease-[cubic-bezier(0.4,0,0.6,1)]';
-const drawerExpandedClass = `${drawerTransitionClass} w-[260px] border-r border-divider shadow-none duration-[225ms]`;
-const drawerCollapsedClass = `${drawerTransitionClass} w-[60px] border-r-0 shadow-z1 duration-[195ms]`;
+const drawerPaperBaseSx = {
+  overflow: 'hidden',
+  boxSizing: 'border-box',
+  whiteSpace: 'nowrap',
+};
+
+const drawerExpandedPaperSx = {
+  ...drawerPaperBaseSx,
+  width: 260,
+  borderRight: 1,
+  borderColor: 'divider',
+  boxShadow: 'none',
+};
+
+const drawerCollapsedPaperSx = {
+  ...drawerPaperBaseSx,
+  width: 60,
+  borderRight: 0,
+  boxShadow: (theme) => theme.shadows[1],
+};
 
 export default function Sidebar({ window }) {
   const downLG = useMediaQuery((theme) => theme.breakpoints.down('lg'));
@@ -30,16 +45,31 @@ export default function Sidebar({ window }) {
   const drawerContent = useMemo(() => <DrawerContent isSidebarExpanded={isSidebarExpanded} />, [isSidebarExpanded]);
   const drawerHeader = useMemo(() => <DrawerHeader open={isSidebarExpanded} />, [isSidebarExpanded]);
 
-  const desktopDrawerStateClass = isDesktopSidebarExpanded ? drawerExpandedClass : drawerCollapsedClass;
+  const desktopDrawerPaperSx = isDesktopSidebarExpanded ? drawerExpandedPaperSx : drawerCollapsedPaperSx;
 
   return (
-    <nav className="z-[1200] md:shrink-0" aria-label="mailbox folders">
+    <Box component="nav" sx={{ zIndex: 1200, flexShrink: { md: 0 } }} aria-label="mailbox folders">
       {!downLG ? (
         <Drawer
           variant="permanent"
           open={isDesktopSidebarExpanded}
-          className={`shrink-0 whitespace-nowrap ${desktopDrawerStateClass}`}
-          slotProps={{ paper: { className: desktopDrawerStateClass } }}
+          sx={{
+            width: desktopDrawerPaperSx.width,
+            flexShrink: 0,
+            transition: (theme) =>
+              theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: isDesktopSidebarExpanded ? 225 : 195,
+              }),
+            '& .MuiDrawer-paper': {
+              ...desktopDrawerPaperSx,
+              transition: (theme) =>
+                theme.transitions.create('width', {
+                  easing: theme.transitions.easing.sharp,
+                  duration: isDesktopSidebarExpanded ? 225 : 195,
+                }),
+            },
+          }}
         >
           {drawerHeader}
           {drawerContent}
@@ -54,15 +84,21 @@ export default function Sidebar({ window }) {
           className={`${state.isMobileSidebarOpen ? 'block' : 'hidden'} lg:hidden`}
           slotProps={{
             paper: {
-              className: 'box-border w-[260px] border-r border-divider shadow-[inherit]'
-            }
+              sx: {
+                boxSizing: 'border-box',
+                width: 260,
+                borderRight: 1,
+                borderColor: 'divider',
+                boxShadow: 'inherit',
+              },
+            },
           }}
         >
           {drawerHeader}
           {drawerContent}
         </Drawer>
       )}
-    </nav>
+    </Box>
   );
 }
 

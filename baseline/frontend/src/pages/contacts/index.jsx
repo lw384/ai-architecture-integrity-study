@@ -1,5 +1,6 @@
 import {
   Alert,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -151,7 +152,7 @@ export default function ContactsPage() {
             label="Status"
             value={statusInput}
             onChange={(event) => setStatusInput(event.target.value)}
-            className="min-w-[10rem]"
+            sx={{ minWidth: '10rem' }}
           >
             <MenuItem value="">All statuses</MenuItem>
             <MenuItem value="active">active</MenuItem>
@@ -184,14 +185,16 @@ export default function ContactsPage() {
         emptyDescription="Try broadening the search or clearing the current filters."
         pagination={
           contactPage && contactPage.total > 0 ? (
-            <DataTablePagination
-              page={contactPage.page}
-              pageSize={contactPage.pageSize}
-              total={contactPage.total}
-              totalPages={contactPage.totalPages}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
+            <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+              <DataTablePagination
+                page={contactPage.page}
+                pageSize={contactPage.pageSize}
+                total={contactPage.total}
+                totalPages={contactPage.totalPages}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
+            </Box>
           ) : null
         }
       >
@@ -225,7 +228,7 @@ export default function ContactsPage() {
              Delete {deleteTarget?.name}? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions className="crm-dialog-actions">
+        <DialogActions>
           <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button color="error" variant="contained" onClick={handleDelete}>
             Delete

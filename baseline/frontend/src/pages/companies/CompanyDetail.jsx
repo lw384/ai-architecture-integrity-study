@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
@@ -21,11 +22,11 @@ function formatDate(value) {
 
 function DetailRow({ label, value }) {
   return (
-    <Stack direction="row" spacing={2} className="justify-between">
-      <Typography className="text-text-secondary">
+    <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
+      <Typography color="text.secondary">
         {label}
       </Typography>
-      <Typography >{value || '—'}</Typography>
+      <Typography>{value || '—'}</Typography>
     </Stack>
   );
 }
@@ -57,9 +58,9 @@ export default function CompanyDetail() {
 
       <MainCard title={company?.name || 'Company detail'}>
         {companyQuery.isLoading ? (
-          <div className="flex justify-center py-6">
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
             <CircularProgress />
-          </div>
+          </Box>
         ) : null}
 
         {companyQuery.isError && !isTransportError(companyQuery.error) ? (
@@ -68,7 +69,7 @@ export default function CompanyDetail() {
 
         {company ? (
           <Stack spacing={1.5}>
-            <Stack direction="row" spacing={1} className="items-center">
+            <Stack direction="row" spacing={1} alignItems="center">
               <Chip label={statusLabels[company.status]} size="small" color={statusColors[company.status]} />
               <Chip label={company.industry} size="small" variant="outlined" />
             </Stack>
@@ -79,7 +80,7 @@ export default function CompanyDetail() {
             <DetailRow label="Created" value={formatDate(company.createdAt)} />
 
             <Stack spacing={1} sx={{ pt: 1 }}>
-              <Typography className="text-text-secondary">
+              <Typography color="text.secondary">
                 Contacts
               </Typography>
 

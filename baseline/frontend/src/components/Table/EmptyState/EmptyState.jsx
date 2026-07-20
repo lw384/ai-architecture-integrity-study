@@ -1,14 +1,14 @@
-import { Paper, Typography } from '@mui/material';
-
-import styles from './EmptyState.module.scss';
+import { Paper, Stack, Typography } from '@mui/material';
 
 export function EmptyState({ description, title }) {
   return (
-    <Paper className={styles.emptyState}>
-      <Typography variant="h6">{title}</Typography>
+    <Paper sx={{ borderRadius: 4, p: 4, textAlign: 'center' }}>
+      <Stack spacing={0.5}>
+        <Typography variant="h6">{title}</Typography>
       {description ? (
-        <Typography className={styles.description}>{description}</Typography>
+          <Typography color="text.secondary">{description}</Typography>
       ) : null}
+      </Stack>
     </Paper>
   );
 }

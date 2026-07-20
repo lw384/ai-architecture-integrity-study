@@ -1,5 +1,6 @@
 import {
   Alert,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -96,7 +97,7 @@ export default function CompaniesPage() {
             label="Status"
             value={statusInput}
             onChange={(event) => setStatusInput(event.target.value)}
-            className="min-w-[10rem]"
+            sx={{ minWidth: '10rem' }}
           >
             <MenuItem value="">All statuses</MenuItem>
             <MenuItem value="1">Active</MenuItem>
@@ -124,7 +125,7 @@ export default function CompaniesPage() {
         emptyDescription="Try broadening the search or clearing the current filters."
         pagination={
           companyPage && companyPage.total > 0 ? (
-            <div className="flex w-full justify-center">
+            <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
               <DataTablePagination
                 page={companyPage.page}
                 pageSize={companyPage.pageSize}
@@ -133,7 +134,7 @@ export default function CompaniesPage() {
                 onPageChange={(page) => setListQuery((current) => ({ ...current, page }))}
                 onPageSizeChange={(pageSize) => setListQuery((current) => ({ ...current, page: 1, pageSize }))}
               />
-            </div>
+            </Box>
           ) : null
         }
       >

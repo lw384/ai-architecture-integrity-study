@@ -1,4 +1,5 @@
 // material-ui
+import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -10,8 +11,8 @@ import SearchOutlined from '@ant-design/icons/SearchOutlined';
 
 export default function Search() {
   return (
-    <div className="ml-0 w-full md:ml-1">
-      <FormControl className="w-full md:w-56">
+    <Box sx={{ ml: { xs: 0, md: 1 }, width: '100%' }}>
+      <FormControl sx={{ width: '100%', maxWidth: { md: '14rem' } }}>
         <OutlinedInput
           size="small"
           id="header-search"
@@ -25,6 +26,6 @@ export default function Search() {
           placeholder="Ctrl + K"
         />
       </FormControl>
-    </div>
+    </Box>
   );
 }

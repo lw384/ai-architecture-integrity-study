@@ -9,16 +9,15 @@ import { companyApi } from '../../api/companyApi';
 export const companyKeys = {
     all: ['companies'],
     lists: () => [...companyKeys.all, 'list'],
-    list: (companyId, query) => [...companyKeys.lists(), companyId, query],
+    list: (query) => [...companyKeys.lists(), query],
     details: () => [...companyKeys.all, 'detail'],
     detail: (id) => [...companyKeys.details(), id],
 };
 
-export function useCompanyList(companyId, query) {
+export function useCompanyList(query = {}) {
     return useQuery({
-        queryKey: companyKeys.list(companyId, query),
-        queryFn: () => companyApi.list(companyId, query),
-        enabled: Boolean(companyId),
+        queryKey: companyKeys.list(query),
+        queryFn: () => companyApi.list(query),
     });
 }
 
