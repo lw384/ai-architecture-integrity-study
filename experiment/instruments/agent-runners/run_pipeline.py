@@ -112,7 +112,8 @@ def main():
     baseline_dir = resolve_baseline_dir(root_dir, args.baseline_dir)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_id = f"run_{args.agent}_{args.task}_{args.strategy}_{timestamp}"
-    workspace_dir = root_dir / "experiment" / "workspace" / run_id
+    workspace_dir = root_dir / "experiment" / "workspace" / run_id  # 代码工作区
+    report_dir = root_dir / "experiment" / "reports" / run_id  # 评估产物目录
 
     print(
         f"🚀 启动实验 | Agent: {args.agent} | Task: {args.task} | Strategy: {args.strategy}"
@@ -145,7 +146,7 @@ def main():
     evaluation_result = run_harness_evaluation(
         root_dir=root_dir,
         baseline_dir=baseline_dir,
-        trajectory_dir=workspace_dir,
+        trajectory_dir=report_dir,  # 评估产物存放在 report_dir
         run_id=run_id,
         task_id=args.task,
         pre_commit=git_context["pre_commit"],
@@ -156,7 +157,26 @@ def main():
     status = evaluation_result.get("status", "unknown (or skipped)")
     print(f"📊 评估最终状态: {status}")
 
-    print(f"🎉 实验全流程结束！产物位于: {workspace_dir}")
+    # 5. 生成可读性报告
+    print("📄 [5/5] 生成可读性报告...")
+    try:
+        generate_report_script = (
+            root_dir / "experiment" / "instruments" / "agent-runners" / "generate_report.py"
+        )
+        evaluation_json = report_dir / "evaluation.json"
+
+        subprocess.run(
+            ["python3", str(generate_report_script), "--evaluation", str(evaluation_json)],
+            check=True,
+            cwd=root_dir / "experiment" / "instruments" / "agent-runners",
+        )
+        print(f"✓ 报告已生成: {report_dir / 'violations_report.md'}")
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️  报告生成失败: {e}")
+
+    print(f"🎉 实验全流程结束！")
+    print(f"   代码工作区: {workspace_dir}")
+    print(f"   评估产物: {report_dir}")
 
 
 if __name__ == "__main__":
