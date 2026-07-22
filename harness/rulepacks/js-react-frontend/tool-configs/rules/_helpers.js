@@ -1,15 +1,16 @@
 import path from 'node:path';
 
 export const STATELESS_COMPONENT_PATHS = [
-    'src/components/ui/',
-    'src/components/atoms/',
+    'src/components/',
+    'src/layout/components/',
 ];
 
 export const CONTROLLED_PROVIDER_PATHS = [
+    'src/App.jsx',
+    'src/App.tsx',
     'src/providers/',
-    'src/app/providers.',
-    'src/pages/_app.',
-    'src/context/providers.',
+    'src/contexts/',
+    'src/layout/',
 ];
 
 export const ROUTES_DIR = 'src/routes/';
@@ -18,16 +19,44 @@ export function normalizePath(filePath) {
     return filePath.split(path.sep).join('/');
 }
 
-export function isInAnyPath(filePath, prefixes) {
+export function pathContainsPrefix(filePath, prefixes) {
     return prefixes.some((prefix) => filePath.includes(`/${prefix}`) || filePath.startsWith(prefix));
 }
 
-export function isControlledProviderFile(filePath) {
-    if (isInAnyPath(filePath, ['src/providers/'])) {
-        return true;
+function escapeRegexSegment(value) {
+    return value.replace(/[|\\{}()[\]^$+?.]/g, '\\$&');
+}
+
+function globToRegex(pattern) {
+    const normalized = normalizePath(pattern);
+    const escaped = escapeRegexSegment(normalized)
+        .replace(/\*\*/g, '__GLOBSTAR__')
+        .replace(/\*/g, '__GLOB__')
+        .replace(/__GLOBSTAR__/g, '.*')
+        .replace(/__GLOB__/g, '[^/]*');
+
+    return new RegExp(`^${escaped}$`);
+}
+
+function getSrcRelativePath(filePath) {
+    const normalized = normalizePath(filePath);
+    const srcIndex = normalized.lastIndexOf('/src/');
+
+    if (srcIndex >= 0) {
+        return normalized.slice(srcIndex + 1);
     }
 
-    return CONTROLLED_PROVIDER_PATHS.some((prefix) => filePath.includes(`/${prefix}`) || filePath.startsWith(prefix));
+    return normalized;
+}
+
+export function pathMatchesGlob(filePath, patterns) {
+    const normalized = normalizePath(filePath);
+    const srcRelative = getSrcRelativePath(normalized);
+
+    return patterns.some((pattern) => {
+        const regex = globToRegex(pattern);
+        return regex.test(normalized) || regex.test(srcRelative);
+    });
 }
 
 export function isInRoutesDirectory(filePath, routesDir = ROUTES_DIR) {
@@ -73,14 +102,10 @@ export function getStaticString(node) {
 }
 
 export function isPageImportPath(importPath) {
-    if (!importPath) {
-        return false;
-    }
-
-    return importPath.startsWith('pages/')
-        || importPath.includes('/pages/')
-        || importPath.startsWith('./pages/')
-        || importPath.startsWith('../pages/');
+    if (!importPath) return false;
+    return /^\.\.?\/pages\/[^/]/.test(importPath)
+        || importPath.startsWith('pages/')
+        || /\/src\/pages\//.test(importPath);       // 绝对路径 /src/pages/
 }
 
 export function collectIdentifiers(node, identifiers = new Set()) {

@@ -1,9 +1,29 @@
 import {
+    CONTROLLED_PROVIDER_PATHS,
     STATELESS_COMPONENT_PATHS,
-    isControlledProviderFile,
-    isInAnyPath,
+    matchesAnyPath,
     normalizePath,
 } from './_helpers.js';
+
+const DEFAULT_ALLOWED_PATHS = [
+    'src/App.js',
+    'src/App.jsx',
+    'src/App.ts',
+    'src/App.tsx',
+    'src/providers/**/*.js',
+    'src/providers/**/*.jsx',
+    'src/providers/**/*.ts',
+    'src/providers/**/*.tsx',
+    'src/contexts/**/*.js',
+    'src/contexts/**/*.jsx',
+    'src/contexts/**/*.ts',
+    'src/contexts/**/*.tsx',
+    'src/layout/**/*Layout.js',
+    'src/layout/**/*Layout.jsx',
+    'src/layout/**/*Layout.ts',
+    'src/layout/**/*Layout.tsx',
+    ...CONTROLLED_PROVIDER_PATHS.map((prefix) => `${prefix}*`),
+];
 
 export const noUseStateInDeepChildComponentsRule = {
     meta: {
@@ -16,7 +36,7 @@ export const noUseStateInDeepChildComponentsRule = {
     create(context) {
         const filename = normalizePath(context.filename ?? context.getFilename());
 
-        if (filename === '<input>' || !isInAnyPath(filename, STATELESS_COMPONENT_PATHS)) {
+        if (filename === '<input>' || !matchesAnyPath(filename, STATELESS_COMPONENT_PATHS)) {
             return {};
         }
 
@@ -46,15 +66,28 @@ export const noUseStateInDeepChildComponentsRule = {
 export const contextProviderOnlyInControlledLocationsRule = {
     meta: {
         type: 'suggestion',
-        schema: [],
+        schema: [
+            {
+                type: 'object',
+                properties: {
+                    allowedPaths: {
+                        type: 'array',
+                        items: { type: 'string' },
+                    },
+                },
+                additionalProperties: false,
+            },
+        ],
         messages: {
             providerOutsideBoundary: 'Context providers must stay in controlled locations.',
         },
     },
     create(context) {
+        const options = context.options[0] ?? {};
+        const allowedPaths = options.allowedPaths ?? DEFAULT_ALLOWED_PATHS;
         const filename = normalizePath(context.filename ?? context.getFilename());
 
-        if (filename === '<input>' || isControlledProviderFile(filename)) {
+        if (filename === '<input>' || matchesAnyPath(filename, allowedPaths)) {
             return {};
         }
 

@@ -12,23 +12,10 @@ import { isTransportError } from 'api/request';
 import { useCompany } from './companyQueries';
 import { useContactList } from '../contacts/contactQueries';
 
+// constants
 function formatDate(value) {
-  if (!value) {
-    return '—';
-  }
-
+  if (!value) return '—';
   return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
-}
-
-function DetailRow({ label, value }) {
-  return (
-    <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
-      <Typography color="text.secondary">
-        {label}
-      </Typography>
-      <Typography>{value || '—'}</Typography>
-    </Stack>
-  );
 }
 
 const statusColors = {
@@ -43,10 +30,61 @@ const statusLabels = {
   "2": 'Pending',
 };
 
+// subcomponents
+function DetailRow({ label, value }) {
+  return (
+    <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between' }}>
+      <Typography color="text.secondary">{label}</Typography>
+      <Typography>{value || '—'}</Typography>
+    </Stack>
+  );
+}
+
+function CompanyContactsSection({ query, contacts }) {
+  return (
+    <Stack spacing={1} sx={{ pt: 1 }}>
+      <Typography color="text.secondary">Contacts</Typography>
+
+      {query.isLoading && <Typography>Loading contacts...</Typography>}
+
+      {query.isError && !isTransportError(query.error) && (
+        <Typography color="error">
+          {query.error?.message || 'Failed to load contacts.'}
+        </Typography>
+      )}
+
+      {!query.isLoading && !query.isError && contacts.length === 0 && (
+        <Typography>—</Typography>
+      )}
+
+      {contacts.length > 0 && (
+        <Stack spacing={0.75}>
+          {contacts.map((contact) => (
+            <Typography
+              key={contact.id}
+              component={Link}
+              to={`/contacts/${contact.id}`}
+              color="primary"
+              sx={{ textDecoration: 'none' }}
+            >
+              {contact.name}
+            </Typography>
+          ))}
+        </Stack>
+      )}
+    </Stack>
+  );
+}
+
+// main component
 export default function CompanyDetail() {
   const { id } = useParams();
+
+  // get company data
   const companyQuery = useCompany(id);
   const company = companyQuery.data;
+
+  // get contacts data
   const contactsQuery = useContactList({ companyId: id, page: 1, pageSize: 100 });
   const contacts = contactsQuery.data?.items ?? [];
 
@@ -57,65 +95,45 @@ export default function CompanyDetail() {
       </IconButton>
 
       <MainCard title={company?.name || 'Company detail'}>
-        {companyQuery.isLoading ? (
+        {/* company loading state */}
+        {companyQuery.isLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
             <CircularProgress />
           </Box>
-        ) : null}
+        )}
 
-        {companyQuery.isError && !isTransportError(companyQuery.error) ? (
-          <Typography color="error">{companyQuery.error?.message || 'Failed to load company.'}</Typography>
-        ) : null}
+        {/* company error state */}
+        {companyQuery.isError && !isTransportError(companyQuery.error) && (
+          <Typography color="error">
+            {companyQuery.error?.message || 'Failed to load company.'}
+          </Typography>
+        )}
 
-        {company ? (
-          <Stack spacing={1.5}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Chip label={statusLabels[company.status]} size="small" color={statusColors[company.status]} />
-              <Chip label={company.industry} size="small" variant="outlined" />
-            </Stack>
+        {/* company detail display (if data is available) */}
+        {company && (
+          <Stack spacing={2} sx={{ mb: 3 }}>
+            <DetailRow
+              label="Status"
+              value={
+                company.status ? (
+                  <Chip
+                    label={statusLabels[company.status]}
+                    color={statusColors[company.status]}
+                    size="small"
+                  />
+                ) : '—'
+              }
+            />
             <DetailRow label="Email" value={company.email} />
             <DetailRow label="Phone" value={company.phone} />
-            <DetailRow label="Website" value={company.website} />
-            <DetailRow label="Last contacted" value={formatDate(company.lastContactedAt)} />
-            <DetailRow label="Created" value={formatDate(company.createdAt)} />
-
-            <Stack spacing={1} sx={{ pt: 1 }}>
-              <Typography color="text.secondary">
-                Contacts
-              </Typography>
-
-              {contactsQuery.isLoading ? (
-                <Typography>Loading contacts...</Typography>
-              ) : null}
-
-              {contactsQuery.isError && !isTransportError(contactsQuery.error) ? (
-                <Typography color="error">
-                  {contactsQuery.error?.message || 'Failed to load contacts.'}
-                </Typography>
-              ) : null}
-
-              {!contactsQuery.isLoading && !contactsQuery.isError && contacts.length === 0 ? (
-                <Typography>—</Typography>
-              ) : null}
-
-              {contacts.length > 0 ? (
-                <Stack spacing={0.75}>
-                  {contacts.map((contact) => (
-                    <Typography
-                      key={contact.id}
-                      component={Link}
-                      to={`/contacts/${contact.id}`}
-                      color="primary"
-                      sx={{ textDecoration: 'none' }}
-                    >
-                      {contact.name}
-                    </Typography>
-                  ))}
-                </Stack>
-              ) : null}
-            </Stack>
+            <DetailRow label="Industry" value={company.industry} />
+            <DetailRow label="Created At" value={formatDate(company.createdAt)} />
+            <DetailRow label="Last Contact At" value={formatDate(company.lastContactedAt)} />
           </Stack>
-        ) : null}
+        )}
+
+        {/* contacts section */}
+        <CompanyContactsSection query={contactsQuery} contacts={contacts} />
       </MainCard>
     </Stack>
   );

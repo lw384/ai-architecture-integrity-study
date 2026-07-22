@@ -9,7 +9,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useCreateCompany, useUpdateCompany } from './companyQueries'; // 引入请求 Hooks
+import { useCreateCompany, useUpdateCompany } from './companyQueries';
 
 const emptyValues = {
   name: '',
@@ -26,6 +26,38 @@ const formatForDatetimeLocal = (isoString) => {
   return isoString.slice(0, 16);
 };
 
+
+function CompanyFormField({
+  field,
+  label,
+  values,
+  touched,
+  errors,
+  onChange,
+  onBlur,
+  value,
+  ...rest
+}) {
+  const displayValue = value !== undefined ? value : (values?.[field] || '');
+
+  const isError = Boolean(touched?.[field] && errors?.[field]);
+  const helperText = touched?.[field] ? errors?.[field] : undefined;
+
+  return (
+    <TextField
+      fullWidth
+      label={label}
+      value={displayValue}
+      onChange={onChange ? onChange(field) : undefined}
+      onBlur={onBlur ? onBlur(field) : undefined}
+      error={isError}
+      helperText={helperText}
+      {...rest}
+    />
+  );
+}
+
+// main component
 export function CompanyFormDialog({
   initialValues,
   mode,
@@ -63,9 +95,8 @@ export function CompanyFormDialog({
   const isFormValid = !errors.name && !errors.email && !errors.phone;
 
   useEffect(() => {
-    if (!open) {
-      return;
-    }
+    if (!open) return;
+
     setValues({
       ...emptyValues,
       ...initialValues,
@@ -86,9 +117,7 @@ export function CompanyFormDialog({
     event.preventDefault();
     setTouched({ name: true, email: true, phone: true });
 
-    if (!isFormValid) {
-      return;
-    }
+    if (!isFormValid) return;
 
     const payload = {
       name: values.name.trim(),
@@ -116,98 +145,81 @@ export function CompanyFormDialog({
     }
   };
 
+  const fieldProps = { values, touched, errors, onChange: handleChange, onBlur: handleBlur };
+
   return (
     <Dialog open={open} onClose={isPending ? undefined : onClose} fullWidth maxWidth="sm">
       <DialogTitle>
         {mode === 'create' ? 'Create company' : 'Edit company'}
       </DialogTitle>
+
       <DialogContent className="!p-5">
-        <Stack direction={{ xs: 'column', sm: 'row' }}  spacing={2} onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <TextField
-            autoFocus
-            required
+        <Stack direction="column" spacing={2} component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+
+          <CompanyFormField
+            {...fieldProps}
+            field="name"
             label="Name"
-            value={values.name}
-            onBlur={handleBlur('name')}
-            onChange={handleChange('name')}
-            error={touched.name && Boolean(errors.name)}
-            helperText={touched.name ? errors.name : undefined}
+            required
+            autoFocus
           />
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
-              required
-              fullWidth
+            <CompanyFormField
+              {...fieldProps}
+              field="email"
               label="Email"
               type="email"
-              value={values.email}
-              onBlur={handleBlur('email')}
-              onChange={handleChange('email')}
-              error={touched.email && Boolean(errors.email)}
-              helperText={touched.email ? errors.email : undefined}
-            />
-            <TextField
               required
-              fullWidth
+            />
+            <CompanyFormField
+              {...fieldProps}
+              field="phone"
               label="Phone"
               type="tel"
               placeholder="+86 13800000000"
-              value={values.phone}
-              onBlur={handleBlur('phone')}
-              onChange={handleChange('phone')}
-              error={touched.phone && Boolean(errors.phone)}
-              helperText={touched.phone ? errors.phone : undefined}
+              required
             />
           </Stack>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
-              select
-              fullWidth
-              label="Industry"
-              value={values.industry}
-              onChange={handleChange('industry')}
-            >
+            <CompanyFormField {...fieldProps} field="industry" label="Industry" select>
               <MenuItem value="TECHNOLOGY">Technology</MenuItem>
               <MenuItem value="FINANCE">Finance</MenuItem>
               <MenuItem value="HEALTHCARE">Healthcare</MenuItem>
               <MenuItem value="RETAIL">Retail</MenuItem>
               <MenuItem value="OTHER">Other</MenuItem>
-            </TextField>
+            </CompanyFormField>
 
-            <TextField
-              select
-              fullWidth
-              label="Status"
-              value={values.status}
-              onChange={handleChange('status')}
-            >
+            <CompanyFormField {...fieldProps} field="status" label="Status" select>
               <MenuItem value="1">Active</MenuItem>
               <MenuItem value="0">Inactive</MenuItem>
               <MenuItem value="2">Pending</MenuItem>
-            </TextField>
+            </CompanyFormField>
           </Stack>
 
-          <TextField
+          <CompanyFormField
+            {...fieldProps}
+            field="website"
             label="Website"
             type="url"
-            value={values.website || ''}
-            onChange={handleChange('website')}
             placeholder="https://example.com"
           />
 
-          <TextField
+          <CompanyFormField
+            {...fieldProps}
+            field="lastContactedAt"
             label="Last Contacted At"
             type="datetime-local"
             InputLabelProps={{ shrink: true }}
-            value={values.lastContactedAt}
-            onChange={handleChange('lastContactedAt')}
           />
 
           {mode === 'edit' && initialValues?.createdAt && (
-            <TextField
-              disabled
+            <CompanyFormField
+              field="createdAt"
               label="Created At"
+              disabled
+              // 针对只读字段直接覆盖 value，跳过标准的 values[field] 读取
               value={new Intl.DateTimeFormat('en', {
                 dateStyle: 'medium',
                 timeStyle: 'short'
@@ -218,6 +230,7 @@ export function CompanyFormDialog({
           <button type="submit" hidden />
         </Stack>
       </DialogContent>
+
       <DialogActions className="crm-dialog-actions">
         <Button onClick={onClose} disabled={isPending}>
           Cancel
