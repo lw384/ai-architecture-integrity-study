@@ -1,0 +1,724 @@
+{
+  "subject_id": "frontend",
+  "subject_root": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend",
+  "rulepack_id": "js-react-frontend",
+  "rulepack_version": "0.1.0",
+  "adapters": [
+    "eslint"
+  ],
+  "status": "failed",
+  "layers": {
+    "constraints": {
+      "layer": "constraints",
+      "status": "fail",
+      "rules_evaluated": 6,
+      "findings": [
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyDetail.jsx",
+            "line": 104,
+            "column": 21
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 171,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 172,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 173,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 174,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 175,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 185,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 186,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+            "line": 187,
+            "column": 15
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyTable.jsx",
+            "line": 60,
+            "column": 17
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyTable.jsx",
+            "line": 69,
+            "column": 17
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyTable.jsx",
+            "line": 78,
+            "column": 17
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/contacts/ContactForm.jsx",
+            "line": 176,
+            "column": 25
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-COM-C-002-jsx-max-depth",
+          "rule_version": "0.2.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/contacts/ContactTable.jsx",
+            "line": 51,
+            "column": 17
+          },
+          "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/business-jsx-max-depth",
+            "payload": {
+              "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+          "rule_version": "0.1.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/contexts/LayoutSettingsContext.jsx",
+            "line": 77,
+            "column": 10
+          },
+          "message": "Move this context provider to a controlled boundary such as app providers, a route layout, or another approved entry point.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/context-provider-only-in-controlled-locations",
+            "payload": {
+              "message": "Context providers must stay in controlled locations.",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+          "rule_version": "0.1.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/contexts/RouteAccessContext.jsx",
+            "line": 128,
+            "column": 10
+          },
+          "message": "Move this context provider to a controlled boundary such as app providers, a route layout, or another approved entry point.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/context-provider-only-in-controlled-locations",
+            "payload": {
+              "message": "Context providers must stay in controlled locations.",
+              "severity": 2
+            }
+          }
+        },
+        {
+          "rule_id": "FE-ROUTE-C-002-route-maps-to-page-component",
+          "rule_version": "0.1.0",
+          "tier": null,
+          "severity": "warning",
+          "location": {
+            "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/routes/MainRoutes.jsx",
+            "line": 15,
+            "column": 3
+          },
+          "message": "Update this route so it maps to a page component. Prefer loader imports from pages/* or route elements backed by a pages import.",
+          "evidence": {
+            "source_tool": "eslint",
+            "source_rule_id": "architecture/route-must-map-to-page-component",
+            "payload": {
+              "message": "Route \"/\" must map to a page component (loader import from pages/* or element referencing a pages import).",
+              "severity": 2
+            }
+          }
+        }
+      ],
+      "findings_by_rule": {
+        "FE-COM-C-001-component-file-max-lines": [],
+        "FE-COM-C-002-jsx-max-depth": [
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyDetail.jsx",
+              "line": 104,
+              "column": 21
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 171,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 172,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 173,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 174,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 175,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 185,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 186,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyForm.jsx",
+              "line": 187,
+              "column": 15
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyTable.jsx",
+              "line": 60,
+              "column": 17
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyTable.jsx",
+              "line": 69,
+              "column": 17
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/companies/CompanyTable.jsx",
+              "line": 78,
+              "column": 17
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/contacts/ContactForm.jsx",
+              "line": 176,
+              "column": 25
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-COM-C-002-jsx-max-depth",
+            "rule_version": "0.2.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/pages/contacts/ContactTable.jsx",
+              "line": 51,
+              "column": 17
+            },
+            "message": "Business logic nesting is too deep in this component. Consider extracting a section into a child component. Do not add pure wrapper components — the rule ignores structural wrappers (portals, transitions, fragments) anyway.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/business-jsx-max-depth",
+              "payload": {
+                "message": "JSX nesting should not exceed 5 levels (business-logic depth, ignoring transparent wrappers).",
+                "severity": 2
+              }
+            }
+          }
+        ],
+        "FE-STATE-C-001-no-usestate-in-deep-child-components": [],
+        "FE-STATE-C-002-context-provider-only-in-controlled-locations": [
+          {
+            "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+            "rule_version": "0.1.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/contexts/LayoutSettingsContext.jsx",
+              "line": 77,
+              "column": 10
+            },
+            "message": "Move this context provider to a controlled boundary such as app providers, a route layout, or another approved entry point.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/context-provider-only-in-controlled-locations",
+              "payload": {
+                "message": "Context providers must stay in controlled locations.",
+                "severity": 2
+              }
+            }
+          },
+          {
+            "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+            "rule_version": "0.1.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/contexts/RouteAccessContext.jsx",
+              "line": 128,
+              "column": 10
+            },
+            "message": "Move this context provider to a controlled boundary such as app providers, a route layout, or another approved entry point.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/context-provider-only-in-controlled-locations",
+              "payload": {
+                "message": "Context providers must stay in controlled locations.",
+                "severity": 2
+              }
+            }
+          }
+        ],
+        "FE-ROUTE-C-001-route-definitions-centralized": [],
+        "FE-ROUTE-C-002-route-maps-to-page-component": [
+          {
+            "rule_id": "FE-ROUTE-C-002-route-maps-to-page-component",
+            "rule_version": "0.1.0",
+            "tier": null,
+            "severity": "warning",
+            "location": {
+              "file": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend/src/routes/MainRoutes.jsx",
+              "line": 15,
+              "column": 3
+            },
+            "message": "Update this route so it maps to a page component. Prefer loader imports from pages/* or route elements backed by a pages import.",
+            "evidence": {
+              "source_tool": "eslint",
+              "source_rule_id": "architecture/route-must-map-to-page-component",
+              "payload": {
+                "message": "Route \"/\" must map to a page component (loader import from pages/* or element referencing a pages import).",
+                "severity": 2
+              }
+            }
+          }
+        ]
+      },
+      "background_findings": [],
+      "background_by_rule": {},
+      "adapter_meta": {
+        "eslint": {
+          "status": "ok",
+          "exit_code": 1,
+          "cwd": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend",
+          "targets": [
+            "src"
+          ]
+        }
+      }
+    },
+    "metrics": [],
+    "judgments": []
+  }
+}

@@ -1,27 +1,15 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { resolveMetricReports } from './_shared/report-io.mjs';
+import {
+    appendBaselineDeltaFinding,
+    buildMetricResult,
+    computeDelta,
+} from './_shared/metric-result.mjs';
+
+// Associated metric rule: BE-DEP-M-001-dependency-violation-density.
+// Aggregates dependency drift signals aligned with BE-DEP-C-002 (layering) and
+// BE-DEP-C-004 (circular dependencies).
 
 export const VERSION = '1.0.0';
-
-function readReport(rootDir, reportPath) {
-    if (!rootDir) {
-        return null;
-    }
-
-    const fullPath = path.join(rootDir, reportPath);
-
-    if (!fs.existsSync(fullPath)) {
-        return null;
-    }
-
-    const report = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-
-    if (!report || !Array.isArray(report.modules)) {
-        throw new Error(`Invalid dep-cruiser report at ${fullPath}: missing modules array.`);
-    }
-
-    return report;
-}
 
 function detectLayer(filePath) {
     if (filePath.endsWith('.controller.ts')) return 'controller';
@@ -185,44 +173,34 @@ function evaluateReport(report, config = {}) {
 }
 
 export async function run({ targetDir, baselineDir, config }) {
-    const reportPath = config?.report_path ?? 'reports/depcruise-raw.json';
-    const targetReport = readReport(targetDir, reportPath);
-
-    if (!targetReport) {
-        throw new Error(`Target dep-cruiser report not found at ${path.join(targetDir, reportPath)}`);
-    }
-
-    const baselineReport = readReport(baselineDir, reportPath);
+    const { targetReport, baselineReport } = resolveMetricReports({
+        targetDir,
+        baselineDir,
+        config,
+        baselineOptional: true,
+    });
     const target = evaluateReport(targetReport, config ?? {});
     const baseline = baselineReport ? evaluateReport(baselineReport, config ?? {}) : null;
-    const delta = baseline ? Number((target.value - baseline.value).toFixed(6)) : null;
+    const delta = computeDelta(target.value, baseline?.value, 6);
 
-    const findings = [
+    const findings = appendBaselineDeltaFinding([
         `MVC violations: ${target.mvcViolations}`,
         `Cyclic dependency count: ${target.cyclicDependencyCount}`,
         `Total import edges: ${target.totalImportEdges}`,
         `Dependency violation density: ${target.value}`,
-    ];
+    ], delta);
 
-    if (delta === null) {
-        findings.push('Baseline report unavailable; delta_vs_baseline set to null.');
-    } else if (delta !== 0) {
-        findings.push(`Delta vs baseline: ${delta > 0 ? '+' : ''}${delta}`);
-    }
-
-    return {
-        score: {
-            value: target.value,
-            unit: 'ratio',
-            direction: 'lower_is_better',
-        },
-        delta_vs_baseline: delta,
+    return buildMetricResult({
+        value: target.value,
+        unit: 'ratio',
+        direction: 'lower_is_better',
+        delta,
         findings,
-        raw_artifact_path: config?.raw_artifact_path,
+        rawArtifactPath: config?.raw_artifact_path,
         details: {
             target,
             baseline,
             formula: '(mvc_direction_violations + cyclic_dependency_count) / total_import_edges',
         },
-    };
+    });
 }

@@ -1,0 +1,2440 @@
+{
+  "modules": [
+    {
+      "source": "src/app.module.ts",
+      "dependencies": [
+        {
+          "module": "./modules/company/company.module",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.module.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./modules/contact/contact.module",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.module.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/config",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+config@4.0.4_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_re_a72z6ebgixz2t62cvj4ub3mvju/node_modules/@nestjs/config/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+typeorm@11.0.3_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1__dbystcdlkrw4xg6xetmekyv7ai/node_modules/@nestjs/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "path",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "core",
+            "import"
+          ],
+          "protocol": "node:",
+          "resolved": "path",
+          "coreModule": true,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/core/seed/seed.ts",
+        "src/main.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/app.module.ts",
+        "src/modules/company/company.module.ts",
+        "src/modules/company/company.controller.ts",
+        "src/common/pipes/uuid-v4.pipe.ts",
+        "src/common/errors/app-exception.ts",
+        "src/common/errors/error-codes.ts",
+        "src/modules/company/company.repository.ts",
+        "src/modules/company/company.service.ts",
+        "src/modules/contact/contact.module.ts",
+        "src/modules/contact/contact.controller.ts",
+        "src/modules/contact/contact.repository.ts",
+        "src/modules/contact/contact.service.ts",
+        "src/common/errors/validation-exception.factory.ts",
+        "src/common/filter/http-exception.filter.ts",
+        "src/core/seed/seed.ts",
+        "src/main.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/@nestjs+config@4.0.4_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_re_a72z6ebgixz2t62cvj4ub3mvju/node_modules/@nestjs/config/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/app.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/@nestjs+typeorm@11.0.3_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1__dbystcdlkrw4xg6xetmekyv7ai/node_modules/@nestjs/typeorm/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/app.module.ts",
+        "src/modules/company/company.module.ts",
+        "src/modules/contact/contact.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "path",
+      "followable": false,
+      "coreModule": true,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": false,
+      "dependencyTypes": [
+        "core",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/app.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/company.module.ts",
+      "dependencies": [
+        {
+          "module": "./company.controller",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.controller.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": false,
+          "rules": [
+            {
+              "severity": "error",
+              "name": "BE-DOM-C-002-no-repository-in-module-exports"
+            }
+          ]
+        },
+        {
+          "module": "./company.repository",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.repository.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": false,
+          "rules": [
+            {
+              "severity": "error",
+              "name": "BE-DOM-C-002-no-repository-in-module-exports"
+            }
+          ]
+        },
+        {
+          "module": "./company.service",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.service.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+typeorm@11.0.3_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1__dbystcdlkrw4xg6xetmekyv7ai/node_modules/@nestjs/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/app.module.ts",
+        "src/modules/contact/contact.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/company.controller.ts",
+      "dependencies": [
+        {
+          "module": "../../common/pipes/uuid-v4.pipe",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/pipes/uuid-v4.pipe.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/company.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/common/pipes/uuid-v4.pipe.ts",
+      "dependencies": [
+        {
+          "module": "../errors/app-exception",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/app-exception.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../errors/error-codes",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/error-codes.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/company.controller.ts",
+        "src/modules/contact/contact.controller.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/common/errors/app-exception.ts",
+      "dependencies": [
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/common/pipes/uuid-v4.pipe.ts",
+        "src/modules/company/company.service.ts",
+        "src/modules/contact/contact.service.ts",
+        "src/common/errors/validation-exception.factory.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/common/errors/error-codes.ts",
+      "dependencies": [
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/common/pipes/uuid-v4.pipe.ts",
+        "src/modules/company/company.service.ts",
+        "src/modules/contact/contact.service.ts",
+        "src/common/errors/validation-exception.factory.ts",
+        "src/common/filter/http-exception.filter.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/company.entity.ts",
+      "dependencies": [
+        {
+          "module": "../contact/contact.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": true,
+          "cycle": [
+            {
+              "name": "src/modules/contact/contact.entity.ts",
+              "dependencyTypes": [
+                "local",
+                "import"
+              ]
+            },
+            {
+              "name": "src/modules/company/company.entity.ts",
+              "dependencyTypes": [
+                "local",
+                "import"
+              ]
+            }
+          ],
+          "valid": false,
+          "rules": [
+            {
+              "severity": "error",
+              "name": "BE-DEP-C-004-no-circular"
+            },
+            {
+              "severity": "error",
+              "name": "BE-DOM-C-001-no-cross-module-deep-import"
+            }
+          ]
+        },
+        {
+          "module": "typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/typeorm@0.3.30_babel-plugin-macros@3.1.0_pg@8.22.0_ts-node@10.9.2_@types+node@24.13.2_typescript@5.9.3_/node_modules/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/company.module.ts",
+        "src/modules/contact/contact.entity.ts",
+        "src/modules/company/company.repository.ts",
+        "src/modules/company/company.service.ts",
+        "src/core/seed/scenarios/demo.seed.ts",
+        "src/core/seed/seed.utils.ts",
+        "src/core/seed/scenarios/edge-case.seed.ts",
+        "src/modules/company/dto/create.dto.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/typeorm@0.3.30_babel-plugin-macros@3.1.0_pg@8.22.0_ts-node@10.9.2_@types+node@24.13.2_typescript@5.9.3_/node_modules/typeorm/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/modules/company/company.entity.ts",
+        "src/modules/contact/contact.entity.ts",
+        "src/core/database/base.repository.ts",
+        "src/modules/contact/contact.repository.ts",
+        "src/core/seed/seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/contact.entity.ts",
+      "dependencies": [
+        {
+          "module": "../company/company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": true,
+          "cycle": [
+            {
+              "name": "src/modules/company/company.entity.ts",
+              "dependencyTypes": [
+                "local",
+                "import"
+              ]
+            },
+            {
+              "name": "src/modules/contact/contact.entity.ts",
+              "dependencyTypes": [
+                "local",
+                "import"
+              ]
+            }
+          ],
+          "valid": false,
+          "rules": [
+            {
+              "severity": "error",
+              "name": "BE-DEP-C-004-no-circular"
+            },
+            {
+              "severity": "error",
+              "name": "BE-DOM-C-001-no-cross-module-deep-import"
+            }
+          ]
+        },
+        {
+          "module": "typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/typeorm@0.3.30_babel-plugin-macros@3.1.0_pg@8.22.0_ts-node@10.9.2_@types+node@24.13.2_typescript@5.9.3_/node_modules/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/company.entity.ts",
+        "src/modules/contact/contact.module.ts",
+        "src/modules/contact/contact.repository.ts",
+        "src/core/seed/scenarios/demo.seed.ts",
+        "src/core/seed/seed.utils.ts",
+        "src/core/seed/scenarios/edge-case.seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/company.repository.ts",
+      "dependencies": [
+        {
+          "module": "../../core/database/base.repository",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/database/base.repository.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/company.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/core/database/base.repository.ts",
+      "dependencies": [
+        {
+          "module": "../../common/utils/pagination.util",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/utils/pagination.util.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/typeorm@0.3.30_babel-plugin-macros@3.1.0_pg@8.22.0_ts-node@10.9.2_@types+node@24.13.2_typescript@5.9.3_/node_modules/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/company.repository.ts",
+        "src/modules/contact/contact.repository.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/common/utils/pagination.util.ts",
+      "dependencies": [],
+      "dependents": [
+        "src/core/database/base.repository.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/company.service.ts",
+      "dependencies": [
+        {
+          "module": "../../common/errors/app-exception",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/app-exception.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../../common/errors/error-codes",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/error-codes.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/company.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/contact.module.ts",
+      "dependencies": [
+        {
+          "module": "../company/company.module",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.module.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./contact.controller",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.controller.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./contact.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": false,
+          "rules": [
+            {
+              "severity": "error",
+              "name": "BE-DOM-C-002-no-repository-in-module-exports"
+            }
+          ]
+        },
+        {
+          "module": "./contact.repository",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.repository.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": false,
+          "rules": [
+            {
+              "severity": "error",
+              "name": "BE-DOM-C-002-no-repository-in-module-exports"
+            }
+          ]
+        },
+        {
+          "module": "./contact.service",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.service.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+typeorm@11.0.3_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1__dbystcdlkrw4xg6xetmekyv7ai/node_modules/@nestjs/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/app.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/contact.controller.ts",
+      "dependencies": [
+        {
+          "module": "../../common/pipes/uuid-v4.pipe",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/pipes/uuid-v4.pipe.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/contact/contact.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/contact.repository.ts",
+      "dependencies": [
+        {
+          "module": "../../core/database/base.repository",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/database/base.repository.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./contact.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/typeorm@0.3.30_babel-plugin-macros@3.1.0_pg@8.22.0_ts-node@10.9.2_@types+node@24.13.2_typescript@5.9.3_/node_modules/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/contact/contact.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/contact.service.ts",
+      "dependencies": [
+        {
+          "module": "../../common/errors/app-exception",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/app-exception.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../../common/errors/error-codes",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/error-codes.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/contact/contact.module.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/common/errors/validation-exception.factory.ts",
+      "dependencies": [
+        {
+          "module": "./app-exception",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/app-exception.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./error-codes",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/error-codes.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/main.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/common/filter/http-exception.filter.ts",
+      "dependencies": [
+        {
+          "module": "../errors/error-codes",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/error-codes.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/main.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/common/types/paginated-result.type.ts",
+      "dependencies": [],
+      "dependents": [],
+      "orphan": true,
+      "valid": true
+    },
+    {
+      "source": "src/core/seed/factories/company.factory.ts",
+      "dependencies": [],
+      "dependents": [
+        "src/core/seed/scenarios/demo.seed.ts",
+        "src/core/seed/scenarios/edge-case.seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/core/seed/factories/contact.factory.ts",
+      "dependencies": [],
+      "dependents": [
+        "src/core/seed/scenarios/demo.seed.ts",
+        "src/core/seed/scenarios/edge-case.seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/core/seed/scenarios/demo.seed.ts",
+      "dependencies": [
+        {
+          "module": "../../../modules/company/company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../../../modules/contact/contact.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../factories/company.factory",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/factories/company.factory.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../factories/contact.factory",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/factories/contact.factory.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../seed.utils",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/seed.utils.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/core/seed/seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/core/seed/seed.utils.ts",
+      "dependencies": [
+        {
+          "module": "../../modules/company/company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../../modules/contact/contact.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/core/seed/scenarios/demo.seed.ts",
+        "src/core/seed/scenarios/edge-case.seed.ts",
+        "src/core/seed/seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/core/seed/scenarios/edge-case.seed.ts",
+      "dependencies": [
+        {
+          "module": "../../../modules/company/company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../../../modules/contact/contact.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/contact.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../factories/company.factory",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/factories/company.factory.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../factories/contact.factory",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/factories/contact.factory.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "../seed.utils",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/seed.utils.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/core/seed/seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/core/seed/seed.ts",
+      "dependencies": [
+        {
+          "module": "../../app.module",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/app.module.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./scenarios/demo.seed",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/scenarios/demo.seed.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./scenarios/edge-case.seed",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/scenarios/edge-case.seed.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./seed.utils",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/core/seed/seed.utils.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/core",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+core@11.1.27_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_re_wsdnldvjie3z6fb3oaoqnagn3m/node_modules/@nestjs/core/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "reflect-metadata",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/reflect-metadata@0.2.2/node_modules/reflect-metadata/Reflect.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "typeorm",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/typeorm@0.3.30_babel-plugin-macros@3.1.0_pg@8.22.0_ts-node@10.9.2_@types+node@24.13.2_typescript@5.9.3_/node_modules/typeorm/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/@nestjs+core@11.1.27_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_re_wsdnldvjie3z6fb3oaoqnagn3m/node_modules/@nestjs/core/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/core/seed/seed.ts",
+        "src/main.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/reflect-metadata@0.2.2/node_modules/reflect-metadata/Reflect.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/core/seed/seed.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/core/seed/seed.types.ts",
+      "dependencies": [],
+      "dependents": [],
+      "orphan": true,
+      "valid": true
+    },
+    {
+      "source": "src/main.ts",
+      "dependencies": [
+        {
+          "module": "./app.module",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/app.module.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./common/errors/validation-exception.factory",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/errors/validation-exception.factory.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./common/filter/http-exception.filter",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/common/filter/http-exception.filter.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/common",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/core",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+core@11.1.27_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.15.1_re_wsdnldvjie3z6fb3oaoqnagn3m/node_modules/@nestjs/core/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/dto/create.dto.ts",
+      "dependencies": [
+        {
+          "module": "../company.entity",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/company.entity.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "class-validator",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/class-validator@0.15.1/node_modules/class-validator/cjs/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/dto/index.ts",
+        "src/modules/company/dto/update.dto.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/class-validator@0.15.1/node_modules/class-validator/cjs/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/modules/company/dto/create.dto.ts",
+        "src/modules/contact/dto/create.dto.ts",
+        "src/modules/contact/dto/query.dto.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/dto/index.ts",
+      "dependencies": [
+        {
+          "module": "./create.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "export"
+          ],
+          "resolved": "src/modules/company/dto/create.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./response.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "export"
+          ],
+          "resolved": "src/modules/company/dto/response.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./update.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "export"
+          ],
+          "resolved": "src/modules/company/dto/update.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/dto/response.dto.ts",
+      "dependencies": [
+        {
+          "module": "class-transformer",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/class-transformer@0.5.1/node_modules/class-transformer/cjs/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/dto/index.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/class-transformer@0.5.1/node_modules/class-transformer/cjs/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/modules/company/dto/response.dto.ts",
+        "src/modules/contact/dto/query.dto.ts",
+        "src/modules/contact/dto/response.dto.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/company/dto/update.dto.ts",
+      "dependencies": [
+        {
+          "module": "./create.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/company/dto/create.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/mapped-types",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+mapped-types@2.1.1_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.1_hzxaksbnrlsaid2l52i7onuaje/node_modules/@nestjs/mapped-types/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/company/dto/index.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "../../node_modules/.pnpm/@nestjs+mapped-types@2.1.1_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.1_hzxaksbnrlsaid2l52i7onuaje/node_modules/@nestjs/mapped-types/index.js",
+      "followable": false,
+      "coreModule": false,
+      "couldNotResolve": false,
+      "matchesDoNotFollow": true,
+      "dependencyTypes": [
+        "npm",
+        "import"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "src/modules/company/dto/update.dto.ts",
+        "src/modules/contact/dto/update.dto.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/dto/create.dto.ts",
+      "dependencies": [
+        {
+          "module": "class-validator",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/class-validator@0.15.1/node_modules/class-validator/cjs/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/contact/dto/index.ts",
+        "src/modules/contact/dto/update.dto.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/dto/index.ts",
+      "dependencies": [
+        {
+          "module": "./create.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "export"
+          ],
+          "resolved": "src/modules/contact/dto/create.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./query.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "export"
+          ],
+          "resolved": "src/modules/contact/dto/query.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "./update.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "export"
+          ],
+          "resolved": "src/modules/contact/dto/update.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/dto/query.dto.ts",
+      "dependencies": [
+        {
+          "module": "class-transformer",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/class-transformer@0.5.1/node_modules/class-transformer/cjs/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "class-validator",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/class-validator@0.15.1/node_modules/class-validator/cjs/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/contact/dto/index.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/dto/update.dto.ts",
+      "dependencies": [
+        {
+          "module": "./create.dto",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "local",
+            "import"
+          ],
+          "resolved": "src/modules/contact/dto/create.dto.ts",
+          "coreModule": false,
+          "followable": true,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": false,
+          "circular": false,
+          "valid": true
+        },
+        {
+          "module": "@nestjs/mapped-types",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/@nestjs+mapped-types@2.1.1_@nestjs+common@11.1.27_class-transformer@0.5.1_class-validator@0.1_hzxaksbnrlsaid2l52i7onuaje/node_modules/@nestjs/mapped-types/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [
+        "src/modules/contact/dto/index.ts"
+      ],
+      "orphan": false,
+      "valid": true
+    },
+    {
+      "source": "src/modules/contact/dto/response.dto.ts",
+      "dependencies": [
+        {
+          "module": "class-transformer",
+          "moduleSystem": "es6",
+          "dynamic": false,
+          "exoticallyRequired": false,
+          "dependencyTypes": [
+            "npm",
+            "import"
+          ],
+          "resolved": "../../node_modules/.pnpm/class-transformer@0.5.1/node_modules/class-transformer/cjs/index.js",
+          "coreModule": false,
+          "followable": false,
+          "couldNotResolve": false,
+          "matchesDoNotFollow": true,
+          "circular": false,
+          "valid": true
+        }
+      ],
+      "dependents": [],
+      "orphan": false,
+      "valid": true
+    }
+  ],
+  "summary": {
+    "violations": [
+      {
+        "type": "cycle",
+        "from": "src/modules/company/company.entity.ts",
+        "to": "src/modules/contact/contact.entity.ts",
+        "rule": {
+          "severity": "error",
+          "name": "BE-DEP-C-004-no-circular"
+        },
+        "cycle": [
+          {
+            "name": "src/modules/contact/contact.entity.ts",
+            "dependencyTypes": [
+              "local",
+              "import"
+            ]
+          },
+          {
+            "name": "src/modules/company/company.entity.ts",
+            "dependencyTypes": [
+              "local",
+              "import"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "dependency",
+        "from": "src/modules/company/company.entity.ts",
+        "to": "src/modules/contact/contact.entity.ts",
+        "rule": {
+          "severity": "error",
+          "name": "BE-DOM-C-001-no-cross-module-deep-import"
+        }
+      },
+      {
+        "type": "dependency",
+        "from": "src/modules/contact/contact.entity.ts",
+        "to": "src/modules/company/company.entity.ts",
+        "rule": {
+          "severity": "error",
+          "name": "BE-DOM-C-001-no-cross-module-deep-import"
+        }
+      },
+      {
+        "type": "dependency",
+        "from": "src/modules/company/company.module.ts",
+        "to": "src/modules/company/company.entity.ts",
+        "rule": {
+          "severity": "error",
+          "name": "BE-DOM-C-002-no-repository-in-module-exports"
+        }
+      },
+      {
+        "type": "dependency",
+        "from": "src/modules/company/company.module.ts",
+        "to": "src/modules/company/company.repository.ts",
+        "rule": {
+          "severity": "error",
+          "name": "BE-DOM-C-002-no-repository-in-module-exports"
+        }
+      },
+      {
+        "type": "dependency",
+        "from": "src/modules/contact/contact.module.ts",
+        "to": "src/modules/contact/contact.entity.ts",
+        "rule": {
+          "severity": "error",
+          "name": "BE-DOM-C-002-no-repository-in-module-exports"
+        }
+      },
+      {
+        "type": "dependency",
+        "from": "src/modules/contact/contact.module.ts",
+        "to": "src/modules/contact/contact.repository.ts",
+        "rule": {
+          "severity": "error",
+          "name": "BE-DOM-C-002-no-repository-in-module-exports"
+        }
+      }
+    ],
+    "error": 7,
+    "warn": 0,
+    "info": 0,
+    "ignore": 0,
+    "totalCruised": 46,
+    "totalDependenciesCruised": 95,
+    "optionsUsed": {
+      "baseDir": "/Users/luowei/project/ai-architecture-integrity-study/baseline/backend",
+      "combinedDependencies": false,
+      "detectJSDocImports": false,
+      "doNotFollow": {
+        "path": "node_modules"
+      },
+      "exclude": {
+        "path": ".(spec|test).(js|ts)$|test/utils|dist|build"
+      },
+      "exoticRequireStrings": [],
+      "externalModuleResolutionStrategy": "node_modules",
+      "metrics": false,
+      "moduleSystems": [
+        "es6",
+        "cjs",
+        "tsd",
+        "amd"
+      ],
+      "outputTo": "-",
+      "outputType": "json",
+      "preserveSymlinks": false,
+      "rulesFile": "/Users/luowei/project/ai-architecture-integrity-study/harness/rulepacks/ts-nestjs-backend/tool-configs/dep-cruiser.config.cjs",
+      "skipAnalysisNotInRules": false,
+      "tsPreCompilationDeps": false,
+      "args": "src"
+    },
+    "ruleSetUsed": {
+      "forbidden": [
+        {
+          "name": "BE-DEP-C-004-no-circular",
+          "severity": "error",
+          "comment": "Disallow circular dependencies in the subject graph.",
+          "from": {},
+          "to": {
+            "circular": true
+          },
+          "scope": "module"
+        },
+        {
+          "name": "BE-DOM-C-001-no-cross-module-deep-import",
+          "severity": "error",
+          "comment": "Cross-module imports must go through module.ts or index.ts",
+          "from": {
+            "path": "^src/modules?/([^/]+)/"
+          },
+          "to": {
+            "path": "^src/modules?/([^/]+)/(.+)",
+            "pathNot": "^src/modules?/$1/|^src/modules?/[^/]+/(index|[^/]+\\.module)\\.ts$"
+          },
+          "scope": "module"
+        },
+        {
+          "name": "BE-DOM-C-002-no-repository-in-module-exports",
+          "severity": "error",
+          "comment": "Module entry files must not re-export repository/entity implementations.",
+          "from": {
+            "path": "^src/modules?/[^/]+/(index|[^/]+\\.module)\\.ts$"
+          },
+          "to": {
+            "path": "^src/modules?/[^/]+/.+\\.(repository|entity)\\.ts$"
+          },
+          "scope": "module"
+        },
+        {
+          "name": "ARCH-005-upward-service-to-controller",
+          "severity": "error",
+          "comment": "Service files must not import controller files.",
+          "from": {
+            "path": "src/.*\\.service\\."
+          },
+          "to": {
+            "path": "src/.*\\.controller\\."
+          },
+          "scope": "module"
+        },
+        {
+          "name": "AI-DEBT-001-hallucinated-imports",
+          "severity": "error",
+          "comment": "Flag unresolved imports as likely hallucinated dependencies.",
+          "from": {},
+          "to": {
+            "couldNotResolve": true
+          },
+          "scope": "module"
+        }
+      ]
+    }
+  }
+}

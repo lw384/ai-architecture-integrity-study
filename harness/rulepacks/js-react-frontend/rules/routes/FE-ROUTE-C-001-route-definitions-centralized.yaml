@@ -1,0 +1,27 @@
+rule_id: FE-ROUTE-C-001-route-definitions-centralized
+version: 0.1.0
+layer: constraints
+category: routing
+visibility: agent-visible
+severity: warning
+
+description: >
+  Route definitions must be centralized under src/routes to keep route topology
+  discoverable and avoid split ownership.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - architecture/route-definitions-only-in-routes-dir
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Move route definition logic into src/routes. Keep route APIs and route object
+  declarations centralized in the routing layer.
+
+research_tags:
+  drift_type: erosion
+  severity_class: soft_constraint
+  erosion_dimension: route-locality

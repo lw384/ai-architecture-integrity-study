@@ -80,5 +80,58 @@ export const nestjsStructPlugin = {
                 };
             },
         },
-    },
-};
+        'no-repository-in-module-exports': {
+            meta: {
+                type: 'problem',
+                docs: { description: 'module.ts must not export Repository symbols' },
+                schema: [{
+                    type: 'object',
+                    properties: {
+                        forbiddenSuffixes: { type: 'array', items: { type: 'string' } },
+                        filePattern: { type: 'string' },
+                    },
+                }],
+            },
+            create(context) {
+                const filename = context.getFilename();
+                const options = context.options[0] || {};
+                const filePattern = new RegExp(options.filePattern || '\\.module\\.ts$');
+                const forbidden = options.forbiddenSuffixes || ['Repository', 'Entity'];
+
+                if (!filePattern.test(filename)) return {};
+                const isForbidden = (name) =>
+                    name && forbidden.some((s) => name.endsWith(s));
+
+                return {
+                    // export class FooRepository {}
+                    ExportNamedDeclaration(node) {
+                        if (node.declaration?.type === 'ClassDeclaration'
+                            && isForbidden(node.declaration.id?.name)) {
+                            context.report({
+                                node,
+                                message: `module.ts must not export "${node.declaration.id.name}"`,
+                            });
+                        }
+                        // export { FooRepository } / export { FooRepository as X }
+                        for (const spec of node.specifiers || []) {
+                            if (isForbidden(spec.exported.name) || isForbidden(spec.local.name)) {
+                                context.report({
+                                    node: spec,
+                                    message: `module.ts must not export "${spec.local.name}"`,
+                                });
+                            }
+                        }
+                    },
+                    ExportAllDeclaration(node) {
+                        if (/\.repository(\.ts)?$|\.entity(\.ts)?$/.test(node.source.value)) {
+                            context.report({
+                                node,
+                                message: `module.ts must not re-export from "${node.source.value}"`,
+                            });
+                        }
+                    },
+                };
+            }
+        },
+    }
+}

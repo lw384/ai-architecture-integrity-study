@@ -2,7 +2,7 @@ import process from 'node:process';
 import importPlugin from 'eslint-plugin-import';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-import { nestjsStructPlugin } from './rules/index.js';
+import { nestjsPlugin } from './rules/index.js';
 export default [
     {
         ignores: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**'],
@@ -30,7 +30,7 @@ export default [
         plugins: {
             import: importPlugin,
             '@typescript-eslint': tsPlugin,
-            nestjs: nestjsStructPlugin,
+            nestjs: nestjsPlugin,
         },
         rules: {
             'no-unused-vars': 'off',
@@ -63,6 +63,18 @@ export default [
                 require_controller: true,
                 require_service: true,
                 require_repository: false,
+            }],
+            'nestjs/no-http-exception-in-service': ['error', {
+                filePattern: '\\.service\\.ts$',
+            }],
+            'nestjs/throw-only-app-exception': ['error', {
+                filePattern: '\\.service\\.ts$',
+                allowedClasses: ['AppException'],
+                allowRethrow: true,
+            }],
+            'nestjs/no-silent-catch': ['error', {
+                filePattern: '\\.service\\.ts$',
+                requireThrowOrHandle: true,
             }],
         },
     },

@@ -22,6 +22,32 @@ module.exports = {
 			to: { circular: true },
 		},
 		{
+			name: 'BE-DOM-C-001-no-cross-module-deep-import',
+			severity: 'error',
+			comment: 'Cross-module imports must go through module.ts or index.ts',
+			from: {
+				path: '^src/modules?/([^/]+)/',
+			},
+			to: {
+				path: '^src/modules?/([^/]+)/(.+)',
+				pathNot: [
+					'^src/modules?/$1/',
+					'^src/modules?/[^/]+/(index|[^/]+\\.module)\\.ts$',
+				],
+			},
+		},
+		{
+			name: 'BE-DOM-C-002-no-repository-in-module-exports',
+			severity: 'error',
+			comment: 'Module entry files must not re-export repository/entity implementations.',
+			from: {
+				path: '^src/modules?/[^/]+/(index|[^/]+\\.module)\\.ts$',
+			},
+			to: {
+				path: '^src/modules?/[^/]+/.+\\.(repository|entity)\\.ts$',
+			},
+		},
+		{
 			name: 'ARCH-005-upward-service-to-controller',
 			severity: 'error',
 			comment: 'Service files must not import controller files.',

@@ -1,5 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+    appendBaselineDeltaFinding,
+    buildMetricResult,
+    computeDelta,
+} from './_shared/metric-result.mjs';
+
+// Associated metric rule: BE-STRUCT-M-001-module-composition-violation-ratio.
+// Reuses the module composition policy from constraint rule BE-STRUCT-C-001-module-composition.
 
 export const VERSION = '1.0.0';
 
@@ -97,29 +105,23 @@ function canReadRoot(rootDir) {
 export async function run({ targetDir, baselineDir, config }) {
     const target = summarize(targetDir, config ?? {});
     const baseline = canReadRoot(baselineDir) ? summarize(baselineDir, config ?? {}) : null;
-    const delta = baseline ? Number((target.ratio - baseline.ratio).toFixed(6)) : null;
-    const findings = [
+    const delta = computeDelta(target.ratio, baseline?.ratio, 6);
+    const findings = appendBaselineDeltaFinding([
         `Violating modules: ${target.violatingModules}/${target.totalModules} (${target.ratio})`,
-    ];
+    ], delta, {
+        missingBaselineMessage: 'Baseline is unavailable; delta_vs_baseline is set to null.',
+    });
 
-    if (delta === null) {
-        findings.push('Baseline is unavailable; delta_vs_baseline is set to null.');
-    } else if (delta !== 0) {
-        findings.push(`Delta vs baseline: ${delta > 0 ? '+' : ''}${delta}`);
-    }
-
-    return {
-        score: {
-            value: target.ratio,
-            unit: 'ratio',
-            direction: 'lower_is_better',
-        },
-        delta_vs_baseline: delta,
+    return buildMetricResult({
+        value: target.ratio,
+        unit: 'ratio',
+        direction: 'lower_is_better',
+        delta,
         findings,
-        raw_artifact_path: config?.raw_artifact_path,
+        rawArtifactPath: config?.raw_artifact_path,
         details: {
             target,
             baseline,
         },
-    };
+    });
 }
