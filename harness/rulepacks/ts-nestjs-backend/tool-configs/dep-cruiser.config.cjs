@@ -13,22 +13,9 @@ module.exports = {
 	...base,
 	forbidden: [
 		...base.forbidden,
+		// BE-DEP-C-004: No circular dependencies
 		{
-			name: 'ARCH-001-controller-to-repo',
-			severity: 'error',
-			comment: 'Controller files must not import repository files directly.',
-			from: { path: '\\.controller\\.(ts|js)$' },
-			to: { path: '\\.repository\\.(ts|js)$' },
-		},
-		{
-			name: 'ARCH-001-controller-to-entity',
-			severity: 'error',
-			comment: 'Controller files must not import entity files directly.',
-			from: { path: '\\.controller\\.(ts|js)$' },
-			to: { path: '\\.entity\\.(ts|js)$' },
-		},
-		{
-			name: 'ARCH-003-no-circular',
+			name: 'BE-DEP-C-004-no-circular',
 			severity: 'error',
 			comment: 'Disallow circular dependencies in the subject graph.',
 			from: {},

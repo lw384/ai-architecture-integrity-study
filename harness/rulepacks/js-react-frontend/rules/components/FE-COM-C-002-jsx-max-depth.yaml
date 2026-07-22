@@ -1,27 +1,52 @@
 rule_id: FE-COM-C-002-jsx-max-depth
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: component-structure
 visibility: agent-visible
 severity: warning
 
 description: >
-  JSX nesting should stay within 5 levels to avoid unreadable render trees and
-  overly complex component bodies.
+  Business-logic JSX nesting should stay within 5 levels to avoid unreadable
+  render trees and overly complex component bodies. Structural wrapper
+  components (portals, transitions, click-away listeners, fragments, render-prop
+  callbacks) are transparent and do not count toward the depth.
+
+config:
+  max_depth: 5
+  transparent_wrappers:
+    # MUI portal / overlay components
+    - Popper
+    - Portal
+    - Modal
+    - Backdrop
+    # MUI transition / interaction wrappers
+    - ClickAwayListener
+    - Fade
+    - Grow
+    - Zoom
+    - Slide
+    - Collapse
+    # Project-local transparent wrappers
+    - Transitions
+  transparent_patterns:
+    - fragment # <> and <Fragment>
+    - render_prop # function-child expressions
 
 evidence_sources:
   - adapter: eslint
     tool_rule_ids:
-      - architecture/jsx-max-depth
+      - architecture/business-jsx-max-depth
     match_condition:
       event_type: file_structure_violation
     aggregation: any
 
 agent_facing_message: >
-  JSX nesting is too deep in this component. Flatten the render tree or extract
-  nested sections into child components.
+  Business logic nesting is too deep in this component. Consider extracting
+  a section into a child component. Do not add pure wrapper components — the
+  rule ignores structural wrappers (portals, transitions, fragments) anyway.
 
 research_tags:
   drift_type: erosion
   severity_class: soft_constraint
   erosion_dimension: component-complexity
+  methodological_note: "v0.2.0 — counts business-layer depth only, ignoring transparent wrappers"

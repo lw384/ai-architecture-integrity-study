@@ -1,9 +1,9 @@
 schema_version: "0.1.0"
-task_id: Base
+task_id: T0
 task_version: "0.1.0"
 description: >
-  Baseline-only evaluation of the untouched project before any agent intervention.
-  Covers backend, frontend, and cross-stack contracts.
+  T0: Baseline evaluation of the untouched baseline project.
+  Covers backend dependency architecture rules with circular dependency detection.
 
 subjects:
   - subject_id: backend
@@ -13,12 +13,12 @@ subjects:
     enabled:
       constraints:
         - BE-STRUCT-C-001
+        - BE-STRUCT-C-002
         - BE-DEP-C-001
         - BE-DEP-C-002
         - BE-DEP-C-003
         - BE-DEP-C-004
       metrics:
-        - BE-STRUCT-M-001
         - BE-DEP-M-001
       judgments: []
     thresholds:
@@ -33,13 +33,18 @@ subjects:
     rulepack_version: "0.1.0"
     enabled:
       constraints:
-        - FE-COM-C-001
-        - FE-COM-C-002
-        - FE-STATE-C-001
-        - FE-STATE-C-002
+        - FE-STRUCT-C-001
       metrics: []
       judgments: []
     expected_diff_scope: []
+
+cross_stack:
+  rulepack_id: cross
+  rulepack_version: "0.1.0"
+  enabled:
+    constraints: []
+    metrics: []
+    judgments: []
 
 judgment_config:
   model: claude-sonnet-4-6
@@ -53,7 +58,7 @@ execution:
   parallel_subjects: false
 
 metadata:
-  purpose: baseline-evaluation
+  purpose: baseline-evaluation-t0
   notes: >
-    This task evaluates the untouched baseline workspace and records the
-    pre-intervention architecture state.
+    T0 baseline evaluation with circular dependency detection (BE-DEP-C-004)
+    via dependency-cruiser.

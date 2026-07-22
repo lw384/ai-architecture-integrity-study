@@ -1,0 +1,33 @@
+rule_id: BE-DEP-C-004-no-circular-dependencies
+version: 0.1.0
+tier: 1
+layer: constraints
+category: dependency-architecture
+visibility: agent-visible
+severity: error
+
+description: >
+  Disallow circular dependencies across all modules and layers.
+  Circular dependencies create tight coupling, complicate testing, and hinder refactoring.
+  Every import edge should contribute to a acyclic dependency graph.
+  Detection method: Module A imports B, B imports C, C imports A (or shorter cycles A→B→A)
+
+evidence_sources:
+  - adapter: dep-cruiser
+    tool_rule_ids:
+      - "BE-DEP-C-004-no-circular"
+    match_condition:
+      event_type: dependency_edge_violation
+    aggregation: any
+
+agent_facing_message: >
+  Circular dependencies detected. Break the cycle by:
+  1. Extracting shared logic to a third module that both depend on
+  2. Moving one of the dependencies to a lower layer (dependency inversion)
+  3. Using interfaces/abstract types instead of concrete imports
+  Cycles make the codebase harder to understand and test.
+
+research_tags:
+  drift_type: entanglement
+  severity_class: hard_constraint
+  pattern: cyclic-coupling

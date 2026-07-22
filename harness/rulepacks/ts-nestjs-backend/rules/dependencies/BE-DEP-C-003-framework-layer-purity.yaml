@@ -1,0 +1,34 @@
+rule_id: BE-DEP-C-003-framework-layer-purity
+version: 0.1.0
+tier: 1
+layer: constraints
+category: dependency-architecture
+visibility: agent-visible
+severity: error
+
+description: >
+  Cross-cutting concerns (Guards, Interceptors, Filters) must remain module-agnostic
+  and reusable across the entire application. These framework extensions must not
+  depend on specific module entities.
+  Violations:
+  - imports from src/modules/**/*.entity.ts into src/common/guards/**
+  - imports from src/modules/**/*.entity.ts into src/common/interceptors/**
+  - imports from src/modules/**/*.entity.ts into src/common/filter/**
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - "import/no-restricted-paths"
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Guards, interceptors, and filters must not depend on specific module entities.
+  Use generic types, interfaces, or DTOs from request/response instead.
+  This ensures framework extensions remain reusable across all modules.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  pattern: framework-business-coupling

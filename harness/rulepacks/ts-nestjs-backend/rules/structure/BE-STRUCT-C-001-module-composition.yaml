@@ -1,0 +1,36 @@
+rule_id: BE-STRUCT-C-001-module-composition
+version: 0.1.0
+tier: 1
+layer: constraints
+category: module-structure
+visibility: agent-visible
+severity: error
+
+description: >
+  Each NestJS module must include its own controller and service files.
+  Modules should have self-contained structure with:
+  - {ModuleName}.module.ts
+  - {moduleName}.controller.ts
+  - {moduleName}.service.ts
+  - {moduleName}.repository.ts (optional but recommended)
+
+  CHINESE: 每个 module 必须有 controller/service，repository 为可选（推荐）
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - nestjs/module-composition
+    match_condition:
+      event_type: code_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  This module is missing required files. Every NestJS module must have:
+  - A controller file (e.g., users.controller.ts)
+  - A service file (e.g., users.service.ts)
+  Optionally include a repository file (e.g., users.repository.ts).
+  Create these files following the module's naming convention.
+
+research_tags:
+  drift_type: erosion
+  pattern: missing-components

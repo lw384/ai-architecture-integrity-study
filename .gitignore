@@ -37,8 +37,6 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# --- Harness generated reports (should be regenerated, not committed) ---
-harness/reports/
 
 # --- Experiment run artifacts (see docs/methodology/run-artifact-policy.md) ---
 experiment/runs/*/agent_output/
