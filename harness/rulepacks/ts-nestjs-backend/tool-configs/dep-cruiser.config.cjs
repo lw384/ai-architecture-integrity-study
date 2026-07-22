@@ -37,17 +37,6 @@ module.exports = {
 			},
 		},
 		{
-			name: 'BE-DOM-C-002-no-repository-in-module-exports',
-			severity: 'error',
-			comment: 'Module entry files must not re-export repository/entity implementations.',
-			from: {
-				path: '^src/modules?/[^/]+/(index|[^/]+\\.module)\\.ts$',
-			},
-			to: {
-				path: '^src/modules?/[^/]+/.+\\.(repository|entity)\\.ts$',
-			},
-		},
-		{
 			name: 'ARCH-005-upward-service-to-controller',
 			severity: 'error',
 			comment: 'Service files must not import controller files.',

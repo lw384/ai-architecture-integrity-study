@@ -76,6 +76,13 @@ export default [
                 filePattern: '\\.service\\.ts$',
                 requireThrowOrHandle: true,
             }],
+            'nestjs/no-repository-in-module-exports': ['error', {
+                filePattern: '(\\.module\\.ts|/index\\.ts)$',
+                forbiddenSuffixes: ['Repository', 'Entity'],
+                forbiddenSourcePatterns: ['\\.repository(\\.ts)?$', '\\.entity(\\.ts)?$'],
+                checkTypeOnlyExports: true,
+                checkNestModuleExports: true,
+            }],
         },
     },
 ];

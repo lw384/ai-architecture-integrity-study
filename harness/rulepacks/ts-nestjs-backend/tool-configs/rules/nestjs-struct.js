@@ -1,5 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import {
+    extractIdentifierNamesFromArray,
+    getModuleDecoratorArgument,
+    getObjectProperty,
+    isForbiddenSourcePath,
+    isForbiddenSymbol,
+} from './_helpers.js';
 
 export const nestjsStructPlugin = {
     rules: {
@@ -83,51 +90,145 @@ export const nestjsStructPlugin = {
         'no-repository-in-module-exports': {
             meta: {
                 type: 'problem',
-                docs: { description: 'module.ts must not export Repository symbols' },
-                schema: [{
-                    type: 'object',
-                    properties: {
-                        forbiddenSuffixes: { type: 'array', items: { type: 'string' } },
-                        filePattern: { type: 'string' },
+                docs: {
+                    description: 'Module entry files must not export persistence-layer symbols.',
+                    category: 'architecture',
+                    recommended: true,
+                },
+                schema: [
+                    {
+                        type: 'object',
+                        properties: {
+                            filePattern: {
+                                type: 'string',
+                                description: 'Regex identifying module entry files',
+                            },
+                            forbiddenSuffixes: {
+                                type: 'array',
+                                items: { type: 'string' },
+                                description: 'Symbol suffixes treated as persistence-layer',
+                            },
+                            forbiddenSourcePatterns: {
+                                type: 'array',
+                                items: { type: 'string' },
+                                description: 'Regex list for forbidden re-export source paths',
+                            },
+                            checkTypeOnlyExports: {
+                                type: 'boolean',
+                                description: 'If true, also check export type declarations',
+                            },
+                            checkNestModuleExports: {
+                                type: 'boolean',
+                                description: 'If true, also inspect @Module({ exports })',
+                            },
+                        },
+                        additionalProperties: false,
                     },
-                }],
+                ],
+                messages: {
+                    namedExport: 'BE-DOM-C-002: module entry must not export persistence-layer symbol "{{name}}". Expose Service APIs instead.',
+                    reExportSource: 'BE-DOM-C-002: module entry must not re-export from persistence-layer file "{{source}}".',
+                    nestModuleExport: 'BE-DOM-C-002: @Module({ exports }) must not include persistence-layer symbol "{{name}}".',
+                },
             },
             create(context) {
-                const filename = context.getFilename();
                 const options = context.options[0] || {};
-                const filePattern = new RegExp(options.filePattern || '\\.module\\.ts$');
-                const forbidden = options.forbiddenSuffixes || ['Repository', 'Entity'];
+                const filePattern = new RegExp(options.filePattern || '(\\.module\\.ts|/index\\.ts)$');
+                const forbiddenSuffixes = options.forbiddenSuffixes || ['Repository', 'Entity'];
+                const forbiddenSourcePatterns = (
+                    options.forbiddenSourcePatterns || ['\\.repository(\\.ts)?$', '\\.entity(\\.ts)?$']
+                ).map((pattern) => new RegExp(pattern));
+                const checkTypeOnlyExports = options.checkTypeOnlyExports ?? true;
+                const checkNestModuleExports = options.checkNestModuleExports ?? true;
+                const filename = context.getFilename();
 
                 if (!filePattern.test(filename)) return {};
-                const isForbidden = (name) =>
-                    name && forbidden.some((s) => name.endsWith(s));
 
                 return {
-                    // export class FooRepository {}
                     ExportNamedDeclaration(node) {
-                        if (node.declaration?.type === 'ClassDeclaration'
-                            && isForbidden(node.declaration.id?.name)) {
-                            context.report({
-                                node,
-                                message: `module.ts must not export "${node.declaration.id.name}"`,
-                            });
+                        if (node.exportKind === 'type' && !checkTypeOnlyExports) {
+                            return;
                         }
-                        // export { FooRepository } / export { FooRepository as X }
-                        for (const spec of node.specifiers || []) {
-                            if (isForbidden(spec.exported.name) || isForbidden(spec.local.name)) {
+
+                        if (node.declaration) {
+                            const declaration = node.declaration;
+                            const symbolName = (
+                                declaration.type === 'ClassDeclaration' ||
+                                declaration.type === 'TSInterfaceDeclaration' ||
+                                declaration.type === 'TSTypeAliasDeclaration'
+                            ) && declaration.id
+                                ? declaration.id.name
+                                : null;
+
+                            if (symbolName && isForbiddenSymbol(symbolName, forbiddenSuffixes)) {
                                 context.report({
-                                    node: spec,
-                                    message: `module.ts must not export "${spec.local.name}"`,
+                                    node: declaration,
+                                    messageId: 'namedExport',
+                                    data: { name: symbolName },
+                                });
+                            }
+
+                            return;
+                        }
+
+                        for (const specifier of node.specifiers || []) {
+                            const localName = specifier.local?.name;
+                            const exportedName = specifier.exported?.name;
+                            const forbiddenName = [localName, exportedName].find((name) => isForbiddenSymbol(name, forbiddenSuffixes));
+
+                            if (forbiddenName) {
+                                context.report({
+                                    node: specifier,
+                                    messageId: 'namedExport',
+                                    data: { name: forbiddenName },
                                 });
                             }
                         }
+
+                        if (node.source && isForbiddenSourcePath(node.source.value, forbiddenSourcePatterns)) {
+                            context.report({
+                                node: node.source,
+                                messageId: 'reExportSource',
+                                data: { source: node.source.value },
+                            });
+                        }
                     },
                     ExportAllDeclaration(node) {
-                        if (/\.repository(\.ts)?$|\.entity(\.ts)?$/.test(node.source.value)) {
+                        if (node.source && isForbiddenSourcePath(node.source.value, forbiddenSourcePatterns)) {
                             context.report({
                                 node,
-                                message: `module.ts must not re-export from "${node.source.value}"`,
+                                messageId: 'reExportSource',
+                                data: { source: node.source.value },
                             });
+                        }
+                    },
+                    Decorator(node) {
+                        if (!checkNestModuleExports) {
+                            return;
+                        }
+
+                        const moduleArg = getModuleDecoratorArgument(node);
+
+                        if (!moduleArg) {
+                            return;
+                        }
+
+                        const exportsProp = getObjectProperty(moduleArg, 'exports');
+
+                        if (!exportsProp) {
+                            return;
+                        }
+
+                        const identifiers = extractIdentifierNamesFromArray(exportsProp);
+
+                        for (const { name, node: idNode } of identifiers) {
+                            if (isForbiddenSymbol(name, forbiddenSuffixes)) {
+                                context.report({
+                                    node: idNode,
+                                    messageId: 'nestModuleExport',
+                                    data: { name },
+                                });
+                            }
                         }
                     },
                 };

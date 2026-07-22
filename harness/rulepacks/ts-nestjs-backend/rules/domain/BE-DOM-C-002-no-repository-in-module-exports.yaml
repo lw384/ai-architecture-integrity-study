@@ -1,5 +1,5 @@
 rule_id: BE-DOM-C-002-no-repository-in-module-exports
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: module-boundary
@@ -12,11 +12,11 @@ description: >
   implementations to other modules.
 
 evidence_sources:
-  - adapter: dep-cruiser
+  - adapter: eslint
     tool_rule_ids:
-      - "BE-DOM-C-002-no-repository-in-module-exports"
+      - "nestjs/no-repository-in-module-exports"
     match_condition:
-      event_type: dependency_edge_violation
+      event_type: file_structure_violation
     aggregation: any
 
 agent_facing_message: >
