@@ -8,11 +8,12 @@ TARGET_MODEL="claude-sonnet-4-6" # 在这里指定你要测试的模型
 EXPERIMENT_ID="run_${AGENT_NAME}_$(date +%Y%m%d_%H%M%S)"
 # 自动定位项目根目录
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)
-BASELINE_DIR="$ROOT_DIR/baseline"
+BASELINE_DIR="${BASELINE_DIR:-$ROOT_DIR/baseline}"
 WORKSPACE_DIR="$ROOT_DIR/experiment/workspace/$EXPERIMENT_ID"
 IMAGE_NAME="local/${AGENT_NAME}-sandbox:latest"
 
 echo "🚀 开始实验 | Agent: $AGENT_NAME | ID: $EXPERIMENT_ID"
+echo "📦 Baseline 源目录: $BASELINE_DIR"
 
 # 1. 检查环境变量
 if [ -z "${CLAUDE_API_KEY:-}" ]; then
@@ -27,6 +28,10 @@ docker build -t "$IMAGE_NAME" -f "$ROOT_DIR/experiment/instruments/agent-images/
 
 # 3. 准备隔离工作区
 echo "📁 [2/3] 克隆 baseline 到隔离工作区..."
+if [ ! -d "$BASELINE_DIR" ]; then
+  echo "❌ 错误: baseline 目录不存在: $BASELINE_DIR"
+  exit 1
+fi
 mkdir -p "$WORKSPACE_DIR"
 cp -a "$BASELINE_DIR/"* "$WORKSPACE_DIR/"
 

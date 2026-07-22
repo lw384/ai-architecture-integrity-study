@@ -18,14 +18,21 @@ export function DataTablePagination({
   onPageSizeChange,
 }) {
   return (
-    <div className="flex items-center justify-center gap-3 border-border pt-4">
-      <Typography variant="body2" className="text-text-muted">
+    <Stack
+      direction={{ xs: 'column', sm: 'row' }}
+      spacing={1.5}
+      alignItems="center"
+      justifyContent="center"
+      useFlexGap
+      sx={{ pt: 2, flexWrap: 'wrap' }}
+    >
+      <Typography variant="body2" color="text.secondary">
         {total === 0
           ? 'No matching records'
           : `Showing page ${page} of ${Math.max(totalPages, 1)} · ${total} records`}
       </Typography>
 
-      <FormControl size="small" className="min-w-[8.5rem]">
+      <FormControl size="small" sx={{ minWidth: '8.5rem' }}>
         <Select
           value={String(pageSize)}
           onChange={(event) => onPageSizeChange(Number(event.target.value))}
@@ -50,7 +57,7 @@ export function DataTablePagination({
           Next
         </Button>
       </Stack>
-    </div>
+    </Stack>
   );
 }
 

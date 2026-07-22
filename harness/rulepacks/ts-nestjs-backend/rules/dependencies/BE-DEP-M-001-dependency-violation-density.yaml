@@ -1,0 +1,31 @@
+rule_id: BE-DEP-M-001-dependency-violation-density
+version: 0.1.0
+layer: metrics
+category: architecture
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: dependency-violation-density
+
+description: >
+  Measures the density of illegal dependency edges in the backend module
+  graph. Combines two failure modes: (a) imports that cross the MVC
+  direction (controller → service → repository), and (b) cyclic import
+  chains between modules. Density is the sum of both violation counts
+  divided by the total number of import edges, giving a [0.0, 1.0] ratio
+  comparable across sprints regardless of codebase size growth.
+
+formula: (mvc_direction_violations + cyclic_dependency_count) / total_import_edges
+
+evidence_sources:
+  - adapter: dep-cruiser
+    tool_rule_ids:
+      - no-orphans
+      - no-circular
+    match_condition:
+      artifact: baseline/reports/depcruise-raw.json
+    aggregation: sum
+
+research_tags:
+  metric_family:
+  erosion_dimension:

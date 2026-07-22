@@ -1,0 +1,27 @@
+rule_id: FE-STATE-C-002-context-provider-only-in-controlled-locations
+version: 0.1.0
+layer: constraints
+category: state-management
+visibility: agent-visible
+severity: warning
+
+description: >
+  Context providers must be declared only in controlled locations such as app
+  shells, route layouts, or dedicated provider entry files.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - architecture/context-provider-only-in-controlled-locations
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Move this context provider to a controlled boundary such as app providers,
+  a route layout, or another approved entry point.
+
+research_tags:
+  drift_type: erosion
+  severity_class: soft_constraint
+  erosion_dimension: state-boundary

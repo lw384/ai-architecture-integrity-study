@@ -6,82 +6,170 @@ import subprocess
 import sys
 from pathlib import Path
 
-def run_harness_evaluation(
-    root_dir: Path,
-    trajectory_dir: Path,
-    run_id: str,
-    task_id: str,
-    pre_commit: str,
-    post_commit: str
-) -> dict:
-    """
-    Python wrapper 供实验流水线调用 Node.js Harness
-    """
-    harness_dir = root_dir / "harness"
-    eval_output_path = trajectory_dir / "evaluation.json"
-    manifest_path = trajectory_dir / "manifest.json"
 
-    # 1. 写入实验清单 (Manifest)，告诉 Harness 该评测什么
-    manifest_data = {
+def resolve_task_config_path(harness_dir: Path, task_id: str) -> Path:
+    task_config_path = harness_dir / "tasks" / f"{task_id}.eval.yaml"
+
+    if not task_config_path.exists():
+        raise FileNotFoundError(f"Harness task config not found: {task_config_path}")
+
+    return task_config_path
+
+
+def build_manifest_data(
+    task_id: str, baseline_commit: str, pre_commit: str, rulepack_id: str
+) -> dict:
+    return {
         "status": "ready_for_evaluation",
         "events": ["agent_started", "agent_completed"],
         "task_id": task_id,
-        "baseline_commit": "baseline-sha-000", # 在完整版中应从 Git 提取
+        "baseline_commit": baseline_commit,
         "pre_commit": pre_commit,
-        "rulepack_id": "rp_ts_react_nest_v1"
+        "rulepack_id": rulepack_id,
     }
-    manifest_path.write_text(json.dumps(manifest_data, indent=2), encoding="utf-8")
-    print(f"📄 [Evaluator] 实验清单 Manifest 已写入: {manifest_path}")
 
-    # 2. 构造调用 Node.js Harness 的命令
-    # (此时仍然使用 CLI 参数传递，后续阶段我们会在 evaluate.mjs 中彻底切换为读 manifest)
-    cmd = [
-        "node", "core/evaluate.mjs",
-        "--target", str(trajectory_dir),
-        "--task-config", "mock/mock_task_config.json", # 暂用 mock 配置兜底
-        "--rulepack", str(root_dir / "harness" / "rulepacks" / "js-ts-react"), # 若无此目录，可用上一阶段的 rulepacks
-        "--baseline", "baseline-sha-000",
-        "--pre-commit", pre_commit,
-        "--post-commit", post_commit,
-        "--run-id", run_id,
-        "--trajectory-id", trajectory_dir.name,
-        "--output", str(eval_output_path),
-        "--mode", "full"
+
+def write_manifest(manifest_path: Path, manifest_data: dict) -> None:
+    manifest_path.write_text(json.dumps(manifest_data, indent=2), encoding="utf-8")
+
+
+def build_harness_command(
+    harness_dir: Path,
+    trajectory_dir: Path,
+    manifest_path: Path,
+    task_config_path: Path,
+    eval_output_path: Path,
+    baseline_dir: Path,
+    run_id: str,
+    trajectory_id: str,
+    pre_commit: str,
+    post_commit: str,
+) -> list[str]:
+    return [
+        "node",
+        "core/evaluate.mjs",
+        "--target",
+        str(trajectory_dir),
+        "--manifest",
+        str(manifest_path),
+        "--task-config",
+        str(task_config_path),
+        "--rulepack",
+        str(harness_dir / "rulepacks"),
+        "--baseline",
+        str(baseline_dir),
+        "--pre-commit",
+        pre_commit,
+        "--post-commit",
+        post_commit,
+        "--run-id",
+        run_id,
+        "--trajectory-id",
+        trajectory_id,
+        "--output",
+        str(eval_output_path),
+        "--mode",
+        "full",
     ]
 
-    print(f"⏳ [Evaluator] 启动 Harness 自动化评估 (Timeout: 10 分钟)...")
+
+def run_harness_cli(
+    harness_dir: Path, cmd: list[str]
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        cmd,
+        cwd=str(harness_dir),
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=600,
+    )
+
+
+def read_evaluation_output(eval_output_path: Path) -> dict:
+    if not eval_output_path.exists():
+        print(
+            "🚨 [Evaluator] Harness exited with code 0 but did not produce evaluation.json."
+        )
+        sys.exit(1)
+
+    with open(eval_output_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def run_harness_evaluation(
+    root_dir: Path,
+    baseline_dir: Path,
+    trajectory_dir: Path,
+    artifact_dir: Path | None,
+    run_id: str,
+    task_id: str,
+    pre_commit: str,
+    post_commit: str,
+    baseline_commit: str = "baseline-sha-000",
+) -> dict:
+    """
+    Thin bridge from experiment runs into the harness CLI.
+    It resolves the task config, writes a run manifest, invokes evaluate.mjs,
+    and returns the resulting evaluation artifact.
+    """
+    harness_dir = root_dir / "harness"
+    output_dir = artifact_dir if artifact_dir is not None else trajectory_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
+    eval_output_path = output_dir / "evaluation.json"
+    manifest_path = output_dir / "manifest.json"
+    task_config_path = resolve_task_config_path(harness_dir, task_id)
+
+    # Manifest currently still requires a rulepack_id even though actual rulepack
+    # selection now comes from the task config.
+    manifest_data = build_manifest_data(
+        task_id=task_id,
+        baseline_commit=baseline_commit,
+        pre_commit=pre_commit,
+        rulepack_id=f"task::{task_id}",
+    )
+    write_manifest(manifest_path, manifest_data)
+    print(f"📄 [Evaluator] Manifest written to: {manifest_path}")
+    print(f"🧭 [Evaluator] Using task config: {task_config_path}")
+
+    cmd = build_harness_command(
+        harness_dir=harness_dir,
+        trajectory_dir=trajectory_dir,
+        manifest_path=manifest_path,
+        task_config_path=task_config_path,
+        eval_output_path=eval_output_path,
+        baseline_dir=baseline_dir,
+        run_id=run_id,
+        trajectory_id=trajectory_dir.name,
+        pre_commit=pre_commit,
+        post_commit=post_commit,
+    )
+
+    print("⏳ [Evaluator] Starting harness evaluation (timeout: 10 minutes)...")
 
     try:
-        # cwd=harness_dir: 确保 Harness 内部加载 module 的相对路径完全正确
-        result = subprocess.run(
-            cmd,
-            cwd=str(harness_dir),
-            capture_output=True,
-            text=True,
-            timeout=600  # 10分钟超时，防止某一个 metrics 工具(如 dep-cruiser)死锁
-        )
+        result = run_harness_cli(harness_dir, cmd)
 
-        # 3. 严格的退出码 (Exit Code) 语义处理
         if result.returncode == 0:
-            print(f"✅ [Evaluator] 评估顺利完成。")
+            print("✅ [Evaluator] Harness evaluation completed.")
         elif result.returncode == 1:
-            print(f"🚨 [Evaluator] 致命错误：Harness 内部 Bug！\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}")
-            sys.exit(1)  # 必须崩溃 Pipeline，停止实验
+            print(
+                f"🚨 [Evaluator] Fatal harness failure.\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
+            )
+            sys.exit(1)
         elif result.returncode == 2:
-            print(f"⚠️ [Evaluator] 跳过：Target 目录不合法或 Manifest 拒绝评估。\nSTDERR: {result.stderr}")
-            return {}    # 跳过本次评估，但不崩溃整体实验循环
+            print(
+                f"⚠️ [Evaluator] Harness skipped evaluation.\nSTDERR: {result.stderr}"
+            )
+            return {}
         else:
-            print(f"💥 [Evaluator] 崩溃：遭遇未知退出码 ({result.returncode})。\nSTDERR: {result.stderr}")
+            print(
+                f"💥 [Evaluator] Unknown harness exit code ({result.returncode}).\nSTDERR: {result.stderr}"
+            )
             sys.exit(result.returncode)
 
     except subprocess.TimeoutExpired:
-        print("⏰ [Evaluator] 崩溃：Harness 评估超过 10 分钟未返回，已强制斩断进程防卡死！")
+        print("⏰ [Evaluator] Harness evaluation timed out after 10 minutes.")
         sys.exit(1)
 
-    # 4. 提取并返回生成的评价产物
-    if eval_output_path.exists():
-        with open(eval_output_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    else:
-        print("🚨 [Evaluator] Harness 退出码为 0，但未生成 evaluation.json 文件！")
-        sys.exit(1)
+    return read_evaluation_output(eval_output_path)

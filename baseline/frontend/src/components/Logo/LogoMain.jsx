@@ -1,12 +1,17 @@
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+
 import LogoIcon from './LogoIcon';
 
 // ==============================|| LOGO PLACEHOLDER ||============================== //
 
 export default function LogoMain() {
   return (
-    <span className="inline-flex items-center gap-2">
+    <Stack component="span" direction="row" spacing={1} alignItems="center">
       <LogoIcon />
-      <span className="whitespace-nowrap text-lg font-bold text-text">CRM Baseline</span>
-    </span>
+      <Typography component="span" variant="h6" fontWeight={700} noWrap color="text.primary">
+        CRM Baseline
+      </Typography>
+    </Stack>
   );
 }

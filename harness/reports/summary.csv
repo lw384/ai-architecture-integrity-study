@@ -1,6 +1,0 @@
-timestamp,name,targetDir,loc,arch_violations,arch_violationsPerKLOC,arch_cycles,arch_cyclesPerKLOC,arch_moduleCount,arch_dependencyCount,arch_graphDensity,lint_errors,lint_errorsPerKLOC,lint_warnings,lint_warningsPerKLOC,test_total,test_passed,test_failed,test_passRate,security_findings,security_findingsPerKLOC,security_skipped
-2026-05-29T16:01:52.039Z,backend,/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline-ai/Gemini/generation-1/backend,100,0,0,0,0,0,0,0,0,0,5,50,0,0,0,,,,true
-2026-05-29T16:02:31.557Z,backend,/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline-ai/Gemini/generation-1/backend,100,0,0,0,0,0,0,0,0,0,5,50,0,0,0,,,,true
-2026-05-29T16:06:45.270Z,backend,/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline-ai/Gemini/generation-1/backend,100,0,0,0,0,5,1,0.05,0,0,5,50,0,0,0,,,,true
-2026-05-31T15:49:38.655Z,backend,/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline/backend,1371,0,0,0,0,36,50,0.0397,8,5.84,0,0,0,0,0,,,,true
-2026-05-31T15:51:57.159Z,backend,/Users/luowei/project/ai-architecture-integrity-study/CRM/baseline/backend,1371,0,0,0,0,36,50,0.0397,0,0,0,0,0,0,0,,,,true

@@ -2,7 +2,7 @@ import process from 'node:process';
 import importPlugin from 'eslint-plugin-import';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-
+import { nestjsStructPlugin } from './rules/index.js';
 export default [
     {
         ignores: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**'],
@@ -30,6 +30,7 @@ export default [
         plugins: {
             import: importPlugin,
             '@typescript-eslint': tsPlugin,
+            nestjs: nestjsStructPlugin,
         },
         rules: {
             'no-unused-vars': 'off',
@@ -41,9 +42,27 @@ export default [
             'import/no-restricted-paths': ['error', {
                 basePath: process.cwd(),
                 zones: [
-                    { target: './src/controllers/**/*', from: './src/dto/**/*' },
-                    { target: './src/services/**/*', from: './src/entities/**/*' },
+                    // BE-DEP-C-001: Infrastructure isolation
+                    { target: './src/common/**/*', from: './src/modules/**/*', message: 'BE-DEP-C-001: common must not depend on modules' },
+                    { target: './src/core/**/*', from: './src/modules/**/*', message: 'BE-DEP-C-001: core must not depend on modules' },
+
+                    // BE-DEP-C-002: Intra-module layering
+                    { target: './src/modules/**/*.controller.ts', from: './src/modules/**/*.controller.ts', message: 'BE-DEP-C-002: controllers should not import from other controllers' },
+                    { target: './src/modules/**/*.service.ts', from: './src/modules/**/*.controller.ts', message: 'BE-DEP-C-002: services must not depend on controllers' },
+                    { target: './src/modules/**/*.entity.ts', from: './src/modules/**/*.service.ts', message: 'BE-DEP-C-002: entities must not depend on services' },
+                    { target: './src/modules/**/*.entity.ts', from: './src/modules/**/*.controller.ts', message: 'BE-DEP-C-002: entities must not depend on controllers' },
+                    { target: './src/modules/**/*.entity.ts', from: './src/modules/**/*.repository.ts', message: 'BE-DEP-C-002: entities must not depend on repositories' },
+
+                    // BE-DEP-C-003: Framework layer purity
+                    { target: './src/common/guards/**/*', from: './src/modules/**/*.entity.ts', message: 'BE-DEP-C-003: guards must not depend on specific entities' },
+                    { target: './src/common/interceptors/**/*', from: './src/modules/**/*.entity.ts', message: 'BE-DEP-C-003: interceptors must not depend on specific entities' },
+                    { target: './src/common/filter/**/*', from: './src/modules/**/*.entity.ts', message: 'BE-DEP-C-003: filters must not depend on specific entities' },
                 ],
+            }],
+            'nestjs/module-composition': ['error', {
+                require_controller: true,
+                require_service: true,
+                require_repository: false,
             }],
         },
     },

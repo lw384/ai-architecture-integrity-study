@@ -1,8 +1,7 @@
-import { Alert, CircularProgress } from '@mui/material';
+import { Alert, Box, CircularProgress, Stack } from '@mui/material';
 
 import { EmptyState } from '../EmptyState/EmptyState';
 import { DataTableToolbar } from '../Toolbar/Toolbar';
-import styles from './Shell.module.scss';
 
 export function DataTableShell({
   actions,
@@ -23,7 +22,7 @@ export function DataTableShell({
   title,
 }) {
   return (
-    <section className={styles.shell}>
+    <Stack component="section" spacing={2.5}>
       <DataTableToolbar
         actions={actions}
         description={description}
@@ -36,11 +35,11 @@ export function DataTableShell({
         title={title}
       />
 
-      <div className={styles.content}>
+      <Stack spacing={2}>
         {loading ? (
-          <div className={styles.loadingState}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 6 }}>
             <CircularProgress />
-          </div>
+          </Box>
         ) : null}
 
         {!loading && error ? <Alert severity="error">{error}</Alert> : null}
@@ -52,8 +51,8 @@ export function DataTableShell({
         {!loading && !error && !isEmpty ? children : null}
 
         {!loading && !error && pagination ? pagination : null}
-      </div>
-    </section>
+      </Stack>
+    </Stack>
   );
 }
 

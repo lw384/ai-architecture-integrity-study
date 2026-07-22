@@ -1,4 +1,5 @@
 // material-ui
+import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
@@ -20,7 +21,7 @@ export default function HeaderContent() {
   return (
     <>
       {!downLG && <Search />}
-      {downLG && <div className="ml-1 w-full" />}
+      {downLG && <Box sx={{ ml: 1, width: '100%' }} />}
       <IconButton
         component={Link}
         href="https://github.com/lw384/ai-architecture-integrity-study"
@@ -28,7 +29,13 @@ export default function HeaderContent() {
         disableRipple
         color="secondary"
         title="Download Free Version"
-        className="bg-surface-subtle text-text hover:bg-white/80 dark:hover:bg-white/10"
+        sx={{
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          '&:hover': {
+            bgcolor: 'action.hover',
+          },
+        }}
       >
         <GithubOutlined />
       </IconButton>

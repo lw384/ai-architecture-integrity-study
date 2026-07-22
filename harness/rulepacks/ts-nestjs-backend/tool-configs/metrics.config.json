@@ -1,8 +1,29 @@
 {
   "metrics": {
-    "BE-DEP-M-001-dependency-graph-size": {
+    "BE-STRUCT-M-001-module-composition-violation-ratio": {
+      "module_roots": [
+        "backend/src/module",
+        "backend/src/modules",
+        "src/module",
+        "src/modules"
+      ],
+      "raw_artifact_path": "artifacts/metrics/module-composition-violation-ratio.json"
+    },
+    "BE-DEP-M-001-dependency-violation-density": {
       "report_path": "reports/depcruise-raw.json",
-      "raw_artifact_path": "artifacts/metrics/dependency-graph-size.json"
+      "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json",
+      "allowed_transitions": {
+        "controller": [
+          "service"
+        ],
+        "service": [
+          "service",
+          "repository"
+        ],
+        "repository": [
+          "repository"
+        ]
+      }
     }
   }
 }

@@ -12,15 +12,17 @@
    envelope, the POST double-role convention, status codes, pagination,
    null semantics, timestamps, naming. Read this first — every other
    document assumes it.
-2. **[company.md](./company.md)** — Company resource. Root aggregate
+2. **[errors.md](./errors.md)** — current backend error envelope, business
+   error code registry, validation/UUID error flow, and where to change them.
+3. **[company.md](./company.md)** — Company resource. Root aggregate
    (formerly "Customer" in v1).
-3. **[contact.md](./contact.md)** — Contact resource. Child of Company.
-4. **[interaction.md](./interaction.md)** — Interaction resource. Child of
+4. **[contact.md](./contact.md)** — Contact resource. Child of Company.
+5. **[interaction.md](./interaction.md)** — Interaction resource. Child of
    Company, **optionally** of Contact (new in v2). Feeds
    `Company.lastContactedAt`.
-5. **[deal.md](./deal.md)** — Deal resource. Child of Company, optionally
+6. **[deal.md](./deal.md)** — Deal resource. Child of Company, optionally
    references Contact. **Only exists in `baseline-v1`.**
-6. **[cross-entity.md](./cross-entity.md)** — rules spanning multiple
+7. **[cross-entity.md](./cross-entity.md)** — rules spanning multiple
    entities: referential integrity, cross-references, state machines, the
    L5b conflict probe, and the full error-code registry. Read this after
    all entity specs — it is where the v2 migration's two most consequential

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import ScrollTop from 'components/ScrollTop';
@@ -25,13 +26,13 @@ export default function Layout() {
   }, [downXL, setMobileSidebarOpen, setSidebarCollapsed]);
 
   return (
-    <div className="flex min-h-screen w-full bg-surface-subtle text-text">
+    <Box sx={{ display: 'flex', minHeight: '100vh', width: '100%', bgcolor: 'background.default', color: 'text.primary' }}>
       <ScrollTop />
       <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <Box sx={{ display: 'flex', minWidth: 0, flex: 1, flexDirection: 'column' }}>
         <Navbar />
         <AppMain />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

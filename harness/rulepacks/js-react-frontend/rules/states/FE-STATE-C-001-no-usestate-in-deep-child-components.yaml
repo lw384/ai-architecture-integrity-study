@@ -1,0 +1,27 @@
+rule_id: FE-STATE-C-001-no-usestate-in-deep-child-components
+version: 0.1.0
+layer: constraints
+category: state-management
+visibility: agent-visible
+severity: warning
+
+description: >
+  useState should not appear in deep child components. Local state must stay in
+  controlled component layers and be pushed down through props when possible.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - architecture/no-usestate-in-deep-child-components
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Avoid useState in deep child components. Hoist this state to a controlled
+  parent component or move the interaction into a dedicated state boundary.
+
+research_tags:
+  drift_type: erosion
+  severity_class: soft_constraint
+  erosion_dimension: state-locality

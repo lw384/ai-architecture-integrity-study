@@ -1,5 +1,7 @@
 import {
+  Autocomplete,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -8,9 +10,11 @@ import {
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useCompanyList } from '../companies/companyQueries';
 
 
 const emptyValues = {
+  companyId: '',
   name: '',
   email: '',
   phone: '',
@@ -33,12 +37,23 @@ export function ContactFormDialog({
   open,
 }) {
   const [values, setValues] = useState(emptyValues);
-  const [touched, setTouched] = useState({ name: false, email: false, phone: false });
+  const [touched, setTouched] = useState({
+    companyId: false,
+    name: false,
+    email: false,
+    phone: false,
+  });
+  const companiesQuery = useCompanyList({ page: 1, pageSize: 100 });
+  const companyOptions = companiesQuery.data?.items ?? [];
+  const selectedCompany = companyOptions.find(
+    (company) => company.id === values.companyId,
+  ) ?? null;
 
   const phoneDigits = values.phone?.replace(/[^0-9]/g, '') || '';
 
   // 校验逻辑：只针对姓名、邮箱、手机号三项必填项
   const errors = {
+    companyId: !values.companyId ? 'Company is required.' : '',
     name: !values.name?.trim() ? 'Name is required.' : '',
     email: !values.email?.trim()
       ? 'Email is required.'
@@ -54,7 +69,8 @@ export function ContactFormDialog({
           : '',
   };
 
-  const isFormValid = !errors.name && !errors.email && !errors.phone;
+          const isFormValid =
+            !errors.companyId && !errors.name && !errors.email && !errors.phone;
 
   useEffect(() => {
     if (!open) {
@@ -66,7 +82,7 @@ export function ContactFormDialog({
       ...initialValues,
       lastContactedAt: formatForDatetimeLocal(initialValues?.lastContactedAt),
     });
-    setTouched({ name: false, email: false, phone: false });
+    setTouched({ companyId: false, name: false, email: false, phone: false });
   }, [initialValues, open]);
 
   const handleChange = (field) => (event) => {
@@ -77,22 +93,28 @@ export function ContactFormDialog({
     setTouched((current) => ({ ...current, [field]: true }));
   };
 
+  const handleCompanyChange = (_, company) => {
+    setValues((current) => ({
+      ...current,
+      companyId: company?.id || '',
+    }));
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setTouched({ name: true, email: true, phone: true });
+    setTouched({ companyId: true, name: true, email: true, phone: true });
 
     if (!isFormValid) {
       return;
     }
 
     const payload = {
+      companyId: values.companyId,
       name: values.name.trim(),
       email: values.email.trim(),
       phone: values.phone.trim(),
       role: values.role?.trim() || null,
       lastContactedAt: values.lastContactedAt ? new Date(values.lastContactedAt).toISOString() : null,
-
-      ...(initialValues?.companyId ? { companyId: initialValues.companyId } : {})
     };
 
     await onSubmit(payload);
@@ -105,8 +127,9 @@ export function ContactFormDialog({
       </DialogTitle>
 
       <DialogContent className="!p-5">
-        <Stack component="form" spacing={2.5} onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          <TextField
+
+        <Stack component="form" spacing={2} onSubmit={handleSubmit} >
+            <TextField
             autoFocus
             required
             label="Name"
@@ -116,6 +139,51 @@ export function ContactFormDialog({
             error={touched.name && Boolean(errors.name)}
             helperText={touched.name ? errors.name : undefined}
           />
+
+          <Autocomplete
+            fullWidth
+            options={companyOptions}
+            value={selectedCompany}
+            loading={companiesQuery.isLoading}
+            onBlur={handleBlur('companyId')}
+            onChange={handleCompanyChange}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            getOptionLabel={(option) => option?.name || ''}
+            noOptionsText={companiesQuery.isLoading ? 'Loading companies...' : 'No companies found'}
+            sx={{
+              '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+                padding: '0 !important',
+              },
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                required
+                label="Company"
+                error={touched.companyId && Boolean(errors.companyId)}
+                helperText={
+                  touched.companyId
+                    ? errors.companyId
+                    : companiesQuery.isError
+                      ? 'Failed to load companies.'
+                      : undefined
+                }
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {companiesQuery.isLoading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+          />
+
+
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
