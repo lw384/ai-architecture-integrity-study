@@ -13,10 +13,20 @@ subjects:
     enabled:
       constraints:
         - BE-STRUCT-C-001
-        - BE-STRUCT-C-002
-        - BE-STRUCT-C-003
+        - BE-DEP-C-001
+        - BE-DEP-C-002
+        - BE-DEP-C-003
+        - BE-DEP-C-004
+        - BE-DOM-C-001
+        - BE-DOM-C-002
+        - BE-ERR-C-001
+        - BE-ERR-C-002
+        - BE-ERR-C-003
       metrics:
+        - BE-STRUCT-M-001
         - BE-DEP-M-001
+        - BE-DOM-M-001
+        - BE-ERR-M-001
       judgments: []
     thresholds:
       BE-DEP-M-001:
@@ -34,24 +44,11 @@ subjects:
         - FE-COM-C-002
         - FE-STATE-C-001
         - FE-STATE-C-002
-      metrics:
-        - FE-DEP-M-001
+        - FE-ROUTE-C-001
+        - FE-ROUTE-C-002
+      metrics: []
       judgments: []
-    thresholds:
-      FE-DEP-M-001:
-        warn_at: 5
-        fail_at: 10
     expected_diff_scope: []
-
-cross_stack:
-  rulepack_id: cross
-  rulepack_version: "0.1.0"
-  enabled:
-    constraints:
-      - CROSS-TYPE-C-001
-      - CROSS-EP-C-001
-    metrics: []
-    judgments: []
 
 judgment_config:
   model: claude-sonnet-4-6

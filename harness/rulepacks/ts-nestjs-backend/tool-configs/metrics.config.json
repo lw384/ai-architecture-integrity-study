@@ -1,8 +1,49 @@
 {
   "metrics": {
-    "BE-DEP-M-001-dependency-graph-size": {
+    "BE-STRUCT-M-001-module-composition-violation-ratio": {
+      "module_roots": [
+        "backend/src/module",
+        "backend/src/modules",
+        "src/module",
+        "src/modules"
+      ],
+      "raw_artifact_path": "artifacts/metrics/module-composition-violation-ratio.json"
+    },
+    "BE-DEP-M-001-dependency-violation-density": {
       "report_path": "reports/depcruise-raw.json",
-      "raw_artifact_path": "artifacts/metrics/dependency-graph-size.json"
+      "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json",
+      "allowed_transitions": {
+        "controller": [
+          "service"
+        ],
+        "service": [
+          "service",
+          "repository"
+        ],
+        "repository": [
+          "repository"
+        ]
+      }
+    },
+    "BE-DOM-M-001-cross-module-deep-import-count": {
+      "report_path": "reports/depcruise-raw.json",
+      "source_rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+      "module_root_pattern": "^src\\/modules?\\/([^/]+)\\/",
+      "raw_artifact_path": "artifacts/metrics/cross-module-deep-import-count.json"
+    },
+    "BE-ERR-M-001-exception-unification-violation-density": {
+      "source_rule_ids": [
+        "BE-ERR-C-001-no-http-exception-in-service",
+        "BE-ERR-C-002-throw-only-app-exception",
+        "BE-ERR-C-003-no-silent-catch"
+      ],
+      "weights": {
+        "BE-ERR-C-001-no-http-exception-in-service": 1,
+        "BE-ERR-C-002-throw-only-app-exception": 1,
+        "BE-ERR-C-003-no-silent-catch": 1
+      },
+      "service_root": "src",
+      "raw_artifact_path": "artifacts/metrics/exception-unification-violation-density.json"
     }
   }
 }

@@ -101,6 +101,7 @@ def run_harness_evaluation(
     root_dir: Path,
     baseline_dir: Path,
     trajectory_dir: Path,
+    artifact_dir: Path | None,
     run_id: str,
     task_id: str,
     pre_commit: str,
@@ -113,8 +114,10 @@ def run_harness_evaluation(
     and returns the resulting evaluation artifact.
     """
     harness_dir = root_dir / "harness"
-    eval_output_path = trajectory_dir / "evaluation.json"
-    manifest_path = trajectory_dir / "manifest.json"
+    output_dir = artifact_dir if artifact_dir is not None else trajectory_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
+    eval_output_path = output_dir / "evaluation.json"
+    manifest_path = output_dir / "manifest.json"
     task_config_path = resolve_task_config_path(harness_dir, task_id)
 
     # Manifest currently still requires a rulepack_id even though actual rulepack

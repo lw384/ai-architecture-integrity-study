@@ -17,10 +17,7 @@ import EditOutlined from '@ant-design/icons/EditOutlined';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 
 function formatDate(value) {
-  if (!value) {
-    return '—';
-  }
-
+  if (!value) return '—';
   return new Intl.DateTimeFormat('en', {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -39,6 +36,71 @@ const statusLabels = {
   "2": 'Pending',
 };
 
+const industryLabels = {
+  TECHNOLOGY: 'Technology',
+  FINANCE: 'Finance',
+  HEALTHCARE: 'Healthcare',
+  RETAIL: 'Retail',
+  OTHER: 'Other',
+};
+
+
+function StatusCell({ status }) {
+  if (!status) {
+    return <TableCell>—</TableCell>;
+  }
+
+  return (
+    <TableCell>
+      <Chip
+        label={statusLabels[status] || 'Unknown'}
+        color={statusColors[status] || 'default'}
+        size="small"
+      />
+    </TableCell>
+  );
+}
+
+function IndustryCell({ industry }) {
+  if (!industry) {
+    return <TableCell>—</TableCell>;
+  }
+
+  return (
+    <TableCell>
+      <Chip
+        label={industryLabels[industry] || industry}
+        size="small"
+        variant="outlined" // 使用描边样式与 Status 区分开
+      />
+    </TableCell>
+  );
+}
+
+function ActionCell({ company, onView, onEdit, onDelete }) {
+  return (
+    <TableCell align="right">
+      <Stack direction="row" spacing={1} justifyContent="flex-end">
+        <Button
+          size="small"
+          startIcon={<EyeOutlined />}
+          onClick={() => onView(company)}
+        >
+          View
+        </Button>
+        <IconButton onClick={() => onEdit(company)} aria-label="edit">
+          <EditOutlined />
+        </IconButton>
+        <IconButton color="error" onClick={() => onDelete(company)} aria-label="delete">
+          <DeleteOutlined />
+        </IconButton>
+      </Stack>
+    </TableCell>
+  );
+}
+
+// main component
+
 export function CompanyTable({ companies, onDelete, onEdit, onView }) {
   return (
     <TableContainer component={Paper} className="crm-table-shell">
@@ -47,6 +109,7 @@ export function CompanyTable({ companies, onDelete, onEdit, onView }) {
           <TableRow>
             <TableCell>Company</TableCell>
             <TableCell>Email</TableCell>
+            <TableCell>Industry</TableCell> {/* 新增了行业列头 */}
             <TableCell>Status</TableCell>
             <TableCell>Last contacted</TableCell>
             <TableCell>Created</TableCell>
@@ -64,33 +127,23 @@ export function CompanyTable({ companies, onDelete, onEdit, onView }) {
                   </Typography>
                 </Stack>
               </TableCell>
+
               <TableCell>{company.email || '—'}</TableCell>
-              <TableCell>
-                <Chip
-                  label={statusLabels[company.status]}
-                  color={statusColors[company.status]}
-                  size="small"
-                />
-              </TableCell>
+
+              <IndustryCell industry={company.industry} />
+
+              <StatusCell status={company.status} />
+
               <TableCell>{formatDate(company.lastContactedAt)}</TableCell>
+
               <TableCell>{formatDate(company.createdAt)}</TableCell>
-              <TableCell align="right">
-                <Stack direction="row" spacing={1} justifyContent="flex-end">
-                  <Button
-                    size="small"
-                    startIcon={<EyeOutlined />}
-                    onClick={() => onView(company)}
-                  >
-                    View
-                  </Button>
-                  <IconButton onClick={() => onEdit(company)}>
-                    <EditOutlined />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => onDelete(company)}>
-                    <DeleteOutlined />
-                  </IconButton>
-                </Stack>
-              </TableCell>
+
+              <ActionCell
+                company={company}
+                onView={onView}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
             </TableRow>
           ))}
         </TableBody>

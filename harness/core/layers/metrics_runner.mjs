@@ -85,7 +85,15 @@ async function loadMetricRun(rulepackDir, ruleDef) {
     return { run, version: mod.VERSION || ruleDef.version || '1.0.0' };
 }
 
-async function runMetricAdapter({ targetDir, baselineDir, rulepackDir, ruleDef, adapterEntry, adapterRegistry }) {
+async function runMetricAdapter({
+    targetDir,
+    baselineDir,
+    rulepackDir,
+    ruleDef,
+    adapterEntry,
+    adapterRegistry,
+    constraintsLayer,
+}) {
     const [adapterId, adapter] = adapterEntry;
     const reg = adapterRegistry?.get(adapterId);
     let run = reg?.run;
@@ -107,6 +115,7 @@ async function runMetricAdapter({ targetDir, baselineDir, rulepackDir, ruleDef, 
     const result = await run({
         targetDir,
         baselineDir,
+        constraintsLayer,
         rule: ruleDef,
         adapterConfig: {
             configPath,
@@ -176,7 +185,14 @@ function makeMetricResult(ruleDef, execResult, status, findings, version) {
     };
 }
 
-export async function runMetrics({ targetDir, baselineDir, rulepackDir, taskConfig, adapterRegistry }) {
+export async function runMetrics({
+    targetDir,
+    baselineDir,
+    rulepackDir,
+    taskConfig,
+    adapterRegistry,
+    constraintsLayer,
+}) {
     const manifest = readManifest(rulepackDir);
     const rulePaths = pickMetricPaths(manifest, taskConfig);
     const defs = loadMetricDefs(rulepackDir, rulePaths);
@@ -195,10 +211,16 @@ export async function runMetrics({ targetDir, baselineDir, rulepackDir, taskConf
                     ruleDef,
                     adapterEntry,
                     adapterRegistry,
+                    constraintsLayer,
                 })
                 : await (async () => {
                     const { run, version } = await loadMetricRun(rulepackDir, ruleDef);
-                    const execResult = await run({ targetDir, baselineDir, rule: ruleDef });
+                    const execResult = await run({
+                        targetDir,
+                        baselineDir,
+                        constraintsLayer,
+                        rule: ruleDef,
+                    });
 
                     return { execResult, version };
                 })();

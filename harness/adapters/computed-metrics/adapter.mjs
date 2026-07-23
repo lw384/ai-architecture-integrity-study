@@ -79,7 +79,14 @@ function normalizeMetricResult(result = {}) {
     };
 }
 
-export async function runAdapter({ targetDir, baselineDir, rule, adapterConfig, toolVersion }) {
+export async function runAdapter({
+    targetDir,
+    baselineDir,
+    constraintsLayer,
+    rule,
+    adapterConfig,
+    toolVersion,
+}) {
     const startedAt = Date.now();
     const config = readConfig(adapterConfig?.configPath);
     const ruleConfig = pickRuleConfig(config, rule);
@@ -87,6 +94,7 @@ export async function runAdapter({ targetDir, baselineDir, rule, adapterConfig, 
     const result = await run({
         targetDir,
         baselineDir,
+        constraintsLayer,
         rule,
         config: ruleConfig,
     });

@@ -1,4 +1,12 @@
 import { resolveMetricReports } from './_shared/report-io.mjs';
+import {
+    appendBaselineDeltaFinding,
+    buildMetricResult,
+    computeDelta,
+} from './_shared/metric-result.mjs';
+
+// Metric implementation key: instability.
+// Rule linkage is provided by rule YAML files that set implementation: instability.
 
 export const VERSION = '1.0.0';
 
@@ -58,21 +66,17 @@ export async function run({ targetDir, baselineDir, config }) {
     });
     const baselineValue = calcInstability(baselineReport);
     const targetValue = calcInstability(targetReport);
-    const delta = targetValue - baselineValue;
-    const findings = [];
+    const delta = computeDelta(targetValue, baselineValue, 6);
+    const findings = appendBaselineDeltaFinding([], delta, {
+        formatDelta: (value) => value.toFixed(4),
+    });
 
-    if (delta > 0) {
-        findings.push(`Instability increased by ${delta.toFixed(4)} from baseline.`);
-    }
-
-    return {
-        score: {
-            value: targetValue,
-            unit: 'ratio',
-            direction: 'lower_is_better',
-        },
-        delta_vs_baseline: delta,
+    return buildMetricResult({
+        value: targetValue,
+        unit: 'ratio',
+        direction: 'lower_is_better',
+        delta,
         findings,
-        raw_artifact_path: config.raw_artifact_path,
-    };
+        rawArtifactPath: config.raw_artifact_path,
+    });
 }

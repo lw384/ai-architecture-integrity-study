@@ -154,6 +154,7 @@ async function runSubjectEvaluations({ subjectPlans, taskConfig, runtimeOptions 
       rulepackDir: subjectPlan.rulepackDir,
       taskConfig: legacyTaskConfig,
       adapterRegistry,
+      constraintsLayer: constraints,
     }).catch(() => []);
 
     // Judgments are temporarily disabled at the orchestrator level.

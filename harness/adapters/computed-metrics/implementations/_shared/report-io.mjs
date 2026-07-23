@@ -19,11 +19,37 @@ function readReport(rootDir, reportPath) {
     return report;
 }
 
-export function resolveMetricReports({ targetDir, baselineDir, config = {} }) {
+export function readRequiredReport(rootDir, reportPath, label = 'Target dep-cruiser report') {
+    if (!rootDir) {
+        throw new Error(`${label} root directory is required.`);
+    }
+
+    return readReport(rootDir, reportPath);
+}
+
+export function readOptionalReport(rootDir, reportPath) {
+    if (!rootDir) {
+        return null;
+    }
+
+    const fullPath = path.join(rootDir, reportPath);
+
+    if (!fs.existsSync(fullPath)) {
+        return null;
+    }
+
+    const report = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+    ensureReportShape(report, `Report at ${fullPath}`);
+    return report;
+}
+
+export function resolveMetricReports({ targetDir, baselineDir, config = {}, baselineOptional = false }) {
     const reportPath = config.report_path ?? 'reports/depcruise-raw.json';
 
     return {
-        baselineReport: readReport(baselineDir, reportPath),
-        targetReport: readReport(targetDir, reportPath),
+        baselineReport: baselineOptional
+            ? readOptionalReport(baselineDir, reportPath)
+            : readRequiredReport(baselineDir, reportPath, 'Baseline dep-cruiser report'),
+        targetReport: readRequiredReport(targetDir, reportPath),
     };
 }

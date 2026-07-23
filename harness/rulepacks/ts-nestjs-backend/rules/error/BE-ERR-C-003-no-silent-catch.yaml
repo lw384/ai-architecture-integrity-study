@@ -1,0 +1,29 @@
+rule_id: BE-ERR-C-003-no-silent-catch
+version: 0.1.0
+tier: 1
+layer: constraints
+category: error-handling
+visibility: agent-visible
+severity: error
+
+description: >
+  Catch blocks must not silently swallow errors.
+  Empty catch blocks, log-only catches, or catches that ignore the error
+  parameter are forbidden in service files.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - "nestjs/no-silent-catch"
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Silent catch detected. Re-throw the error, wrap it in AppException,
+  or handle it explicitly with meaningful control flow.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  pattern: silent-failure

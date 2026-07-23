@@ -1,0 +1,28 @@
+rule_id: BE-DOM-M-001-cross-module-deep-import-count
+version: 0.1.0
+layer: metrics
+category: module-boundary
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: cross-module-deep-import-count
+
+description: >
+  Counts cross-module deep imports that bypass module entry files
+  (*.module.ts or index.ts). This metric reuses the same dep-cruiser
+  violation source as BE-DOM-C-001 and reports the absolute number
+  of violating import edges.
+
+formula: count(import edges violating BE-DOM-C-001)
+
+agent_facing_message: >
+  Cross-module deep import count is {value}. Reduce imports that bypass
+  module entry files to protect module boundaries.
+
+research_tags:
+  metric_family: module-boundary
+  erosion_dimension: deep-import-bypass
+
+methodological_note: >
+  This metric counts dep-cruiser dependency edges tagged with
+  BE-DOM-C-001-no-cross-module-deep-import and compares against baseline.

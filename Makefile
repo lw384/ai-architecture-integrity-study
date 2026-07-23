@@ -1,4 +1,4 @@
-.PHONY: help install test lint eval analyze figures smoke clean
+.PHONY: help install test lint eval eval-baseline analyze figures smoke clean
 
 help:  ## 列出所有可用命令
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -22,8 +22,8 @@ test-harness:  ## 只测 harness
 lint:  ## 运行所有 lint
 	pnpm lint
 
-eval:  ## 用 harness 评估 baseline,产出 harness/reports/
-	pnpm eval -- --target baseline/backend
+eval-baseline:  ## 只跑 baseline 评估并归档到 reports/baselines/baseline_时间戳
+	python3 experiment/instruments/agent-runners/run_baseline_eval.py --task Base
 
 analyze:  ## 运行 Python 分析脚本
 	@if [ -d experiment/venv ]; then \
@@ -50,4 +50,5 @@ clean:  ## 清理所有生成物
 	find . -name node_modules -type d -prune -exec rm -rf {} \; 2>/dev/null || true
 	find . -name __pycache__ -type d -prune -exec rm -rf {} \; 2>/dev/null || true
 	find . -name dist -type d -prune -exec rm -rf {} \; 2>/dev/null || true
+	rm -rf reports
 	rm -rf harness/reports

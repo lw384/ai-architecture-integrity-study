@@ -23,11 +23,21 @@ adapters:
 
 rules:
   constraints:
-    - rules/structure/BE-STRUCT-C-001-layer-distribution.yaml
-    - rules/structure/BE-STRUCT-C-002-no-explicit-any.yaml
-    - rules/structure/BE-STRUCT-C-003-no-restricted-paths.yaml
+    - rules/structure/BE-STRUCT-C-001-module-composition.yaml
+    - rules/dependencies/BE-DEP-C-001-infrastructure-isolation.yaml
+    - rules/dependencies/BE-DEP-C-002-intra-module-layering.yaml
+    - rules/dependencies/BE-DEP-C-003-framework-layer-purity.yaml
+    - rules/dependencies/BE-DEP-C-004-no-circular-dependencies.yaml
+    - rules/domain/BE-DOM-C-001-no-cross-module-deep-import.yaml
+    - rules/domain/BE-DOM-C-002-no-repository-in-module-exports.yaml
+    - rules/error/BE-ERR-C-001-no-http-exception-in-service.yaml
+    - rules/error/BE-ERR-C-002-throw-only-app-exception.yaml
+    - rules/error/BE-ERR-C-003-no-silent-catch.yaml
   metrics:
-    - rules/dependencies/BE-DEP-M-001-dependency-graph-size.yaml
+    - rules/structure/BE-STRUCT-M-001-module-composition-violation-ratio.yaml
+    - rules/dependencies/BE-DEP-M-001-dependency-violation-density.yaml
+    - rules/domain/BE-DOM-M-001-cross-module-deep-import-count.yaml
+    - rules/error/BE-ERR-M-001-exception-unification-violation-density.yaml
   judgments: []
 
 metadata:

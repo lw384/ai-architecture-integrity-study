@@ -17,6 +17,8 @@ rules:
     - rules/components/FE-COM-C-002-jsx-max-depth.yaml
     - rules/states/FE-STATE-C-001-no-usestate-in-deep-child-components.yaml
     - rules/states/FE-STATE-C-002-context-provider-only-in-controlled-locations.yaml
+    - rules/routes/FE-ROUTE-C-001-route-definitions-centralized.yaml
+    - rules/routes/FE-ROUTE-C-002-route-maps-to-page-component.yaml
   metrics: []
   judgments: []
 

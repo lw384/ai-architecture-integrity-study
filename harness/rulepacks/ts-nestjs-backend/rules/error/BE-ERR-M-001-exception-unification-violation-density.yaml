@@ -1,0 +1,29 @@
+rule_id: BE-ERR-M-001-exception-unification-violation-density
+version: 0.1.0
+layer: metrics
+category: error-handling
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: exception-unification-violation-density
+
+description: >
+  Measures exception-handling drift in service layer by aggregating
+  violations from BE-ERR-C-001/002/003 and normalizing by service file count.
+  This metric reuses existing constraint outputs instead of re-scanning AST.
+
+formula: sum(weight_i * err_violation_count_i) / max(1, service_file_count)
+
+agent_facing_message: >
+  Exception handling drift density is {value}. Reduce direct HttpException use,
+  enforce AppException-only throws, and remove silent catches in service layer.
+
+research_tags:
+  metric_family: error-handling
+  erosion_dimension: exception-governance
+
+methodological_note: >
+  This metric reads findings_by_rule from constraints layer for
+  BE-ERR-C-001-no-http-exception-in-service,
+  BE-ERR-C-002-throw-only-app-exception,
+  BE-ERR-C-003-no-silent-catch.
