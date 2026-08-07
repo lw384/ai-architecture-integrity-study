@@ -1,9 +1,8 @@
 schema_version: "0.1.0"
-task_id: T0
+task_id: T2
 task_version: "0.1.0"
 description: >
-  T0: Baseline evaluation of the untouched baseline project.
-  Covers backend dependency architecture rules with circular dependency detection.
+  T2: Evaluation of Task.
 
 subjects:
   - subject_id: backend
@@ -51,7 +50,7 @@ subjects:
     expected_diff_scope: []
 
 judgment_config:
-  model: claude-sonnet-4-6
+  model: Claude Sonnet 4.6
   temperature: 0.0
   samples_per_rubric: 5
   min_kappa: 0.6
@@ -62,6 +61,6 @@ execution:
   parallel_subjects: false
 
 metadata:
-  purpose: T0-evaluation
+  purpose: T2-evaluation
   notes: >
     This task evaluates the experiment pipeline

@@ -1,0 +1,14 @@
+run_id: run_claude_T1_minimal_20260723_164423
+task_id: T1
+agent: claude
+model: default
+strategy: minimal
+timestamp: 20260723_164423
+workspace_dir: /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/run_claude_T1_minimal_20260723_164423
+baseline_dir: /Users/luowei/project/ai-architecture-integrity-study/baseline
+pre_commit: 81e17fe565a99420f8bd05d6e4917e1a13fca606
+post_commit: 81e17fe565a99420f8bd05d6e4917e1a13fca606+dirty
+baseline_commit: 7ab7c8fa0916131bb04fec6f181e2235aa9f2f5e
+subjects:
+  - backend
+  - frontend

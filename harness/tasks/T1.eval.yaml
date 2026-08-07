@@ -1,114 +1,66 @@
-# ============================================================
-# T1.eval.yaml
-#
-# T1 任务的评估配置。声明:
-#   - T1 任务评估哪些 subject
-#   - 每个 subject 用哪个 rulepack
-#   - 每个 subject 启用哪些具体规则
-#   - 跨栈评估如何配置
-#
-# 引用者:
-#   - experiment/instruments/agent-runners/run_pipeline.py
-#     (通过 --task-config CLI 参数传给 evaluate.mjs)
-#   - harness/core/evaluate.mjs
-#     (作为 orchestrator 的评估规范来源)
-# ============================================================
-
 schema_version: "0.1.0"
 task_id: T1
 task_version: "0.1.0"
 description: >
-  T1: Deal CRUD implementation.
-  实验第一阶段的低压力任务, 主要评估 backend 分层完整性与依赖方向.
-  Frontend 评估最小化 (仅结构性检查), cross-stack 只开类型契约.
+  T1: Evaluation of Task.
 
-# ============================================================
-# Subject 声明:每个 subject 是一个独立评估单元
-# ============================================================
 subjects:
   - subject_id: backend
     root_path: backend/
-    rulepack_id: js-ts-nestjs-backend
-    rulepack_version: "0.1.0" # 期望的 rulepack 版本 (可选,用于版本锁定)
+    rulepack_id: ts-nestjs-backend
+    rulepack_version: "0.1.0"
     enabled:
       constraints:
-        - BE-STRUCT-C-001 # 每个 module 必须有 controller/service/repository
-        - BE-DEP-C-001 # 禁止 controller → repository 直接依赖
-        - BE-DEP-C-002 # 禁止 upward import
-        - BE-DEP-C-003 # 禁止循环依赖
-        - BE-DOM-C-001 # module 只能通过 index.ts 被外部访问
-        - BE-DOM-C-002 # 跨 module 不能深路径 import
+        - BE-STRUCT-C-001
+        - BE-DEP-C-001
+        - BE-DEP-C-002
+        - BE-DEP-C-003
+        - BE-DEP-C-004
+        - BE-DOM-C-001
+        - BE-DOM-C-002
+        - BE-ERR-C-001
+        - BE-ERR-C-002
+        - BE-ERR-C-003
       metrics:
-        - BE-DEP-M-001 # 跨层 import 密度
-        - BE-DOM-M-001 # 跨 module import 数
-      judgments: [] # T1 不做 judgments (P2 阶段再加)
-
-    # 可选:该 subject 的度量阈值配置
+        - BE-STRUCT-M-001
+        - BE-DEP-M-001
+        - BE-DOM-M-001
+        - BE-ERR-M-001
+      judgments: []
     thresholds:
       BE-DEP-M-001:
-        warn_at: 0.15 # 跨层密度 > 0.15 触发 warning
-        fail_at: 0.30 # > 0.30 触发 error
-      BE-DOM-M-001:
-        warn_at: 5 # 跨 module import 数 > 5 触发 warning
-        fail_at: 15
-
-    # 可选:该 subject 预期修改的文件范围
-    # (用于检测 agent 是否越界修改)
-    expected_diff_scope:
-      - "backend/src/modules/deal/**"
-      - "backend/src/app.module.ts"
-      - "backend/migrations/**"
-      - "backend/test/**/*deal*"
+        warn_at: 2
+        fail_at: 3
+    expected_diff_scope: []
 
   - subject_id: frontend
     root_path: frontend/
-    rulepack_id: js-ts-react-frontend
+    rulepack_id: js-react-frontend
     rulepack_version: "0.1.0"
     enabled:
-      constraints: [] # T1 前端不启用任何 constraints (P1/P2 再加)
+      constraints:
+        - FE-COM-C-001
+        - FE-COM-C-002
+        - FE-STATE-C-001
+        - FE-STATE-C-002
+        - FE-ROUTE-C-001
+        - FE-ROUTE-C-002
       metrics: []
       judgments: []
-    # 注: 保留 subject 声明但 enabled 全空,是为了让 harness
-    # 报告里显式呈现"frontend 被评估过但无违规"
+    expected_diff_scope: []
 
-# ============================================================
-# 跨栈评估声明:与 subjects 平行,而非嵌套在其中
-# ============================================================
-cross_stack:
-  rulepack_id: crm-cross-stack-contracts
-  rulepack_version: "0.1.0"
-  enabled:
-    constraints:
-      - CROSS-TYPE-C-001 # 前端 API 类型必须与后端 DTO 结构一致
-      - CROSS-EP-C-001 # 前端调用的每个 URL 必须在后端存在
-    metrics: []
-    judgments: []
-
-# ============================================================
-# LLM judge 全局配置 (如果 judgments 层有规则,这里配置)
-# ============================================================
 judgment_config:
-  model: claude-sonnet-4-6
+  model: Claude Sonnet 4.6
   temperature: 0.0
-  samples_per_rubric: 5 # 每个 rubric 采样 5 次求 kappa
-  min_kappa: 0.6 # kappa 低于 0.6 视为信度不足,标记 rule 为不可信
+  samples_per_rubric: 5
+  min_kappa: 0.6
 
-# ============================================================
-# 评估行为控制
-# ============================================================
 execution:
-  fail_fast: false # 一个 rule 失败不中断整体评估
-  max_duration_ms: 600000 # 整体评估超时 (10 分钟)
-  parallel_subjects: false # 是否并行处理 subjects (当前为串行)
+  fail_fast: false
+  max_duration_ms: 600000
+  parallel_subjects: false
 
-# ============================================================
-# 元数据 (仅供审计,不影响运行)
-# ============================================================
 metadata:
-  authored_by: "Luowei (研究者)"
-  authored_at: "2026-07-10"
-  priority_tier: P0 # 对应矩阵优先级 P0
+  purpose: T1-evaluation
   notes: >
-    T1 作为 pilot 起点,规则集控制在 P0 范围内.
-    Frontend 与 judgments 层留作 T2 之后扩展.
-    Cross-stack 保持最小 (只开 2 条) 以观察 baseline 跨栈契约状态.
+    This task evaluates the experiment pipeline

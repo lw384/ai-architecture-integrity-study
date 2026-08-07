@@ -8,7 +8,11 @@ from datetime import datetime
 from pathlib import Path
 
 from config import get_agent_config
-from prompt_builder import build_mega_prompt
+from prompt_builder import (
+    append_observability_tail,
+    build_mega_prompt,
+    has_strict_terminal_output_requirement,
+)
 from docker_runner import setup_and_run_agent
 from evaluator import run_harness_evaluation
 
@@ -132,6 +136,8 @@ def archive_run_outputs(
     # Copy agent outputs from workspace.
     copy_if_exists(workspace_dir / "agent_execution.log", experiment_run_dir / "agent_execution.log")
     copy_if_exists(workspace_dir / "execution_metrics.json", experiment_run_dir / "execution_metrics.json")
+    copy_if_exists(workspace_dir / "cost_query.log", experiment_run_dir / "cost_query.log")
+    copy_if_exists(workspace_dir / "cost_query.json", experiment_run_dir / "cost_query.json")
     copy_if_exists(workspace_dir / "violations_report.md", experiment_run_dir / "violations_report.md")
     copy_if_exists(
         workspace_dir / "frontend_violations_report.md",
@@ -282,6 +288,16 @@ def main():
         "--baseline-dir",
         help="baseline 源目录；默认使用仓库根目录下的 baseline",
     )
+    parser.add_argument(
+        "--append-observability-tail",
+        action="store_true",
+        help="在任务提示词末尾追加 /cost 与行动摘要输出规范（可选）",
+    )
+    parser.add_argument(
+        "--force-observability-tail",
+        action="store_true",
+        help="即使任务要求精确最终输出，也强制追加 observability 尾注（高风险）",
+    )
     args = parser.parse_args()
 
     # 路径与 ID 初始化
@@ -304,6 +320,16 @@ def main():
 
     # 2. 组装 Prompt
     final_prompt = build_mega_prompt(root_dir, args.task, args.strategy, args.interface)
+    if args.append_observability_tail:
+        if has_strict_terminal_output_requirement(final_prompt) and not args.force_observability_tail:
+            print(
+                "⚠️ 检测到任务要求精确最终输出（如 [TASK_COMPLETED]），"
+                "已跳过追加 observability 尾注；"
+                "如需强制追加请使用 --force-observability-tail"
+            )
+        else:
+            final_prompt = append_observability_tail(final_prompt)
+
 
     # 3. 执行容器沙盒
     setup_and_run_agent(
@@ -317,8 +343,8 @@ def main():
         heartbeat_seconds=args.heartbeat_seconds,
     )
 
-    # 4. 运行 Harness 评估
-    print("🔍 [4/4] 触发 Harness 自动化评估...")
+    # # 4. 运行 Harness 评估
+    # print("🔍 [4/4] 触发 Harness 自动化评估...")
 
     git_context = build_run_git_context(workspace_dir, baseline_dir)
 
@@ -350,22 +376,22 @@ def main():
     status = evaluation_result.get("status", "unknown (or skipped)")
     print(f"📊 评估最终状态: {status}")
 
-    # # 5. 生成可读性报告
-    # print("📄 [5/5] 生成可读性报告...")
-    # try:
-    #     generate_report_script = (
-    #         root_dir / "experiment" / "instruments" / "agent-runners" / "generate_report.py"
-    #     )
-    #     evaluation_json = report_dir / "evaluation.json"
+    # # # 5. 生成可读性报告
+    # # print("📄 [5/5] 生成可读性报告...")
+    # # try:
+    # #     generate_report_script = (
+    # #         root_dir / "experiment" / "instruments" / "agent-runners" / "generate_report.py"
+    # #     )
+    # #     evaluation_json = report_dir / "evaluation.json"
 
-    #     subprocess.run(
-    #         ["python3", str(generate_report_script), "--evaluation", str(evaluation_json)],
-    #         check=True,
-    #         cwd=root_dir / "experiment" / "instruments" / "agent-runners",
-    #     )
-    #     print(f"✓ 报告已生成: {report_dir / 'violations_report.md'}")
-    # except subprocess.CalledProcessError as e:
-    #     print(f"⚠️  报告生成失败: {e}")
+    # #     subprocess.run(
+    # #         ["python3", str(generate_report_script), "--evaluation", str(evaluation_json)],
+    # #         check=True,
+    # #         cwd=root_dir / "experiment" / "instruments" / "agent-runners",
+    # #     )
+    # #     print(f"✓ 报告已生成: {report_dir / 'violations_report.md'}")
+    # # except subprocess.CalledProcessError as e:
+    # #     print(f"⚠️  报告生成失败: {e}")
 
     print(f"🎉 实验全流程结束！归档")
     print(f"   代码工作区: {experiment_run_dir}")

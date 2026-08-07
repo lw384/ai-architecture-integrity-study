@@ -35,6 +35,7 @@ python -m venv venv
 Current entry points:
 
 - Python pipeline: `instruments/agent-runners/run_pipeline.py`
+- Python harness-only evaluator: `instruments/agent-runners/run_harness.py`
 - Shell pipeline: `instruments/agent-runners/run_pipeline.sh`
 
 ### Run a full experiment
@@ -68,6 +69,12 @@ Optional flags supported by the current Python runner:
 - `--baseline-dir` — override the baseline source directory copied into the isolated workspace; supports absolute paths or paths relative to the repository root
 - `--live-output` — stream the container output instead of waiting for the run to finish
 - `--heartbeat-seconds` — when live output is enabled, print periodic workspace heartbeat messages during long quiet periods
+- `--append-observability-tail` — append a runtime tail requesting `[COST_BEGIN/END]` and `[ACTIONS_BEGIN/END]` blocks in agent output (optional; disable for strict output tasks)
+- `--force-observability-tail` — force append observability tail even when the task prompt requires exact terminal output (high risk)
+
+Notes:
+- If the task contains strict terminal-output requirements (for example, `output exactly [TASK_COMPLETED]`), `--append-observability-tail` is skipped by default to avoid prompt conflicts.
+- Use `--force-observability-tail` only when you explicitly accept this conflict risk.
 
 ### Run the shell wrapper
 
@@ -78,6 +85,31 @@ cd /Users/luowei/project/ai-architecture-integrity-study/experiment/instruments/
 BASELINE_DIR=/absolute/path/to/other-baseline \
 bash run_pipeline.sh
 ```
+
+### Run Harness only for an existing workspace run
+
+Use this when you already have `experiment/workspace/<run_id>/` artifacts and only want to generate evaluation outputs:
+
+```bash
+cd /Users/luowei/project/ai-architecture-integrity-study/experiment
+./venv/bin/python instruments/agent-runners/run_harness.py \
+	--run-id run_claude_T0_minimal_20260723_145022
+```
+
+You can also pass a direct workspace path and explicit task override:
+
+```bash
+cd /Users/luowei/project/ai-architecture-integrity-study/experiment
+./venv/bin/python instruments/agent-runners/run_harness.py \
+	--workspace-dir experiment/workspace/run_claude_T0_minimal_20260723_145022 \
+	--task T0
+```
+
+By default, outputs are written to:
+
+- `reports/experiments/<run_id>/evaluation.json`
+- `reports/experiments/<run_id>/manifest.json`
+- plus copied run artifacts (`agent_execution.log`, `execution_metrics.json`, diff/status files)
 
 ### Evaluate the current baseline with Harness only
 
@@ -130,6 +162,11 @@ Typical files written there by the current code path include:
 - `.agent_instruction.md`
 - `agent_execution.log`
 - `execution_metrics.json`
+- `cost_query.log`
+- `cost_query.json`
+- `workspace_git_status.txt`
+- `workspace_diff_stat.txt`
+- `workspace_diff.patch`
 - `manifest.json`
 - `evaluation.json`
 

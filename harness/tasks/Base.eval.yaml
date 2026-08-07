@@ -38,7 +38,7 @@ subjects:
     root_path: frontend/
     rulepack_id: js-react-frontend
     rulepack_version: "0.1.0"
-     enabled:
+    enabled:
       constraints:
         - FE-COM-C-001
         - FE-COM-C-002
