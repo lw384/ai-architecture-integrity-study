@@ -1,0 +1,123 @@
+{
+  "metrics": {
+    "agent": "claude",
+    "model": "claude-sonnet-4-6",
+    "run_id": "session_20260812_220814_T3_230844",
+    "status": "success",
+    "exit_code": 0,
+    "completion_marker_found": true,
+    "agent_reported_error": false,
+    "started_at": "2026-08-12T22:08:44.563233+00:00",
+    "finished_at": "2026-08-12T22:25:05.896845+00:00",
+    "duration_seconds": 981.331,
+    "session_id": "e7a481bd-8781-4cdb-bd0f-ca43abe3abd3",
+    "num_turns": 60,
+    "total_cost_usd": 2.5905655,
+    "usage": {
+      "input_tokens": 48,
+      "cache_creation_input_tokens": 92445,
+      "cache_read_input_tokens": 4097508,
+      "output_tokens": 53784,
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 92445
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 1,
+          "output_tokens": 453,
+          "cache_read_input_tokens": 117680,
+          "cache_creation_input_tokens": 255,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 255,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    }
+  },
+  "agent_result": {
+    "type": "result",
+    "subtype": "success",
+    "is_error": false,
+    "api_error_status": null,
+    "duration_ms": 824239,
+    "duration_api_ms": 870887,
+    "ttft_ms": 4243,
+    "ttft_stream_ms": 3532,
+    "time_to_request_ms": 58,
+    "num_turns": 60,
+    "result": "All 53 tests pass and TypeScript compiles cleanly. Here's a summary of what was implemented:\n\n**Backend:**\n- `DealStage` enum updated: `PROPOSAL` → `ACTIVE` \n- 4 new error codes added: `UNKNOWN_STAGE`, `INVALID_INITIAL_STAGE`, `INVALID_STAGE_TRANSITION`, `TRANSITION_PRECONDITION_UNMET`\n- New `deal-stage-machine.ts` with full transition matrix and helper functions\n- `CreateDealDto` uses `@IsString()` for stage (service validates unknown/disallowed initial stages)\n- New `StageTransitionDto` for dedicated endpoint\n- `DealService` validates stage transitions and preconditions: contacts required for `active`, close date required for `negotiation`\n- New `POST /deals/:id/stage` endpoint (delegates to `updateDeal`)\n- Migration `20260812000200-NormalizeDealsStage.ts` normalizes existing data (won→closed_won, lost→closed_lost, proposal_sent→negotiation, prospect→lead, anything else→lead)\n- Demo seed uses `ACTIVE` instead of `PROPOSAL`; edge-case no-contact deal moved to `QUALIFIED` (so `active` transition fails with `TRANSITION_PRECONDITION_UNMET`)\n- 38 deal service tests covering all new behavior\n\n**Frontend:**\n- `DEAL_STAGES` updated (active replaces proposal), plus `STAGE_TRANSITIONS` map and helper functions\n- Create form shows only lead/qualified; edit form shows only allowed transitions from current stage\n- `active` option disabled when no contacts linked (with tooltip hint)\n- `closed_won` stage shown as read-only disabled field\n- `negotiation` requires expected close date (form-level validation)\n- API errors shown inline in the form dialog; stage resets to current deal stage on API error\n\n[TASK_COMPLETED]",
+    "stop_reason": "end_turn",
+    "session_id": "e7a481bd-8781-4cdb-bd0f-ca43abe3abd3",
+    "total_cost_usd": 2.5905655,
+    "usage": {
+      "input_tokens": 48,
+      "cache_creation_input_tokens": 92445,
+      "cache_read_input_tokens": 4097508,
+      "output_tokens": 53784,
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 92445
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 1,
+          "output_tokens": 453,
+          "cache_read_input_tokens": 117680,
+          "cache_creation_input_tokens": 255,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 255,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2703,
+        "outputTokens": 7918,
+        "cacheReadInputTokens": 528193,
+        "cacheCreationInputTokens": 48752,
+        "webSearchRequests": 0,
+        "costUSD": 0.1560523,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000
+      },
+      "claude-sonnet-4-6": {
+        "inputTokens": 54,
+        "outputTokens": 54138,
+        "cacheReadInputTokens": 4138854,
+        "cacheCreationInputTokens": 101500,
+        "webSearchRequests": 0,
+        "costUSD": 2.4345132,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "origin": {
+      "kind": "task-notification"
+    },
+    "uuid": "f48fd44a-c68d-4621-a4b3-905251dd6cfb"
+  },
+  "stderr": ""
+}

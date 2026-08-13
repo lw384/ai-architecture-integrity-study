@@ -1,0 +1,10 @@
+{
+  "status": "evaluated",
+  "task_id": "T2",
+  "baseline_commit": "2a22ca998b75fa02acb25ae947794bd2c9441ac6",
+  "pre_commit": "task-T1-done",
+  "rulepack_id": "task::T2",
+  "events": [
+    "evaluation_completed"
+  ]
+}

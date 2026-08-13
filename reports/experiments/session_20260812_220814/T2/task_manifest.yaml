@@ -1,0 +1,13 @@
+session_id: session_20260812_220814
+task_id: T2
+run_id: session_20260812_220814_T2_224550
+start_ref: task-T1-done
+post_commit: 406caac3afe9307888b019c8c6208efb64eda081
+post_tag: task-T2-done
+execution_file: execution.json
+requested_from_tag: none
+prompt_file: prompt.md
+execution_file: execution.json
+harness_status: success
+harness_execution_file: harness_execution.json
+harness_evaluation_file: harness_evaluation.json

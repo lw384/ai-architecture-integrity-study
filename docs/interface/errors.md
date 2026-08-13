@@ -1,7 +1,7 @@
 # Error Handling
 
 > **Scope**: current `baseline/backend` implementation
->
+> 
 > **Primary sources**:
 > `src/common/errors/error-codes.ts`,
 > `src/common/errors/app-exception.ts`,
@@ -82,14 +82,14 @@ The response envelope is assembled in:
 
 The project currently defines these business error codes:
 
-| Code | Default HTTP status | Meaning |
-|---|---|---|
-| `VALIDATION_ERROR` | `400` | DTO body/query validation failed |
-| `INVALID_UUID` | `400` | A route parameter is not a valid UUID v4 |
-| `ENTITY_NOT_FOUND` | `404` | The requested entity does not exist |
-| `PARENT_NOT_FOUND` | `404` | A required parent entity does not exist |
-| `IMMUTABLE_FIELD` | `422` | The request tries to change an immutable field |
-| `REFERENTIAL_INTEGRITY_VIOLATION` | `409` | The operation is blocked by related records |
+| Code                              | Default HTTP status | Meaning                                        |
+| --------------------------------- | ------------------- | ---------------------------------------------- |
+| `VALIDATION_ERROR`                | `400`               | DTO body/query validation failed               |
+| `INVALID_UUID`                    | `400`               | A route parameter is not a valid UUID v4       |
+| `ENTITY_NOT_FOUND`                | `404`               | The requested entity does not exist            |
+| `PARENT_NOT_FOUND`                | `404`               | A required parent entity does not exist        |
+| `IMMUTABLE_FIELD`                 | `422`               | The request tries to change an immutable field |
+| `REFERENTIAL_INTEGRITY_VIOLATION` | `409`               | The operation is blocked by related records    |
 
 The canonical registry lives in:
 

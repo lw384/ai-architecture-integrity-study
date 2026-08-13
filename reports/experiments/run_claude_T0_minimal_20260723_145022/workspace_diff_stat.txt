@@ -1,8 +1,0 @@
- backend/package.json                            |  5 +++--
- backend/src/core/seed/scenarios/demo.seed.ts    | 20 +++++++++++++++++---
- backend/src/modules/company/company.entity.ts   |  8 ++++++++
- backend/src/modules/company/dto/create.dto.ts   |  5 +++++
- backend/src/modules/company/dto/response.dto.ts |  3 +++
- frontend/src/pages/companies/CompanyDetail.jsx  |  9 +++++++++
- frontend/src/pages/companies/CompanyForm.jsx    | 13 +++++++++++++
- 7 files changed, 58 insertions(+), 5 deletions(-)

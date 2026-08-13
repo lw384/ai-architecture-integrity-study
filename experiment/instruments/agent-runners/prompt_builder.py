@@ -1,81 +1,60 @@
 # experiment/instruments/agent-runners/pipeline/prompt_builder.py
-import sys
 import re
 from pathlib import Path
 
-def build_mega_prompt(root_dir: Path, task: str, strategy: str, interface: str) -> str:
-    print("🧩 [1/4] 读取提示词上下文...")
-    prompt_parts = []
+def build_mega_prompt(
+    root_dir: Path,
+    task_id: str,
+    strategy: str,
+    memory_filename: str | None = None,
+) -> str:
+    task_file = root_dir / "experiment" / "design" / "tasks" / f"{task_id}_{strategy}.md"
 
-    # # a. 读取 Prompt 策略 (System Prompt)
-    # strategy_file = root_dir / f"experiment/design/tasks/{}{strategy}.md"
-    # if strategy_file.exists():
-    #     prompt_parts.append("【角色与规范】\n" + strategy_file.read_text())
+    if not task_file.exists():
+        raise FileNotFoundError(f"找不到任务模板: {task_file}")
 
-    # print("strategy_file:", strategy_file)
-    # # b. 读取 接口文档 (Context)
-    # if interface:
-    #     interface_file = root_dir / f"docs/interface/{interface}"
-    #     if interface_file.exists():
-    #         prompt_parts.append("【接口文档】\n" + interface_file.read_text())
-    #     else:
-    #         print(f"⚠️ 警告: 找不到接口文档 {interface_file}")
+    raw_content = task_file.read_text(encoding="utf-8")
+    task_content = re.sub(r"<!--.*?-->", "", raw_content, flags=re.DOTALL).strip()
 
-    #
-    task_file = root_dir / f"experiment/design/tasks/{task}_{strategy}.md"
-    if task_file.exists():
-        raw_content = task_file.read_text(encoding="utf-8")
+    if not task_content:
+        raise ValueError(f"任务模板为空: {task_file}")
 
-        cleaned_content = re.sub(r"<!--.*?-->", "", raw_content, flags=re.DOTALL)
+    prompt_parts = [task_content]
 
-        prompt_parts.append(cleaned_content.strip())
-    else:
-        print(f"❌ 错误: 找不到任务文件 {task_file}")
-        sys.exit(1)
+    # add memory instructions if applicable
+    if memory_filename:
+        prompt_parts.append(
+            f"""
+                ## Persistent Project Memory
 
-    return "\n\n".join(prompt_parts)
+                Before outputting the required completion signal, update the workspace-root
+                `{memory_filename}`.
 
+                Record:
+                - completed work;
+                - key implementation decisions;
+                - verification commands and outcomes;
+                - unresolved issues or important follow-up work.
 
-def append_observability_tail(prompt: str) -> str:
-    observability_tail = """
+                Correct or remove stale information when necessary. This update must be completed
+                before you output the required completion signal.
+                """.strip()
+        )
 
-## 6. Runtime Observability (Runner-Appended)
+    # add end-of-task signal
+    prompt_parts.append(build_completion_protocol())
 
-After finishing the implementation, include two machine-readable blocks at the very end of your response.
-
-1) Cost block:
-- If /cost is supported in your runtime, execute /cost and paste the raw output.
-- If /cost is unavailable, write COST_UNAVAILABLE.
-
-Format exactly:
-[COST_BEGIN]
-<raw /cost output or COST_UNAVAILABLE>
-[COST_END]
-
-2) Action summary block:
-Summarize the concrete actions you performed.
-
-Format exactly:
-[ACTIONS_BEGIN]
-- edited: <file path>
-- ran: <command>
-- verified: <result>
-[ACTIONS_END]
-""".strip()
-
-    return f"{prompt}\n\n{observability_tail}\n"
+    return "\n\n".join(prompt_parts) + "\n"
 
 
-def has_strict_terminal_output_requirement(prompt: str) -> bool:
-    normalized = prompt.lower()
 
-    if "output exactly [task_completed]" in normalized:
-        return True
 
-    patterns = [
-        r"output\s+exactly\s*\[task_completed\]",
-        r"do\s+not\s+print\s+.*output\s+exactly",
-        r"terminate\s+your\s+process\s+immediately",
-    ]
+# set endpoint for agent to know when to stop
+def build_completion_protocol() -> str:
+    return """
+        ## Completion Protocol
+        After all required work, verification, and any required updates are
+        complete, output exactly this final line and then terminate:
 
-    return any(re.search(pattern, normalized) for pattern in patterns)
+        [TASK_COMPLETED]
+        """.strip()

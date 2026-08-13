@@ -76,7 +76,7 @@ The Company entity gains an optional free-text `notes` field. Reps view and edit
 
 ## 5. API Contract
 
-External API Contract. The internal file structure, class names, DTO definitions, and column specification used to satisfy this contract are left to the implementer. All routes are relative to the global prefix `/api/v1`.
+External API Contract. The internal file structure, class names, DTO definitions, and column specification used to satisfy this contract are left to the implementer. All routes are relative to the global prefix `/api`.
 
 ### Endpoint 1 — Create Company (field added)
 

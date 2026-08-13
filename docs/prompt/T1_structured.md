@@ -1,12 +1,6 @@
 <!--
 Task: T1
 Variant: structured
-Blocks enabled: 1, 2, 3, 4, 5, 6, 7 
-Rule IDs targeted: 
-Derived from: prompt_meta_template_v2.md
-Source documents: 
-Content hash (SHA-256 of blocks 3+4+5): [pending — must match T1_structured.md]
-Frozen at: [pending — set at freeze commit]
 -->
 
 ## 1. Agent Role
@@ -74,202 +68,184 @@ UI
 22. 22. The Deals list SHALL be reachable from the primary navigation.
 
 Data setup
- 23. After 'demo' seed runs, at least 8 Deals SHALL exist across at least 4
- distinct stage values.
- 24. After 'edge-case' seed runs, at least one Deal SHALL have contactId=null
- and at least one SHALL have expectedCloseDate=null.
 
-5. API Contract
+23. After 'demo' seed runs, at least 8 Deals SHALL exist across at least 4
+     distinct stage values.
+     24. After 'edge-case' seed runs, at least one Deal SHALL have contactId=null
+     and at least one SHALL have expectedCloseDate=null.
 
-The internal architecture, file structure, class names, and DTO definitions used to satisfy this contract are left to the implementer. All routes are relative to the global prefix `/api`.
+## 5. API Contract
 
-### 1.Create Deal
+All routes below include the global `/api` prefix.
 
-**Route:** POST /api/deals
+This section defines externally observable HTTP behaviour only. It does not
+prescribe the internal architecture, file structure, class names, DTO names, or
+implementation patterns.
 
-**Request:**
+### Shared Error Contract
 
-Content-Type: `application/json`
+All error responses use the existing project error-response envelope.
 
-```json
-name:              { type: string,       required: true,  maxLength: 255 }
-value:             { type: number,       required: true,  min: 0 }
-companyId:         { type: uuid-v4,      required: true,  refs: Company }
-stage:             { type: string,       required: false, maxLength: 100, default: lead }
-contactId:         { type: uuid-v4,      required: false, refs: Contact, nullable: true }
-expectedCloseDate: { type: iso-8601-date, required: false, nullable: true }
+- Invalid path parameters, request bodies, query parameters, unknown fields,
+  invalid UUIDs, and invalid field values return `400` with code
+  `VALIDATION_ERROR`.
+- A Deal, Company, or Contact that does not exist returns `404` with code
+  `NOT_FOUND`.
+
+### Deal Representation
+
+Unless stated otherwise, a Deal returned by the API includes:
+
+`contactId` and `expectedCloseDate` may be `null`.
+
+### 1. Create Deal
+
+**Route:** `POST /api/deals`  
+**Content-Type:** `application/json`
+
+| Field               | Type                    | Required | Constraints                                         |
+| ------------------- | ----------------------- | -------- | --------------------------------------------------- |
+| `name`              | string                  | Yes      | Non-empty; maximum length 255                       |
+| `value`             | number                  | Yes      | Must be non-negative                                |
+| `companyId`         | UUID v4                 | Yes      | Must reference an existing Company                  |
+| `stage`             | string                  | No       | Maximum length 100; defaults to `lead`              |
+| `contactId`         | UUID v4 or `null`       | No       | A non-null value must reference an existing Contact |
+| `expectedCloseDate` | ISO 8601 date or `null` | No       | Nullable                                            |
+
+Example request:
+
 ```
-
-example:
-
-> `// required, non-empty string, max 255   "name": "Acme Q3 renewal",    // required, number, >= 0   "value": 50000,    // required, uuid v4; referenced Company must exist   "companyId": "a3f8c1e2-1234-5678-9abc-def012345678",    // optional, string, max 100; defaults to 'lead' when omitted   "stage": "qualified",    // optional, uuid v4; referenced Contact must exist when supplied   "contactId": "b4e9d2f3-1234-5678-9abc-def012345678",    // optional, ISO 8601 date; nullable   "expectedCloseDate": "2026-09-30"`
-
-**Sucess Response:**
-
-```json
-{ "id": "<uuid>" }
-```
-
-Clients requiring full Deal state issue a subsequent `GET /api/deals/:id`.
-
-**Error Response:**
-
-| HTTP | code               | Trigger                                                                                                                                   |
-| ---- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| 400  | `VALIDATION_ERROR` | body missing any of `name`, `value`, `companyId`; any field violates its stated constraint; body contains a field outside the allowed set |
-| 404  | `PARENT_NOT_FOUND` | `companyId` does not reference an existing Company; `contactId` (when supplied) does not reference an existing Contact                    |
-
-Example error response (unknown `companyId`):
-
-```json
 {
-  "success": false,
-  "statusCode": 404,
-  "code": "PARENT_NOT_FOUND",
-  "message": "Company with ID 8e2f... not found",
-  "details": { "resource": "Company", "id": "8e2f..." },
-  "timestamp": "2026-07-19T12:00:00.000Z",
-  "path": "/api/deals"
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "companyId": "b4e9d2f3-1234-5678-9ab0-def012345678",
+  "stage": "qualified",
+  "contactId": "c5f0e3a4-1234-5678-9ab0-def012345678",
+  "expectedCloseDate": "2026-09-30"
+}
+```
+
+**Success:** `201 Created`
+
+```
+{
+  "id": "a3f8c1e2-1234-5678-9ab0-def012345678"
 }
 ```
 
 ### 2. List Deals
 
-**Route:** GET /api/deals
+**Route:** `GET /api/deals`
 
-**Request:**
+Supported query parameters:
 
-Unknown query params are rejected.
+| Parameter   | Type    | Default | Constraints                           | Behaviour                |
+| ----------- | ------- | ------- | ------------------------------------- | ------------------------ |
+| `page`      | integer | `1`     | Minimum `1`                           | Pagination page          |
+| `pageSize`  | integer | `10`    | Minimum `10`; no maximum is specified | Number of items per page |
+| `stage`     | string  | —       | Exact-match                           | Filter by stage          |
+| `companyId` | UUID v4 | —       | Must be valid when supplied           | Filter by Company        |
 
-**Success Response:** `200 OK`
+Unknown query parameters follow the Shared Error Contract.
 
-```js
+**Success:** `200 OK`
+
+```
 {
   "items": [
     {
-      "id": "<uuid>",
-      "name": "<string>",
-      "value": <number>,
-      "stage": "<string>",
-      "companyId": "<uuid>",
-      "contactId": "<uuid> | null",
-      "expectedCloseDate": "<ISO date> | null",
-      "createdAt": "<ISO 8601>",
-      "updatedAt": "<ISO 8601>"
+      "id": "a3f8c1e2-1234-5678-9ab0-def012345678",
+      "name": "Acme Q3 renewal",
+      "value": 50000,
+      "stage": "qualified",
+      "companyId": "b4e9d2f3-1234-5678-9ab0-def012345678",
+      "contactId": null,
+      "expectedCloseDate": null,
+      "createdAt": "2026-07-03T10:30:00.000Z",
+      "updatedAt": "2026-07-19T14:22:11.000Z"
     }
   ],
-  "total": <int>,
-  "page": <int>,
-  "pageSize": <int>,
-  "totalPages": <int>
+  "total": 1,
+  "page": 1,
+  "pageSize": 10,
+  "totalPages": 1
 }
 ```
 
-Requesting a page beyond the last returns `items: []` with a correct `total` value
-
-**Error Response:**
-
-`400 VALIDATION_ERROR`: any query param violates its stated constraint; an unknown query param is present
+A page beyond the final page returns an empty `items` list and the correct  
+`total` value.
 
 ### 3. Get Deal
 
-Route: GET /api/deals/:id (Path params: `id` : uuid v4)
+**Route:** `GET /api/deals/:id`
 
-Request: No body, no query params.
+The `id` path parameter must be a UUID v4. The request accepts no body and no  
+query parameters.
 
-Success Response:
+**Success:** `200 OK`
 
-```json
+```
 {
-  "id": "<uuid>",
-  "name": "<string>",
-  "value": <number>,
-  "stage": "<string>",
-  "companyId": "<uuid>",
-  "contactId": "<uuid> | null",
-  "expectedCloseDate": "<ISO date> | null",
-  "createdAt": "<ISO 8601>",
-  "updatedAt": "<ISO 8601>",
+  "id": "a3f8c1e2-1234-5678-9ab0-def012345678",
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "stage": "qualified",
+  "companyId": "b4e9d2f3-1234-5678-9ab0-def012345678",
+  "contactId": null,
+  "expectedCloseDate": null,
+  "createdAt": "2026-07-03T10:30:00.000Z",
+  "updatedAt": "2026-07-19T14:22:11.000Z",
   "company": {
-    "id": "<uuid>",
-    "name": "<string>"
+    "id": "b4e9d2f3-1234-5678-9ab0-def012345678",
+    "name": "Acme Corporation"
   }
 }
 ```
 
-Error Response:
-
-- 400`INVALID_UUID``:id` is not a valid UUID
-
-- 404`ENTITY_NOT_FOUND`no Deal with the given id exists
-
 ### 4. Update Deal
 
-**Route**: POST /api/deals/:id
+**Route:** `POST /api/deals/:id`  
+**Content-Type:** `application/json`
 
-**Request**: Content-Type: `application/json`
+The `id` path parameter must be a UUID v4.
 
-**Mutable fields**
+The request body accepts any non-empty subset of these mutable fields:
 
-```yaml
-name:              { type: string,        maxLength: 255, minLength: 1 }
-value:             { type: number,        min: 0 }
-stage:             { type: string,        maxLength: 100 }
-contactId:         { type: uuid-v4,       nullable: true,  refs: Contact }
-expectedCloseDate: { type: iso-8601-date, nullable: true }
+| Field               | Type                    | Constraints                                         |
+| ------------------- | ----------------------- | --------------------------------------------------- |
+| `name`              | string                  | Non-empty; maximum length 255                       |
+| `value`             | number                  | Must be non-negative                                |
+| `stage`             | string                  | Maximum length 100                                  |
+| `contactId`         | UUID v4 or `null`       | A non-null value must reference an existing Contact |
+| `expectedCloseDate` | ISO 8601 date or `null` | Nullable                                            |
+
+The following fields are not accepted in an update request:
+
+```
+companyId, id, createdAt, updatedAt, deletedAt
 ```
 
-**Immutable and rejected fields**
+An empty request body, an unknown field, an immutable field, or an invalid  
+mutable-field value follows the Shared Error Contract.
 
-```yaml
-companyId:         { type: uuid-v4,       policy: reject-if-different }
-id, createdAt, updatedAt, deletedAt: { policy: reject-always }
+**Success:** `200 OK`
+
 ```
-
-**Success Response**: `200 OK`
-
-Example:
-
-```js
-{
-  "id": "c5f0e3g4-9d3f-4a2e-9abc-def012345678",
-  "name": "Acme Q3 renewal",
-  "value": 55000,
-  "stage": "proposal",
-  "companyId": "a3f8c1e2-9d3f-4a2e-9abc-def012345678",
-  "contactId": "b4e9d2f3-abcd-4b7c-8def-a12345678901",
-  "expectedCloseDate": "2026-09-30",
-  "createdAt": "2026-07-03T10:30:00.000Z",
-  "updatedAt": "2026-07-19T14:22:11.000Z"
-}
-```
-
-**Error Response**:
-
-- 400`INVALID_UUID``:id` is not a valid UUID v4
-
-- 400`VALIDATION_ERROR`body is empty (no mutable field after `companyId` silent-drop); body contains `id`, `createdAt`, or `updatedAt`; body contains a field outside the allowed set; a mutable field violates its constraint
-
-- 422`IMMUTABLE_FIELD``companyId` supplied and differs from the stored value
-
-- 404`ENTITY_NOT_FOUND`no Deal with the given id exists
-
-- 404`PARENT_NOT_FOUND``contactId` supplied (non-null) and does not reference an existing Contact
-
-```js
-{
-  "success": false,
-  "statusCode": 422,
-  "code": "IMMUTABLE_FIELD",
-  "message": "The companyId field cannot be updated after creation.",
-  "details": { "field": "companyId" },
-  "timestamp": "2026-07-19T14:30:00.000Z",
-  "path": "/api/deals/c5f0e3g4-1234-5678-9abc-def012345678"
-}
+The response is the updated Deal Representation.
 ```
 
 ## 6. Delivery & Verification Protocol:
 
-You MUST write and execute functional tests (npm run test) to verify your implementation. You are responsible for fixing any compilation errors or failing tests before concluding.
+- Work directly in the provided workspace. Implement the task by modifying the
+  relevant project files; do not merely describe a proposed solution.
 
-Do NOT print raw source code, diffs, or design rationales. Modify the files directly in the workspace. Once your tests pass and the implementation is complete, output exactly [TASK_COMPLETED] on a new line and terminate your process immediately.
+- Add or update focused functional tests for the behaviour introduced or changed
+  by this task. Keep those tests in the project's existing test locations and
+  run the relevant test suite before concluding.
+
+- Before concluding, run the relevant functional tests and fix any failures,
+  compilation errors, or regressions caused by your changes.
+
+- Do not create Git commits or Git tags.
+
+- When the implementation is complete and the relevant functional tests pass, respond with exactly `[TASK_COMPLETED]` and nothing else.

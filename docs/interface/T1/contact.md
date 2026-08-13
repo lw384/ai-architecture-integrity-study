@@ -264,7 +264,7 @@ Content-Type: application/json
 }
 ```
 
-**Response** (`201`): the updated `ContactEntity`.
+**Response** (`200`): the updated `ContactEntity`.
 
 Behavior:
 
@@ -291,15 +291,14 @@ Other errors:
 - `400` for invalid UUID or DTO validation failures
 - `404` when the contact does not exist
 
-### 5.5 `DELETE /contacts/:id`
+###### 5.5 `DELETE /contacts/:id`
 
 Soft-deletes a contact.
 
 **Request**:
 
 ```json
-​http
-DELETE /api/contacts/b4e9d2f3-1234-5678-9abc-def012345678
+​http DELETE /api/contacts/b4e9d2f3-1234-5678-9abc-def012345678
 ```
 
 **Response** (`204 No Content`): empty body.
@@ -318,11 +317,6 @@ Behavior:
 
 **Missing-record response**: standard envelope with `code: 404`, message
 `"Contact with ID <id> not found"`.
-
-Related-record note: after T1, Deals may reference a Contact via
-`contactId`. Deleting the Contact does **not** cascade to Deals — the
-Deal's `contactId` is set to `NULL` by the entity relation
-(`onDelete: 'SET NULL'`). The Deal record itself survives.
 
 ---
 

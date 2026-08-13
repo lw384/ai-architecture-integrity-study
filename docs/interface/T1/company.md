@@ -11,8 +11,7 @@
 ## 1. Scope
 
 The current backend exposes Company endpoints under the global `/api` prefix set
-in `src/main.ts`. There is **no `/api/v1` prefix** and there is **no delete
-endpoint implementation** yet.
+in `src/main.ts`. 
 
 The Company module currently provides:
 
@@ -57,12 +56,13 @@ Relations:
 
 ## 3. Endpoints
 
-| Method | Path             | Summary          | Success | Notes                                             |
-| ------ | ---------------- | ---------------- | ------- | ------------------------------------------------- |
-| `POST` | `/companies`     | Create a company | `200`   | Returns a success wrapper, not the created entity |
-| `GET`  | `/companies`     | List companies   | `200`   | Supports pagination and simple filters            |
-| `GET`  | `/companies/:id` | Get one company  | `200`   | Returns the raw entity                            |
-| `POST` | `/companies/:id` | Partial update   | `200`   | Returns the updated entity                        |
+| Method   | Path             | Summary               | Success | Notes                                                    |
+| -------- | ---------------- | --------------------- | ------- | -------------------------------------------------------- |
+| `POST`   | `/companies`     | Create a company      | `201`   | Returns a success wrapper, not the created entity        |
+| `GET`    | `/companies`     | List companies        | `200`   | Supports pagination and simple filters                   |
+| `GET`    | `/companies/:id` | Get one company       | `200`   | Returns the raw entity                                   |
+| `POST`   | `/companies/:id` | Partial update        | `200`   | Returns the updated entity                               |
+| `DELETE` | `/companies/:id` | Soft-delete a company | `204`   | Refused if any non-deleted Contact or Deal references it |
 
 Not implemented:
 
@@ -140,7 +140,7 @@ Content-Type: application/json
 }
 ```
 
-**Response** (`200`):
+**Response** (`201`):
 
 ```json
 {
@@ -149,12 +149,6 @@ Content-Type: application/json
   "companyId": "a3f8c1e2-1234-5678-9abc-def012345678"
 }
 ```
-
-Notes:
-
-- The controller explicitly uses `@HttpCode(HttpStatus.OK)`.
-- The response does **not** include the created entity body.
-- No `Location` header is set.
 
 **Validation / error behavior**:
 
@@ -259,7 +253,7 @@ Content-Type: application/json
 }
 ```
 
-**Response**: the updated `CompanyEntity`.
+**Response** (`201`): the updated `CompanyEntity`.
 
 Behavior:
 
@@ -273,9 +267,68 @@ Errors:
 - `404` when the company does not exist
 - `400` on DTO validation failures
 
+### 5.5 `DELETE /companies/:id`
+
+Soft-deletes a company, subject to reference constraints.
+
+**Request**:
+
+```json
+http
+DELETE /api/companies/a3f8c1e2-1234-5678-9abc-def012345678
+​
+```
+
+**Response** (`204 No Content`): empty body on success.
+
+Behavior:
+
+- **Add `ParseUUIDPipe({ version: '4' })` to the path param** — the current
+  `GET /companies/:id` route does not use it (see §5.3); DELETE should
+  bring it in, and the same pipe SHOULD be back-fitted to `GET` and
+  `POST /:id` for consistency
+- service checks whether any non-deleted Contact references this Company:
+  `contactRepository.count({ where: { companyId: id } })`; if `> 0`,
+  throws `ConflictException` (`409`)
+- service checks whether any non-deleted Deal references this Company
+  (after T1 ships): `dealRepository.count({ where: { companyId: id } })`;
+  if `> 0`, throws `ConflictException` (`409`)
+- service calls `companyRepository.softDelete(id)`, which writes `deletedAt`
+- if the company does not exist (or is already soft-deleted), returns `404`
+
+**Referenced-records error** (`409`):
+
+​```json
+{
+  "success": false,
+  "code": 409,
+  "message": "Cannot delete company: 3 contact(s) and 1 deal(s) still reference it.",
+  "timestamp": "2026-07-19T00:00:00.000Z",
+  "path": "/api/companies/<id>"
+}
+​```
+
+The message SHOULD include the counts of each referring entity type so a
+CLI or admin UI can guide the user to the correct cleanup action.
+
+**Alternatives considered and rejected**:
+
+- Cascade soft-delete of all Contacts and Deals belonging to the Company —
+  makes bulk data loss too easy from a single API call; the "undo" is
+  ambiguous because we cannot distinguish contacts-deleted-because-of-cascade
+  from contacts-deleted-directly.
+- Leave dependent rows orphaned (companyId points to a soft-deleted
+  Company) — creates zombie foreign keys visible in Contact list until the
+  next data cleanup pass.
+
+The restrict-then-delete pattern above is what T3 will later formalize
+alongside the Company inactive/dormant state (soft-delete is orthogonal to
+inactive status — inactive means "no new activity", deleted means "should
+not appear at all").
+
 ---
 
-## 6. Error Envelope
+## 6. Error
 
 All `HttpException` responses are transformed by `src/common/filter/http-exception.filter.ts`:
 
@@ -288,11 +341,6 @@ All `HttpException` responses are transformed by `src/common/filter/http-excepti
   "path": "/api/companies"
 }
 ```
-
-Notes:
-
-- `code` is the numeric HTTP status, not a domain error string
-- when validation produces multiple messages, only the first message is returned
 
 ---
 
@@ -345,10 +393,4 @@ field assembly.
 
 ---
 
-## 8. Behavior Summary
-
-- `lastContactedAt` is persisted directly on the company row
-- company list sorting is always `createdAt DESC`
-- invalid query filter values are ignored rather than rejected
-- create returns a wrapper object, while get/update return raw entities
-- soft-delete metadata exists in the entity, but no delete API is exposed
+## Introduced by T2

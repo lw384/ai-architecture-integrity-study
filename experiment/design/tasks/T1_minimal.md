@@ -1,12 +1,6 @@
 <!--
 Task: T1
 Variant: minimal
-Blocks enabled: 1, 2, 3, 4, 5, 7
-Rule IDs targeted: none (Block 6 absent by design)
-Derived from: prompt_meta_template_v2.md
-Source documents:
-Content hash (SHA-256 of blocks 3+4+5): [pending — must match T1_structured.md]
-Frozen at: [pending — set at freeze commit]
 -->
 
 ## 1. Agent Role
@@ -15,7 +9,11 @@ You are a senior full-stack engineer working on a production-grade multi-tenant 
 
 ## 2. Codebase Orientation
 
-Add code under `backend/src/module/deal/` and `frontend/src/pages/deals/`. See `backend/src/module/company/` and `frontend/src/pages/companies/` for the pattern. Shared backend utilities (e.g. error) live in `backend/src/common/`. Global API prefix is `/api`. Frontend API clients live under `frontend/src/api/`. Routes register in `frontend/src/routes/route-registry.js`. Seed lives at `backend/src/database/seed/seed.ts`.
+The backend CRM modules are under `backend/src/modules/`. Inspect the existing company, contact modules before making changes.
+
+The frontend feature code is under `frontend/src/`. Inspect the current navigation,  views, or components before extending the application.
+
+Treat the current workspace as the source of truth. Build on the existing implementation and preserve existing externally observable behaviour unless this task explicitly requires a change.
 
 ## 3. Problem Statement
 
@@ -31,7 +29,7 @@ Sales reps currently track opportunities in parallel spreadsheets because the CR
 
 ### Desired Outcome
 
-Introduce the Deal entity as a first-class citizen in the CRM. The system must support CRUD operations for Deals, allowing them to be linked to Companies (mandatory) and Contacts (optional). The frontend must provide a dedicated list and detail view for Deals, supporting basic filtering by stage and Company. The initial seed data must be updated to include representative Deal records to ensure the development environment is immediately functional.
+Introduce the Deal entity in the CRM. The system must support CRUD operations for Deals, allowing them to be linked to Companies (mandatory) and Contacts (optional). The frontend must provide a dedicated list and detail view for Deals, supporting basic filtering by stage and Company. The initial seed data must be updated to include representative Deal records to ensure the development environment is immediately functional.
 
 ## 4. Requirements
 
@@ -71,7 +69,8 @@ UI
 
 21. Users SHALL create and edit Deals from the same UI surface.
 
-22. 22. The Deals list SHALL be reachable from the primary navigation.
+22.
+The Deals list SHALL be reachable from the primary navigation.
 
 Data setup
  23. After 'demo' seed runs, at least 8 Deals SHALL exist across at least 4
@@ -79,9 +78,24 @@ Data setup
  24. After 'edge-case' seed runs, at least one Deal SHALL have contactId=null
  and at least one SHALL have expectedCloseDate=null.
 
+## 5. API Contract
 
-## 5. Delivery & Verification Protocol:
+Determine any necessary API additions or modifications from the functional requirements.
 
-You MUST write and execute functional tests (npm run test) to verify your implementation. You are responsible for fixing any compilation errors or failing tests before concluding.
+Preserve existing public API behaviour unless a change is necessary to fulfil those requirements.
 
-Do NOT print raw source code, diffs, or design rationales. Modify the files directly in the workspace. Once your tests pass and the implementation is complete, output exactly [TASK_COMPLETED] on a new line and terminate your process immediately.
+## 6. Delivery & Verification Protocol:
+
+- Work directly in the provided workspace. Implement the task by modifying the
+  relevant project files; do not merely describe a proposed solution.
+
+- Add or update focused functional tests for the behaviour introduced or changed
+  by this task. Keep those tests in the project's existing test locations and
+  run the relevant test suite before concluding.
+
+- Before concluding, run the relevant functional tests and fix any failures,
+  compilation errors, or regressions caused by your changes.
+
+- Do not create Git commits or Git tags.
+
+- When the implementation is complete and the relevant functional tests pass, respond with exactly `[TASK_COMPLETED]` and nothing else.

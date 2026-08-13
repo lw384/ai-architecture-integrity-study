@@ -1,9 +1,3 @@
-<!--
-Task: T3
-Variant: architecture-neutral
-Prompt schema: V2
--->
-
 ## 1. Agent Role
 
 You are a senior full-stack engineer working on a production-grade multi-tenant CRM built with NestJS using TypeScript (backend), React with MUI using JavaScript (frontend), and TypeORM with PostgreSQL.
@@ -212,3 +206,9 @@ Preserve existing public API behaviour unless a change is necessary to fulfil th
 - Do not create Git commits or Git tags. The experiment pipeline manages Git history after this task completes.
 
 - When the implementation is complete and the relevant functional tests pass, respond with exactly `[TASK_COMPLETED]` and nothing else.
+
+## Completion Protocol
+        After all required work, verification, and any required updates are
+        complete, output exactly this final line and then terminate:
+
+        [TASK_COMPLETED]

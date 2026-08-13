@@ -195,11 +195,131 @@ and every Deal continues to belong to exactly one Company.
 
 ## 5. API Contract
 
-Determine any necessary API additions or modifications from the functional requirements.
+All routes below include the global `/api` prefix.
 
-Preserve existing public API behaviour unless a change is necessary to fulfil those requirements.
+This section defines externally observable HTTP behaviour only. It does not  
+prescribe the internal architecture, file structure, class names, DTO names, or  
+implementation patterns.
 
-## 6. Delivery and Verification Protocol
+### Shared Error Contract
+
+All error responses use the existing project error-response envelope.
+
+| HTTP status | Code                            | Condition                                              |
+| ----------- | ------------------------------- | ------------------------------------------------------ |
+| `400`       | `UNKNOWN_STAGE`                 | A requested stage is outside the controlled vocabulary |
+| `400`       | `INVALID_INITIAL_STAGE`         | Deal creation specifies a disallowed initial stage     |
+| `422`       | `INVALID_STAGE_TRANSITION`      | The target stage is not allowed from the current stage |
+| `422`       | `TRANSITION_PRECONDITION_UNMET` | A target-stage precondition is not satisfied           |
+| `404`       | `NOT_FOUND`                     | The requested Deal does not exist                      |
+
+### Create Deal — Modified
+
+**Route:** `POST /api/deals`  
+**Content-Type:** `application/json`
+
+The existing Create Deal contract remains in effect. Its optional `stage` field  
+may contain only `lead` or `qualified`; when omitted, it defaults to `lead`.
+
+```
+{
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "companyId": "<company-uuid>",
+  "stage": "qualified"
+}
+```
+
+**Success:** `201 Created`
+
+The response is the created Deal with a canonical `stage`.
+
+### Update Deal — Modified
+
+**Route:** `POST /api/deals/:id`  
+**Content-Type:** `application/json`
+
+The existing partial-update contract remains in effect. If the request includes  
+`stage`, the requested change follows the transition matrix and preconditions.
+
+A transition to `negotiation` may provide the required date in the same request:
+
+```
+{
+  "stage": "negotiation",
+  "expectedCloseDate": "2026-10-31"
+}
+```
+
+**Success:** `200 OK`
+
+The response is the updated Deal with a canonical `stage`.
+
+### Transition Deal Stage — New
+
+**Route:** `POST /api/deals/:id/stage`  
+**Content-Type:** `application/json`
+
+```
+{
+  "stage": "qualified"
+}
+```
+
+`stage` must be one of:
+
+```
+lead, qualified, active, negotiation, closed_won, closed_lost
+```
+
+**Success:** `200 OK`
+
+The response is the updated Deal with its canonical `stage`.
+
+## 6. Architecture Rules
+
+### Controlled domain-state representation
+
+Define a shared TypeScript enum named `DealStage` for the controlled Deal-stage
+vocabulary.
+
+```ts
+enum DealStage {
+  Lead = "lead",
+  Qualified = "qualified",
+  Active = "active",
+  Negotiation = "negotiation",
+  ClosedWon = "closed_won",
+  ClosedLost = "closed_lost"
+}
+
+
+
+The Deal stage field, stage-transition validation, request validation, and  
+stage-related API response typing SHALL use this shared `DealStage`  
+representation rather than independently defined free-form string literals.
+
+### Transition ownership and consistency
+
+The transition matrix and target-stage preconditions SHALL have one shared  
+authoritative implementation. Both the generic Deal update flow and the  
+dedicated stage-transition flow SHALL delegate stage changes to that same  
+validation behaviour.
+
+A generic update that does not include `stage` SHALL not invoke stage-transition  
+validation.
+
+### Persistence and migration boundary
+
+The persisted Deal stage value SHALL be constrained to the controlled  
+`DealStage` vocabulary after migration. Migration logic is responsible for  
+normalising legacy values before the application relies on the controlled  
+vocabulary.
+
+The frontend SHALL obtain allowed stage values and transition outcomes through  
+the Deal API contract; it SHALL not bypass backend transition validation.
+
+## 7. Delivery and Verification Protocol
 
 - Work directly in the provided workspace. Implement the task by modifying the relevant project files; do not merely describe a proposed solution.
 
