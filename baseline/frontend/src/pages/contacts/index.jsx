@@ -7,10 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   Snackbar,
-  MenuItem,
   Typography,
   Stack,
-  TextField,
 } from '@mui/material';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +27,6 @@ import {
   useUpdateContact,
 } from './contactQueries';
 
-
 function extractErrorMessage(error, fallbackMessage) {
   return error?.message || fallbackMessage;
 }
@@ -43,7 +40,6 @@ export default function ContactsPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [feedback, setFeedback] = useState({ open: false, severity: 'success', message: '' });
   const [searchInput, setSearchInput] = useState('');
-  const [statusInput, setStatusInput] = useState('');
   const [listQuery, setListQuery] = useState({
     page: 1,
     pageSize: 10,
@@ -115,13 +111,11 @@ export default function ContactsPage() {
       ...current,
       page: 1,
       ...(searchInput.trim() ? { q: searchInput.trim() } : { q: undefined }),
-      ...(statusInput ? { status: statusInput } : { status: undefined }),
     }));
   };
 
   const handleResetFilters = () => {
     setSearchInput('');
-    setStatusInput('');
     setListQuery({ page: 1, pageSize: listQuery.pageSize });
   };
 
@@ -144,21 +138,7 @@ export default function ContactsPage() {
         onSearchChange={setSearchInput}
         onSearchSubmit={handleSearchSubmit}
         onReset={handleResetFilters}
-        searchPlaceholder="Search by name, company, or email"
-        filters={(
-          <TextField
-            select
-            size="small"
-            label="Status"
-            value={statusInput}
-            onChange={(event) => setStatusInput(event.target.value)}
-            sx={{ minWidth: '10rem' }}
-          >
-            <MenuItem value="">All statuses</MenuItem>
-            <MenuItem value="active">active</MenuItem>
-            <MenuItem value="inactive">inactive</MenuItem>
-          </TextField>
-        )}
+        searchPlaceholder="Search by name, email, phone, or role"
         actions={(
           <Button
             variant="contained"
