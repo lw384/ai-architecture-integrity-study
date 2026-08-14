@@ -6,10 +6,10 @@ Variant: minimal
 <!--
 Task: T1
 Variant: structured
-Blocks enabled: 1, 2, 3, 4, 5, 6, 7 
-Rule IDs targeted: 
+Blocks enabled: 1, 2, 3, 4, 5, 6, 7
+Rule IDs targeted:
 Derived from: prompt_meta_template_v2.md
-Source documents: 
+Source documents:
 Content hash (SHA-256 of blocks 3+4+5): [pending — must match T1_structured.md]
 Frozen at: [pending — set at freeze commit]
 -->
@@ -209,7 +209,7 @@ A Company link returned as part of a Contact includes:
 
 ### Deal Contact Link Representation
 
-A Deal Contact link includes the linked Contact id and the optional role of that  
+A Deal Contact link includes the linked Contact id and the optional role of that
 Contact in the current Deal:
 
 ```
@@ -221,10 +221,10 @@ Contact in the current Deal:
 
 ### 1. Create Contact — Modified
 
-**Route:** `POST /api/contacts`  
+**Route:** `POST /api/contacts`
 **Content-Type:** `application/json`
 
-All existing Contact creation fields remain supported. The previous single  
+All existing Contact creation fields remain supported. The previous single
 `companyId` field is replaced by `companies`.
 
 | Field                   | Type    | Required | Constraints                                               |
@@ -252,22 +252,22 @@ Example request fragment:
 
 **Success:** `201 Created`
 
-The response is the created Contact, including `companies`, ordered with the  
+The response is the created Contact, including `companies`, ordered with the
 primary Company first.
 
 ### 2. Update Contact — Modified
 
-**Route:** `PATCH /api/contacts/:id`  
+**Route:** `PATCH /api/contacts/:id`
 **Content-Type:** `application/json`
 
-The request body accepts any valid partial update of the existing Contact  
-fields. When `companies` is supplied, it atomically replaces the Contact's  
-complete Company link set and must contain at least one link with exactly one  
+The request body accepts any valid partial update of the existing Contact
+fields. When `companies` is supplied, it atomically replaces the Contact's
+complete Company link set and must contain at least one link with exactly one
 primary Company.
 
 **Success:** `200 OK`
 
-The response is the updated Contact, including `companies`, ordered with the  
+The response is the updated Contact, including `companies`, ordered with the
 primary Company first.
 
 ### 3. Get Contact — Modified
@@ -290,7 +290,7 @@ The response is the Contact with:
 }
 ```
 
-The primary Company appears first. The previous single-Company reference field  
+The primary Company appears first. The previous single-Company reference field
 is absent.
 
 ### 4. List Contacts — Modified
@@ -299,20 +299,20 @@ is absent.
 
 The existing pagination and search query behaviour remains unchanged.
 
-The `companyId` query parameter filters Contacts by any Company link, whether  
+The `companyId` query parameter filters Contacts by any Company link, whether
 that link is primary or non-primary.
 
 **Success:** `200 OK`
 
-Each returned Contact includes its `companies` array using the Company Link  
+Each returned Contact includes its `companies` array using the Company Link
 Representation.
 
 ### 5. Create Deal — Modified
 
-**Route:** `POST /api/deals`  
+**Route:** `POST /api/deals`
 **Content-Type:** `application/json`
 
-All existing Deal creation fields remain supported. The previous single  
+All existing Deal creation fields remain supported. The previous single
 `contactId` field is replaced by `contactLinks` and `primaryContactId`.
 
 | Field                      | Type              | Required      | Constraints                                             |
@@ -346,14 +346,14 @@ The response is the created Deal with `contactLinks` and `primaryContactId`.
 
 ### 8. Update Deal — Modified
 
-**Route:** `POST /api/deals/:id`  
+**Route:** `POST /api/deals/:id`
 **Content-Type:** `application/json`
 
-The request body accepts any valid non-empty subset of the existing mutable Deal  
-fields. When `contactLinks` is supplied, it atomically replaces the Deal's  
+The request body accepts any valid non-empty subset of the existing mutable Deal
+fields. When `contactLinks` is supplied, it atomically replaces the Deal's
 complete Contact link set.
 
-When `primaryContactId` is non-null, it must occur in the resulting  
+When `primaryContactId` is non-null, it must occur in the resulting
 `contactLinks[].contactId` set.
 
 **Success:** `200 OK`
@@ -384,15 +384,103 @@ The response includes:
 }
 ```
 
-`primaryContactId`, when non-null, must occur in  
-`contactLinks[].contactId`. The previous single `contactId` field is absent.  
+`primaryContactId`, when non-null, must occur in
+`contactLinks[].contactId`. The previous single `contactId` field is absent.
 Contact details are retrieved separately through `GET /api/contacts/:id`.
 
-## 6. Rules
 
-Please determine the best internal code structure and patterns autonomously to fulfill the requirements.
+## 6. Architecture Rules
 
-## 7. Delivery / Meta
+Apply these rules to all production code added or modified for this task. Do
+not disable, suppress, or bypass the corresponding checks. Explicit task
+requirements take precedence where a conflict exists.
+
+### Backend
+
+- **BE-STRUCT-C-001:** Each business module uses separate module, controller,
+  service, and repository files.
+- **BE-DEP-C-001:** Dependencies follow Controller → Service → Repository →
+  Entity.
+- **BE-DEP-C-002:** `src/common/` and `src/core/` must not import business
+  implementations from `src/modules/`.
+- **BE-DEP-C-003:** Guards, interceptors, and filters must not import
+  module-specific entities or repositories.
+- **BE-DEP-C-004:** Do not introduce circular imports.
+- **BE-DOM-C-001:** Cross-module imports use only the target module's
+  `.module.ts` or `index.ts` entry point.
+- **BE-DOM-C-002:** Module entry points must not export repositories or
+  entities.
+- **BE-ERR-C-001:** Services must not throw NestJS `HttpException` classes.
+- **BE-ERR-C-002:** Service failures use the project's `AppException`.
+- **BE-ERR-C-003:** Catch blocks must handle, wrap, or rethrow errors; no
+  silent or log-only catches.
+- **BE-CONTRACT-C-001:** Persistent entity or relationship changes require a
+  corresponding executable migration.
+- **BE-CONTRACT-C-002:** Request DTOs use the project's `class-validator` and
+  `ValidationPipe` mechanism.
+- **BE-CONTRACT-C-003:** Optional request properties must validate supplied
+  values; `@IsOptional()` alone is insufficient.
+- **BE-CONTRACT-C-004:** Preserve input whitelisting and rejection of unknown
+  request fields.
+- **BE-TEST-C-001:** Services obtain repositories through dependency
+  injection; do not call `new Repository(...)`.
+- **BE-ROUTE-C-001:** Resolved public routes use the global `/api` prefix and
+  kebab-case resource paths.
+- **BE-SIZE-C-001:** Production methods have at most three direct parameters;
+  group cohesive inputs in a DTO or parameter object.
+- **BE-DUP-C-001:** Each business resource has one backend owner; do not create
+  competing modules, controllers, routes, or entity-table owners.
+- **BE-DUP-C-002:** Each business policy or invariant has one authoritative
+  implementation; all entry points delegate to it.
+- **BE-DUP-C-003:** Do not copy equivalent production functions or code
+  blocks; reuse or extract an existing shared implementation.
+
+### Frontend
+
+- **FE-COM-C-001:** React component files contain at most 300 non-blank,
+  non-comment lines.
+- **FE-COM-C-002:** Business JSX nesting does not exceed five levels.
+- **FE-STATE-C-001:** Components under `src/components/` and
+  `src/layout/components/` must not introduce `useState` or `useReducer`.
+- **FE-STATE-C-002:** Context providers appear only at the application root,
+  route layouts, `src/providers/`, or `src/contexts/`.
+- **FE-ROUTE-C-001:** Route definitions live under `src/routes/`.
+- **FE-ROUTE-C-002:** Every route resolves to a page component.
+- **FE-STYLE-C-001:** Do not use raw JSX `style`; use MUI or the established
+  shared styling abstraction.
+- **FE-STYLE-C-002:** Global styles live only under `src/styles/global/`.
+- **FE-DATA-C-001:** Direct `fetch` or `axios` calls appear only in approved
+  API service or data-hook modules.
+- **FE-DATA-C-002:** Every `useEffect` declares all referenced reactive values
+  in its dependency array.
+- **FE-COMM-C-001:** Do not introduce a global event bus; use props, controlled
+  context, or the established state mechanism.
+- **FE-DUP-C-001:** Each resource has one frontend feature, route, page, and
+  form owner; do not create competing feature directories or UI surfaces.
+- **FE-DUP-C-002:** Repeated API, form, validation, transformation, or state
+  logic belongs in a shared service, hook, or utility.
+- **FE-DUP-C-003:** Do not copy equivalent production components, functions,
+  or code blocks; reuse or extract a cohesive shared implementation.
+
+### Cross-Stack
+
+- **CROSS-TYPE-C-001:** Frontend requests and response models match backend
+  DTO names, types, requiredness, nullability, and enum values.
+- **CROSS-EP-C-001:** Every frontend API URL resolves to an implemented
+  backend route.
+- **CROSS-ERR-C-001:** Every frontend-handled error code is defined and emitted
+  by the backend.
+- **CROSS-METHOD-C-001:** Frontend HTTP methods and expected statuses match
+  the corresponding backend endpoints.
+- **CROSS-NAME-C-001:** Use one canonical resource name across backend routes,
+  modules, frontend features, API services, and UI terminology.
+- **CROSS-PROP-C-001:** Propagate API-facing changes to every affected DTO,
+  route, persistence artifact, frontend adapter, UI surface, seed, and test.
+- **CROSS-DUP-C-001:** Each cross-stack contract has one authoritative source
+  or an automated synchronization mechanism; do not maintain unsynchronized
+  duplicate definitions.
+
+## 7. Delivery & Verification Protocol:
 
 - Work directly in the provided workspace. Implement the task by modifying the
   relevant project files; do not merely describe a proposed solution.

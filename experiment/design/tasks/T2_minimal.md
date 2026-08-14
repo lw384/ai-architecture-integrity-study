@@ -171,8 +171,7 @@ Determine any necessary API additions or modifications from the functional requi
 
 Preserve existing public API behaviour unless a change is necessary to fulfil those requirements.
 
-## 6. Delivery / Meta
-
+## 6. Delivery & Verification Protocol:
 - Work directly in the provided workspace. Implement the task by modifying the
   relevant project files; do not merely describe a proposed solution.
 
@@ -185,15 +184,4 @@ Preserve existing public API behaviour unless a change is necessary to fulfil th
 
 - Do not create Git commits or Git tags.
 
-- Work autonomously in the workspace until the entire task is implemented and
-verified.
-
-- Do not stop after inspection, planning, or a progress update. Do not ask for a
-later implementation pass, and do not respond with an explanation of remaining
-work.
-
-- Before finishing, you must modify the required workspace files, add or update
-the requested focused tests, and run the relevant verification commands.
-
-- Your final response must contain exactly `[TASK_COMPLETED]` and nothing else.
-Do not emit this marker until all requirements are complete.
+- When the implementation is complete and the relevant functional tests pass, respond with exactly `[TASK_COMPLETED]` and nothing else.

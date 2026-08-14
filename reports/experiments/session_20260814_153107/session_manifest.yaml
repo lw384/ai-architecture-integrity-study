@@ -1,0 +1,9 @@
+session_id: session_20260814_153107
+workspace_dir: /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260814_153107
+created_at: 2026-08-14T15:38:30.558113
+initial_config:
+  agent: claude
+  model: claude-sonnet-4-6
+  strategy: minimal
+  write_memory_md: false
+  memory_filename: none
