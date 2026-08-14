@@ -1,7 +1,32 @@
 const SERVICE_FILE_RE = /\.service\.ts$/;
+const CONTROLLER_FILE_RE = /\.controller\.ts$/;
+const REPOSITORY_FILE_RE = /\.repository\.ts$/;
+const SPEC_FILE_RE = /\.(spec|test)\.ts$/;
+const DTO_FILE_RE = /(^|\/)dto\/.+\.ts$/;
+const MAIN_FILE_RE = /(^|\/)main\.ts$/;
 
 export function isServiceFile(filename) {
     return SERVICE_FILE_RE.test(filename);
+}
+
+export function isControllerFile(filename) {
+    return CONTROLLER_FILE_RE.test(filename);
+}
+
+export function isRepositoryFile(filename) {
+    return REPOSITORY_FILE_RE.test(filename);
+}
+
+export function isSpecFile(filename) {
+    return SPEC_FILE_RE.test(filename);
+}
+
+export function isDtoFile(filename) {
+    return DTO_FILE_RE.test(filename);
+}
+
+export function isMainFile(filename) {
+    return MAIN_FILE_RE.test(filename);
 }
 
 export function getThrownClassName(argument) {
@@ -199,4 +224,147 @@ export function extractIdentifierNamesFromArray(arrayExpr) {
     }
 
     return names;
+}
+
+export function getDecoratorName(decorator) {
+    const expr = decorator?.expression;
+
+    if (!expr) {
+        return null;
+    }
+
+    if (expr.type === 'Identifier') {
+        return expr.name;
+    }
+
+    if (expr.type === 'CallExpression') {
+        if (expr.callee?.type === 'Identifier') {
+            return expr.callee.name;
+        }
+
+        if (expr.callee?.type === 'MemberExpression' && expr.callee.property?.type === 'Identifier') {
+            return expr.callee.property.name;
+        }
+    }
+
+    if (expr.type === 'MemberExpression' && expr.property?.type === 'Identifier') {
+        return expr.property.name;
+    }
+
+    return null;
+}
+
+export function getLiteralStringValue(node) {
+    if (!node) {
+        return null;
+    }
+
+    if (node.type === 'Literal' && typeof node.value === 'string') {
+        return node.value;
+    }
+
+    if (node.type === 'TemplateLiteral' && node.expressions.length === 0) {
+        return node.quasis[0]?.value?.cooked ?? '';
+    }
+
+    return null;
+}
+
+export function getClassExtendsCallName(node) {
+    const superClass = node?.superClass;
+
+    if (!superClass) {
+        return null;
+    }
+
+    if (superClass.type === 'CallExpression') {
+        if (superClass.callee?.type === 'Identifier') {
+            return superClass.callee.name;
+        }
+
+        if (superClass.callee?.type === 'MemberExpression' && superClass.callee.property?.type === 'Identifier') {
+            return superClass.callee.property.name;
+        }
+    }
+
+    return null;
+}
+
+export function collectImportedNames(programNode, packageName) {
+    const imported = new Set();
+    const namespaces = new Set();
+
+    for (const stmt of programNode?.body ?? []) {
+        if (stmt.type !== 'ImportDeclaration' || stmt.source?.value !== packageName) {
+            continue;
+        }
+
+        for (const specifier of stmt.specifiers ?? []) {
+            if (specifier.type === 'ImportSpecifier') {
+                imported.add(specifier.local.name);
+            }
+
+            if (specifier.type === 'ImportNamespaceSpecifier') {
+                namespaces.add(specifier.local.name);
+            }
+        }
+    }
+
+    return { imported, namespaces };
+}
+
+export function isClassValidatorDecorator(decorator, validatorImports) {
+    const expr = decorator?.expression;
+
+    if (!expr) {
+        return false;
+    }
+
+    if (expr.type === 'CallExpression') {
+        const callee = expr.callee;
+
+        if (callee?.type === 'Identifier') {
+            return validatorImports.imported.has(callee.name);
+        }
+
+        if (
+            callee?.type === 'MemberExpression'
+            && callee.object?.type === 'Identifier'
+            && callee.property?.type === 'Identifier'
+        ) {
+            return validatorImports.namespaces.has(callee.object.name);
+        }
+    }
+
+    if (expr.type === 'Identifier') {
+        return validatorImports.imported.has(expr.name);
+    }
+
+    return false;
+}
+
+export function isKebabCaseRoutePath(pathValue) {
+    if (typeof pathValue !== 'string') {
+        return true;
+    }
+
+    const trimmed = pathValue.trim();
+
+    if (!trimmed || trimmed === '/') {
+        return true;
+    }
+
+    const segments = trimmed.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean);
+
+    return segments.every((segment) => {
+        if (!segment) {
+            return true;
+        }
+
+        if (segment.startsWith(':')) {
+            return /^[A-Za-z][A-Za-z0-9_]*$/.test(segment.slice(1));
+        }
+
+        return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(segment);
+    });
 }

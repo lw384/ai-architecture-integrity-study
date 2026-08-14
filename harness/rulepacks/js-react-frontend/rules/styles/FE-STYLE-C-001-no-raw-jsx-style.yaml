@@ -1,0 +1,27 @@
+rule_id: FE-STYLE-C-001-no-raw-jsx-style
+version: 0.1.0
+layer: constraints
+category: styling
+visibility: agent-visible
+severity: warning
+
+description: >
+  React components should not use raw JSX style props. Prefer MUI sx, styled,
+  or approved shared styling abstractions.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - "architecture/no-raw-jsx-style"
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Raw JSX style props are not allowed. Use the established shared styling
+  approach instead.
+
+research_tags:
+  drift_type: erosion
+  severity_class: soft_constraint
+  erosion_dimension: styling-discipline

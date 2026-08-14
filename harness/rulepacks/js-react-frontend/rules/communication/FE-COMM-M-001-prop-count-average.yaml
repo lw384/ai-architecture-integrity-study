@@ -1,0 +1,20 @@
+rule_id: FE-COMM-M-001-prop-count-average
+version: 0.1.0
+layer: metrics
+category: communication
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: frontend-prop-count-average
+
+description: >
+  Measures the average prop count of components that destructure their first
+  parameter.
+
+agent_facing_message: >
+  Average prop count is {value}. Lower values indicate narrower component
+  interfaces.
+
+research_tags:
+  metric_family: interface-width
+  erosion_dimension: component-interface-width

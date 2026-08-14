@@ -1,0 +1,19 @@
+rule_id: FE-STYLE-M-002-global-style-rule-count
+version: 0.1.0
+layer: metrics
+category: styling
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: frontend-global-style-rule-count
+
+description: >
+  Measures the total number of CSS rules in approved global style files.
+
+agent_facing_message: >
+  Global style rule count is {value}. Growth can indicate expanding shared CSS
+  surface area.
+
+research_tags:
+  metric_family: global-css-surface
+  erosion_dimension: global-style-surface

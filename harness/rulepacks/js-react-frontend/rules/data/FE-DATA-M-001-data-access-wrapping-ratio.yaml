@@ -1,0 +1,20 @@
+rule_id: FE-DATA-M-001-data-access-wrapping-ratio
+version: 0.1.0
+layer: metrics
+category: data-access
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: frontend-data-access-wrapping-ratio
+
+description: >
+  Measures the share of detected network calls that stay inside approved
+  frontend data-access modules.
+
+agent_facing_message: >
+  Approved data-access wrapping ratio is {value}. Higher values indicate better
+  localization of network calls.
+
+research_tags:
+  metric_family: data-access-locality
+  erosion_dimension: network-call-dispersion

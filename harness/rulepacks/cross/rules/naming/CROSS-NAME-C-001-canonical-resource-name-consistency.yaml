@@ -1,0 +1,27 @@
+rule_id: CROSS-NAME-C-001-canonical-resource-name-consistency
+version: 0.1.0
+layer: constraints
+category: cross-resource-naming
+visibility: agent-visible
+severity: warning
+
+description: >
+  Use one canonical resource name across backend modules/controllers and the
+  corresponding frontend API, route, and page surfaces.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/canonical-resource-name-mismatch"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Resource naming is inconsistent on {surface} in {file}: expected
+  {expected_resource}, found {actual_resource}.
+
+research_tags:
+  drift_type: erosion
+  severity_class: soft_constraint
+  erosion_dimension: cross-resource-naming

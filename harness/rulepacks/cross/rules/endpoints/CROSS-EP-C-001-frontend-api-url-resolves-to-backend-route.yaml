@@ -1,0 +1,26 @@
+rule_id: CROSS-EP-C-001-frontend-api-url-resolves-to-backend-route
+version: 0.1.0
+layer: constraints
+category: cross-endpoint-contract
+visibility: agent-visible
+severity: error
+
+description: >
+  Every frontend API URL must resolve to an implemented backend public path.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/frontend-endpoint-missing-backend-route"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Frontend endpoint path {frontend_path} in {frontend_file} does not resolve to
+  any backend route under the public API surface.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: cross-endpoint-alignment

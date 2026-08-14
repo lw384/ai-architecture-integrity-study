@@ -1,0 +1,20 @@
+rule_id: FE-STATE-M-001-context-provider-ratio
+version: 0.1.0
+layer: metrics
+category: state-management
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: frontend-state-distribution-context-ratio
+
+description: >
+  Measures the share of context provider usages relative to all detected local
+  state hooks and provider usages.
+
+agent_facing_message: >
+  Context-provider ratio is {value}. Large shifts can indicate state-management
+  drift.
+
+research_tags:
+  metric_family: state-distribution
+  erosion_dimension: state-placement

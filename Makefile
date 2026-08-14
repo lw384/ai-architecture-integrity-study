@@ -22,8 +22,8 @@ test-harness:  ## 只测 harness
 lint:  ## 运行所有 lint
 	pnpm lint
 
-eval-baseline:  ## 只跑 baseline 评估并归档到 reports/baselines/baseline_时间戳
-	python3 experiment/instruments/agent-runners/run_baseline_eval.py --task Base
+eval-baseline:  ## 只跑 baseline 评估并写入 reports/baseline
+	python3 experiment/instruments/agent-runners/run_harness.py --baseline
 
 analyze:  ## 运行 Python 分析脚本
 	@if [ -d experiment/venv ]; then \

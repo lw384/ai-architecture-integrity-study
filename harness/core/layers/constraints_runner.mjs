@@ -56,7 +56,7 @@ function pickAdapters(adapters = {}) {
     return Object.entries(adapters).filter(([, adapter]) => adapter.emits?.includes('constraints'));
 }
 
-async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry }) {
+async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry, runtimeContext }) {
     const events = [];
     const meta = {};
 
@@ -81,6 +81,7 @@ async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry }
 
             const result = await run({
                 targetDir,
+                runtimeContext,
                 adapterConfig: {
                     configPath,
                     ...(adapter.options ?? {}),
@@ -143,7 +144,7 @@ function sumResult(rules, findings, findingsByRule, meta) {
     };
 }
 
-export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapterRegistry }) {
+export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapterRegistry, runtimeContext = {} }) {
     const manifest = readManifest(rulepackDir);
     const rulePaths = pickRulePaths(manifest, taskConfig);
     const rules = loadRules(rulepackDir, rulePaths);
@@ -153,6 +154,7 @@ export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapt
         rulepackDir,
         adapters,
         adapterRegistry,
+        runtimeContext,
     });
     const findings = [];
     const findingsByRule = {};

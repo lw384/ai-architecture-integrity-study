@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 
 const eslintBin = new URL('../../node_modules/eslint/bin/eslint.js', import.meta.url);
+const ARCH_RULE_ID_RE = /\b((?:BE|FE|CROSS)-[A-Z]+-[CMJ]-\d{3}(?:-[a-z0-9-]+)?)\b/;
 
 function runTool(binPath, args, cwd, timeoutMs) {
     return new Promise((resolve) => {
@@ -118,13 +119,21 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion }) {
 
     results.forEach((file) => {
         file.messages.forEach((msg) => {
+            const matchedRuleId = typeof msg.message === 'string'
+                ? msg.message.match(ARCH_RULE_ID_RE)?.[1] ?? null
+                : null;
             normalized_events.push({
                 event_type: 'file_structure_violation',
                 source_tool: 'eslint',
                 source_tool_version: toolVersion,
-                source_rule_id: msg.ruleId,
+                source_rule_id: matchedRuleId || msg.ruleId,
                 location: { file: file.filePath, line: msg.line, column: msg.column ?? null },
-                payload: { message: msg.message, severity: msg.severity },
+                payload: {
+                    message: msg.message,
+                    severity: msg.severity,
+                    eslint_rule_id: msg.ruleId,
+                    architecture_rule_id: matchedRuleId,
+                },
             });
         });
     });

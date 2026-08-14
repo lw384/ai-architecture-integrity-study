@@ -1,0 +1,28 @@
+rule_id: CROSS-ERR-C-001-frontend-handled-error-codes-defined-and-emitted
+version: 0.1.0
+layer: constraints
+category: cross-error-contract
+visibility: agent-visible
+severity: error
+
+description: >
+  Every business error code that frontend code handles explicitly must exist in
+  the backend error catalog and be emitted by backend exception flows.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/frontend-handled-error-code-not-defined"
+      - "cross-static/frontend-handled-error-code-not-emitted"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Frontend-handled error code {frontend_code} in {frontend_file} is invalid:
+  {reason}.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: cross-error-alignment

@@ -10,6 +10,11 @@ adapters:
     version: 0.1.0
     config: tool-configs/eslint.config.js
     emits: [constraints]
+  computed-metrics:
+    source: computed-metrics
+    version: 0.1.0
+    config: tool-configs/metrics.config.json
+    emits: [metrics]
 
 rules:
   constraints:
@@ -19,8 +24,28 @@ rules:
     - rules/states/FE-STATE-C-002-context-provider-only-in-controlled-locations.yaml
     - rules/routes/FE-ROUTE-C-001-route-definitions-centralized.yaml
     - rules/routes/FE-ROUTE-C-002-route-maps-to-page-component.yaml
-  metrics: []
+    - rules/styles/FE-STYLE-C-001-no-raw-jsx-style.yaml
+    - rules/styles/FE-STYLE-C-002-global-styles-only-in-approved-locations.yaml
+    - rules/data/FE-DATA-C-001-network-calls-only-in-approved-modules.yaml
+    - rules/data/FE-DATA-C-002-useeffect-requires-dependency-array.yaml
+    - rules/communication/FE-COMM-C-001-no-global-event-bus.yaml
+  metrics:
+    - rules/components/FE-COM-M-001-component-line-average.yaml
+    - rules/components/FE-COM-M-002-jsx-depth-average.yaml
+    - rules/states/FE-STATE-M-001-context-provider-ratio.yaml
+    - rules/states/FE-STATE-M-002-context-consumer-per-provider-ratio.yaml
+    - rules/routes/FE-ROUTE-M-001-route-count.yaml
+    - rules/routes/FE-ROUTE-M-002-route-param-complexity.yaml
+    - rules/styles/FE-STYLE-M-001-style-mixing-ratio.yaml
+    - rules/styles/FE-STYLE-M-002-global-style-rule-count.yaml
+    - rules/data/FE-DATA-M-001-data-access-wrapping-ratio.yaml
+    - rules/data/FE-DATA-M-002-useeffect-missing-dependency-ratio.yaml
+    - rules/communication/FE-COMM-M-001-prop-count-average.yaml
+    - rules/communication/FE-COMM-M-002-prop-drilling-average.yaml
   judgments: []
 
 metadata:
   migration_status: minimal-schema-valid
+  notes:
+    - Frontend constraints are calibrated to the current baseline structure.
+    - Frontend metrics run through the shared computed-metrics adapter.

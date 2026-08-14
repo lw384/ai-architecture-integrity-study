@@ -29,13 +29,33 @@ function escapeRegexSegment(value) {
 
 function globToRegex(pattern) {
     const normalized = normalizePath(pattern);
-    const escaped = escapeRegexSegment(normalized)
-        .replace(/\*\*/g, '__GLOBSTAR__')
-        .replace(/\*/g, '__GLOB__')
-        .replace(/__GLOBSTAR__/g, '.*')
-        .replace(/__GLOB__/g, '[^/]*');
+    let regex = '^';
 
-    return new RegExp(`^${escaped}$`);
+    for (let index = 0; index < normalized.length;) {
+        if (normalized.slice(index, index + 3) === '**/') {
+            regex += '(?:.*/)?';
+            index += 3;
+            continue;
+        }
+
+        if (normalized.slice(index, index + 2) === '**') {
+            regex += '.*';
+            index += 2;
+            continue;
+        }
+
+        if (normalized[index] === '*') {
+            regex += '[^/]*';
+            index += 1;
+            continue;
+        }
+
+        regex += escapeRegexSegment(normalized[index]);
+        index += 1;
+    }
+
+    regex += '$';
+    return new RegExp(regex);
 }
 
 function getSrcRelativePath(filePath) {
@@ -57,6 +77,10 @@ export function pathMatchesGlob(filePath, patterns) {
         const regex = globToRegex(pattern);
         return regex.test(normalized) || regex.test(srcRelative);
     });
+}
+
+export function matchesAnyPath(filePath, patterns) {
+    return pathMatchesGlob(filePath, patterns);
 }
 
 export function isInRoutesDirectory(filePath, routesDir = ROUTES_DIR) {

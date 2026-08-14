@@ -1,0 +1,154 @@
+{
+  "evaluation_count": 12,
+  "session_count": 4,
+  "tasks": [
+    "T1",
+    "T2",
+    "T3"
+  ],
+  "overall_status_counts": {
+    "partial": 12
+  },
+  "constraint_finding_count": 241,
+  "metric_observation_count": 131,
+  "metric_error_count": 7,
+  "average_metric_coverage": 0.9563492063492063,
+  "top_rules": [
+    [
+      "FE-COM-C-002-jsx-max-depth",
+      79
+    ],
+    [
+      "FE-STYLE-C-001-no-raw-jsx-style",
+      52
+    ],
+    [
+      "BE-DEP-C-004-no-circular-dependencies",
+      28
+    ],
+    [
+      "BE-DOM-C-001-no-cross-module-deep-import",
+      27
+    ],
+    [
+      "BE-CONTRACT-C-002-request-dto-uses-class-validator",
+      19
+    ],
+    [
+      "BE-SIZE-C-001-max-method-parameters",
+      15
+    ],
+    [
+      "FE-COM-C-001-component-file-max-lines",
+      6
+    ],
+    [
+      "CROSS-TYPE-C-001-request-query-body-contract-alignment",
+      6
+    ],
+    [
+      "CROSS-DUP-C-001-authoritative-cross-contract-source-or-synchronization",
+      5
+    ],
+    [
+      "FE-DATA-C-002-useeffect-requires-dependency-array",
+      4
+    ]
+  ],
+  "top_files": [
+    [
+      "frontend/src/components/Breadcrumbs/index.jsx",
+      36
+    ],
+    [
+      "frontend/src/pages/companies/CompanyForm.jsx",
+      32
+    ],
+    [
+      "frontend/src/pages/deals/DealForm.jsx",
+      24
+    ],
+    [
+      "backend/src/modules/deal/deal.service.ts",
+      12
+    ],
+    [
+      "backend/src/modules/contact/dto/response.dto.ts",
+      12
+    ],
+    [
+      "frontend/src/pages/contacts/ContactForm.jsx",
+      12
+    ],
+    [
+      "backend/src/modules/contact/contact.entity.ts",
+      10
+    ],
+    [
+      "backend/src/modules/contact/contact-company.entity.ts",
+      8
+    ],
+    [
+      "backend/src/modules/deal/deal-contact.entity.ts",
+      8
+    ],
+    [
+      "frontend/src/components/AnalyticEcommerce/index.jsx",
+      8
+    ],
+    [
+      "frontend/src/layout/components/Sidebar/DrawerContent/Navigation/NavItem.jsx",
+      8
+    ],
+    [
+      "backend/src/modules/company/company.controller.ts",
+      7
+    ],
+    [
+      "backend/src/modules/company/company.service.ts",
+      7
+    ],
+    [
+      "backend/src/modules/deal/dto/response.dto.ts",
+      7
+    ],
+    [
+      "backend/src/modules/deal/deal.entity.ts",
+      6
+    ],
+    [
+      "frontend/src/pages/deals/DealTable.jsx",
+      6
+    ],
+    [
+      "backend/src/modules/deal/deal-contact-link.entity.ts",
+      6
+    ],
+    [
+      "frontend/src/pages/companies/CompanyTable.jsx",
+      4
+    ],
+    [
+      "frontend/src/pages/deals/DealDetail.jsx",
+      4
+    ],
+    [
+      "frontend/src/layout/components/Navbar/HeaderContent/Notification.jsx",
+      4
+    ]
+  ],
+  "source_files": [
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260812_220814/T1/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260812_220814/T2/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260812_220814/T3/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_150337/T1/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_150337/T2/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_150337/T3/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_203443/T1/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_203443/T2/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_203443/T3/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_211609/T1/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_211609/T2/harness_evaluation.json",
+    "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260813_211609/T3/harness_evaluation.json"
+  ]
+}

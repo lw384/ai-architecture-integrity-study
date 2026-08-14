@@ -1,0 +1,29 @@
+rule_id: BE-CONTRACT-C-001-entity-change-requires-migration
+version: 0.1.0
+tier: 1
+layer: constraints
+category: data-contract
+visibility: agent-visible
+severity: error
+
+description: >
+  Entity schema changes must be accompanied by a migration change in the same diff.
+  This v1 rule detects entity property or relation changes and fails if no migration
+  file was added or modified under src/core/database/migrations/.
+
+evidence_sources:
+  - adapter: contract-diff
+    tool_rule_ids:
+      - "BE-CONTRACT-C-001-entity-change-requires-migration"
+    match_condition:
+      event_type: diff_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Entity schema changes were detected without a matching migration update.
+  Add or modify a migration under src/core/database/migrations/ in the same task.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  pattern: schema-without-migration

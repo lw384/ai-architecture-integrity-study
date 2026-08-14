@@ -21,11 +21,21 @@ subjects:
         - BE-ERR-C-001
         - BE-ERR-C-002
         - BE-ERR-C-003
+        - BE-CONTRACT-C-001
+        - BE-CONTRACT-C-002
+        - BE-TEST-C-001
+        - BE-ROUTE-C-001
+        - BE-SIZE-C-001
       metrics:
         - BE-STRUCT-M-001
         - BE-DEP-M-001
         - BE-DOM-M-001
         - BE-ERR-M-001
+        - BE-CONTRACT-M-001
+        - BE-TEST-M-001
+        - BE-TEST-M-002
+        - BE-ROUTE-M-001
+        - BE-SIZE-M-001
       judgments: []
     thresholds:
       BE-DEP-M-001:
@@ -45,9 +55,43 @@ subjects:
         - FE-STATE-C-002
         - FE-ROUTE-C-001
         - FE-ROUTE-C-002
-      metrics: []
+        - FE-STYLE-C-001
+        - FE-STYLE-C-002
+        - FE-DATA-C-001
+        - FE-DATA-C-002
+        - FE-COMM-C-001
+      metrics:
+        - FE-COM-M-001
+        - FE-COM-M-002
+        - FE-STATE-M-001
+        - FE-STATE-M-002
+        - FE-ROUTE-M-001
+        - FE-ROUTE-M-002
+        - FE-STYLE-M-001
+        - FE-STYLE-M-002
+        - FE-DATA-M-001
+        - FE-DATA-M-002
+        - FE-COMM-M-001
+        - FE-COMM-M-002
       judgments: []
     expected_diff_scope: []
+
+cross_stack:
+  rulepack_id: cross
+  rulepack_version: "0.1.0"
+  enabled:
+    constraints:
+      - CROSS-EP-C-001
+      - CROSS-METHOD-C-001
+      - CROSS-TYPE-C-001
+      - CROSS-NAME-C-001
+      - CROSS-ERR-C-001
+      - CROSS-PROP-C-001
+      - CROSS-DUP-C-001
+    metrics: []
+    judgments: []
+  thresholds: {}
+  expected_diff_scope: []
 
 judgment_config:
   model: Claude Sonnet 4.6

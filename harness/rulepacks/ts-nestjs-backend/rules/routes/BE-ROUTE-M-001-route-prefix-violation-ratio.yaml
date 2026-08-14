@@ -1,0 +1,19 @@
+rule_id: BE-ROUTE-M-001-route-prefix-violation-ratio
+version: 0.1.0
+layer: metrics
+category: routing
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: route-prefix-violation-ratio
+
+description: >
+  Measures the share of backend endpoints violating /api prefix or kebab-case route rules.
+  Value = violating endpoints / total endpoints.
+
+agent_facing_message: >
+  Backend route convention violation ratio is {value}. Normalize /api prefix and kebab-case routes.
+
+research_tags:
+  metric_family: route-conventions
+  erosion_dimension: endpoint-convention-drift

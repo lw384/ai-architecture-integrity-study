@@ -1,0 +1,29 @@
+rule_id: CROSS-DUP-C-001-authoritative-cross-contract-source-or-synchronization
+version: 0.1.0
+layer: constraints
+category: cross-contract-duplication
+visibility: agent-visible
+severity: error
+
+description: >
+  Cross-stack contract vocabularies and transition rules must have one
+  authoritative source or an explicit synchronization mechanism, rather than
+  duplicated local definitions on both backend and frontend.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/unsynchronized-cross-contract-duplicate-definition"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Frontend definition {frontend_definition} in {frontend_file} duplicates the
+  {contract_token} contract from {backend_definition} in {backend_file}
+  ({duplicate_mode}).
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: cross-contract-duplication

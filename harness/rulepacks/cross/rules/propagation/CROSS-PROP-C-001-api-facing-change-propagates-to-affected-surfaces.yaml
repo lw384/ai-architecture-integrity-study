@@ -1,0 +1,29 @@
+rule_id: CROSS-PROP-C-001-api-facing-change-propagates-to-affected-surfaces
+version: 0.1.0
+layer: constraints
+category: cross-change-propagation
+visibility: agent-visible
+severity: error
+
+description: >
+  API-facing backend or frontend adapter changes must propagate to the
+  corresponding cross-stack counterpart surfaces that already exist for the
+  same resource.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/api-facing-change-not-fully-propagated"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  API-facing change for resource {resource} did not propagate completely.
+  Changed surfaces: {changed_surfaces}. Missing counterpart surfaces:
+  {missing_surfaces}.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: change-propagation-completeness

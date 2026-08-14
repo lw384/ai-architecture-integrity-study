@@ -1,0 +1,20 @@
+rule_id: FE-STYLE-M-001-style-mixing-ratio
+version: 0.1.0
+layer: metrics
+category: styling
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: frontend-style-mixing-ratio
+
+description: >
+  Measures the share of frontend files that mix multiple styling mechanisms
+  such as sx, className, style, or styled.
+
+agent_facing_message: >
+  Style mixing ratio is {value}. Lower values indicate a more consistent
+  styling approach.
+
+research_tags:
+  metric_family: style-consistency
+  erosion_dimension: styling-consistency

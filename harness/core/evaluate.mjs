@@ -132,21 +132,27 @@ function buildFinalEvaluation({
 async function runSubjectEvaluations({ subjectPlans, taskConfig, runtimeOptions }) {
   const subjectResults = [];
 
-  for (const subjectPlan of subjectPlans) {
-    console.log(`[Harness Engine] Evaluating subject: ${subjectPlan.subjectId}`);
+    for (const subjectPlan of subjectPlans) {
+        console.log(`[Harness Engine] Evaluating subject: ${subjectPlan.subjectId}`);
 
     const adapterRegistry = await buildAdapterRegistry({
       rulepackDir: subjectPlan.rulepackDir,
       adaptersDeclaration: subjectPlan.rulepackManifest.adapters,
     });
 
-    const legacyTaskConfig = buildLegacyTaskConfig(subjectPlan, taskConfig);
-    const constraints = await runConstraints({
-      targetDir: subjectPlan.subjectRoot,
-      rulepackDir: subjectPlan.rulepackDir,
-      taskConfig: legacyTaskConfig,
-      adapterRegistry,
-    });
+        const legacyTaskConfig = buildLegacyTaskConfig(subjectPlan, taskConfig);
+        const constraints = await runConstraints({
+            targetDir: subjectPlan.subjectRoot,
+            rulepackDir: subjectPlan.rulepackDir,
+            taskConfig: legacyTaskConfig,
+            adapterRegistry,
+            runtimeContext: {
+                workspaceRoot: runtimeOptions.targetPath,
+                baselinePath: runtimeOptions.baselinePath,
+                preCommit: runtimeOptions.preCommit,
+                postCommit: runtimeOptions.postCommit,
+            },
+        });
 
     const metrics = await runMetrics({
       targetDir: subjectPlan.subjectRoot,
@@ -188,16 +194,48 @@ async function runSubjectEvaluations({ subjectPlans, taskConfig, runtimeOptions 
   return subjectResults;
 }
 
-async function runCrossStackEvaluation({ crossStackPlan }) {
+async function runCrossStackEvaluation({ crossStackPlan, runtimeOptions }) {
   if (!crossStackPlan) {
     return null;
   }
 
+  const adapterRegistry = await buildAdapterRegistry({
+    rulepackDir: crossStackPlan.rulepackDir,
+    adaptersDeclaration: crossStackPlan.rulepackManifest.adapters,
+  });
+
+  const constraints = await runConstraints({
+    targetDir: crossStackPlan.workspaceRoot,
+    rulepackDir: crossStackPlan.rulepackDir,
+    taskConfig: {
+      enabled: crossStackPlan.enabled,
+      thresholds: crossStackPlan.thresholds,
+    },
+    adapterRegistry,
+    runtimeContext: {
+      workspaceRoot: runtimeOptions.targetPath,
+      baselinePath: runtimeOptions.baselinePath,
+      preCommit: runtimeOptions.preCommit,
+      postCommit: runtimeOptions.postCommit,
+    },
+  });
+
+  const statusMap = {
+    ok: 'completed',
+    fail: 'failed',
+    error: 'error',
+  };
+
   return {
     plan_id: crossStackPlan.planId,
     rulepack_id: crossStackPlan.rulepackId,
-    status: 'skipped',
-    reason: 'Cross-stack runner is not wired into the orchestrator yet.',
+    status: statusMap[constraints.status] ?? 'error',
+    adapters: Array.from(adapterRegistry.keys()),
+    layers: {
+      constraints,
+      metrics: [],
+      judgments: [],
+    },
   };
 }
 
@@ -245,6 +283,7 @@ async function runEvaluation(runtimeOptions) {
 
   const crossStackResult = await runCrossStackEvaluation({
     crossStackPlan,
+    runtimeOptions,
   });
 
   const currentData = aggregateLayers(subjectResults);

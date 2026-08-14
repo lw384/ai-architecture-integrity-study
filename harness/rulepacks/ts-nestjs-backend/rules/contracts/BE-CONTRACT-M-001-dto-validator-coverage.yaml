@@ -1,0 +1,20 @@
+rule_id: BE-CONTRACT-M-001-dto-validator-coverage
+version: 0.1.0
+layer: metrics
+category: data-contract
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: dto-validator-coverage
+
+description: >
+  Measures request DTO validation coverage.
+  Coverage = validated request DTO fields / total request DTO fields.
+
+agent_facing_message: >
+  DTO validator coverage is {value}. Increase the share of request DTO fields
+  protected by class-validator decorators.
+
+research_tags:
+  metric_family: dto-validation
+  erosion_dimension: request-contract-coverage

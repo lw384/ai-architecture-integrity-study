@@ -1,9 +1,0 @@
-snapshot_id: baseline_20260722_214756
-task_id: Base
-baseline_dir: /Users/luowei/project/ai-architecture-integrity-study/baseline
-baseline_commit: 1f724489bee4b2242a2477f64beffe7cef9b9b0c
-harness_version: 0.1.0
-recorded_at: 20260722_214756
-subjects:
-  - backend
-  - frontend

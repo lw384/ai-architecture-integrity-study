@@ -1,0 +1,18 @@
+rule_id: BE-TEST-M-001-test-coverage
+version: 0.1.0
+layer: metrics
+category: testability
+visibility: agent-visible
+severity: warn
+adapter: test-coverage
+
+description: >
+  Measures backend line coverage using the project's coverage-summary.json report.
+  Value = lines.pct.
+
+agent_facing_message: >
+  Backend line coverage is {value}. Improve automated test coverage for production code paths.
+
+research_tags:
+  metric_family: test-coverage
+  erosion_dimension: verification-depth

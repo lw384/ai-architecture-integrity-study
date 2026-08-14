@@ -18,7 +18,7 @@ description: >
 evidence_sources:
   - adapter: eslint
     tool_rule_ids:
-      - "import/no-restricted-paths"
+      - "BE-DEP-C-003"
     match_condition:
       event_type: file_structure_violation
     aggregation: any

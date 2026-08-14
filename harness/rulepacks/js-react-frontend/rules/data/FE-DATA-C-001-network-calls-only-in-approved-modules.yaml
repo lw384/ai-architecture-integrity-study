@@ -1,0 +1,26 @@
+rule_id: FE-DATA-C-001-network-calls-only-in-approved-modules
+version: 0.1.0
+layer: constraints
+category: data-access
+visibility: agent-visible
+severity: error
+
+description: >
+  Direct fetch or axios calls should appear only in approved API, query, or
+  route-access modules.
+
+evidence_sources:
+  - adapter: eslint
+    tool_rule_ids:
+      - "architecture/network-calls-only-in-approved-modules"
+    match_condition:
+      event_type: file_structure_violation
+    aggregation: any
+
+agent_facing_message: >
+  Move this network call into an approved data-access abstraction.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: data-access-locality

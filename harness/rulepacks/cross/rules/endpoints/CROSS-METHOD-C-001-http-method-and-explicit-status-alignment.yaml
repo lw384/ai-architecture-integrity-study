@@ -1,0 +1,30 @@
+rule_id: CROSS-METHOD-C-001-http-method-and-explicit-status-alignment
+version: 0.1.0
+layer: constraints
+category: cross-endpoint-contract
+visibility: agent-visible
+severity: error
+
+description: >
+  Frontend HTTP methods must match backend endpoints. When frontend code
+  declares an explicit expected success status, it must match the backend
+  endpoint status as well.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/frontend-endpoint-method-mismatch"
+      - "cross-static/frontend-endpoint-status-mismatch"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Frontend endpoint {frontend_method} {frontend_path} in {frontend_file} does
+  not match the backend contract. Expected statuses: {expected_statuses};
+  backend method/status details: methods={backend_methods} status={backend_status}.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: cross-method-status-alignment

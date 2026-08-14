@@ -44,6 +44,56 @@
       },
       "service_root": "src",
       "raw_artifact_path": "artifacts/metrics/exception-unification-violation-density.json"
+    },
+    "BE-CONTRACT-M-001-dto-validator-coverage": {
+      "dto_roots": [
+        "backend/src/modules",
+        "src/modules"
+      ],
+      "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
+    },
+    "BE-TEST-M-001-test-coverage": {
+      "command": [
+        "npm",
+        "run",
+        "test:cov",
+        "--",
+        "--coverageReporters=json-summary",
+        "--watchman=false"
+      ],
+      "working_directory": ".",
+      "baseline_working_directory": "backend",
+      "coverage_summary_path": "coverage/coverage-summary.json",
+      "raw_artifact_path": "artifacts/metrics/test-coverage.json"
+    },
+    "BE-TEST-M-002-mock-per-test-case": {
+      "test_roots": [
+        "backend/src",
+        "backend/test",
+        "src",
+        "test"
+      ],
+      "raw_artifact_path": "artifacts/metrics/mock-per-test-case.json"
+    },
+    "BE-ROUTE-M-001-route-prefix-violation-ratio": {
+      "main_file_candidates": [
+        "backend/src/main.ts",
+        "src/main.ts"
+      ],
+      "controller_roots": [
+        "backend/src/modules",
+        "src/modules"
+      ],
+      "required_prefix": "api",
+      "raw_artifact_path": "artifacts/metrics/route-prefix-violation-ratio.json"
+    },
+    "BE-SIZE-M-001-method-parameter-violation-ratio": {
+      "source_roots": [
+        "backend/src",
+        "src"
+      ],
+      "max_parameters": 3,
+      "raw_artifact_path": "artifacts/metrics/method-parameter-violation-ratio.json"
     }
   }
 }

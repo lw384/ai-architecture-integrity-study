@@ -1,0 +1,31 @@
+rule_id: CROSS-TYPE-C-001-request-query-body-contract-alignment
+version: 0.1.0
+layer: constraints
+category: cross-data-contract
+visibility: agent-visible
+severity: error
+
+description: >
+  Frontend request paths, query objects, and body payloads should align with
+  backend request contracts. This v1 rule checks route-param arity, query/body
+  field existence, required body fields when the payload is statically known,
+  and statically resolvable enum/type literal mismatches.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/frontend-route-param-arity-mismatch"
+      - "cross-static/frontend-query-key-mismatch"
+      - "cross-static/frontend-body-key-mismatch"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Frontend request contract does not align with backend for {endpoint} in
+  {frontend_file}: {reason}.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: cross-request-contract-alignment

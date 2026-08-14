@@ -1,0 +1,19 @@
+rule_id: FE-COM-M-001-component-line-average
+version: 0.1.0
+layer: metrics
+category: component-structure
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: frontend-component-line-average
+
+description: >
+  Measures the average non-blank line count across frontend component files.
+
+agent_facing_message: >
+  Average component size is {value}. Lower values indicate smaller, more local
+  component units.
+
+research_tags:
+  metric_family: component-size
+  erosion_dimension: component-size
