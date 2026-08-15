@@ -55,6 +55,26 @@ export default function Breadcrumbs({
   }
 
   useEffect(() => {
+    const getCollapse = (menu) => {
+      if (!custom && menu.children) {
+        menu.children.filter((collapse) => {
+          if (collapse.type && collapse.type === 'collapse') {
+            getCollapse(collapse);
+            if (collapse.url === customLocation) {
+              setMain(collapse);
+              setItem(collapse);
+            }
+          } else if (collapse.type && collapse.type === 'item') {
+            if (customLocation === collapse.url) {
+              setMain(menu);
+              setItem(collapse);
+            }
+          }
+          return false;
+        });
+      }
+    };
+
     navigation?.items?.map((menu) => {
       if (menu.type && menu.type === 'group') {
         if (menu?.url && menu.url === customLocation) {
@@ -66,27 +86,7 @@ export default function Breadcrumbs({
       }
       return false;
     });
-  });
-
-  const getCollapse = (menu) => {
-    if (!custom && menu.children) {
-      menu.children.filter((collapse) => {
-        if (collapse.type && collapse.type === 'collapse') {
-          getCollapse(collapse);
-          if (collapse.url === customLocation) {
-            setMain(collapse);
-            setItem(collapse);
-          }
-        } else if (collapse.type && collapse.type === 'item') {
-          if (customLocation === collapse.url) {
-            setMain(menu);
-            setItem(collapse);
-          }
-        }
-        return false;
-      });
-    }
-  };
+  }, [custom, customLocation]);
 
   const SeparatorIcon = separator;
   const separatorIcon = separator ? <SeparatorIcon style={{ fontSize: '0.75rem', marginTop: 2 }} /> : '/';
@@ -111,7 +111,7 @@ export default function Breadcrumbs({
       </Typography>
     );
 
-    if (!!custom) {
+    if (custom) {
       breadcrumbContent = (
         <MainCard
           border={card}

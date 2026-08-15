@@ -14,6 +14,7 @@ def resolve_task_config_path(harness_dir: Path, task_id: str) -> Path:
 
     return task_config_path
 
+
 def read_evaluation_output(eval_output_path):
     if not eval_output_path.exists():
         raise FileNotFoundError(
@@ -26,6 +27,7 @@ def read_evaluation_output(eval_output_path):
         raise ValueError(
             f"evaluation.json 不是合法 JSON: {eval_output_path}"
         ) from error
+
 
 def describe_baseline_revision(baseline_dir):
     result = subprocess.run(
@@ -40,6 +42,7 @@ def describe_baseline_revision(baseline_dir):
         return result.stdout.strip()
     return f"external-dir:{baseline_dir}"
 
+
 def run_harness_cli(
     harness_dir: Path, cmd: list[str]
 ) -> subprocess.CompletedProcess[str]:
@@ -53,13 +56,53 @@ def run_harness_cli(
     )
 
 
-def build_manifest_data(task_id, baseline_commit, pre_commit):
+def validate_comparison_inputs(
+    comparison_mode: str,
+    baseline_evaluation_path: Path | None,
+    pre_evaluation_path: Path | None,
+) -> None:
+    """Reject incomplete or contradictory comparison inputs before Node starts."""
+    if comparison_mode == "self":
+        if baseline_evaluation_path or pre_evaluation_path:
+            raise ValueError("self comparison mode must not receive evaluation artifacts")
+        return
+
+    if comparison_mode != "trajectory":
+        raise ValueError(f"Unsupported comparison mode: {comparison_mode}")
+
+    for label, path in (
+        ("baseline", baseline_evaluation_path),
+        ("pre", pre_evaluation_path),
+    ):
+        if path is None:
+            raise ValueError(f"trajectory comparison requires a {label} evaluation")
+        if not path.is_file():
+            raise FileNotFoundError(f"{label.title()} evaluation not found: {path}")
+
+
+def build_manifest_data(
+    task_id,
+    baseline_commit,
+    pre_commit,
+    comparison_mode,
+    baseline_evaluation_path,
+    pre_evaluation_path,
+):
     return {
         "status": "ready_for_evaluation",
         "task_id": task_id,
         "baseline_commit": baseline_commit,
         "pre_commit": pre_commit,
         "rulepack_id": f"task::{task_id}",
+        "comparison": {
+            "mode": comparison_mode,
+            "baseline_evaluation": (
+                str(baseline_evaluation_path) if baseline_evaluation_path else None
+            ),
+            "pre_evaluation": (
+                str(pre_evaluation_path) if pre_evaluation_path else None
+            ),
+        },
     }
 
 
@@ -73,8 +116,20 @@ def build_harness_command(
     run_id,
     pre_commit,
     post_commit,
+    comparison_mode,
+    baseline_evaluation_path,
+    pre_evaluation_path,
 ) -> list[str]:
-    return [
+    # Comparison validation is centralized in run_harness_evaluation so invalid
+    # inputs fail before a manifest is written. The former duplicate validation
+    # call is intentionally retained as a comment during the transition.
+    # validate_comparison_inputs(
+    #     comparison_mode=comparison_mode,
+    #     baseline_evaluation_path=baseline_evaluation_path,
+    #     pre_evaluation_path=pre_evaluation_path,
+    # )
+
+    command = [
         "node",
         "core/evaluate.mjs",
         "--target",
@@ -99,8 +154,21 @@ def build_harness_command(
         str(eval_output_path),
         "--mode",
         "full",
+        "--comparison-mode",
+        comparison_mode,
     ]
 
+    if comparison_mode == "trajectory":
+        command.extend(
+            [
+                "--baseline-evaluation",
+                str(baseline_evaluation_path),
+                "--pre-evaluation",
+                str(pre_evaluation_path),
+            ]
+        )
+
+    return command
 
 
 def write_json(path, data):
@@ -119,13 +187,11 @@ def run_harness_evaluation(
     task_id,
     pre_commit,
     post_commit,
+    comparison_mode,
+    baseline_evaluation_path,
+    pre_evaluation_path,
 ):
-    """
-    评估当前 workspace 的当前代码状态。
-
-    评估输入和结果归档到：
-    reports/experiments/<session_id>/<task_id>/
-    """
+    """Evaluate one workspace snapshot and archive its Harness artifacts."""
     harness_dir = root_dir / "harness"
 
     if not workspace_dir.is_dir():
@@ -139,12 +205,21 @@ def run_harness_evaluation(
     execution_path = task_archive_dir / "harness_execution.json"
     task_config_path = resolve_task_config_path(harness_dir, task_id)
 
+    validate_comparison_inputs(
+        comparison_mode=comparison_mode,
+        baseline_evaluation_path=baseline_evaluation_path,
+        pre_evaluation_path=pre_evaluation_path,
+    )
+
     baseline_commit = describe_baseline_revision(baseline_dir)
 
     manifest_data = build_manifest_data(
         task_id=task_id,
         baseline_commit=baseline_commit,
         pre_commit=pre_commit,
+        comparison_mode=comparison_mode,
+        baseline_evaluation_path=baseline_evaluation_path,
+        pre_evaluation_path=pre_evaluation_path,
     )
     write_json(manifest_path, manifest_data)
 
@@ -158,6 +233,9 @@ def run_harness_evaluation(
         run_id=run_id,
         pre_commit=pre_commit,
         post_commit=post_commit,
+        comparison_mode=comparison_mode,
+        baseline_evaluation_path=baseline_evaluation_path,
+        pre_evaluation_path=pre_evaluation_path,
     )
 
     print(f"📄 Harness manifest: {manifest_path}")

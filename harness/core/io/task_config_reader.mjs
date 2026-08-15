@@ -65,18 +65,26 @@ function validateTaskConfigShape(config) {
         throw new Error('[Harness Error] Task config is missing task_id.');
     }
 
-    if (!Array.isArray(config.subjects) || config.subjects.length === 0) {
-        throw new Error('[Harness Error] Task config must define at least one subject.');
+    if (!Array.isArray(config.evaluation_scopes) || config.evaluation_scopes.length === 0) {
+        throw new Error('[Harness Error] Task config must define at least one evaluation scope.');
     }
 }
 
-// Validate the required fields for one subject block.
-function validateSubjectShape(subject) {
-    ensurePlainObject(subject, 'Each subject');
+// Validate the required fields and identity of one evaluation scope.
+function validateScopeShape(scope, seenScopeIds) {
+    ensurePlainObject(scope, 'Each evaluation scope');
 
-    if (!subject.subject_id || !subject.root_path || !subject.rulepack_id) {
-        throw new Error('[Harness Error] Each subject must define subject_id, root_path, and rulepack_id.');
+    if (!scope.scope_id || !scope.scope_type || !scope.root_path || !scope.rulepack_id) {
+        throw new Error(
+            '[Harness Error] Each evaluation scope must define scope_id, scope_type, root_path, and rulepack_id.',
+        );
     }
+
+    if (seenScopeIds.has(scope.scope_id)) {
+        throw new Error(`[Harness Error] Duplicate evaluation scope ID: ${scope.scope_id}.`);
+    }
+
+    seenScopeIds.add(scope.scope_id);
 }
 
 // Normalize one rule execution scope.
@@ -90,19 +98,13 @@ function normalizeRuleScope(scope = {}) {
     };
 }
 
-// Normalize one subject block from the task config.
-function normalizeSubject(subject) {
-    validateSubjectShape(subject);
-
-    return normalizeRuleScope(subject);
-}
-
-// Normalize the optional cross-stack block.
-function normalizeCrossStackConfig(crossStackConfig) {
-    if (!crossStackConfig) {
-        return null;
-    }
-    return normalizeRuleScope(crossStackConfig);
+// Normalize all scopes and reject duplicate IDs before planning.
+function normalizeEvaluationScopes(scopes) {
+    const seenScopeIds = new Set();
+    return scopes.map((scope) => {
+        validateScopeShape(scope, seenScopeIds);
+        return normalizeRuleScope(scope);
+    });
 }
 
 // Read and normalize the task config from YAML.
@@ -117,8 +119,7 @@ export function readTaskConfig(taskConfigPath) {
 
     return {
         ...config,
-        subjects: config.subjects.map(normalizeSubject),
-        cross_stack: normalizeCrossStackConfig(config.cross_stack),
+        evaluation_scopes: normalizeEvaluationScopes(config.evaluation_scopes),
         judgment_config: config.judgment_config ?? null,
         execution: config.execution ?? {},
         metadata: config.metadata ?? {},

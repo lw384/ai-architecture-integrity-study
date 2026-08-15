@@ -19,16 +19,7 @@ from statistics import mean
 from typing import Any, Iterable
 
 
-STATUS_COLOURS = {
-    "completed": "#16825d",
-    "pass": "#16825d",
-    "partial": "#bd6b00",
-    "failed": "#b42318",
-    "fail": "#b42318",
-    "error": "#7a271a",
-    "none": "#98a2b3",
-    "unknown": "#667085",
-}
+# STATUS_COLOURS = { ... }  # Redundant: status colors are defined in dashboard CSS.
 SERIES_COLOURS = ["#175cd3", "#7a5af8", "#039855", "#dc6803", "#d92d20", "#0e7090"]
 
 SVG_EMBEDDED_STYLE = """<style>
@@ -113,7 +104,7 @@ def discover_evaluations(experiments_dir: Path, include_reruns: bool) -> list[Pa
     return paths
 
 
-def finding_file(finding: dict[str, Any], subject_id: str) -> str:
+def finding_file(finding: dict[str, Any], scope_id: str) -> str:
     location = finding.get("location") or {}
     path = location.get("file") or ""
     if not path:
@@ -123,8 +114,8 @@ def finding_file(finding: dict[str, Any], subject_id: str) -> str:
     for marker in ("/backend/", "/frontend/"):
         if marker in normalized:
             return marker.strip("/") + "/" + normalized.split(marker, 1)[1]
-    if subject_id in {"backend", "frontend"} and not normalized.startswith(f"{subject_id}/"):
-        return f"{subject_id}/{normalized.lstrip('/')}"
+    if scope_id in {"backend", "frontend"} and not normalized.startswith(f"{scope_id}/"):
+        return f"{scope_id}/{normalized.lstrip('/')}"
     return normalized
 
 
@@ -132,7 +123,7 @@ def append_constraint_rows(
     rows: list[dict[str, Any]],
     findings: Iterable[dict[str, Any]],
     record: dict[str, Any],
-    subject_id: str,
+    scope_id: str,
 ) -> None:
     for finding in findings:
         rows.append(
@@ -142,10 +133,10 @@ def append_constraint_rows(
                 "task_id": record["task_id"],
                 "agent": record["agent"],
                 "strategy": record["strategy"],
-                "subject_id": subject_id,
+                "scope_id": scope_id,
                 "rule_id": finding.get("rule_id") or "unknown-rule",
                 "severity": finding.get("severity") or "unknown",
-                "file": finding_file(finding, subject_id),
+                "file": finding_file(finding, scope_id),
                 "message": finding.get("message") or "",
             }
         )
@@ -159,6 +150,8 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
 
     for path in paths:
         data = json.loads(path.read_text(encoding="utf-8"))
+        if data.get("schema_version") != "0.2.0":
+            raise ValueError(f"Unsupported evaluation schema in {path}")
         relative = path.relative_to(experiments_dir)
         session_id = relative.parts[0]
         config = read_session_config(experiments_dir / session_id)
@@ -166,7 +159,7 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
         label_counts[(session_id, task_id)] += 1
         suffix = label_counts[(session_id, task_id)]
         evaluation_id = f"{session_id}/{task_id}" + (f"#{suffix}" if suffix > 1 else "")
-        subjects = data.get("subjects") or []
+        scopes = data.get("scopes") or []
 
         record: dict[str, Any] = {
             "evaluation_id": evaluation_id,
@@ -178,11 +171,13 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
             "model": config.get("model") or "unknown",
             "strategy": config.get("strategy") or "unknown",
             "memory": bool(config.get("write_memory_md", False)),
-            "status": data.get("status") or "unknown",
+            "execution_status": data.get("execution_status") or "unknown",
+            "compliance_status": data.get("compliance_status") or "unknown",
+            "comparison_status": data.get("comparison_status") or "unknown",
             "duration_ms": data.get("duration_ms"),
             "backend_status": "none",
             "frontend_status": "none",
-            "cross_status": (data.get("cross_stack") or {}).get("status") or "none",
+            "cross_status": "none",
             "backend_findings": 0,
             "frontend_findings": 0,
             "cross_findings": 0,
@@ -190,24 +185,29 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
             "metrics_total": 0,
             "metrics_scored": 0,
             "metric_errors": 0,
-            "subject_errors": 0,
+            "scope_errors": 0,
         }
 
-        for subject in subjects:
-            subject_id = str(subject.get("subject_id") or "unknown")
-            subject_status = subject.get("status") or "unknown"
-            if subject_id in {"backend", "frontend"}:
-                record[f"{subject_id}_status"] = subject_status
-            if subject_status in {"error", "failed"}:
-                record["subject_errors"] += 1
+        for scope in scopes:
+            scope_id = str(scope.get("scope_id") or "unknown")
+            scope_type = str(scope.get("scope_type") or "unknown")
+            scope_status = scope.get("status") or "unknown"
+            if scope_id in {"backend", "frontend"}:
+                record[f"{scope_id}_status"] = scope_status
+            if scope_type == "cross-stack":
+                record["cross_status"] = scope_status
+            if scope_status in {"error", "failed"}:
+                record["scope_errors"] += 1
 
-            layers = subject.get("layers") or {}
+            layers = scope.get("layers") or {}
             constraint_layer = layers.get("constraints") or {}
             findings = constraint_layer.get("findings") or []
             record["rules_evaluated"] += int(constraint_layer.get("rules_evaluated") or 0)
-            if subject_id in {"backend", "frontend"}:
-                record[f"{subject_id}_findings"] += len(findings)
-            append_constraint_rows(constraints, findings, record, subject_id)
+            if scope_id in {"backend", "frontend"}:
+                record[f"{scope_id}_findings"] += len(findings)
+            if scope_type == "cross-stack":
+                record["cross_findings"] += len(findings)
+            append_constraint_rows(constraints, findings, record, scope_id)
 
             for metric in layers.get("metrics") or []:
                 score = metric.get("score") or {}
@@ -224,7 +224,7 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
                         "task_id": task_id,
                         "agent": record["agent"],
                         "strategy": record["strategy"],
-                        "subject_id": subject_id,
+                        "scope_id": scope_id,
                         "metric_name": metric.get("name") or "unknown-metric",
                         "status": status,
                         "value": score.get("value"),
@@ -234,13 +234,6 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
                         "findings": " | ".join(str(item) for item in (metric.get("findings") or [])),
                     }
                 )
-
-        cross = data.get("cross_stack") or {}
-        cross_constraints = (cross.get("layers") or {}).get("constraints") or {}
-        cross_findings = cross_constraints.get("findings") or []
-        record["cross_findings"] = len(cross_findings)
-        record["rules_evaluated"] += int(cross_constraints.get("rules_evaluated") or 0)
-        append_constraint_rows(constraints, cross_findings, record, "cross")
 
         record["total_findings"] = (
             record["backend_findings"]
@@ -442,7 +435,9 @@ def make_run_table(runs: list[dict[str, Any]]) -> str:
             "<tr>"
             f"<td>{e(run['session_label'])}</td><td>{e(run['task_id'])}</td>"
             f"<td>{e(run['agent'])} / {e(run['strategy'])}</td>"
-            f"<td><span class='status status-{e(run['status'])}'>{e(run['status'])}</span></td>"
+            f"<td><span class='status status-{e(run['execution_status'])}'>{e(run['execution_status'])}</span></td>"
+            f"<td><span class='status status-{e(run['compliance_status'])}'>{e(run['compliance_status'])}</span></td>"
+            f"<td><span class='status status-{e(run['comparison_status'])}'>{e(run['comparison_status'])}</span></td>"
             f"<td>{e(run['backend_status'])}</td><td>{e(run['frontend_status'])}</td><td>{e(run['cross_status'])}</td>"
             f"<td class='num'>{run['backend_findings']}</td><td class='num'>{run['frontend_findings']}</td>"
             f"<td class='num'>{run['cross_findings']}</td><td class='num'>{coverage}</td>"
@@ -451,7 +446,8 @@ def make_run_table(runs: list[dict[str, Any]]) -> str:
         )
     return (
         "<div class='table-wrap'><table><thead><tr>"
-        "<th>Session</th><th>Task</th><th>Condition</th><th>Overall</th>"
+        "<th>Session</th><th>Task</th><th>Condition</th><th>Execution</th>"
+        "<th>Compliance</th><th>Comparison</th>"
         "<th>Backend</th><th>Frontend</th><th>Cross</th>"
         "<th>BE findings</th><th>FE findings</th><th>Cross findings</th>"
         "<th>Metric coverage</th><th>Metric errors</th><th>Runtime (s)</th>"
@@ -583,13 +579,13 @@ def build_dashboard(
     error_rows = [row for row in metrics if row["status"] == "error"]
     error_table_rows = "".join(
         "<tr>"
-        f"<td>{e(row['evaluation_id'])}</td><td>{e(row['subject_id'])}</td>"
+        f"<td>{e(row['evaluation_id'])}</td><td>{e(row['scope_id'])}</td>"
         f"<td>{e(row['metric_name'])}</td><td class='message'>{e(row['findings'])}</td>"
         "</tr>"
         for row in error_rows
     ) or "<tr><td colspan='4'>No metric errors.</td></tr>"
 
-    all_partial = all(row["status"] == "partial" for row in runs)
+    all_partial = all(row["execution_status"] == "partial" for row in runs)
     status_note = (
         "当前所有 evaluation 的 overall status 都是 partial；在比较架构质量前，应先把 metric/adapter error 与真实规则失败分开。"
         if all_partial
@@ -629,8 +625,8 @@ def build_dashboard(
     td.num { text-align:right; font-variant-numeric:tabular-nums; }
     td.message { white-space:normal; min-width:460px; max-width:760px; line-height:1.45; }
     .status { display:inline-block; padding:2px 7px; border-radius:10px; background:#fff4e5; color:#93370d; font-weight:650; }
-    .status-completed, .status-pass { background:#ecfdf3; color:#027a48; }
-    .status-failed, .status-error, .status-fail { background:#fef3f2; color:#b42318; }
+    .status-completed, .status-pass, .status-passed, .status-valid { background:#ecfdf3; color:#027a48; }
+    .status-failed, .status-error, .status-fail, .status-invalid { background:#fef3f2; color:#b42318; }
     .method { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin-top:14px; }
     .method section { background:var(--surface); border:1px solid var(--line); padding:14px; }
     .method h3 { margin:0 0 6px; }
@@ -648,7 +644,7 @@ def build_dashboard(
 
 <h2>分析框架</h2>
 <div class="method">
-  <section><h3>1. 测量可靠性</h3><p>先看 overall/subject status、metric coverage 和 error。回答“结果是否可比”，避免把工具崩溃解释成架构退化。</p></section>
+  <section><h3>1. 测量可靠性</h3><p>先看 overall/scope status、metric coverage 和 error。回答“结果是否可比”，避免把工具崩溃解释成架构退化。</p></section>
   <section><h3>2. 任务内演化</h3><p>以 session 为轨迹，观察 T1→T2→T3 的 finding 数变化。回答“持续开发是否累积架构债务”。</p></section>
   <section><h3>3. 实验条件</h3><p>按 agent × strategy 做描述性比较。当前每个条件只有一个 session，只能观察，不能作因果或显著性结论。</p></section>
   <section><h3>4. 规则与文件热点</h3><p>规则×evaluation 热图定位系统性违规；文件排名定位反复承载问题的架构边界。</p></section>
@@ -742,7 +738,15 @@ def main() -> None:
         "evaluation_count": len(runs),
         "session_count": len({row["session_id"] for row in runs}),
         "tasks": sorted({row["task_id"] for row in runs}, key=task_sort_key),
-        "overall_status_counts": dict(Counter(row["status"] for row in runs)),
+        "execution_status_counts": dict(
+            Counter(row["execution_status"] for row in runs)
+        ),
+        "compliance_status_counts": dict(
+            Counter(row["compliance_status"] for row in runs)
+        ),
+        "comparison_status_counts": dict(
+            Counter(row["comparison_status"] for row in runs)
+        ),
         "constraint_finding_count": len(constraints),
         "metric_observation_count": len(metrics),
         "metric_error_count": sum(row["status"] == "error" for row in metrics),

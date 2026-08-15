@@ -37,5 +37,19 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    test: {
+      environment: 'jsdom',
+      setupFiles: './src/test/setup.js',
+      clearMocks: true,
+      mockReset: true,
+      restoreMocks: true,
+      unstubEnvs: true,
+      unstubGlobals: true,
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'html'],
+        exclude: ['src/test/**', 'src/themes/**', 'src/assets/**', 'src/index.jsx'],
+      },
+    },
   };
 });

@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { load } from 'js-yaml';
 
+// Fill rule message placeholders from normalized adapter event payloads.
 function fillMsg(template, payload = {}) {
     if (!template) {
         return 'Architecture violation detected.';
@@ -15,6 +16,7 @@ function fillMsg(template, payload = {}) {
     return template.replace(/\{([^}]+)\}/g, (_, key) => payload[key] ?? `{${key}}`).trim();
 }
 
+// Read the rulepack manifest needed to select constraint rules and adapters.
 function readManifest(rulepackDir) {
     const manifestPath = path.join(rulepackDir, 'manifest.yaml');
 
@@ -25,12 +27,13 @@ function readManifest(rulepackDir) {
     return load(fs.readFileSync(manifestPath, 'utf8'));
 }
 
+// Select only manifest rule files explicitly enabled for this scope.
 function pickRulePaths(manifest, taskConfig) {
     const allPaths = manifest.rules?.constraints ?? [];
     const enabled = taskConfig.enabled?.constraints ?? [];
 
     if (!enabled.length) {
-        return allPaths;
+        return [];
     }
 
     return allPaths.filter((rulePath) => {
@@ -39,6 +42,7 @@ function pickRulePaths(manifest, taskConfig) {
     });
 }
 
+// Load selected YAML rule declarations while tolerating missing optional files.
 function loadRules(rulepackDir, rulePaths) {
     return rulePaths.flatMap((rulePath) => {
         const fullPath = path.resolve(rulepackDir, rulePath);
@@ -52,10 +56,16 @@ function loadRules(rulepackDir, rulePaths) {
     });
 }
 
+// Select adapter declarations that emit normalized constraint events.
 function pickAdapters(adapters = {}) {
     return Object.entries(adapters).filter(([, adapter]) => adapter.emits?.includes('constraints'));
 }
 
+/**
+ * Execute constraint adapters independently and merge their normalized events.
+ * Adapter failures are captured in metadata so one tool cannot discard results
+ * already produced by other adapters in the same scope.
+ */
 async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry, runtimeContext }) {
     const events = [];
     const meta = {};
@@ -100,6 +110,7 @@ async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry, 
     return { events, meta };
 }
 
+// Match normalized events against one rule's declared evidence sources.
 function hitRule(rule, events) {
     return (rule.evidence_sources ?? []).flatMap((source) =>
         events.filter((event) => {
@@ -113,6 +124,7 @@ function hitRule(rule, events) {
     );
 }
 
+// Convert matched adapter events into stable architecture findings.
 function makeFindings(rule, events) {
     return events.map((event) => ({
         rule_id: rule.rule_id,
@@ -129,6 +141,7 @@ function makeFindings(rule, events) {
     }));
 }
 
+// Assemble the constraint result and derive error/fail/ok precedence.
 function sumResult(rules, findings, findingsByRule, meta) {
     const hasError = Object.values(meta).some((entry) => entry?.status === 'error');
 
@@ -144,10 +157,20 @@ function sumResult(rules, findings, findingsByRule, meta) {
     };
 }
 
+/**
+ * Run the complete constraint layer for one scope.
+ * An empty enabled list disables the layer; otherwise adapters emit evidence
+ * that selected rule declarations translate into normalized findings.
+ */
 export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapterRegistry, runtimeContext = {} }) {
     const manifest = readManifest(rulepackDir);
     const rulePaths = pickRulePaths(manifest, taskConfig);
     const rules = loadRules(rulepackDir, rulePaths);
+
+    if (rules.length === 0) {
+        return sumResult([], [], {}, {});
+    }
+
     const adapters = pickAdapters(manifest.adapters);
     const { events, meta } = await runAdapters({
         targetDir,

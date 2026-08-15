@@ -49,7 +49,7 @@ export async function request(path, { query, headers, ...options } = {}) {
         ...headers,
       },
     });
-  } catch (networkError) {
+  } catch {
     throw new RequestError('Network error, please check your connection and try again.', undefined);
   }
 

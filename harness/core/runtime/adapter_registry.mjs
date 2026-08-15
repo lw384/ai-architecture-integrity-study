@@ -45,13 +45,7 @@ export async function buildAdapterRegistry({ rulepackDir, adaptersDeclaration, a
         }
 
         registry.set(adapterId, {
-            adapterId,
-            emits: adapterDeclaration.emits ?? [],
-            version: adapterDeclaration.version ?? null,
-            source: adapterDeclaration.source,
             configPath: path.resolve(rulepackDir, adapterDeclaration.config),
-            options: adapterDeclaration.options ?? {},
-            modulePath,
             run,
         });
     }

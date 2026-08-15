@@ -8,18 +8,20 @@ This directory contains the JSON schemas that define the harness data contracts.
 
 Defines the input shape for one evaluation task.
 
+Version 0.2 is the only supported task contract; the former separate `subjects` and `cross_stack` fields are not accepted.
+
 Main sections:
 - `schema_version`: version of the task document format.
 - `task_id`, `task_version`: task identity.
-- `subjects`: subject-level evaluation units such as backend or frontend.
-- `cross_stack`: optional rules for checks across subjects.
+- `evaluation_scopes`: ordered subject and cross-stack evaluation units.
 - `judgment_config`: shared LLM judgment settings.
 - `execution`: runtime controls such as fail-fast and parallel mode.
 - `metadata`: optional audit fields.
 
-Each subject includes:
-- `subject_id`: stable name of the subject.
-- `root_path`: workspace-relative subject path.
+Each scope includes:
+- `scope_id`: stable name of the evaluation unit.
+- `scope_type`: `subject` or `cross-stack`; it must match the rulepack `kind`.
+- `root_path`: workspace-relative target path; use `.` for the whole workspace.
 - `rulepack_id`, `rulepack_version`: selected rulepack.
 - `enabled`: rule IDs to run for constraints, metrics, and judgments.
 - `thresholds`: metric limits keyed by rule ID.
@@ -70,14 +72,17 @@ The harness no longer uses tier metadata in rulepack manifests. Layer intent com
 Defines the output shape written by the harness.
 
 Main sections:
-- `schema_version`, `run_id`, `trajectory_id`, `task_id`, `rulepack_id`: run identity.
+- `schema_version`, `evaluation_profile_hash`, `run_id`, `trajectory_id`, `task_id`, `rulepack_id`: run identity and comparison compatibility.
 - `target`: evaluated workspace and commit context.
+- `comparison`: baseline, pre, and post artifact identities.
 - `env_snapshot`: runtime environment and tool versions.
 - `layers`: constraints, metrics, and judgments outputs.
-- `deltas`: run-local and cumulative comparisons.
-- `duration_ms`, `status`, `errors`: execution summary.
+- `scopes`: uniform detailed results for every configured evaluation scope.
+- `deltas`: finding-aware run-local and cumulative comparisons.
+- `execution_status`, `compliance_status`, `comparison_status`: independent status dimensions.
+- `duration_ms`, `errors`: execution summary.
 
-Use this schema to validate `evaluation.json` before publishing or aggregating results.
+Version 0.2 is the only supported evaluation contract. Use this schema to validate both comparison inputs and final output before publishing or aggregation.
 
 ## Typical Flow
 

@@ -1,10 +1,15 @@
 // harness/core/io/manifest_reader.mjs
 import fs from 'node:fs';
 
+/**
+ * Read the Python-generated run manifest and enforce its lifecycle state.
+ * Runtime CLI commit values remain authoritative; this reader returns only
+ * identity fields needed when assembling the final evaluation artifact.
+ */
 export function readManifest(manifestPath) {
     if (!fs.existsSync(manifestPath)) {
         console.error(`[Harness Error] Manifest file not found at ${manifestPath}`);
-        // 退出码 2：target 目录/状态不合法
+        // Exit code 2 identifies invalid target or manifest state.
         process.exit(2);
     }
 
@@ -17,19 +22,20 @@ export function readManifest(manifestPath) {
         process.exit(2);
     }
 
-    // 1. 严格检查状态机：只有 ready_for_evaluation 才能被评估
+    // Only a ready manifest may enter the evaluation state transition.
     if (manifest.status !== 'ready_for_evaluation') {
         console.error(`[Harness Error] Refusing to evaluate. Manifest status is '${manifest.status}', expected 'ready_for_evaluation'.`);
         process.exit(2);
     }
 
-    // 2. 幂等性检查：如果 events 已经包含 evaluation_completed，警告但继续执行
+    // Re-evaluation is allowed but remains visible in logs and output metadata.
     if (Array.isArray(manifest.events) && manifest.events.includes('evaluation_completed')) {
         console.warn(`[Harness Warning] Evaluation was already completed for this trajectory. Re-running evaluation idempotently.`);
     }
 
-    // 3. 提取核心上下文
-    const { task_id, pre_commit, baseline_commit, rulepack_id } = manifest;
+    // Keep only fields required by the evaluation orchestrator.
+    const { task_id, baseline_commit, rulepack_id } = manifest;
+    // const { pre_commit } = manifest; // Runtime CLI SHA is now authoritative.
 
     if (!task_id || !baseline_commit || !rulepack_id) {
         console.error(`[Harness Error] Manifest missing required fields: task_id, baseline_commit, or rulepack_id.`);
@@ -38,7 +44,7 @@ export function readManifest(manifestPath) {
 
     return {
         task_id,
-        pre_commit: pre_commit || 'unknown', // 第一轮可能没有 pre_commit
+        // pre_commit: pre_commit || 'unknown', // Redundant after strict CLI parsing.
         baseline_commit,
         rulepack_id
     };

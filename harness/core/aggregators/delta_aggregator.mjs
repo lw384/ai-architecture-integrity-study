@@ -1,90 +1,101 @@
-// core/aggregators/delta_aggregator.mjs
-
-/**
- * 从规则结果中提取数值
- * 对于 Metrics (v2 格式)，提取 score.value
- * 对于 Judgments，直接提取 score
- */
-function extractScore(ruleResult) {
-    if (!ruleResult) return null;
-    if (typeof ruleResult.score === 'object' && ruleResult.score !== null) {
-        return ruleResult.score.value; // Metrics v2
-    }
-    return typeof ruleResult.score === 'number' ? ruleResult.score : null; // Judgments
+// Index normalized metric or judgment results by their stable scope-qualified key.
+function indexByKey(results) {
+  return new Map(results.map((result) => [result.key, result]));
 }
 
-/**
- * 提取 Constraints 的违规数量
- */
-function extractFindingsCount(ruleResult) {
-    if (!ruleResult || !ruleResult.findings) return 0;
-    return ruleResult.findings.length;
-}
+// Compare scored post results with their source values without inventing missing data.
+function compareScoredLayer(fromResults, toResults) {
+  const fromByKey = indexByKey(fromResults);
 
-/**
- * 聚合三层数据，计算 run_local 和 trajectory_cumulative 两个维度的 delta
- *
- * @param {Object} params
- * @param {Object} params.baselineData - 原始基线 target 的 evaluation results
- * @param {Object} params.preData - 本次 run 之前的 evaluation results
- * @param {Object} params.postData - 本次 run 生成的 target 的 evaluation results
- * @returns {Object} { run_local, trajectory_cumulative }
- */
-export function calculateDeltas({ baselineData, preData, postData }) {
-    const run_local = {};
-    const trajectory_cumulative = {};
+  return toResults.map((toResult) => {
+    const fromResult = fromByKey.get(toResult.key);
+    const comparable =
+      typeof fromResult?.value === 'number' &&
+      typeof toResult.value === 'number';
 
-    // 通用的层级处理函数 (针对有数值评分的 Metrics 和 Judgments)
-    const processScoredLayer = (layerName) => {
-        if (!postData[layerName]) return;
-
-        for (const postRule of postData[layerName]) {
-            if (postRule.status === 'error') continue;
-
-            const ruleName = postRule.name;
-            const postScore = extractScore(postRule);
-
-            const preRule = (preData[layerName] || []).find(r => r.name === ruleName);
-            const preScore = extractScore(preRule);
-
-            const baselineRule = (baselineData[layerName] || []).find(r => r.name === ruleName);
-            const baselineScore = extractScore(baselineRule);
-
-            if (postScore !== null && preScore !== null) {
-                // Run Local: post - pre
-                // 例如：pre_commit 复杂度 10，post_commit 复杂度 12 -> delta = +2 (局部恶化)
-                run_local[`${ruleName}_delta`] = postScore - preScore;
-            }
-
-            if (postScore !== null && baselineScore !== null) {
-                // Trajectory Cumulative: post - baseline
-                // 例如：baseline 复杂度 8，post_commit 复杂度 12 -> delta = +4 (全局恶化)
-                trajectory_cumulative[`${ruleName}_delta`] = postScore - baselineScore;
-            }
-        }
+    return {
+      key: toResult.key,
+      name: toResult.name,
+      scope: toResult.scope,
+      from: fromResult?.value ?? null,
+      to: toResult.value,
+      delta: comparable ? toResult.value - fromResult.value : null,
+      direction: toResult.direction,
+      status: comparable ? 'available' : 'unavailable',
     };
+  });
+}
 
-    processScoredLayer('metrics');
-    processScoredLayer('judgments');
+// Preserve duplicate findings by grouping each fingerprint into a multiset bucket.
+function groupFindings(findings) {
+  const groups = new Map();
 
-    // 特殊处理 Constraints 层（通过统计 findings 的数量增减来计算 Delta）
-    if (postData.constraints) {
-        for (const postRule of postData.constraints) {
-            if (postRule.status === 'error') continue;
+  for (const finding of findings) {
+    const group = groups.get(finding.fingerprint) ?? [];
+    group.push(finding);
+    groups.set(finding.fingerprint, group);
+  }
 
-            const ruleName = postRule.name;
-            const postCount = extractFindingsCount(postRule);
+  return groups;
+}
 
-            const preRule = (preData.constraints || []).find(r => r.name === ruleName);
-            const preCount = extractFindingsCount(preRule);
+// Remove the internal fingerprint before publishing a finding in a delta artifact.
+function publicFinding(finding) {
+  const { fingerprint, ...visibleFields } = finding;
+  return visibleFields;
+}
 
-            const baseRule = (baselineData.constraints || []).find(r => r.name === ruleName);
-            const baseCount = extractFindingsCount(baseRule);
+// Compute introduced, resolved, and unchanged findings using multiset semantics.
+function compareConstraints(fromFindings, toFindings) {
+  const fromGroups = groupFindings(fromFindings);
+  const toGroups = groupFindings(toFindings);
+  const introduced = [];
+  const resolved = [];
+  let unchangedCount = 0;
 
-            run_local[`${ruleName}_issues_delta`] = postCount - preCount;
-            trajectory_cumulative[`${ruleName}_issues_delta`] = postCount - baseCount;
-        }
-    }
+  for (const fingerprint of new Set([...fromGroups.keys(), ...toGroups.keys()])) {
+    const before = fromGroups.get(fingerprint) ?? [];
+    const after = toGroups.get(fingerprint) ?? [];
+    const unchanged = Math.min(before.length, after.length);
 
-    return { run_local, trajectory_cumulative };
+    unchangedCount += unchanged;
+    introduced.push(...after.slice(unchanged).map(publicFinding));
+    resolved.push(...before.slice(unchanged).map(publicFinding));
+  }
+
+  return {
+    before_count: fromFindings.length,
+    after_count: toFindings.length,
+    introduced_count: introduced.length,
+    resolved_count: resolved.length,
+    unchanged_count: unchangedCount,
+    net_change: toFindings.length - fromFindings.length,
+    introduced,
+    resolved,
+  };
+}
+
+// Compare every normalized layer between two evaluation snapshots.
+function compareSnapshots(fromSnapshot, toSnapshot) {
+  return {
+    constraints: compareConstraints(
+      fromSnapshot.constraints,
+      toSnapshot.constraints,
+    ),
+    metrics: compareScoredLayer(fromSnapshot.metrics, toSnapshot.metrics),
+    judgments: compareScoredLayer(
+      fromSnapshot.judgments,
+      toSnapshot.judgments,
+    ),
+  };
+}
+
+/**
+ * Produce both task-local (pre to post) and cumulative (baseline to post) deltas.
+ */
+export function calculateDeltas({ baselineSnapshot, preSnapshot, postSnapshot }) {
+  return {
+    run_local: compareSnapshots(preSnapshot, postSnapshot),
+    trajectory_cumulative: compareSnapshots(baselineSnapshot, postSnapshot),
+  };
 }

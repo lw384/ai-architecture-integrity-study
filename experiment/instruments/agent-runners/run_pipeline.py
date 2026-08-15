@@ -1,19 +1,21 @@
-
 import argparse
-from pathlib import Path
-import subprocess
-import shutil
 from datetime import datetime
+import os
+from pathlib import Path
+import shutil
+import subprocess
 
+from comparison_resolver import resolve_comparison_evaluations
 from config import get_agent_config
-from prompt_builder import build_mega_prompt
 from docker_runner import run_agent_task
 from evaluator import run_harness_evaluation
+from prompt_builder import build_mega_prompt
 
 INITIAL_MEMORY_TEMPLATE = Path("experiment/design/memory/initial_memory.md")
 
-# 工具函数
+
 def git(workspace_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    """Run one checked Git command in the isolated workspace."""
     return subprocess.run(
         ["git", *args],
         cwd=workspace_dir,
@@ -21,6 +23,22 @@ def git(workspace_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
         text=True,
         capture_output=True,
     )
+
+
+def resolve_commit(workspace_dir: Path, ref: str) -> str:
+    """Resolve a tag, branch, or SHA to an immutable commit SHA."""
+    return git(
+        workspace_dir,
+        "rev-parse",
+        "--verify",
+        f"{ref}^{{commit}}",
+    ).stdout.strip()
+
+
+def relative_artifact_path(artifact_path: Path, archive_dir: Path) -> str:
+    """Store portable artifact references relative to the task archive."""
+    return os.path.relpath(artifact_path, start=archive_dir)
+
 
 def load_initial_memory_content(root_dir: Path) -> str:
     template_path = root_dir / INITIAL_MEMORY_TEMPLATE
@@ -34,32 +52,25 @@ def load_initial_memory_content(root_dir: Path) -> str:
 
     return content + "\n"
 
-# 首次实验：拉取baseline代码
-def create_new_workspace(root_dir, baseline_dir, args, config):
 
-    # 1. 生成本次“实验会话”的唯一目录
-    session_id = (
-        f"session_"
-        f"{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    )
-    # 工作区路径
+def create_new_workspace(root_dir, baseline_dir, args, config):
+    """Copy baseline and initialize an independent session repository."""
+    session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     workspace_dir = root_dir / "experiment" / "workspace" / session_id
 
-    # 2. 复制 baseline 内容到这个长期保留的 workspace
-    #    注意：不要把 baseline 自己的 .git 一起复制
+    # The session owns its Git history; source repository metadata is excluded.
     shutil.copytree(
         baseline_dir,
         workspace_dir,
         ignore=shutil.ignore_patterns(".git"),
     )
 
-    # 3. 在 workspace 内建立“本 session 自己的”Git 历史
     git(workspace_dir, "init", "-q")
     git(workspace_dir, "add", "-A")
     git(workspace_dir, "commit", "-m", "chore: baseline snapshot")
     git(workspace_dir, "tag", "baseline")
 
-    # 4. 若本实验条件启用记忆，先创建 agent 对应的原生文件
+    # Memory is committed separately so its experimental condition is explicit.
     if args.write_memory_md:
         memory_filename = config["memory_filename"]
         memory_path = workspace_dir / memory_filename
@@ -72,13 +83,14 @@ def create_new_workspace(root_dir, baseline_dir, args, config):
 
     return workspace_dir, session_id
 
-# T2 之后的任务需要依赖上一次实验的结果
+
 def reuse_existing_workspace(
-    workspace_dir: str,
+    workspace_dir: Path,
     from_tag: str | None,
     force: bool,
     task_id: str,
-) -> tuple[Path, str]:
+) -> str:
+    """Validate a reusable session and optionally move it to a start tag."""
     if not workspace_dir.exists():
         raise FileNotFoundError(f"workspace 不存在: {workspace_dir}")
 
@@ -113,8 +125,9 @@ def reuse_existing_workspace(
 
     return workspace_dir.name
 
-# 读取 tag 或 HEAD
-def read_current_tag_or_head(workspace_dir):
+
+def read_current_tag_or_head(workspace_dir: Path) -> str:
+    """Prefer a tag pointing at HEAD, otherwise return the current SHA."""
     result = subprocess.run(
         ["git", "tag", "--points-at", "HEAD"],
         cwd=workspace_dir,
@@ -136,8 +149,8 @@ def read_current_tag_or_head(workspace_dir):
     )
     return result.stdout.strip()
 
-# tag 是否存在
-def tag_exists(workspace_dir, tag_name):
+
+def tag_exists(workspace_dir: Path, tag_name: str) -> bool:
     result = subprocess.run(
         ["git", "rev-parse", "--verify", f"refs/tags/{tag_name}"],
         cwd=workspace_dir,
@@ -147,8 +160,8 @@ def tag_exists(workspace_dir, tag_name):
     )
     return result.returncode == 0
 
-# 提交修改并打 tag
-def commit_and_tag_task(workspace_dir, task_id, force):
+
+def commit_and_tag_task(workspace_dir: Path, task_id: str, force: bool):
     task_tag = f"task-{task_id}-done"
 
     if tag_exists(workspace_dir, task_tag):
@@ -156,10 +169,10 @@ def commit_and_tag_task(workspace_dir, task_id, force):
             raise ValueError(
                 f"tag 已存在: {task_tag}；如确认覆盖，请使用 --force"
             )
-        if tag_exists(workspace_dir, task_tag):
-            git(workspace_dir, "tag", "-d", task_tag)
+        # if tag_exists(workspace_dir, task_tag):  # Duplicate check; already true.
+        git(workspace_dir, "tag", "-d", task_tag)
 
-    # 提交 agent 在 workspace 中的全部改动
+    # Commit every agent change so the evaluated post state is immutable.
     git(workspace_dir, "add", "-A")
 
     staged_changes = subprocess.run(
@@ -188,14 +201,13 @@ def commit_and_tag_task(workspace_dir, task_id, force):
 
     return post_commit, task_tag
 
-# 初始化 session_manifest.yaml
+
 def initialize_session_manifest(
     workspace_dir,
     session_archive_dir,
     session_id,
     args,
     config,
-
 ):
     manifest_path = session_archive_dir / "session_manifest.yaml"
 
@@ -219,15 +231,20 @@ def initialize_session_manifest(
         ),
         encoding="utf-8",
     )
+
+
 def write_task_manifest(
     task_archive_dir,
     session_id,
     task_id,
     run_id,
     start_tag,
+    pre_commit,
     post_commit,
     current_tag,
     requested_from_tag,
+    baseline_evaluation_path,
+    pre_evaluation_path,
     harness_run,
 ):
     manifest_path = task_archive_dir / "task_manifest.yaml"
@@ -239,75 +256,85 @@ def write_task_manifest(
                 f"task_id: {task_id}",
                 f"run_id: {run_id}",
                 f"start_ref: {start_tag}",
+                f"pre_commit: {pre_commit}",
                 f"post_commit: {post_commit}",
                 f"post_tag: {current_tag}",
                 "execution_file: execution.json",
                 f"requested_from_tag: {requested_from_tag or 'none'}",
                 "prompt_file: prompt.md",
-                "execution_file: execution.json",
+                # "execution_file: execution.json",  # Duplicate legacy entry; disabled.
+                "comparison_mode: trajectory",
+                "baseline_evaluation_file: "
+                f"{relative_artifact_path(baseline_evaluation_path, task_archive_dir)}",
+                "pre_evaluation_file: "
+                f"{relative_artifact_path(pre_evaluation_path, task_archive_dir)}",
                 f"harness_status: {harness_run['harness_status']}",
                 "harness_execution_file: harness_execution.json",
                 f"harness_evaluation_file: {'harness_evaluation.json' if harness_run['harness_status'] == 'success' else 'none'}",
-                                "",
+                "",
             ]
         ),
         encoding="utf-8",
     )
 
-#  实验最开始确定的baseline的路径
-#  执行参数
-#  1. prompt 类型： minimal / structured ;
-#  2. task_id: T0 / T1 / T2 / ... ;
-#  3. agent_name: claude code / codex;
-#  创建容器
-#  执行任务
-#  任务完成，调用评估
-#  输出： 归档到 reports/experiments/<session_id>/<task_id> 下
+
 def main():
-    # 可选的参数
     parser = argparse.ArgumentParser(description="AI 架构完整性对照实验流水线")
     parser.add_argument("--agent", choices=["claude", "codex"], default="claude")
-    parser.add_argument("--model", help="覆盖默认模型 (可选)") # 调用的模型暂时为固定某一个模型
+    parser.add_argument("--model", help="覆盖默认模型 (可选)")
     parser.add_argument("--strategy", choices=["minimal", "structured"], required=True)
     parser.add_argument("--task", required=True, help="本次要执行的 task,如 T1")
-    parser.add_argument("--from-workspace",help="复用哪个 workspace 目录;不给则新建")
-    parser.add_argument("--from-tag",help="从哪个 git tag 起跑;不给则用 workspace HEAD",)
-    parser.add_argument("--force", action="store_true",help="覆盖已存在的 tag / 归档,不询问")
-    parser.add_argument("--write-memory-md", action="store_true",help="仅在新建 workspace 时生效,不影响复用",)
+    parser.add_argument(
+        "--from-workspace",
+        help="复用哪个 workspace 目录;不给则新建",
+    )
+    parser.add_argument(
+        "--from-tag",
+        help="从哪个 git tag 起跑;不给则用 workspace HEAD",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="覆盖已存在的 tag / 归档,不询问",
+    )
+    parser.add_argument(
+        "--write-memory-md",
+        action="store_true",
+        help="仅在新建 workspace 时生效,不影响复用",
+    )
     args = parser.parse_args()
 
-    # 路径
     root_dir = Path(__file__).resolve().parent.parent.parent.parent
-    baseline_dir = root_dir / "baseline" # 最一开始起点代码仓库
+    baseline_dir = root_dir / "baseline"
 
-    # === 获取 agent 配置 ===
+    # Resolve the selected agent and optional model override.
     config = get_agent_config(args.agent, args.model)
 
-    # === 确定 workspace ===
-    workspace_dir = None
+    # workspace_dir = None  # Redundant: both branches assign the workspace.
     if args.from_workspace:
-        # 读取 workspace 目录,并复用
         workspace_dir = Path(args.from_workspace).expanduser().resolve()
         session_id = reuse_existing_workspace(
-            workspace_dir, args.from_tag, args.force, args.task,
+            workspace_dir,
+            args.from_tag,
+            args.force,
+            args.task,
         )
         print(f"♻️  复用 workspace: {workspace_dir}-{session_id}")
     else:
-        # 创建新的 workspace (baseline)
         workspace_dir, session_id = create_new_workspace(
             root_dir, baseline_dir, args, config
         )
         print(f"🆕 新建 workspace: {workspace_dir}-{session_id}")
 
-    # === 起点 tag ===
     start_tag = read_current_tag_or_head(workspace_dir)
+    pre_commit = resolve_commit(workspace_dir, start_tag)
     print(f"📍 起点: {start_tag}")
+    print(f"📍 起点 commit: {pre_commit}")
 
-    # === Task 归档目录 ===
     session_archive_dir = root_dir / "reports" / "experiments" / session_id
     session_archive_dir.mkdir(parents=True, exist_ok=True)
 
-    # 初次运行实验，需要在 session_manifest.yaml 里记录初始配置
+    # Session-level conditions are written once, when the workspace is created.
     if not args.from_workspace:
         initialize_session_manifest(
             workspace_dir,
@@ -317,9 +344,21 @@ def main():
             config,
         )
 
-    # === 本次 task 归档目录 ===
+    # Resolve comparison inputs before the agent runs. Missing history should
+    # fail early rather than invalidate an otherwise completed agent task.
+    baseline_evaluation_path, pre_evaluation_path = (
+        resolve_comparison_evaluations(
+            root_dir=root_dir,
+            session_archive_dir=session_archive_dir,
+            task_id=args.task,
+            start_ref=start_tag,
+            pre_commit=pre_commit,
+        )
+    )
+    print(f"📊 Baseline evaluation: {baseline_evaluation_path}")
+    print(f"📊 Pre evaluation: {pre_evaluation_path}")
+
     task_archive_dir = session_archive_dir / args.task
-    # 如果已有归档,且没有 --force, 则报错
     if task_archive_dir.exists() and not args.force:
         raise FileExistsError(
             f"归档已存在: {task_archive_dir}\n"
@@ -333,7 +372,6 @@ def main():
     if candidate_memory_path.exists():
         memory_filename = config["memory_filename"]
 
-    # === Prompt ===
     final_prompt = build_mega_prompt(
         root_dir=root_dir,
         task_id=args.task,
@@ -348,10 +386,8 @@ def main():
     else:
         print("本次未启用 memory 维护")
 
-    # 本次task prompt 归档
     (task_archive_dir / "prompt.md").write_text(final_prompt, encoding="utf-8")
 
-    # === 执行任务 ===
     run_id = f"{session_id}_{args.task}_{datetime.now().strftime('%H%M%S')}"
 
     agent_run = run_agent_task(
@@ -369,7 +405,6 @@ def main():
             f"请查看: {task_archive_dir / 'agent_execution.log'}"
         )
 
-    # === Commit + tag ===
     post_commit, current_tag = commit_and_tag_task(
         workspace_dir=workspace_dir,
         task_id=args.task,
@@ -378,10 +413,7 @@ def main():
 
     print(f"✅ Git commit: {post_commit}")
     print(f"🏷️  Task tag: {current_tag}")
-
-
-
-    # # === 评估 ===
+    # Evaluate the immutable task commit immediately after tagging it.
     harness_run = run_harness_evaluation(
         root_dir=root_dir,
         baseline_dir=baseline_dir,
@@ -389,8 +421,11 @@ def main():
         task_archive_dir=task_archive_dir,
         run_id=run_id,
         task_id=args.task,
-        pre_commit=start_tag,
+        pre_commit=pre_commit,
         post_commit=post_commit,
+        comparison_mode="trajectory",
+        baseline_evaluation_path=baseline_evaluation_path,
+        pre_evaluation_path=pre_evaluation_path,
     )
 
     write_task_manifest(
@@ -399,9 +434,12 @@ def main():
         task_id=args.task,
         run_id=run_id,
         start_tag=start_tag,
+        pre_commit=pre_commit,
         post_commit=post_commit,
         current_tag=current_tag,
         requested_from_tag=args.from_tag,
+        baseline_evaluation_path=baseline_evaluation_path,
+        pre_evaluation_path=pre_evaluation_path,
         harness_run=harness_run,
     )
 
@@ -410,12 +448,10 @@ def main():
             "Harness 运行失败。"
             f"请查看: {harness_run['execution_path']}"
         )
-    # # === 提示下一步 ===
     print(f"\n🎉 Task {args.task} 完成")
-    print(f"💡 继续下一个 task:")
+    print("💡 继续下一个 task:")
     # print(f"   python run_pipeline.py --task <TN> --strategy {args.strategy} \\")
     # print(f"     --from-workspace {workspace_dir}")
-
 
 
 if __name__ == "__main__":

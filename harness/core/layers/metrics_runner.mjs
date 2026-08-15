@@ -6,6 +6,7 @@ import path from 'node:path';
 import { load } from 'js-yaml';
 import { pathToFileURL } from 'node:url';
 
+// Read the rulepack manifest used for metric and adapter selection.
 function readManifest(rulepackDir) {
     const manifestPath = path.join(rulepackDir, 'manifest.yaml');
 
@@ -16,12 +17,13 @@ function readManifest(rulepackDir) {
     return load(fs.readFileSync(manifestPath, 'utf8'));
 }
 
+// Select only manifest metric files explicitly enabled for this scope.
 function pickMetricPaths(manifest, taskConfig) {
     const allPaths = manifest.rules?.metrics ?? [];
     const enabled = taskConfig.enabled?.metrics ?? [];
 
     if (!enabled.length) {
-        return allPaths;
+        return [];
     }
 
     return allPaths.filter((rulePath) => {
@@ -30,6 +32,7 @@ function pickMetricPaths(manifest, taskConfig) {
     });
 }
 
+// Load selected metric YAML definitions and preserve their source paths.
 function loadMetricDefs(rulepackDir, rulePaths) {
     return rulePaths.flatMap((rulePath) => {
         const fullPath = path.resolve(rulepackDir, rulePath);
@@ -43,10 +46,12 @@ function loadMetricDefs(rulepackDir, rulePaths) {
     });
 }
 
+// Select adapters capable of producing metric results.
 function pickAdapters(adapters = {}) {
     return Object.entries(adapters).filter(([, adapter]) => adapter.emits?.includes('metrics'));
 }
 
+// Resolve the declared adapter for a metric and reject ambiguous configurations.
 function pickAdapterForRule(ruleDef, adapters) {
     if (adapters.length === 0) {
         return null;
@@ -65,6 +70,7 @@ function pickAdapterForRule(ruleDef, adapters) {
     );
 }
 
+// Dynamically load a metric-specific runner when no adapter implements the rule.
 async function loadMetricRun(rulepackDir, ruleDef) {
     const baseName = path.basename(ruleDef.rule_path ?? `${ruleDef.rule_id}.yaml`, '.yaml');
     const relPath = ruleDef.runner || ruleDef.run || ruleDef.implementation || `rules/metrics/${baseName}.mjs`;
@@ -85,6 +91,10 @@ async function loadMetricRun(rulepackDir, ruleDef) {
     return { run, version: mod.VERSION || ruleDef.version || '1.0.0' };
 }
 
+/**
+ * Execute one metric through its shared adapter and normalize adapter metadata.
+ * The constraint layer is supplied so a metric may reuse already collected evidence.
+ */
 async function runMetricAdapter({
     targetDir,
     baselineDir,
@@ -130,10 +140,16 @@ async function runMetricAdapter({
     };
 }
 
+// Return the threshold configuration associated with one metric rule ID.
 function readThreshold(ruleId, thresholds = {}) {
     return thresholds[ruleId] ?? {};
 }
 
+/**
+ * Apply warn/fail thresholds according to the metric's optimization direction.
+ * Missing numeric scores remain non-failing here and are later marked
+ * unavailable when snapshots are compared.
+ */
 function judgeMetric(score, threshold, baseFindings = []) {
     const nextFindings = [...baseFindings];
     const value = typeof score?.value === 'number' ? score.value : null;
@@ -170,6 +186,7 @@ function judgeMetric(score, threshold, baseFindings = []) {
     return { status: 'pass', findings: nextFindings };
 }
 
+// Convert raw metric execution output into the Evaluation Schema result shape.
 function makeMetricResult(ruleDef, execResult, status, findings, version) {
     const score = execResult.score || null;
     const baseName = path.basename(ruleDef.rule_path ?? `${ruleDef.rule_id}.yaml`, '.yaml');
@@ -185,6 +202,10 @@ function makeMetricResult(ruleDef, execResult, status, findings, version) {
     };
 }
 
+/**
+ * Run every enabled metric for one scope in declaration order.
+ * Each metric failure is isolated as an error result so remaining metrics still run.
+ */
 export async function runMetrics({
     targetDir,
     baselineDir,

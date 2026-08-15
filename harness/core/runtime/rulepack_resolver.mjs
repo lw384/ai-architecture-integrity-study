@@ -85,6 +85,7 @@ export function assertRulepackSchema(manifest) {
 export function assertResolvedRulepackConsistency({
     rulepackId,
     expectedVersion,
+    expectedKind,
     rulepackDir,
     manifestPath,
     manifest,
@@ -101,6 +102,12 @@ export function assertResolvedRulepackConsistency({
         );
     }
 
+    if (expectedKind && manifest.kind !== expectedKind) {
+        throw new Error(
+            `[Harness Error] Rulepack kind mismatch for ${rulepackId}. Expected ${expectedKind}, received ${manifest.kind}.`,
+        );
+    }
+
     for (const [adapterId, adapterDeclaration] of Object.entries(manifest.adapters ?? {})) {
         const configPath = path.resolve(rulepackDir, adapterDeclaration.config);
         assertFileExists(configPath, `Adapter config for ${adapterId}`);
@@ -113,7 +120,7 @@ export function assertResolvedRulepackConsistency({
 }
 
 // Resolve one rulepack ID into a parsed rulepack context.
-export function resolveRulepack({ rulepackId, expectedVersion, rulepacksRoot }) {
+export function resolveRulepack({ rulepackId, expectedVersion, expectedKind, rulepacksRoot }) {
     const rulepackDir = resolveRulepackDirectory(rulepacksRoot, rulepackId);
     const manifestPath = path.join(rulepackDir, 'manifest.yaml');
     const manifest = readRulepackManifest(manifestPath);
@@ -121,6 +128,7 @@ export function resolveRulepack({ rulepackId, expectedVersion, rulepacksRoot }) 
     assertResolvedRulepackConsistency({
         rulepackId,
         expectedVersion,
+        expectedKind,
         rulepackDir,
         manifestPath,
         manifest,
@@ -129,37 +137,20 @@ export function resolveRulepack({ rulepackId, expectedVersion, rulepacksRoot }) 
     return {
         rulepackId,
         rulepackDir,
-        manifestPath,
         manifest,
-        kind: manifest.kind,
-        version: manifest.version,
-        adapters: manifest.adapters,
-        ruleSources: collectRulePaths(manifest),
-        metadata: manifest.metadata ?? {},
     };
 }
 
-// Resolve all subject rulepacks declared by the task config.
-export function resolveSubjectRulepacks({ subjects, rulepacksRoot }) {
-    return subjects.map((subject) => ({
-        subjectId: subject.subject_id,
+// Resolve every evaluation scope through one rulepack contract.
+export function resolveEvaluationScopes({ scopes, rulepacksRoot }) {
+    return scopes.map((scope) => ({
+        scopeId: scope.scope_id,
+        scopeType: scope.scope_type,
         ...resolveRulepack({
-            rulepackId: subject.rulepack_id,
-            expectedVersion: subject.rulepack_version,
+            rulepackId: scope.rulepack_id,
+            expectedVersion: scope.rulepack_version,
+            expectedKind: scope.scope_type,
             rulepacksRoot,
         }),
     }));
-}
-
-// Resolve the optional cross-stack rulepack declared by the task config.
-export function resolveCrossStackRulepack({ crossStackConfig, rulepacksRoot }) {
-    if (!crossStackConfig) {
-        return null;
-    }
-
-    return resolveRulepack({
-        rulepackId: crossStackConfig.rulepack_id,
-        expectedVersion: crossStackConfig.rulepack_version,
-        rulepacksRoot,
-    });
 }

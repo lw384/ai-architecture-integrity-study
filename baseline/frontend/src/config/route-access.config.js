@@ -22,9 +22,7 @@ export function normalizeAllowedRouteIds(routeIds) {
         return defaultAllowedRouteIds;
     }
 
-    const normalizedRouteIds = routeIds.filter((routeId) => routeAccessRegistry[routeId]);
-
-    return normalizedRouteIds.length > 0 ? normalizedRouteIds : defaultAllowedRouteIds;
+    return [...new Set(routeIds.filter((routeId) => routeAccessRegistry[routeId]))];
 }
 
 export function getDefaultAccessiblePath(allowedRouteIds) {
@@ -32,5 +30,5 @@ export function getDefaultAccessiblePath(allowedRouteIds) {
 
     const fallbackRouteId = prioritizedRouteIds.find((routeId) => allowedRouteIds.includes(routeId));
 
-    return routeAccessRegistry[fallbackRouteId ?? prioritizedRouteIds[0]].path;
+    return fallbackRouteId ? routeAccessRegistry[fallbackRouteId].path : null;
 }

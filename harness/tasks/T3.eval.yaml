@@ -1,11 +1,12 @@
-schema_version: "0.1.0"
+schema_version: "0.2.0"
 task_id: T3
 task_version: "0.1.0"
 description: >
   T3: Evaluation of Task.
 
-subjects:
-  - subject_id: backend
+evaluation_scopes:
+  - scope_id: backend
+    scope_type: subject
     root_path: backend/
     rulepack_id: ts-nestjs-backend
     rulepack_version: "0.1.0"
@@ -43,7 +44,8 @@ subjects:
         fail_at: 3
     expected_diff_scope: []
 
-  - subject_id: frontend
+  - scope_id: frontend
+    scope_type: subject
     root_path: frontend/
     rulepack_id: js-react-frontend
     rulepack_version: "0.1.0"
@@ -76,22 +78,24 @@ subjects:
       judgments: []
     expected_diff_scope: []
 
-cross_stack:
-  rulepack_id: cross
-  rulepack_version: "0.1.0"
-  enabled:
-    constraints:
-      - CROSS-EP-C-001
-      - CROSS-METHOD-C-001
-      - CROSS-TYPE-C-001
-      - CROSS-NAME-C-001
-      - CROSS-ERR-C-001
-      - CROSS-PROP-C-001
-      - CROSS-DUP-C-001
-    metrics: []
-    judgments: []
-  thresholds: {}
-  expected_diff_scope: []
+  - scope_id: cross-stack
+    scope_type: cross-stack
+    root_path: .
+    rulepack_id: cross
+    rulepack_version: "0.1.0"
+    enabled:
+      constraints:
+        - CROSS-EP-C-001
+        - CROSS-METHOD-C-001
+        - CROSS-TYPE-C-001
+        - CROSS-NAME-C-001
+        - CROSS-ERR-C-001
+        - CROSS-PROP-C-001
+        - CROSS-DUP-C-001
+      metrics: []
+      judgments: []
+    thresholds: {}
+    expected_diff_scope: []
 
 judgment_config:
   model: Claude Sonnet 4.6
@@ -102,7 +106,7 @@ judgment_config:
 execution:
   fail_fast: false
   max_duration_ms: 600000
-  parallel_subjects: false
+  parallel_scopes: false
 
 metadata:
   purpose: T2-evaluation

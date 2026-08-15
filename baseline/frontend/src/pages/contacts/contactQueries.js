@@ -41,7 +41,7 @@ export function useCreateContact() {
   });
 }
 
-export function useUpdateContact(contactId) {
+export function useUpdateContact() {
   const queryClient = useQueryClient();
 
   return useMutation({

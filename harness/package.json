@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "eval": "node scripts/evaluate.mjs",
-    "test": "echo 'harness has no unit tests yet; smoke test via eval' && exit 0",
-    "lint": "find scripts -type f \\( -name '*.mjs' -o -name '*.js' -o -name '*.cjs' \\) -print0 | xargs -0 -n1 node --check"
+    "test": "node --test core/tests/*.test.mjs",
+    "lint": "find core -type f \\( -name '*.mjs' -o -name '*.js' -o -name '*.cjs' \\) -print0 | xargs -0 -n1 node --check"
   },
   "dependencies": {
     "ajv": "^8.17.1",

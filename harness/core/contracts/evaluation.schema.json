@@ -1,31 +1,44 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Harness Evaluation Result",
-  "description": "The standardized output contract for the multi-subject evaluation harness.",
+  "description": "Version 0.2 evaluation contract with explicit execution, compliance, and comparison semantics.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "schema_version": {
+    "schema_version": { "const": "0.2.0" },
+    "evaluation_profile_hash": {
       "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "description": "Semantic versioning of the schema, e.g., '0.1.0'"
+      "pattern": "^sha256:[a-f0-9]{64}$"
     },
-    "run_id": { "type": "string" },
-    "trajectory_id": { "type": "string" },
-    "task_id": { "type": "string" },
-    "rulepack_id": { "type": "string" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "trajectory_id": { "type": "string", "minLength": 1 },
+    "task_id": { "type": "string", "minLength": 1 },
+    "rulepack_id": { "type": "string", "minLength": 1 },
     "target": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "workspace_path": { "type": "string" },
-        "pre_commit": { "type": "string" },
-        "post_commit": { "type": "string" },
-        "baseline_commit": { "type": "string" }
+        "workspace_path": { "type": "string", "minLength": 1 },
+        "pre_commit": { "type": "string", "minLength": 1 },
+        "post_commit": { "type": "string", "minLength": 1 },
+        "baseline_commit": { "type": "string", "minLength": 1 }
       },
       "required": ["workspace_path", "pre_commit", "post_commit", "baseline_commit"]
     },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "type": "string", "enum": ["self", "trajectory"] },
+        "baseline": { "$ref": "#/definitions/artifact_reference" },
+        "pre": { "$ref": "#/definitions/artifact_reference" },
+        "post": { "$ref": "#/definitions/artifact_reference" }
+      },
+      "required": ["mode", "baseline", "pre", "post"]
+    },
     "env_snapshot": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "node_version": { "type": "string" },
         "pnpm_version": { "type": "string" },
@@ -36,7 +49,7 @@
           "additionalProperties": { "type": "string" }
         }
       },
-      "required": ["node_version", "pnpm_version", "harness_commit", "os"]
+      "required": ["node_version", "pnpm_version", "harness_commit", "os", "tool_versions"]
     },
     "layers": {
       "type": "object",
@@ -48,80 +61,89 @@
       },
       "required": ["constraints", "metrics", "judgments"]
     },
-    "subjects": {
+    "scopes": {
       "type": "array",
-      "items": { "$ref": "#/definitions/subject_result" }
-    },
-    "cross_stack": {
-      "anyOf": [
-        { "type": "null" },
-        { "$ref": "#/definitions/cross_stack_result" }
-      ]
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/scope_result" }
     },
     "task_summary": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "subject_count": { "type": "integer", "minimum": 0 },
-        "cross_stack_enabled": { "type": "boolean" },
-        "execution": {
+        "scope_count": { "type": "integer", "minimum": 1 },
+        "scope_types": {
           "type": "object",
-          "additionalProperties": true
-        }
+          "additionalProperties": { "type": "integer", "minimum": 1 }
+        },
+        "execution": { "type": "object", "additionalProperties": true }
       },
-      "required": ["subject_count", "cross_stack_enabled", "execution"]
+      "required": ["scope_count", "scope_types", "execution"]
     },
     "deltas": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "run_local": { "type": "object", "additionalProperties": true },
-        "trajectory_cumulative": { "type": "object", "additionalProperties": true }
+        "run_local": { "$ref": "#/definitions/snapshot_delta" },
+        "trajectory_cumulative": { "$ref": "#/definitions/snapshot_delta" }
       },
       "required": ["run_local", "trajectory_cumulative"]
     },
-    "duration_ms": {
-      "type": "number",
-      "minimum": 0
-    },
-    "status": {
+    "duration_ms": { "type": "number", "minimum": 0 },
+    "execution_status": {
       "type": "string",
       "enum": ["completed", "partial", "failed"]
     },
-    "re_evaluated_from": {
+    "compliance_status": {
       "type": "string",
-      "format": "date-time"
+      "enum": ["passed", "failed", "unknown"]
     },
+    "comparison_status": {
+      "type": "string",
+      "enum": ["valid", "invalid"]
+    },
+    "re_evaluated_from": { "type": "string", "format": "date-time" },
     "errors": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "layer": { "type": "string", "enum": ["constraints", "metrics", "judgments", "system"] },
-          "name": { "type": "string" },
-          "message": { "type": "string" }
-        },
-        "required": ["layer", "message"]
-      }
+      "items": { "$ref": "#/definitions/evaluation_error" }
     }
   },
   "required": [
     "schema_version",
+    "evaluation_profile_hash",
     "run_id",
     "trajectory_id",
     "task_id",
     "rulepack_id",
     "target",
+    "comparison",
     "env_snapshot",
     "layers",
-    "subjects",
-    "cross_stack",
+    "scopes",
     "task_summary",
     "deltas",
     "duration_ms",
-    "status",
+    "execution_status",
+    "compliance_status",
+    "comparison_status",
     "errors"
   ],
   "definitions": {
+    "artifact_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": ["string", "null"] },
+        "sha256": {
+          "anyOf": [
+            { "type": "null" },
+            { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+          ]
+        },
+        "run_id": { "type": "string", "minLength": 1 },
+        "post_commit": { "type": "string", "minLength": 1 }
+      },
+      "required": ["path", "sha256", "run_id", "post_commit"]
+    },
     "constraint_finding": {
       "type": "object",
       "additionalProperties": true,
@@ -130,15 +152,9 @@
         "rule_version": { "type": ["string", "null"] },
         "tier": { "type": ["integer", "null"] },
         "severity": { "type": ["string", "null"] },
-        "location": {
-          "type": ["object", "null"],
-          "additionalProperties": true
-        },
+        "location": { "type": ["object", "null"], "additionalProperties": true },
         "message": { "type": "string" },
-        "evidence": {
-          "type": ["object", "null"],
-          "additionalProperties": true
-        }
+        "evidence": { "type": ["object", "null"], "additionalProperties": true }
       },
       "required": ["message"]
     },
@@ -153,28 +169,10 @@
           "type": "array",
           "items": { "$ref": "#/definitions/constraint_finding" }
         },
-        "findings_by_rule": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "items": { "$ref": "#/definitions/constraint_finding" }
-          }
-        },
-        "background_findings": {
-          "type": "array",
-          "items": { "type": "object", "additionalProperties": true }
-        },
-        "background_by_rule": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
-          }
-        },
-        "adapter_meta": {
-          "type": "object",
-          "additionalProperties": true
-        }
+        "findings_by_rule": { "type": "object", "additionalProperties": true },
+        "background_findings": { "type": "array" },
+        "background_by_rule": { "type": "object" },
+        "adapter_meta": { "type": "object", "additionalProperties": true }
       },
       "required": ["status", "findings"]
     },
@@ -184,10 +182,7 @@
       "properties": {
         "name": { "type": "string" },
         "version": { "type": "string" },
-        "status": {
-          "type": "string",
-          "enum": ["pass", "fail", "error", "skipped"]
-        },
+        "status": { "type": "string", "enum": ["pass", "fail", "error", "skipped"] },
         "findings": { "type": "array", "items": { "type": "string" } },
         "score": {
           "anyOf": [
@@ -196,21 +191,14 @@
             { "type": "null" }
           ]
         },
-        "delta_vs_baseline": {
-          "type": ["number", "null"]
-        },
-        "kappa": {
-          "type": ["number", "null"]
-        },
-        "per_sample_results": {
-          "type": "array",
-          "items": { "type": "object", "additionalProperties": true }
-        },
+        "delta_vs_baseline": { "type": ["number", "null"] },
+        "kappa": { "type": ["number", "null"] },
+        "per_sample_results": { "type": "array", "items": { "type": "object" } },
         "raw_artifact_path": { "type": "string" }
       },
       "required": ["name", "version", "status", "raw_artifact_path"]
     },
-    "subject_layers": {
+    "scope_layers": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -226,27 +214,23 @@
       },
       "required": ["constraints", "metrics", "judgments"]
     },
-    "subject_result": {
+    "scope_result": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "subject_id": { "type": "string" },
-        "subject_root": { "type": "string" },
+        "scope_id": { "type": "string", "minLength": 1 },
+        "scope_type": { "type": "string", "enum": ["subject", "cross-stack"] },
+        "scope_root": { "type": "string", "minLength": 1 },
         "rulepack_id": { "type": "string" },
         "rulepack_version": { "type": "string" },
-        "adapters": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "status": {
-          "type": "string",
-          "enum": ["completed", "failed", "error"]
-        },
-        "layers": { "$ref": "#/definitions/subject_layers" }
+        "adapters": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["completed", "failed", "error"] },
+        "layers": { "$ref": "#/definitions/scope_layers" }
       },
       "required": [
-        "subject_id",
-        "subject_root",
+        "scope_id",
+        "scope_type",
+        "scope_root",
         "rulepack_id",
         "rulepack_version",
         "adapters",
@@ -254,51 +238,86 @@
         "layers"
       ]
     },
-    "cross_stack_result": {
-      "type": "object",
-      "additionalProperties": true,
-      "properties": {
-        "plan_id": { "type": "string" },
-        "rulepack_id": { "type": "string" },
-        "status": { "type": "string", "enum": ["skipped", "completed", "failed", "error"] },
-        "reason": { "type": "string" }
-      },
-      "required": ["plan_id", "rulepack_id", "status"]
-    },
     "layer_array": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": true,
-        "properties": {
-          "name": { "type": "string" },
-          "version": { "type": "string" },
-          "status": {
-            "type": "string",
-            "enum": ["pass", "fail", "error", "skipped"]
-          },
-          "findings": { "type": "array", "items": { "type": "string" } },
-          "score": {
-            "anyOf": [
-              { "type": "number" },
-              { "type": "object", "additionalProperties": true },
-              { "type": "null" }
-            ]
-          },
-          "delta_vs_baseline": {
-            "type": ["number", "null"]
-          },
-          "kappa": {
-            "type": ["number", "null"]
-          },
-          "per_sample_results": {
-            "type": "array",
-            "items": { "type": "object", "additionalProperties": true }
-          },
-          "raw_artifact_path": { "type": "string" }
+      "items": { "$ref": "#/definitions/metric_or_judgment_result" }
+    },
+    "comparison_finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": { "type": "string" },
+        "rule_id": { "type": "string" },
+        "source_rule_id": { "type": ["string", "null"] },
+        "location": { "type": ["object", "null"], "additionalProperties": true },
+        "message": { "type": "string" }
+      },
+      "required": ["scope", "rule_id", "source_rule_id", "location", "message"]
+    },
+    "constraint_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "before_count": { "type": "integer", "minimum": 0 },
+        "after_count": { "type": "integer", "minimum": 0 },
+        "introduced_count": { "type": "integer", "minimum": 0 },
+        "resolved_count": { "type": "integer", "minimum": 0 },
+        "unchanged_count": { "type": "integer", "minimum": 0 },
+        "net_change": { "type": "integer" },
+        "introduced": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/comparison_finding" }
         },
-        "required": ["name", "version", "status", "raw_artifact_path"]
-      }
+        "resolved": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/comparison_finding" }
+        }
+      },
+      "required": [
+        "before_count",
+        "after_count",
+        "introduced_count",
+        "resolved_count",
+        "unchanged_count",
+        "net_change",
+        "introduced",
+        "resolved"
+      ]
+    },
+    "score_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "name": { "type": "string" },
+        "scope": { "type": "string" },
+        "from": { "type": ["number", "null"] },
+        "to": { "type": ["number", "null"] },
+        "delta": { "type": ["number", "null"] },
+        "direction": { "type": ["string", "null"] },
+        "status": { "type": "string", "enum": ["available", "unavailable"] }
+      },
+      "required": ["key", "name", "scope", "from", "to", "delta", "direction", "status"]
+    },
+    "snapshot_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "constraints": { "$ref": "#/definitions/constraint_delta" },
+        "metrics": { "type": "array", "items": { "$ref": "#/definitions/score_delta" } },
+        "judgments": { "type": "array", "items": { "$ref": "#/definitions/score_delta" } }
+      },
+      "required": ["constraints", "metrics", "judgments"]
+    },
+    "evaluation_error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": { "type": "string", "enum": ["constraints", "metrics", "judgments", "system"] },
+        "name": { "type": "string" },
+        "message": { "type": "string" }
+      },
+      "required": ["layer", "name", "message"]
     }
   }
 }

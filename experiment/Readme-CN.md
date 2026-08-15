@@ -24,6 +24,7 @@ experiment/
 │   │   └── Dockerfile.codex
 │   └── agent-runners/
 │       ├── config.py
+│       ├── comparison_resolver.py
 │       ├── docker_runner.py
 │       ├── evaluator.py
 │       ├── generate_report.py
@@ -41,6 +42,7 @@ experiment/
 | `design/memory/initial_memory.md` | 记忆实验的初始内容；仅在新建 session 时使用 `--write-memory-md` 才会读取。 |
 | `instruments/agent-images/` | Claude Code 与 Codex agent 的 Docker 镜像定义。 |
 | `instruments/agent-runners/config.py` | agent 镜像、默认模型、认证目录、memory 文件名和容器内 CLI 命令。 |
+| `instruments/agent-runners/comparison_resolver.py` | 解析 canonical E0，并按不可变 commit SHA 定位唯一的任务前评估。 |
 | `instruments/agent-runners/prompt_builder.py` | 读取任务模板、去掉 HTML 注释，并追加 memory 指令和 `[TASK_COMPLETED]` 完成协议。 |
 | `instruments/agent-runners/docker_runner.py` | 挂载 workspace 和认证目录、启动 agent 容器、解析 CLI 输出并写入执行记录。 |
 | `instruments/agent-runners/evaluator.py` | 组装并执行 `harness/core/evaluate.mjs`，写入 Harness manifest、执行记录和评估结果。 |
@@ -55,13 +57,13 @@ experiment/
 
 | 路径 | 在实验中的角色 |
 | --- | --- |
-| `baseline/` | 新 session 的原始代码来源，也是所有 Harness 评估的对照目录。 |
-| `harness/tasks/<task>.eval.yaml` | `Base`、`T1`、`T2`、`T3` 各自启用的规则和指标。 |
+| `baseline/` | 新 session 的原始代码来源，也是各 evaluation scope metric 的 baseline。 |
+| `harness/tasks/<task>.eval.yaml` | `Base`、`T1`、`T2`、`T3` 的统一 `evaluation_scopes` 及其启用规则和指标。 |
 | `harness/rulepacks/` | Harness 实际执行的后端、前端和跨栈规则包。 |
 | `reports/experiments/<session_id>/` | pipeline 与 workspace Harness 评估的归档目录。 |
 | `reports/baseline/` | baseline Harness 评估的默认输出目录。 |
 
-Pipeline 的 baseline 路径固定为仓库根目录的 `baseline/`；`run_pipeline.py` 没有 baseline 路径覆盖参数。只有 Harness-only 入口支持通过 `--baseline-dir` 选择其他对照目录。
+Pipeline 的源 baseline 路径固定为 `baseline/`。Comparison 数据来自 E0 和之前的任务 artifact；Harness-only 的 `--baseline-dir` 可覆盖 scope metric 使用的源目录。
 
 ## 2. Pipeline 的运行流程、输入与产物
 
@@ -119,10 +121,10 @@ reports/experiments/<session_id>/
 | `session_manifest.yaml` | session 创建时间以及初始 agent、model、strategy、memory 条件。 |
 | `prompt.md` | 本任务实际发送给 agent 的完整 prompt。 |
 | `execution.json` | agent、模型、退出码、完成标记、耗时、token/费用字段、原始 agent 事件及 stderr。 |
-| `task_manifest.yaml` | 任务起点 ref、完成 commit/tag、请求的 `--from-tag` 和 Harness 文件索引。 |
-| `manifest.json` | 提供给 Harness 的任务、baseline revision 和 pre-commit 元数据。 |
+| `task_manifest.yaml` | 任务起点 ref/SHA、完成 commit/tag、comparison artifact 引用和 Harness 文件索引。 |
+| `manifest.json` | 提供给 Harness 的任务、revision、comparison 模式和已解析 comparison 输入。 |
 | `harness_execution.json` | Harness 命令、退出码、超时状态、stdout 和 stderr。 |
-| `harness_evaluation.json` | 约束、指标以及整体评估状态。`partial` 是评估结论，不等同于 Harness 进程失败。 |
+| `harness_evaluation.json` | 统一的 `scopes[]` 结果、局部/累计 delta、artifact 标识以及独立的 execution/compliance/comparison 状态。 |
 
 如果 agent 或 Harness 中途失败，已有的 workspace 和任务目录会保留以便诊断。再次写入同一任务归档或覆盖同名 `task-Tn-done` tag 时，必须显式传入 `--force`。
 
@@ -167,6 +169,8 @@ docker build \
 当前 runner 不会自动读取 `experiment/.env`。认证必须存在于上述挂载目录；需要覆盖默认模型时，在每个任务命令中一致地增加 `--model <model-id>`。
 
 ### 3.2 顺序运行 T1、T2、T3
+
+开始新 trajectory 前，先执行 `python3 experiment/instruments/agent-runners/run_harness.py --baseline --force` 生成当前 v0.2 E0。Pipeline 会在启动 agent 前拒绝缺失、未完成或旧 schema 的 baseline artifact。
 
 下面以 Claude、`structured`、不启用 memory 的单个实验 session 为例。若实验条件是 `minimal`，三个命令都改为 `--strategy minimal`；若使用 Codex，三个命令都改为 `--agent codex`。
 
@@ -275,11 +279,11 @@ python3 experiment/instruments/agent-runners/run_harness.py \
 
 默认输出目录是 `reports/experiments/<session_id>/<task>/`。如果其中已经有 Harness 产物，必须选择新的 `--output-dir`，或使用 `--force` 仅替换该目录中的 `manifest.json`、`harness_execution.json` 和 `harness_evaluation.json`。
 
-Harness 默认从原任务目录的 `task_manifest.yaml` 读取 `start_ref` 作为 pre-commit；找不到时使用当前 `HEAD^`。只有在评估自定义快照且自动推断不正确时，才需要显式传入 `--pre-commit <git-ref>`。`--baseline-dir` 可接受绝对路径或仓库根目录相对路径，用来覆盖默认的 `baseline/` 对照目录。
+Harness 默认从原 task manifest 读取 `start_ref`，解析为完整 SHA，再选择 `target.post_commit` 与该 SHA 一致的唯一 pre artifact；无 ref 时使用 `HEAD^`。只有自动推断错误时才传入 `--pre-ref <git-ref>`。显式覆盖 artifact 时，`--baseline-evaluation` 与 `--pre-evaluation` 必须成对使用。`--baseline-dir` 只改变 metric runner 使用的源 baseline。
 
 ### 3.4 评估 baseline
 
-使用 `--baseline` 直接把 `baseline/` 同时作为被评估目标和对照目录。默认任务是 `Base`，规则来自 `harness/tasks/Base.eval.yaml`：
+使用 `--baseline` 以 self-comparison 模式评估 `baseline/`。默认任务是 `Base`，规则来自 `harness/tasks/Base.eval.yaml`：
 
 ```bash
 python3 experiment/instruments/agent-runners/run_harness.py --baseline
@@ -309,4 +313,4 @@ python3 experiment/instruments/agent-runners/run_harness.py \
   --force
 ```
 
-评估成功与否先查看 `harness_execution.json` 中的 `harness_status` 和 `exit_code`；架构规则的通过、失败或 `partial` 状态查看 `harness_evaluation.json`。
+进程成功与否查看 `harness_execution.json` 中的 `harness_status` 和 `exit_code`；在 `harness_evaluation.json` 中分别查看 `execution_status`、`compliance_status` 和 `comparison_status`。

@@ -24,6 +24,7 @@ experiment/
 │   │   └── Dockerfile.codex
 │   └── agent-runners/
 │       ├── config.py
+│       ├── comparison_resolver.py
 │       ├── docker_runner.py
 │       ├── evaluator.py
 │       ├── generate_report.py
@@ -41,6 +42,7 @@ experiment/
 | `design/memory/initial_memory.md` | Initial content for the memory condition. It is read only when `--write-memory-md` is used while creating a new session. |
 | `instruments/agent-images/` | Docker image definitions for the Claude Code and Codex agents. |
 | `instruments/agent-runners/config.py` | Agent images, default models, authentication directories, memory filenames, and in-container CLI commands. |
+| `instruments/agent-runners/comparison_resolver.py` | Resolves canonical E0 and the unique pre-task evaluation by immutable commit SHA. |
 | `instruments/agent-runners/prompt_builder.py` | Reads the task template, removes HTML comments, and appends the memory instructions and `[TASK_COMPLETED]` completion protocol. |
 | `instruments/agent-runners/docker_runner.py` | Mounts the workspace and authentication directory, launches the agent container, parses the CLI output, and writes the execution record. |
 | `instruments/agent-runners/evaluator.py` | Builds and runs `harness/core/evaluate.mjs` and writes the Harness manifest, execution record, and evaluation result. |
@@ -55,13 +57,13 @@ The experiment also reads from or writes to these repository-level directories:
 
 | Path | Role in the experiment |
 | --- | --- |
-| `baseline/` | Source code for every new session and the comparison directory for all Harness evaluations. |
-| `harness/tasks/<task>.eval.yaml` | Rules and metrics enabled for `Base`, `T1`, `T2`, and `T3`. |
+| `baseline/` | Source code for every new session and the per-scope metric baseline. |
+| `harness/tasks/<task>.eval.yaml` | Uniform `evaluation_scopes` and enabled rules/metrics for `Base`, `T1`, `T2`, and `T3`. |
 | `harness/rulepacks/` | Backend, frontend, and cross-stack rulepacks executed by the Harness. |
 | `reports/experiments/<session_id>/` | Archive for pipeline runs and workspace Harness evaluations. |
 | `reports/baseline/` | Default output directory for baseline Harness evaluations. |
 
-The pipeline baseline path is fixed to `baseline/` at the repository root; `run_pipeline.py` does not provide a baseline path override. Only the Harness-only entry point supports selecting another comparison directory through `--baseline-dir`.
+The pipeline source baseline path is fixed to `baseline/`. Comparison data comes from E0 and prior task artifacts, while `--baseline-dir` on the Harness-only entry point can override the source directory used by scope metrics.
 
 ## 2. Pipeline flow, inputs, and artifacts
 
@@ -119,10 +121,10 @@ reports/experiments/<session_id>/
 | `session_manifest.yaml` | Session creation time and the initial agent, model, strategy, and memory conditions. |
 | `prompt.md` | Complete prompt sent to the agent for this task. |
 | `execution.json` | Agent, model, exit code, completion marker, duration, token/cost fields, raw agent events, and stderr. |
-| `task_manifest.yaml` | Task start ref, completed commit/tag, requested `--from-tag`, and the Harness artifact index. |
-| `manifest.json` | Task, baseline revision, and pre-commit metadata supplied to the Harness. |
+| `task_manifest.yaml` | Task start ref/SHA, completed commit/tag, comparison artifact references, and the Harness artifact index. |
+| `manifest.json` | Task, revisions, comparison mode, and resolved comparison inputs supplied to the Harness. |
 | `harness_execution.json` | Harness command, exit code, timeout status, stdout, and stderr. |
-| `harness_evaluation.json` | Constraints, metrics, and overall evaluation status. `partial` is an evaluation outcome; it does not mean that the Harness process failed. |
+| `harness_evaluation.json` | Uniform `scopes[]` results, local/cumulative deltas, artifact identities, and independent execution/compliance/comparison statuses. |
 
 If the agent or Harness fails partway through, the existing workspace and task directory remain available for diagnosis. Pass `--force` explicitly before writing to the same task archive again or replacing an existing `task-Tn-done` tag.
 
@@ -167,6 +169,8 @@ A valid CLI authentication state must also be available before execution:
 The current runners do not automatically load `experiment/.env`. Authentication must be present in the mounted directories above. To override the default model, add `--model <model-id>` consistently to every task command.
 
 ### 3.2 Run T1, T2, and T3 in sequence
+
+Before starting a new trajectory, generate a current v0.2 E0 with `python3 experiment/instruments/agent-runners/run_harness.py --baseline --force`. The pipeline deliberately rejects missing, incomplete, or older-schema baseline artifacts before launching the agent.
 
 The following example uses Claude, the `structured` strategy, and no memory for a single experiment session. For a `minimal` condition, change all three commands to `--strategy minimal`. For Codex, change all three commands to `--agent codex`.
 
@@ -275,11 +279,11 @@ python3 experiment/instruments/agent-runners/run_harness.py \
 
 The default output directory is `reports/experiments/<session_id>/<task>/`. If it already contains Harness artifacts, choose a new `--output-dir`, or use `--force` to replace only `manifest.json`, `harness_execution.json`, and `harness_evaluation.json` in that directory.
 
-By default, the Harness reads `start_ref` from the original task directory's `task_manifest.yaml` and uses it as the pre-commit. If that field is unavailable, it uses the current `HEAD^`. Supply `--pre-commit <git-ref>` only when evaluating a custom snapshot for which automatic inference is incorrect. `--baseline-dir` accepts either an absolute path or a path relative to the repository root and overrides the default `baseline/` comparison directory.
+By default, the Harness reads `start_ref` from the original task manifest, resolves it to a full SHA, and selects the unique pre artifact whose `target.post_commit` matches that SHA. If the ref is unavailable, it uses `HEAD^`. Supply `--pre-ref <git-ref>` only when automatic inference is incorrect. Explicit artifact overrides must provide `--baseline-evaluation` and `--pre-evaluation` together. `--baseline-dir` changes the source baseline used by metric runners.
 
 ### 3.4 Evaluate the baseline
 
-Use `--baseline` to make `baseline/` both the evaluation target and the comparison directory. The default task is `Base`, with rules from `harness/tasks/Base.eval.yaml`:
+Use `--baseline` to evaluate `baseline/` in self-comparison mode. The default task is `Base`, with rules from `harness/tasks/Base.eval.yaml`:
 
 ```bash
 python3 experiment/instruments/agent-runners/run_harness.py --baseline
@@ -309,4 +313,4 @@ python3 experiment/instruments/agent-runners/run_harness.py \
   --force
 ```
 
-Check `harness_status` and `exit_code` in `harness_execution.json` to determine whether the Harness process succeeded. Check `harness_evaluation.json` for the architectural rules' pass, failure, or `partial` evaluation result.
+Check `harness_status` and `exit_code` in `harness_execution.json` for process success. In `harness_evaluation.json`, inspect `execution_status`, `compliance_status`, and `comparison_status` independently.

@@ -1,4 +1,4 @@
-import { BankOutlined, DashboardOutlined, TeamOutlined } from '@ant-design/icons';
+import { BankOutlined, TeamOutlined } from '@ant-design/icons';
 
 // ==============================|| ROUTE REGISTRY||============================== //
 // Consumed by MainRoutes.jsx (router), route-access.config.js (access control)
@@ -10,6 +10,7 @@ export const routeDefinitions = [
     {
         id: 'contacts',
         path: 'contacts',
+        default: true,
         group: 'group-dashboard',
         title: 'Contacts',
         icon: TeamOutlined,

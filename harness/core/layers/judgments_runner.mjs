@@ -1,66 +1,98 @@
-// core/layers/judgments_runner.mjs
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+// Create a complete error-first result template for one judgment rule.
+function createResult(ruleName) {
+  return {
+    name: ruleName,
+    version: 'unknown',
+    status: 'error',
+    score: null,
+    kappa: null,
+    findings: [],
+    raw_artifact_path: `artifacts/judgments/${ruleName}.json`,
+  };
+}
+
+// Fail otherwise successful judgments when sample agreement is below policy.
+function judgeAgreement(executionResult, minimumKappa) {
+  if (
+    typeof executionResult.kappa === 'number' &&
+    executionResult.kappa < minimumKappa
+  ) {
+    return {
+      status: 'fail',
+      finding: `Kappa ${executionResult.kappa} is below ${minimumKappa}`,
+    };
+  }
+  return { status: 'pass', finding: null };
+}
+
 /**
- * 执行 judgments 层面的评估 (LLM 裁判)
+ * Execute enabled LLM judgment modules and normalize score, agreement, and samples.
+ * Rule failures are isolated so one judgment does not abort the remaining rules.
  */
-export async function runJudgments({ targetDir, baselineDir, rulepackDir, taskConfig, llmClient }) {
-    const enabledRules = taskConfig.enabled?.judgments || [];
-    const judgmentConfig = taskConfig.judgment_config || { sampling_times: 1, temperature: 0.0, model: 'mock-model' };
-    const results = [];
+export async function runJudgments({
+  targetDir,
+  baselineDir,
+  rulepackDir,
+  taskConfig,
+  llmClient,
+}) {
+  const enabledRules = taskConfig.enabled?.judgments ?? [];
+  const judgmentConfig = taskConfig.judgment_config ?? {};
+  const results = [];
 
-    for (const ruleName of enabledRules) {
-        const ruleModulePath = path.resolve(rulepackDir, 'judgments', `${ruleName}.mjs`);
+  for (const ruleName of enabledRules) {
+    const resultTemplate = createResult(ruleName);
 
-        const resultTemplate = {
-            name: ruleName,
-            version: 'unknown',
-            status: 'error',
-            score: null,
-            kappa: null, // 样本间一致性系数
-            findings: [],
-            raw_artifact_path: `artifacts/judgments/${ruleName}.json`
-        };
+    try {
+      const modulePath = path.resolve(
+        rulepackDir,
+        'judgments',
+        `${ruleName}.mjs`,
+      );
+      const ruleModule = await import(pathToFileURL(modulePath).href);
+      if (typeof ruleModule.run !== 'function') {
+        throw new Error(`Rule module ${ruleName} does not export run`);
+      }
 
-        try {
-            const moduleUrl = pathToFileURL(ruleModulePath).href;
-            const ruleModule = await import(moduleUrl);
+      const executionResult = await ruleModule.run({
+        targetDir,
+        baselineDir,
+        llmClient,
+        samples: judgmentConfig.samples_per_rubric ?? 1,
+        model: judgmentConfig.model,
+        temperature: judgmentConfig.temperature ?? 0,
+      });
+      const agreement = judgeAgreement(
+        executionResult,
+        judgmentConfig.min_kappa ?? 0,
+      );
+      const findings = [...(executionResult.findings ?? [])];
+      if (agreement.finding) {
+        findings.push(agreement.finding);
+      }
 
-            if (typeof ruleModule.run !== 'function') {
-                throw new Error(`Rule module ${ruleName} does not export an async 'run' function.`);
-            }
-
-            resultTemplate.version = ruleModule.VERSION || '1.0.0';
-
-            // 将 LLM 客户端、采样配置一并注入给规则模块
-            const executionResult = await ruleModule.run({
-                targetDir,
-                baselineDir,
-                llmClient,
-                samples: judgmentConfig.sampling_times,
-                model: judgmentConfig.model,
-                temperature: judgmentConfig.temperature
-            });
-
-            results.push({
-                ...resultTemplate,
-                status: 'pass', // 只要 LLM 成功返回且没有抛出异常，执行状态即为 pass
-                score: executionResult.score,
-                kappa: executionResult.kappa,
-                per_sample_results: executionResult.per_sample_results,
-                findings: executionResult.findings || [],
-                raw_artifact_path: executionResult.raw_artifact_path || resultTemplate.raw_artifact_path
-            });
-
-        } catch (error) {
-            results.push({
-                ...resultTemplate,
-                status: 'error',
-                findings: [`LLM Judgment Runner crashed: ${error.message}`]
-            });
-        }
+      results.push({
+        ...resultTemplate,
+        version: ruleModule.VERSION ?? '1.0.0',
+        status: agreement.status,
+        score: executionResult.score ?? null,
+        kappa: executionResult.kappa ?? null,
+        per_sample_results: executionResult.per_sample_results ?? [],
+        findings,
+        raw_artifact_path:
+          executionResult.raw_artifact_path ??
+          resultTemplate.raw_artifact_path,
+      });
+    } catch (error) {
+      results.push({
+        ...resultTemplate,
+        findings: [`LLM judgment runner crashed: ${error.message}`],
+      });
     }
+  }
 
-    return results;
+  return results;
 }

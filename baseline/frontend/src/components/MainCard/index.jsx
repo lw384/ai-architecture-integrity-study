@@ -20,7 +20,7 @@ export default function MainCard({
   sx = {},
   title,
   codeHighlight = false,
-  codeString,
+  codeString: _codeString,
   modal = false,
   ref,
   ...others

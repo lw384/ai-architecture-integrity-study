@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Task Evaluation Configuration",
-  "description": "Defines the evaluation plan for a task across multiple subjects and optional cross-stack checks.",
+  "description": "Defines a task as a list of independently executable evaluation scopes.",
   "type": "object",
   "additionalProperties": false,
   "definitions": {
@@ -49,24 +49,29 @@
         "$ref": "#/definitions/metricThreshold"
       }
     },
-    "subjectConfig": {
+    "evaluationScope": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "subject_id": {
+        "scope_id": {
           "type": "string",
           "minLength": 1,
-          "description": "Stable identifier for this evaluation subject, e.g. backend or frontend."
+          "description": "Stable identifier for this evaluation scope, e.g. backend, frontend, or cross-stack."
+        },
+        "scope_type": {
+          "type": "string",
+          "enum": ["subject", "cross-stack"],
+          "description": "Execution kind expected from the selected rulepack."
         },
         "root_path": {
           "type": "string",
           "minLength": 1,
-          "description": "Workspace-relative path to the subject root."
+          "description": "Workspace-relative path evaluated by this scope; use '.' for the workspace root."
         },
         "rulepack_id": {
           "type": "string",
           "minLength": 1,
-          "description": "Rulepack selected for this subject."
+          "description": "Rulepack selected for this scope."
         },
         "rulepack_version": {
           "type": "string",
@@ -82,55 +87,21 @@
         "expected_diff_scope": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
-          "description": "Allowed file globs for modifications within this subject."
+          "description": "Allowed file globs for modifications within this scope."
         },
         "metadata": {
           "type": "object",
-          "description": "Optional subject-scoped metadata for auditing or experimentation.",
+          "description": "Optional scope metadata for auditing or experimentation.",
           "additionalProperties": true
         }
       },
-      "required": ["subject_id", "root_path", "rulepack_id", "enabled"]
-    },
-    "crossStackConfig": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "rulepack_id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Cross-stack rulepack selected for contract checks across subjects."
-        },
-        "rulepack_version": {
-          "type": "string",
-          "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "description": "Optional version pin for the cross-stack rulepack."
-        },
-        "enabled": {
-          "$ref": "#/definitions/ruleSelection"
-        },
-        "thresholds": {
-          "$ref": "#/definitions/thresholdMap"
-        },
-        "expected_diff_scope": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "description": "Allowed file globs for cross-stack modifications."
-        },
-        "metadata": {
-          "type": "object",
-          "description": "Optional cross-stack metadata.",
-          "additionalProperties": true
-        }
-      },
-      "required": ["rulepack_id", "enabled"]
+      "required": ["scope_id", "scope_type", "root_path", "rulepack_id", "enabled"]
     }
   },
   "properties": {
     "schema_version": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "description": "Schema version for the task configuration document."
+      "const": "0.2.0",
+      "description": "Schema version for the unified evaluation-scopes task contract."
     },
     "task_id": {
       "type": "string",
@@ -146,16 +117,13 @@
       "type": "string",
       "description": "Human-readable description of the evaluation task."
     },
-    "subjects": {
+    "evaluation_scopes": {
       "type": "array",
-      "description": "Evaluation subjects processed independently by the orchestrator.",
+      "description": "Evaluation units processed independently by the orchestrator.",
       "items": {
-        "$ref": "#/definitions/subjectConfig"
+        "$ref": "#/definitions/evaluationScope"
       },
       "minItems": 1
-    },
-    "cross_stack": {
-      "$ref": "#/definitions/crossStackConfig"
     },
     "judgment_config": {
       "type": "object",
@@ -192,19 +160,19 @@
       "properties": {
         "fail_fast": {
           "type": "boolean",
-          "description": "Whether the orchestrator should abort on the first subject or rule failure."
+          "description": "Whether the orchestrator should abort on the first scope or rule failure."
         },
         "max_duration_ms": {
           "type": "integer",
           "minimum": 1,
           "description": "Maximum total evaluation duration allowed for this task."
         },
-        "parallel_subjects": {
+        "parallel_scopes": {
           "type": "boolean",
-          "description": "Whether subjects may be processed in parallel."
+          "description": "Whether scopes may be processed in parallel."
         }
       },
-      "required": ["fail_fast", "max_duration_ms", "parallel_subjects"]
+      "required": ["fail_fast", "max_duration_ms", "parallel_scopes"]
     },
     "metadata": {
       "type": "object",
@@ -216,7 +184,7 @@
     "schema_version",
     "task_id",
     "task_version",
-    "subjects",
+    "evaluation_scopes",
     "judgment_config"
   ]
 }

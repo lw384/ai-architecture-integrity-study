@@ -62,7 +62,7 @@
         "--watchman=false"
       ],
       "working_directory": ".",
-      "baseline_working_directory": "backend",
+      "baseline_working_directory": ".",
       "coverage_summary_path": "coverage/coverage-summary.json",
       "raw_artifact_path": "artifacts/metrics/test-coverage.json"
     },

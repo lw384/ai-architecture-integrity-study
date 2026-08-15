@@ -6,6 +6,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from comparison_resolver import resolve_comparison_evaluations
 from evaluator import run_harness_evaluation
 
 
@@ -14,6 +15,17 @@ HARNESS_OUTPUT_FILES = (
     "harness_execution.json",
     "harness_evaluation.json",
 )
+
+
+def format_evaluation_status(evaluation: dict) -> str:
+    """Render the three independent v0.2 evaluation status dimensions."""
+    return ", ".join(
+        [
+            f"execution={evaluation.get('execution_status', 'unknown')}",
+            f"compliance={evaluation.get('compliance_status', 'unknown')}",
+            f"comparison={evaluation.get('comparison_status', 'unknown')}",
+        ]
+    )
 
 
 def resolve_baseline_dir(root_dir: Path, baseline_dir_arg: str | None) -> Path:
@@ -66,6 +78,18 @@ def resolve_output_dir(
 
     candidate = Path(output_dir_arg).expanduser()
     return (candidate if candidate.is_absolute() else root_dir / candidate).resolve()
+
+
+def resolve_evaluation_file(root_dir: Path, path_arg: str, label: str) -> Path:
+    """Resolve an explicit evaluation artifact and verify it is readable."""
+    candidate = Path(path_arg).expanduser()
+    path = candidate if candidate.is_absolute() else root_dir / candidate
+    path = path.resolve()
+
+    if not path.is_file():
+        raise FileNotFoundError(f"{label} evaluation not found: {path}")
+
+    return path
 
 
 def git_output(repo_dir: Path, *args: str, check: bool = True) -> str:
@@ -140,20 +164,58 @@ def read_task_manifest_field(manifest_path: Path, field: str) -> str | None:
     return None
 
 
-def detect_pre_commit(
+def detect_pre_state(
     workspace_dir: Path,
     source_task_manifest: Path,
     override: str | None,
-) -> str:
-    if override:
-        return override
+) -> tuple[str, str]:
+    """Return the human-readable start ref and its immutable commit SHA."""
+    start_ref = override or read_task_manifest_field(
+        source_task_manifest,
+        "start_ref",
+    )
+    if start_ref is None:
+        start_ref = "HEAD^" if git_ref_commit(workspace_dir, "HEAD^") else "HEAD"
 
-    start_ref = read_task_manifest_field(source_task_manifest, "start_ref")
-    if start_ref:
-        return start_ref
+    pre_commit = git_ref_commit(workspace_dir, start_ref)
+    if pre_commit is None:
+        raise ValueError(f"Cannot resolve task start ref: {start_ref}")
 
-    parent_commit = git_ref_commit(workspace_dir, "HEAD^")
-    return parent_commit or git_output(workspace_dir, "rev-parse", "HEAD")
+    return start_ref, pre_commit
+
+
+def resolve_workspace_comparisons(
+    root_dir: Path,
+    session_archive_dir: Path,
+    task_id: str,
+    start_ref: str,
+    pre_commit: str,
+    baseline_evaluation_arg: str | None,
+    pre_evaluation_arg: str | None,
+) -> tuple[Path, Path]:
+    """Use explicit comparison files or resolve canonical trajectory history."""
+    if bool(baseline_evaluation_arg) != bool(pre_evaluation_arg):
+        raise ValueError(
+            "--baseline-evaluation and --pre-evaluation must be provided together"
+        )
+
+    if baseline_evaluation_arg and pre_evaluation_arg:
+        return (
+            resolve_evaluation_file(
+                root_dir,
+                baseline_evaluation_arg,
+                "Baseline",
+            ),
+            resolve_evaluation_file(root_dir, pre_evaluation_arg, "Pre"),
+        )
+
+    return resolve_comparison_evaluations(
+        root_dir=root_dir,
+        session_archive_dir=session_archive_dir,
+        task_id=task_id,
+        start_ref=start_ref,
+        pre_commit=pre_commit,
+    )
 
 
 def describe_post_commit(workspace_dir: Path) -> str:
@@ -221,7 +283,9 @@ def validate_mode_args(parser: argparse.ArgumentParser, args: argparse.Namespace
                 ("--run-id", args.run_id),
                 ("--workspace-dir", args.workspace_dir),
                 ("--from-tag", args.from_tag),
-                ("--pre-commit", args.pre_commit),
+                ("--pre-ref", args.pre_ref),
+                ("--baseline-evaluation", args.baseline_evaluation),
+                ("--pre-evaluation", args.pre_evaluation),
                 ("--allow-task-ref-mismatch", args.allow_task_ref_mismatch),
             )
             if value
@@ -264,6 +328,9 @@ def run_baseline_mode(
         task_id=task_id,
         pre_commit=baseline_commit,
         post_commit=baseline_commit,
+        comparison_mode="self",
+        baseline_evaluation_path=None,
+        pre_evaluation_path=None,
     )
 
 
@@ -307,10 +374,24 @@ def main() -> None:
         ),
     )
     parser.add_argument(
-        "--pre-commit",
+        "--pre-ref",
         help=(
             "Override the task start ref; defaults to task_manifest.yaml start_ref, "
             "then HEAD^"
+        ),
+    )
+    parser.add_argument(
+        "--baseline-evaluation",
+        help=(
+            "Explicit E0 evaluation path for workspace mode; must be paired with "
+            "--pre-evaluation"
+        ),
+    )
+    parser.add_argument(
+        "--pre-evaluation",
+        help=(
+            "Explicit evaluation of the workspace pre-state; must be paired with "
+            "--baseline-evaluation"
         ),
     )
     parser.add_argument(
@@ -352,7 +433,7 @@ def main() -> None:
         evaluation = harness_run.get("evaluation") or {}
         print(
             "✅ Baseline evaluation finished. "
-            f"status={evaluation.get('status', 'unknown')}"
+            f"{format_evaluation_status(evaluation)}"
         )
         print(f"📄 Evaluation: {harness_run['evaluation_path']}")
         return
@@ -382,13 +463,23 @@ def main() -> None:
             allow_task_ref_mismatch=args.allow_task_ref_mismatch,
         )
 
-    prepare_output_dir(output_dir, force=args.force)
-
-    pre_commit = detect_pre_commit(
+    start_ref, pre_commit = detect_pre_state(
         workspace_dir,
         source_task_manifest,
-        override=args.pre_commit,
+        override=args.pre_ref,
     )
+    baseline_evaluation_path, pre_evaluation_path = resolve_workspace_comparisons(
+        root_dir=root_dir,
+        session_archive_dir=source_task_dir.parent,
+        task_id=task_id,
+        start_ref=start_ref,
+        pre_commit=pre_commit,
+        baseline_evaluation_arg=args.baseline_evaluation,
+        pre_evaluation_arg=args.pre_evaluation,
+    )
+
+    prepare_output_dir(output_dir, force=args.force)
+
     post_commit = describe_post_commit(workspace_dir)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     run_id = f"{session_id}_{task_id}_harness_{timestamp}"
@@ -397,9 +488,12 @@ def main() -> None:
     print(f"🧭 Task: {task_id}")
     if args.from_tag:
         print(f"🏷️ Checked out tag: {args.from_tag} ({checked_out_tag_commit})")
+    print(f"📍 Start ref: {start_ref}")
     print(f"📍 Pre-commit: {pre_commit}")
     print(f"📍 Post-commit: {post_commit}")
     print(f"📦 Baseline: {baseline_dir}")
+    print(f"📊 Baseline evaluation: {baseline_evaluation_path}")
+    print(f"📊 Pre evaluation: {pre_evaluation_path}")
     print(f"🗂️ Output: {output_dir}")
 
     harness_run = run_harness_evaluation(
@@ -411,6 +505,9 @@ def main() -> None:
         task_id=task_id,
         pre_commit=pre_commit,
         post_commit=post_commit,
+        comparison_mode="trajectory",
+        baseline_evaluation_path=baseline_evaluation_path,
+        pre_evaluation_path=pre_evaluation_path,
     )
 
     if harness_run["harness_status"] != "success":
@@ -420,7 +517,10 @@ def main() -> None:
         )
 
     evaluation = harness_run.get("evaluation") or {}
-    print(f"✅ Harness-only evaluation finished. status={evaluation.get('status', 'unknown')}")
+    print(
+        "✅ Harness-only evaluation finished. "
+        f"{format_evaluation_status(evaluation)}"
+    )
     print(f"📄 Evaluation: {harness_run['evaluation_path']}")
 
 
