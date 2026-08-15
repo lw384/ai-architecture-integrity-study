@@ -1,0 +1,23 @@
+rule_id: BE-DUP-C-003-no-equivalent-production-code
+version: 0.1.0
+tier: 1
+layer: constraints
+category: duplication
+visibility: agent-visible
+
+description: >
+  Equivalent production functions must be reused or extracted. Detection uses a
+  normalized AST fingerprint and intentionally excludes short or policy-shaped functions.
+
+evidence_sources:
+  - adapter: backend-static
+    tool_rule_ids: [BE-DUP-C-003]
+    match_condition:
+      event_type: backend_architecture_violation
+    aggregation: any
+
+agent_facing_message: "{message}"
+
+research_tags:
+  drift_type: duplication
+  pattern: copied-production-code

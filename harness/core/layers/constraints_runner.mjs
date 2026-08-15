@@ -56,9 +56,14 @@ function loadRules(rulepackDir, rulePaths) {
     });
 }
 
-// Select adapter declarations that emit normalized constraint events.
-function pickAdapters(adapters = {}) {
-    return Object.entries(adapters).filter(([, adapter]) => adapter.emits?.includes('constraints'));
+// Run only adapters referenced by the selected rules.
+function pickAdapters(adapters = {}, rules = []) {
+    const required = new Set(
+        rules.flatMap((rule) => (rule.evidence_sources ?? []).map((source) => source.adapter)),
+    );
+    return Object.entries(adapters).filter(([adapterId, adapter]) =>
+        required.has(adapterId) && adapter.emits?.includes('constraints')
+    );
 }
 
 /**
@@ -130,7 +135,6 @@ function makeFindings(rule, events) {
         rule_id: rule.rule_id,
         rule_version: rule.version ?? null,
         tier: null,
-        severity: rule.severity ?? null,
         location: event.location ?? null,
         message: fillMsg(rule.agent_facing_message, event.payload),
         evidence: {
@@ -141,13 +145,13 @@ function makeFindings(rule, events) {
     }));
 }
 
-// Assemble the constraint result and derive error/fail/ok precedence.
+// Report adapter reliability; findings alone represent constraint violations.
 function sumResult(rules, findings, findingsByRule, meta) {
     const hasError = Object.values(meta).some((entry) => entry?.status === 'error');
 
     return {
         layer: 'constraints',
-        status: hasError ? 'error' : findings.length > 0 ? 'fail' : 'ok',
+        status: hasError ? 'error' : 'ok',
         rules_evaluated: rules.length,
         findings,
         findings_by_rule: findingsByRule,
@@ -171,7 +175,7 @@ export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapt
         return sumResult([], [], {}, {});
     }
 
-    const adapters = pickAdapters(manifest.adapters);
+    const adapters = pickAdapters(manifest.adapters, rules);
     const { events, meta } = await runAdapters({
         targetDir,
         rulepackDir,

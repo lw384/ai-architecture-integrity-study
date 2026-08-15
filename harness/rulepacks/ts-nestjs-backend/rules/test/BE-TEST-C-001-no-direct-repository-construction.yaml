@@ -1,27 +1,24 @@
 rule_id: BE-TEST-C-001-no-direct-repository-construction
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: testability
 visibility: agent-visible
-severity: error
 
 description: >
   Service classes must not instantiate Repository or *Repository classes directly.
   Repositories should be supplied through dependency injection.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "nestjs/no-direct-repository-construction"
+      - BE-TEST-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Services must not construct repositories directly. Inject the repository via Nest DI instead.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: repository-construction

@@ -1,10 +1,15 @@
 rulepack_id: ts-nestjs-backend
-version: 0.1.0
+version: 0.2.0
 kind: subject
 language: [typescript]
 frameworks: [nestjs]
 
 adapters:
+  backend-static:
+    source: backend-static
+    version: 0.2.0
+    config: tool-configs/backend-static.config.json
+    emits: [constraints]
   dep-cruiser:
     source: dep-cruiser
     version: 0.1.0
@@ -34,6 +39,7 @@ adapters:
 rules:
   constraints:
     - rules/structure/BE-STRUCT-C-001-module-composition.yaml
+    - rules/name/BE-STRUCT-C-002-no-explicit-any.yaml
     - rules/dependencies/BE-DEP-C-001-intra-module-layering.yaml
     - rules/dependencies/BE-DEP-C-002-infrastructure-isolation.yaml
     - rules/dependencies/BE-DEP-C-003-framework-layer-purity.yaml
@@ -45,9 +51,14 @@ rules:
     - rules/error/BE-ERR-C-003-no-silent-catch.yaml
     - rules/contracts/BE-CONTRACT-C-001-entity-change-requires-migration.yaml
     - rules/contracts/BE-CONTRACT-C-002-request-dto-uses-class-validator.yaml
+    - rules/contracts/BE-CONTRACT-C-003-optional-request-properties-validate-values.yaml
+    - rules/contracts/BE-CONTRACT-C-004-validation-pipe-whitelisting.yaml
     - rules/test/BE-TEST-C-001-no-direct-repository-construction.yaml
     - rules/routes/BE-ROUTE-C-001-api-prefix-and-kebab-case.yaml
     - rules/size/BE-SIZE-C-001-max-method-parameters.yaml
+    - rules/duplication/BE-DUP-C-001-single-resource-owner.yaml
+    - rules/duplication/BE-DUP-C-002-single-policy-implementation.yaml
+    - rules/duplication/BE-DUP-C-003-no-equivalent-production-code.yaml
   metrics:
     - rules/structure/BE-STRUCT-M-001-module-composition-violation-ratio.yaml
     - rules/dependencies/BE-DEP-M-001-dependency-violation-density.yaml
@@ -61,7 +72,8 @@ rules:
   judgments: []
 
 metadata:
-  migration_status: minimal-schema-valid
+  migration_status: backend-constraint-protocol-v2
   notes:
-    - Uses only rule and configs that currently exist on disk.
-    - Metrics are currently experimental and only wired through computed-metrics.
+    - Canonical backend constraints share one production-source analysis pass.
+    - Every registered constraint has positive, negative, near-miss, and ignored fixtures.
+    - Metrics remain independently wired through computed-metrics and test-coverage.

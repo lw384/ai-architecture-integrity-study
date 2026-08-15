@@ -1,0 +1,7 @@
+{
+  "app_exception_sources": [
+    "app-exception",
+    "common/exceptions"
+  ],
+  "resource_aliases": {}
+}

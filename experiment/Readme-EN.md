@@ -124,7 +124,7 @@ reports/experiments/<session_id>/
 | `task_manifest.yaml` | Task start ref/SHA, completed commit/tag, comparison artifact references, and the Harness artifact index. |
 | `manifest.json` | Task, revisions, comparison mode, and resolved comparison inputs supplied to the Harness. |
 | `harness_execution.json` | Harness command, exit code, timeout status, stdout, and stderr. |
-| `harness_evaluation.json` | Uniform `scopes[]` results, local/cumulative deltas, artifact identities, and independent execution/compliance/comparison statuses. |
+| `harness_evaluation.json` | Uniform `scopes[]` results, local/cumulative deltas, artifact identities, and execution/comparison statuses. The constraint result is derived from local introduced findings. |
 
 If the agent or Harness fails partway through, the existing workspace and task directory remain available for diagnosis. Pass `--force` explicitly before writing to the same task archive again or replacing an existing `task-Tn-done` tag.
 
@@ -313,4 +313,4 @@ python3 experiment/instruments/agent-runners/run_harness.py \
   --force
 ```
 
-Check `harness_status` and `exit_code` in `harness_execution.json` for process success. In `harness_evaluation.json`, inspect `execution_status`, `compliance_status`, and `comparison_status` independently.
+Check `harness_status` and `exit_code` in `harness_execution.json` for process success. In `harness_evaluation.json`, inspect `execution_status` and `comparison_status`. When execution is completed, `deltas.run_local.constraints.introduced_count == 0` means the current constraint evaluation passed; a value greater than `0` means it failed.

@@ -1,10 +1,9 @@
 rule_id: BE-DOM-C-002-no-repository-in-module-exports
-version: 0.2.0
+version: 0.3.0
 tier: 1
 layer: constraints
 category: module-boundary
 visibility: agent-visible
-severity: error
 
 description: >
   Module entry files must not expose persistence-layer details.
@@ -12,18 +11,15 @@ description: >
   implementations to other modules.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "nestjs/no-repository-in-module-exports"
+      - BE-DOM-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Module entry file leaks persistence-layer details. Do not export repository
-  or entity implementations from *.module.ts/index.ts.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: persistence-leakage

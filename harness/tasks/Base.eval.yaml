@@ -10,7 +10,7 @@ evaluation_scopes:
     scope_type: subject
     root_path: backend/
     rulepack_id: ts-nestjs-backend
-    rulepack_version: "0.1.0"
+    rulepack_version: "0.2.0"
     enabled:
       constraints:
         - BE-STRUCT-C-001
@@ -25,9 +25,14 @@ evaluation_scopes:
         - BE-ERR-C-003
         - BE-CONTRACT-C-001
         - BE-CONTRACT-C-002
+        - BE-CONTRACT-C-003
+        - BE-CONTRACT-C-004
         - BE-TEST-C-001
         - BE-ROUTE-C-001
         - BE-SIZE-C-001
+        - BE-DUP-C-001
+        - BE-DUP-C-002
+        - BE-DUP-C-003
       metrics:
         - BE-STRUCT-M-001
         - BE-DEP-M-001

@@ -1,10 +1,9 @@
 rule_id: BE-ERR-C-001-no-http-exception-in-service
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: error-handling
 visibility: agent-visible
-severity: error
 
 description: >
   Service layer must not throw NestJS HTTP exceptions directly.
@@ -12,19 +11,15 @@ description: >
   to HTTP responses.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "nestjs/no-http-exception-in-service"
+      - BE-ERR-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Service layer throws a NestJS HTTP exception directly.
-  Replace it with the unified AppException (or approved domain exception)
-  and map it to HTTP at the boundary layer.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: boundary-exception-leak

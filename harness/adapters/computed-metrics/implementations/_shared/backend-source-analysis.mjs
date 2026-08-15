@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
+import { isProductionSourcePath } from '../../../_shared/production-files.mjs';
 
 const HTTP_DECORATORS = new Set(['Get', 'Post', 'Put', 'Patch', 'Delete', 'Options', 'Head', 'All']);
 const MAPPED_TYPE_CALLS = new Set(['PartialType', 'PickType', 'OmitType', 'IntersectionType']);
@@ -222,7 +223,11 @@ export function analyzeDtoValidatorCoverage(projectRoot, config = {}) {
     for (const dtoRoot of dtoRoots) {
         const absoluteRoot = path.resolve(projectRoot, dtoRoot);
 
-        for (const filePath of listFiles(absoluteRoot, (candidate) => /(^|\/)dto\/.+\.ts$/.test(toPosixPath(candidate)))) {
+        for (const filePath of listFiles(
+            absoluteRoot,
+            (candidate) => /(^|\/)dto\/.+\.ts$/.test(toPosixPath(candidate))
+                && isProductionSourcePath(candidate),
+        )) {
             const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
             const { ast } = parseTypescriptFile(filePath);
             const validatorImports = collectClassValidatorImports(ast);
@@ -270,7 +275,8 @@ export function analyzeDtoValidatorCoverage(projectRoot, config = {}) {
 }
 
 function isRelevantMethodFile(filePath) {
-    return /\.(controller|service|repository)\.ts$/.test(filePath) && !/\.(spec|test)\.ts$/.test(filePath);
+    return /\.(controller|service|repository)\.ts$/.test(filePath)
+        && isProductionSourcePath(filePath);
 }
 
 export function analyzeMethodParameters(projectRoot, config = {}) {
@@ -372,7 +378,10 @@ export function analyzeRoutes(projectRoot, config = {}) {
     for (const root of controllerRoots) {
         const absoluteRoot = path.resolve(projectRoot, root);
 
-        for (const filePath of listFiles(absoluteRoot, (candidate) => /\.controller\.ts$/.test(candidate))) {
+        for (const filePath of listFiles(
+            absoluteRoot,
+            (candidate) => /\.controller\.ts$/.test(candidate) && isProductionSourcePath(candidate),
+        )) {
             const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
             const { ast } = parseTypescriptFile(filePath);
             const classes = extractClassDeclarations(ast);

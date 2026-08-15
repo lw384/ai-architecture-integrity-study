@@ -1,0 +1,23 @@
+rule_id: BE-DUP-C-001-single-resource-owner
+version: 0.1.0
+tier: 1
+layer: constraints
+category: duplication
+visibility: agent-visible
+
+description: >
+  Each normalized business resource has one module, controller route, and entity-table
+  owner. URI versions are tracked independently and configured aliases are normalized.
+
+evidence_sources:
+  - adapter: backend-static
+    tool_rule_ids: [BE-DUP-C-001]
+    match_condition:
+      event_type: backend_architecture_violation
+    aggregation: any
+
+agent_facing_message: "{message}"
+
+research_tags:
+  drift_type: duplication
+  pattern: competing-resource-owner

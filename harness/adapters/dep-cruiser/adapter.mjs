@@ -163,6 +163,22 @@ function buildArgs(configPath, adapterConfig = {}) {
     ];
 }
 
+function dependencyLocation(cwd, sourceFile, dependency) {
+    const filePath = path.resolve(cwd, sourceFile);
+    if (!fs.existsSync(filePath)) return { line: null, column: null };
+    const lines = fs.readFileSync(filePath, 'utf8').split('\n');
+    const needles = [dependency.module, dependency.resolved]
+        .filter(Boolean)
+        .flatMap((value) => [value, path.basename(value).replace(/\.[^.]+$/, '')]);
+
+    for (let index = 0; index < lines.length; index += 1) {
+        const column = needles.map((needle) => lines[index].indexOf(needle)).find((value) => value >= 0);
+        if (column !== undefined) return { line: index + 1, column: column + 1 };
+    }
+
+    return { line: null, column: null };
+}
+
 export async function runAdapter({ targetDir, adapterConfig, toolVersion }) {
     const startTime = Date.now();
     const timeout = adapterConfig.timeout_ms || 60000;
@@ -178,6 +194,7 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion }) {
     const duration_ms = Date.now() - startTime;
 
     const execution_meta = {
+        status: 'ok',
         duration_ms,
         warnings: [],
         cwd,
@@ -194,12 +211,14 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion }) {
 
     try {
         if (result.isTimeout) {
+            execution_meta.status = 'error';
             execution_meta.exit_code = 'timeout';
             execution_meta.warnings.push(`dep-cruiser execution timed out after ${timeout}ms.`);
             return { raw_output: null, normalized_events, execution_meta };
         }
 
         if (result.code !== 0 && !result.stdout.trim().startsWith('{')) {
+            execution_meta.status = 'error';
             execution_meta.exit_code = result.code;
             execution_meta.warnings.push(`Command failed with code ${result.code}: ${result.stderr}`);
             return { raw_output: null, normalized_events, execution_meta };
@@ -209,6 +228,7 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion }) {
         try {
             raw_output = JSON.parse(result.stdout);
         } catch (err) {
+            execution_meta.status = 'error';
             execution_meta.exit_code = 'parse_error';
             execution_meta.warnings.push(`Failed to parse dep-cruiser JSON output: ${err.message}`);
             return { raw_output: null, normalized_events, execution_meta };
@@ -217,10 +237,23 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion }) {
         execution_meta.exit_code = 0;
 
         const modules = raw_output.modules || [];
+        const emittedCycles = new Set();
         for (const mod of modules) {
             for (const dep of (mod.dependencies || [])) {
                 if (dep.rules && dep.rules.length > 0) {
                     for (const rule of dep.rules) {
+                        if (rule.name === 'BE-DEP-C-004-no-circular') {
+                            const cycleMembers = [
+                                mod.source,
+                                dep.resolved,
+                                ...(dep.cycle ?? []).map((entry) => entry.name ?? entry),
+                            ].filter(Boolean).sort();
+                            const cycleKey = `${rule.name}:${[...new Set(cycleMembers)].join('|')}`;
+                            if (emittedCycles.has(cycleKey)) continue;
+                            emittedCycles.add(cycleKey);
+                        }
+
+                        const dependencyLoc = dependencyLocation(cwd, mod.source, dep);
                         normalized_events.push({
                             event_type: 'dependency_edge_violation',
                             source_tool: 'dep-cruiser',
@@ -228,8 +261,8 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion }) {
                             source_rule_id: rule.name,
                             location: {
                                 file: mod.source,
-                                line: dep.line || null,
-                                column: null,
+                                line: dep.line || dependencyLoc.line,
+                                column: dependencyLoc.column,
                             },
                             payload: {
                                 from_module: mod.source,

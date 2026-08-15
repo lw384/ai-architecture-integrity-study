@@ -19,7 +19,11 @@ module.exports = {
 			severity: 'error',
 			comment: 'Disallow circular dependencies in the subject graph.',
 			from: {},
-			to: { circular: true },
+			to: {
+				circular: true,
+				dependencyTypesNot: ['type-only'],
+				viaOnly: { dependencyTypesNot: ['type-only'] },
+			},
 		},
 		{
 			name: 'BE-DOM-C-001-no-cross-module-deep-import',

@@ -1,10 +1,9 @@
 rule_id: BE-DOM-C-001-no-cross-module-deep-import
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: module-boundary
 visibility: agent-visible
-severity: error
 
 description: >
   Cross-module imports must go through module entry files only.
@@ -13,18 +12,15 @@ description: >
   repository/entity/dto) are forbidden across module boundaries.
 
 evidence_sources:
-  - adapter: dep-cruiser
+  - adapter: backend-static
     tool_rule_ids:
-      - "BE-DOM-C-001-no-cross-module-deep-import"
+      - BE-DOM-C-001
     match_condition:
-      event_type: dependency_edge_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Cross-module deep import detected. Import from the target module entry file
-  (*.module.ts or index.ts) instead of internal implementation files.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: boundary-bypass

@@ -51,11 +51,10 @@ function collectToolVersions(resolvedRulepacks) {
 
 // Convert a scope's detailed constraint result into the flattened layer view.
 function toConstraintLayerEntry(scope, rulepackVersion, constraints) {
-  const statusMap = { ok: 'pass', fail: 'fail', error: 'error' };
   return {
     name: `${scope}:constraints`,
     version: rulepackVersion,
-    status: statusMap[constraints.status] ?? 'error',
+    status: constraints.status,
     findings: constraints.findings.map((finding) => finding.message),
     raw_artifact_path: `scopes/${scope}/constraints.json`,
   };
@@ -94,20 +93,11 @@ function countScopeTypes(scopeResults) {
   }, {});
 }
 
-// Separate analyzer reliability from architecture compliance.
-function deriveStatuses(scopeResults) {
+// Derive analyzer reliability without interpreting findings as execution errors.
+function deriveExecutionStatus(scopeResults) {
   const statuses = scopeResults.map((scope) => scope.status);
   const hasExecutionError = statuses.includes('error');
-  const hasComplianceFailure = statuses.includes('failed');
-
-  return {
-    executionStatus: hasExecutionError ? 'partial' : 'completed',
-    complianceStatus: hasExecutionError
-      ? 'unknown'
-      : hasComplianceFailure
-        ? 'failed'
-        : 'passed',
-  };
+  return hasExecutionError ? 'partial' : 'completed';
 }
 
 // Convert layer-level execution errors into the Evaluation Schema error list.
@@ -152,7 +142,7 @@ function applyBaselineMetricDeltas(scopeResults, cumulativeDeltas) {
   }
 }
 
-// Derive one scope status with execution errors taking precedence over findings.
+// Derive one scope's execution reliability without interpreting layer findings.
 function deriveScopeStatus({ constraints, metrics, judgments }) {
   const layerStatuses = [
     constraints.status,
@@ -163,7 +153,7 @@ function deriveScopeStatus({ constraints, metrics, judgments }) {
   if (layerStatuses.includes('error')) {
     return 'error';
   }
-  return layerStatuses.includes('fail') ? 'failed' : 'completed';
+  return 'completed';
 }
 
 /**
@@ -315,9 +305,8 @@ async function runEvaluation(runtimeOptions) {
     run_id: runId,
     post_commit: runtimeOptions.postCommit,
   };
-  const statuses = deriveStatuses(scopeResults);
   const evaluationResult = {
-    schema_version: '0.2.0',
+    schema_version: '0.3.0',
     evaluation_profile_hash: evaluationProfile.hash,
     run_id: runId,
     trajectory_id: runtimeOptions.trajectoryId ?? 'traj_pending',
@@ -344,8 +333,7 @@ async function runEvaluation(runtimeOptions) {
     },
     deltas,
     duration_ms: Date.now() - startedAt,
-    execution_status: statuses.executionStatus,
-    compliance_status: statuses.complianceStatus,
+    execution_status: deriveExecutionStatus(scopeResults),
     comparison_status: 'valid',
     errors: collectErrors(scopeResults),
   };

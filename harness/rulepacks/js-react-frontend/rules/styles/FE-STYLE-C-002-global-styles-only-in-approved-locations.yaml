@@ -3,7 +3,6 @@ version: 0.1.0
 layer: constraints
 category: styling
 visibility: agent-visible
-severity: warning
 
 description: >
   Global stylesheet imports must resolve to approved shared style locations
@@ -22,5 +21,4 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: soft_constraint
   erosion_dimension: style-locality

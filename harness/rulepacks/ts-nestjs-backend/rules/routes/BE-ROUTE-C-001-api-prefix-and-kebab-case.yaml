@@ -1,28 +1,24 @@
 rule_id: BE-ROUTE-C-001-api-prefix-and-kebab-case
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: routing
 visibility: agent-visible
-severity: error
 
 description: >
   Public backend routes must resolve under the global /api prefix and use kebab-case
   path segments in controller and method decorators.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "nestjs/api-prefix-and-kebab-routes"
+      - BE-ROUTE-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Backend routes must use the global /api prefix and kebab-case path segments.
-  Fix main.ts or the relevant controller/method route decorators.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: route-convention-drift

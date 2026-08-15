@@ -1,29 +1,25 @@
 rule_id: BE-CONTRACT-C-002-request-dto-uses-class-validator
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: data-contract
 visibility: agent-visible
-severity: error
 
 description: >
-  Request DTO properties must declare at least one class-validator decorator.
-  Response DTOs are excluded. PartialType-derived DTOs are ignored because they
-  inherit validation behavior from their source DTO.
+  DTOs used by @Body, @Query, @Param, or @Headers controller parameters must
+  declare class-validator decorators. Mapped DTOs inherit their base validation,
+  while newly declared fields are checked directly.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "nestjs/request-dto-must-use-validators"
+      - BE-CONTRACT-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Request DTO fields must be validated with class-validator decorators.
-  Add at least one validator to each request DTO property, or derive from a validated base DTO.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: unvalidated-request-dto

@@ -3,7 +3,6 @@ version: 0.1.0
 layer: constraints
 category: cross-change-propagation
 visibility: agent-visible
-severity: error
 
 description: >
   API-facing backend or frontend adapter changes must propagate to the
@@ -25,5 +24,4 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   erosion_dimension: change-propagation-completeness

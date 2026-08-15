@@ -1,10 +1,9 @@
 rule_id: BE-DEP-C-002-infrastructure-isolation
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: dependency-architecture
 visibility: agent-visible
-severity: error
 
 description: >
   Infrastructure layers (common, core) must remain independent of business modules.
@@ -15,19 +14,15 @@ description: >
   - imports from src/modules/** into src/core/**
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "BE-DEP-C-002"
+      - BE-DEP-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Infrastructure utilities and core setup must not import from business modules.
-  Keep common/ and core/ independent. Extract common patterns into these layers,
-  or place module-specific setup inside the module itself.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   layer_violation: infrastructure

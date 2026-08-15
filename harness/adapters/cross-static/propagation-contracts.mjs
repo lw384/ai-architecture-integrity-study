@@ -1,6 +1,12 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+    isGeneratedSourcePath,
+    isProductionSourcePath,
+    isStorySourcePath,
+    isTestSourcePath,
+} from '../_shared/production-files.mjs';
 
 function normalizePath(value) {
     return value.split(path.sep).join('/');
@@ -55,6 +61,10 @@ function listFiles(rootDir, predicate, files = []) {
     }
 
     return files;
+}
+
+function listProductionFiles(rootDir, predicate) {
+    return listFiles(rootDir, (filePath) => isProductionSourcePath(filePath) && predicate(filePath));
 }
 
 function runGit(repoRoot, args) {
@@ -139,7 +149,7 @@ function collectResourceInventory(workspaceRoot, config) {
     const testRoots = Array.isArray(config.test_roots) ? config.test_roots : ['backend/src', 'backend/test', 'frontend/src'];
 
     for (const root of controllerRoots) {
-        const files = listFiles(path.resolve(workspaceRoot, root), (filePath) => /\.controller\.ts$/.test(filePath));
+        const files = listProductionFiles(path.resolve(workspaceRoot, root), (filePath) => /\.controller\.ts$/.test(filePath));
 
         for (const filePath of files) {
             const relativePath = normalizePath(path.relative(workspaceRoot, filePath));
@@ -154,7 +164,7 @@ function collectResourceInventory(workspaceRoot, config) {
     }
 
     for (const root of dtoRoots) {
-        const files = listFiles(path.resolve(workspaceRoot, root), (filePath) => /\/dto\/.+\.(ts|tsx|js|jsx)$/.test(normalizePath(filePath)));
+        const files = listProductionFiles(path.resolve(workspaceRoot, root), (filePath) => /\/dto\/.+\.(ts|tsx|js|jsx)$/.test(normalizePath(filePath)));
 
         for (const filePath of files) {
             const relativePath = normalizePath(path.relative(workspaceRoot, filePath));
@@ -169,7 +179,7 @@ function collectResourceInventory(workspaceRoot, config) {
     }
 
     for (const root of frontendApiRoots) {
-        const files = listFiles(path.resolve(workspaceRoot, root), (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
+        const files = listProductionFiles(path.resolve(workspaceRoot, root), (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
 
         for (const filePath of files) {
             const relativePath = normalizePath(path.relative(workspaceRoot, filePath));
@@ -184,7 +194,7 @@ function collectResourceInventory(workspaceRoot, config) {
     }
 
     for (const root of frontendUiRoots) {
-        const files = listFiles(path.resolve(workspaceRoot, root), (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
+        const files = listProductionFiles(path.resolve(workspaceRoot, root), (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
 
         for (const filePath of files) {
             const relativePath = normalizePath(path.relative(workspaceRoot, filePath));
@@ -199,7 +209,13 @@ function collectResourceInventory(workspaceRoot, config) {
     }
 
     for (const root of testRoots) {
-        const files = listFiles(path.resolve(workspaceRoot, root), (filePath) => /\.(spec|test)\.(js|jsx|ts|tsx)$/.test(filePath));
+        const files = listFiles(
+            path.resolve(workspaceRoot, root),
+            (filePath) => isTestSourcePath(filePath)
+                && !isStorySourcePath(filePath)
+                && !isGeneratedSourcePath(filePath)
+                && /\.(js|jsx|ts|tsx)$/.test(filePath),
+        );
 
         for (const filePath of files) {
             const relativePath = normalizePath(path.relative(workspaceRoot, filePath));
@@ -220,6 +236,22 @@ function collectResourceInventory(workspaceRoot, config) {
 
 function classifyChangedFile(relativePath, resourceStates, globalState) {
     const normalizedPath = normalizePath(relativePath);
+
+    if (isStorySourcePath(normalizedPath) || isGeneratedSourcePath(normalizedPath)) {
+        return;
+    }
+
+    if (isTestSourcePath(normalizedPath)) {
+        const resource = normalizedPath.startsWith('frontend/')
+            ? frontendTestResource(normalizedPath)
+            : backendTestResource(normalizedPath);
+
+        if (resource) {
+            ensureResourceState(resourceStates, resource).changedTests.push(normalizedPath);
+        }
+
+        return;
+    }
 
     if (/^backend\/src\/modules\/[^/]+\/.+\.controller\.ts$/.test(normalizedPath)) {
         const resource = backendModuleResource(normalizedPath);
@@ -267,15 +299,6 @@ function classifyChangedFile(relativePath, resourceStates, globalState) {
         globalState.changedRouteFiles.push(normalizedPath);
     }
 
-    if (/\.(spec|test)\.(js|jsx|ts|tsx)$/.test(normalizedPath)) {
-        const resource = normalizedPath.startsWith('frontend/')
-            ? frontendTestResource(normalizedPath)
-            : backendTestResource(normalizedPath);
-
-        if (resource) {
-            ensureResourceState(resourceStates, resource).changedTests.push(normalizedPath);
-        }
-    }
 }
 
 function uniqueSorted(values) {

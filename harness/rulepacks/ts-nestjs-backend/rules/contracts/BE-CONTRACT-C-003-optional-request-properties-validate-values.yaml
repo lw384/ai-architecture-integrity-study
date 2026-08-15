@@ -1,0 +1,23 @@
+rule_id: BE-CONTRACT-C-003-optional-request-properties-validate-values
+version: 0.1.0
+tier: 1
+layer: constraints
+category: data-contract
+visibility: agent-visible
+
+description: >
+  Optional request properties created by ?, @IsOptional(), or mapped types must
+  validate supplied values. Optionality decorators alone are not value validators.
+
+evidence_sources:
+  - adapter: backend-static
+    tool_rule_ids: [BE-CONTRACT-C-003]
+    match_condition:
+      event_type: backend_architecture_violation
+    aggregation: any
+
+agent_facing_message: "{message}"
+
+research_tags:
+  drift_type: erosion
+  pattern: optional-without-value-validator

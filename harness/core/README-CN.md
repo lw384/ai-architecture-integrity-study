@@ -75,8 +75,8 @@ harness/core/
 7. 构建规范化 baseline、pre、post 快照。
 8. 计算局部与累计 delta。
 9. 把统一计算的 baseline delta 回填到 scope metric 结果。
-10. 分别推导执行状态与合规状态。
-11. 校验完整的 v0.2 artifact 并原子写入。
+10. 推导执行状态；Constraint 通过与否由局部 introduced findings 直接表达。
+11. 校验完整的 v0.3 artifact 并原子写入。
 
 Python 编排层对应的 trajectory 是：
 
@@ -129,7 +129,7 @@ Workspace 与 pipeline 评估使用 `trajectory`。在 Node 边界，`--baseline
 
 每个 comparison artifact 必须满足：
 
-- 是符合 Evaluation Schema v0.2 的合法 JSON；
+- 是符合 Evaluation Schema v0.3 的合法 JSON；
 - `execution_status: completed`；
 - `comparison_status: valid`；
 - 与当前评估拥有相同的 `evaluation_profile_hash`；
@@ -176,17 +176,16 @@ Constraint finding 的规范化指纹由 scope、rule ID、source rule ID、loca
 
 所有 scope finding 都通过同一条路径纳入比较。绝对 workspace 前缀会被规范化，因此 E0 与独立 session 中的同一逻辑 finding 会保持 unchanged。
 
-## 6. 状态模型
+## 6. 状态与 Constraint 判定模型
 
-Evaluation Schema v0.2 把三个概念明确分离：
+Evaluation Schema v0.3 只保存执行可靠性与比较有效性：
 
 | 字段 | 取值 | 含义 |
 | --- | --- | --- |
 | `execution_status` | `completed`、`partial`、`failed` | Analyzer 是否可靠执行完成。 |
-| `compliance_status` | `passed`、`failed`、`unknown` | 被评估架构是否通过规则。 |
 | `comparison_status` | `valid`、`invalid` | Comparison 输入与 delta 是否可信。 |
 
-Baseline 完全可以同时是 `execution_status: completed` 与 `compliance_status: failed`：这表示 Harness 正常运行并发现了已有违规，并不会使 E0 无效。Analyzer error 会产生 `partial` execution 和 `unknown` compliance；这种 artifact 不能作为下一任务的 pre 输入。
+Constraint 是二元规则：遵守时没有 finding，违反时产生 finding；finding 不区分 warning/error。Constraint layer 的 `ok/error` 与 scope 的 `completed/error` 只描述执行可靠性，不描述规则是否遵守。顶层不保存 `compliance_status`。只有在 `execution_status === "completed"` 时，当前修改的 Constraint 判定才可直接派生：`deltas.run_local.constraints.introduced_count === 0` 表示通过，大于 `0` 表示未通过。Baseline 使用 self comparison，因此 introduced count 必须为 `0`；已有 finding 仍会保存在绝对结果中，但不会被误判为本次新增违规。Analyzer error 会产生 `partial` execution；这种 artifact 不能作为下一任务的 pre 输入。
 
 `harness_execution.json` 中的 Python `harness_status` 仍表示进程级状态。Node 非零退出或输出无效时，它会是 `failure`。
 

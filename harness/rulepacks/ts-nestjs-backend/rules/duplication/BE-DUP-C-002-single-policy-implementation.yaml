@@ -1,0 +1,23 @@
+rule_id: BE-DUP-C-002-single-policy-implementation
+version: 0.1.0
+tier: 1
+layer: constraints
+category: duplication
+visibility: agent-visible
+
+description: >
+  Deterministic policy constants and guard/predicate implementations must have one
+  authoritative implementation. Entry points should delegate instead of copying it.
+
+evidence_sources:
+  - adapter: backend-static
+    tool_rule_ids: [BE-DUP-C-002]
+    match_condition:
+      event_type: backend_architecture_violation
+    aggregation: any
+
+agent_facing_message: "{message}"
+
+research_tags:
+  drift_type: duplication
+  pattern: competing-policy-implementation

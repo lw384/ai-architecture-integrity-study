@@ -1,28 +1,24 @@
 rule_id: BE-SIZE-C-001-max-method-parameters
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: size-complexity
 visibility: agent-visible
-severity: error
 
 description: >
   Production controller, service, and repository methods must not exceed three
   direct parameters. Constructors and test files are excluded.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "nestjs/max-method-parameters"
+      - BE-SIZE-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Production methods must have at most three direct parameters.
-  Collapse related inputs into a DTO or parameter object when the signature grows.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: wide-method-signature

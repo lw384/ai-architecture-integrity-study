@@ -1,10 +1,9 @@
 rule_id: BE-DEP-C-001-intra-module-layering
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: dependency-architecture
 visibility: agent-visible
-severity: error
 
 description: >
   Enforce strict layering within business modules to maintain clear separation of concerns.
@@ -16,20 +15,15 @@ description: >
   Expected flow: HTTP Transport (Controller) → Business Logic (Service) → Data Access (Repository) → Data Model (Entity)
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "BE-DEP-C-001"
+      - BE-DEP-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Module internal layers must follow strict dependency direction:
-  Controllers → Services → Repositories → Entities.
-  Do not violate this hierarchy. If you need shared logic between controllers, move it to a service.
-  If services need data, use repositories. Entities must be pure data models with no imports.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: layer-violation

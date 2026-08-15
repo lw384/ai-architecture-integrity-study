@@ -3,7 +3,6 @@ version: 0.1.0
 layer: constraints
 category: routing
 visibility: agent-visible
-severity: warning
 
 description: >
   Route definitions must be centralized under src/routes to keep route topology
@@ -23,5 +22,4 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: soft_constraint
   erosion_dimension: route-locality

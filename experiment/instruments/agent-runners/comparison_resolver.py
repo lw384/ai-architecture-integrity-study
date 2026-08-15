@@ -9,7 +9,7 @@ BASELINE_REFS = frozenset({"baseline", "baseline-with-memory"})
 
 
 def load_evaluation(path: Path) -> dict:
-    """Read one complete v0.2 artifact suitable for trajectory comparison."""
+    """Read one complete v0.3 artifact suitable for trajectory comparison."""
     if not path.is_file():
         raise FileNotFoundError(f"Evaluation artifact not found: {path}")
 
@@ -21,8 +21,8 @@ def load_evaluation(path: Path) -> dict:
     if not isinstance(data, dict):
         raise ValueError(f"Evaluation artifact must contain a JSON object: {path}")
 
-    if data.get("schema_version") != "0.2.0":
-        raise ValueError(f"Evaluation artifact is not schema v0.2.0: {path}")
+    if data.get("schema_version") != "0.3.0":
+        raise ValueError(f"Evaluation artifact is not schema v0.3.0: {path}")
     if data.get("execution_status") != "completed":
         raise ValueError(f"Evaluation artifact is not complete: {path}")
     if data.get("comparison_status") != "valid":

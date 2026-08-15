@@ -124,7 +124,7 @@ reports/experiments/<session_id>/
 | `task_manifest.yaml` | 任务起点 ref/SHA、完成 commit/tag、comparison artifact 引用和 Harness 文件索引。 |
 | `manifest.json` | 提供给 Harness 的任务、revision、comparison 模式和已解析 comparison 输入。 |
 | `harness_execution.json` | Harness 命令、退出码、超时状态、stdout 和 stderr。 |
-| `harness_evaluation.json` | 统一的 `scopes[]` 结果、局部/累计 delta、artifact 标识以及独立的 execution/compliance/comparison 状态。 |
+| `harness_evaluation.json` | 统一的 `scopes[]` 结果、局部/累计 delta、artifact 标识以及 execution/comparison 状态。Constraint 结果由局部 introduced findings 派生。 |
 
 如果 agent 或 Harness 中途失败，已有的 workspace 和任务目录会保留以便诊断。再次写入同一任务归档或覆盖同名 `task-Tn-done` tag 时，必须显式传入 `--force`。
 
@@ -313,4 +313,4 @@ python3 experiment/instruments/agent-runners/run_harness.py \
   --force
 ```
 
-进程成功与否查看 `harness_execution.json` 中的 `harness_status` 和 `exit_code`；在 `harness_evaluation.json` 中分别查看 `execution_status`、`compliance_status` 和 `comparison_status`。
+进程成功与否查看 `harness_execution.json` 中的 `harness_status` 和 `exit_code`；在 `harness_evaluation.json` 中查看 `execution_status` 和 `comparison_status`。当 execution completed 时，`deltas.run_local.constraints.introduced_count == 0` 表示本次 Constraint 评估通过，大于 `0` 表示未通过。

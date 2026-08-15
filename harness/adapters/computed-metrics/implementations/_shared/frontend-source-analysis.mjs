@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
+import { isProductionSourcePath } from '../../../_shared/production-files.mjs';
 
 export function toPosixPath(value) {
     return value.split(path.sep).join('/');
@@ -85,7 +86,10 @@ function collectFrontendFiles(projectRoot, config = {}) {
     for (const sourceRoot of sourceRoots) {
         const absoluteRoot = path.resolve(projectRoot, sourceRoot);
 
-        for (const filePath of listFiles(absoluteRoot, (candidate) => exts.has(path.extname(candidate)))) {
+        for (const filePath of listFiles(
+            absoluteRoot,
+            (candidate) => exts.has(path.extname(candidate)) && isProductionSourcePath(candidate),
+        )) {
             files.push(filePath);
         }
     }
@@ -311,7 +315,10 @@ export function analyzeRoutes(projectRoot, config = {}) {
     const routesRoot = path.resolve(projectRoot, config.routes_root ?? 'src/routes');
     const details = [];
 
-    for (const filePath of listFiles(routesRoot, (candidate) => /\.(js|jsx|ts|tsx)$/.test(candidate))) {
+    for (const filePath of listFiles(
+        routesRoot,
+        (candidate) => /\.(js|jsx|ts|tsx)$/.test(candidate) && isProductionSourcePath(candidate),
+    )) {
         const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
         const { ast } = parseFrontendFile(filePath);
 
@@ -416,7 +423,10 @@ export function analyzeGlobalStyleRuleCount(projectRoot, config = {}) {
     for (const styleRoot of styleRoots) {
         const absoluteRoot = path.resolve(projectRoot, styleRoot);
 
-        for (const filePath of listFiles(absoluteRoot, (candidate) => /\.(css|scss|sass)$/.test(candidate))) {
+        for (const filePath of listFiles(
+            absoluteRoot,
+            (candidate) => /\.(css|scss|sass)$/.test(candidate) && isProductionSourcePath(candidate),
+        )) {
             const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
             const content = fs.readFileSync(filePath, 'utf8');
             const ruleCount = (content.match(/\{/g) ?? []).length;

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
+import { isProductionSourcePath } from '../_shared/production-files.mjs';
 
 function normalizePath(value) {
     return value.split(path.sep).join('/');
@@ -15,11 +16,14 @@ function listFiles(rootDir, predicate, files = []) {
         const entryPath = path.join(rootDir, entry.name);
 
         if (entry.isDirectory()) {
+            if (!isProductionSourcePath(entryPath)) {
+                continue;
+            }
             listFiles(entryPath, predicate, files);
             continue;
         }
 
-        if (predicate(entryPath)) {
+        if (isProductionSourcePath(entryPath) && predicate(entryPath)) {
             files.push(entryPath);
         }
     }
@@ -515,7 +519,7 @@ function collectDefinitions(workspaceRoot, roots, side) {
 
     for (const root of roots) {
         const absoluteRoot = path.resolve(workspaceRoot, root);
-        const files = listFiles(absoluteRoot, (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath) && !/\.spec\./.test(filePath));
+        const files = listFiles(absoluteRoot, (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
 
         for (const filePath of files) {
             const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));

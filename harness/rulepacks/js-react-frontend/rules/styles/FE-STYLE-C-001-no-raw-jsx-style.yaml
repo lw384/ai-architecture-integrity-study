@@ -3,7 +3,6 @@ version: 0.1.0
 layer: constraints
 category: styling
 visibility: agent-visible
-severity: warning
 
 description: >
   React components should not use raw JSX style props. Prefer MUI sx, styled,
@@ -23,5 +22,4 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: soft_constraint
   erosion_dimension: styling-discipline

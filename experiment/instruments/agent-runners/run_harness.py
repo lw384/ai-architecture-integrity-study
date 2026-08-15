@@ -18,11 +18,27 @@ HARNESS_OUTPUT_FILES = (
 
 
 def format_evaluation_status(evaluation: dict) -> str:
-    """Render the three independent v0.2 evaluation status dimensions."""
+    """Render v0.3 execution status and the finding-derived constraint result."""
+    execution_status = evaluation.get("execution_status", "unknown")
+    introduced_count = (
+        evaluation.get("deltas", {})
+        .get("run_local", {})
+        .get("constraints", {})
+        .get("introduced_count")
+    )
+    constraint_result = (
+        "indeterminate"
+        if execution_status != "completed"
+        else "passed"
+        if introduced_count == 0
+        else "failed"
+        if isinstance(introduced_count, int)
+        else "unknown"
+    )
     return ", ".join(
         [
-            f"execution={evaluation.get('execution_status', 'unknown')}",
-            f"compliance={evaluation.get('compliance_status', 'unknown')}",
+            f"execution={execution_status}",
+            f"constraints={constraint_result} (introduced={introduced_count})",
             f"comparison={evaluation.get('comparison_status', 'unknown')}",
         ]
     )

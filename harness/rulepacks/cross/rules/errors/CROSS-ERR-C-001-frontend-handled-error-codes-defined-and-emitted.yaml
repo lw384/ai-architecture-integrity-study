@@ -3,7 +3,6 @@ version: 0.1.0
 layer: constraints
 category: cross-error-contract
 visibility: agent-visible
-severity: error
 
 description: >
   Every business error code that frontend code handles explicitly must exist in
@@ -24,5 +23,4 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   erosion_dimension: cross-error-alignment

@@ -1,8 +1,4 @@
 {
   "entity_file_pattern": "(^|/)src/modules?/.*\\.entity\\.ts$",
-  "migration_file_pattern": "(^|/)src/core/database/migrations?/.*\\.(ts|js)$",
-  "schema_change_patterns": [
-    "^[+-]\\s*@(Column|PrimaryGeneratedColumn|PrimaryColumn|CreateDateColumn|UpdateDateColumn|DeleteDateColumn|VersionColumn|ManyToOne|OneToMany|OneToOne|ManyToMany|JoinColumn|JoinTable|RelationId)\\b",
-    "^[+-]\\s*(public\\s+|private\\s+|protected\\s+|readonly\\s+)*[A-Za-z_][A-Za-z0-9_]*\\??\\s*:"
-  ]
+  "migration_file_pattern": "(^|/)src/core/database/migrations?/.*\\.(ts|js)$"
 }

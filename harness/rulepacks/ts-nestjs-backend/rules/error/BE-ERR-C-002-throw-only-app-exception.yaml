@@ -1,10 +1,9 @@
 rule_id: BE-ERR-C-002-throw-only-app-exception
-version: 0.1.0
+version: 0.2.0
 tier: 1
 layer: constraints
 category: error-handling
 visibility: agent-visible
-severity: error
 
 description: >
   Service layer must throw only the unified AppException class
@@ -12,19 +11,15 @@ description: >
   This keeps error semantics consistent across modules.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: backend-static
     tool_rule_ids:
-      - "nestjs/throw-only-app-exception"
+      - BE-ERR-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: backend_architecture_violation
     aggregation: any
 
-agent_facing_message: >
-  Service layer threw an exception type outside the allowed set.
-  Throw AppException (or an explicitly approved class) to keep
-  error semantics consistent.
+agent_facing_message: "{message}"
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   pattern: exception-type-divergence

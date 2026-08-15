@@ -1,0 +1,23 @@
+rule_id: BE-CONTRACT-C-004-validation-pipe-whitelisting
+version: 0.1.0
+tier: 1
+layer: constraints
+category: data-contract
+visibility: agent-visible
+
+description: >
+  The global ValidationPipe or APP_PIPE equivalent must enable whitelist: true
+  and forbidNonWhitelisted: true. Constants and local options factories are resolved.
+
+evidence_sources:
+  - adapter: backend-static
+    tool_rule_ids: [BE-CONTRACT-C-004]
+    match_condition:
+      event_type: backend_architecture_violation
+    aggregation: any
+
+agent_facing_message: "{message}"
+
+research_tags:
+  drift_type: erosion
+  pattern: request-whitelisting-disabled

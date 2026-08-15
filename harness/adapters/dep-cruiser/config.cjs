@@ -5,7 +5,9 @@
 module.exports = {
     options: {
         doNotFollow: { path: 'node_modules' },
-        exclude: { path: '\.(spec|test)\.(js|ts)$|test/utils|dist|build' },
+        exclude: {
+            path: '(?:^|/)(?:__tests__|tests?|stories|generated|__generated__)(?:/|$)|\\.(?:spec|test|story|stories|generated)\\.(?:[cm]?[jt]sx?)$|(?:^|/)(?:dist|build)(?:/|$)',
+        },
     },
     forbidden: [],
 };

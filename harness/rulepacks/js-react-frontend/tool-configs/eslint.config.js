@@ -1,8 +1,15 @@
 import { architecturePlugin } from './rules/index.js';
+import { PRODUCTION_IGNORE_GLOBS } from '../../../adapters/_shared/production-files.mjs';
 
 export default [
     {
-        ignores: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**'],
+        ignores: [
+            'node_modules/**',
+            'dist/**',
+            'build/**',
+            'coverage/**',
+            ...PRODUCTION_IGNORE_GLOBS,
+        ],
     },
     {
         files: ['**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],

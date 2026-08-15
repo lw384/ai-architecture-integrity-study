@@ -3,7 +3,6 @@ version: 0.2.0
 layer: constraints
 category: component-structure
 visibility: agent-visible
-severity: warning
 
 description: >
   Business-logic JSX nesting should stay within 5 levels to avoid unreadable
@@ -47,6 +46,5 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: soft_constraint
   erosion_dimension: component-complexity
   methodological_note: "v0.2.0 — counts business-layer depth only, ignoring transparent wrappers"

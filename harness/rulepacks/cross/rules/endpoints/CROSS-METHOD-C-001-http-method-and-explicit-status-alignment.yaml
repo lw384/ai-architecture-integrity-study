@@ -3,7 +3,6 @@ version: 0.1.0
 layer: constraints
 category: cross-endpoint-contract
 visibility: agent-visible
-severity: error
 
 description: >
   Frontend HTTP methods must match backend endpoints. When frontend code
@@ -26,5 +25,4 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: hard_constraint
   erosion_dimension: cross-method-status-alignment

@@ -135,7 +135,6 @@ def append_constraint_rows(
                 "strategy": record["strategy"],
                 "scope_id": scope_id,
                 "rule_id": finding.get("rule_id") or "unknown-rule",
-                "severity": finding.get("severity") or "unknown",
                 "file": finding_file(finding, scope_id),
                 "message": finding.get("message") or "",
             }
@@ -150,7 +149,7 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
 
     for path in paths:
         data = json.loads(path.read_text(encoding="utf-8"))
-        if data.get("schema_version") != "0.2.0":
+        if data.get("schema_version") != "0.3.0":
             raise ValueError(f"Unsupported evaluation schema in {path}")
         relative = path.relative_to(experiments_dir)
         session_id = relative.parts[0]
@@ -160,6 +159,23 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
         suffix = label_counts[(session_id, task_id)]
         evaluation_id = f"{session_id}/{task_id}" + (f"#{suffix}" if suffix > 1 else "")
         scopes = data.get("scopes") or []
+
+        execution_status = data.get("execution_status") or "unknown"
+        introduced_count = (
+            (data.get("deltas") or {})
+            .get("run_local", {})
+            .get("constraints", {})
+            .get("introduced_count")
+        )
+        constraint_result = (
+            "indeterminate"
+            if execution_status != "completed"
+            else "passed"
+            if introduced_count == 0
+            else "failed"
+            if isinstance(introduced_count, int)
+            else "unknown"
+        )
 
         record: dict[str, Any] = {
             "evaluation_id": evaluation_id,
@@ -171,8 +187,9 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
             "model": config.get("model") or "unknown",
             "strategy": config.get("strategy") or "unknown",
             "memory": bool(config.get("write_memory_md", False)),
-            "execution_status": data.get("execution_status") or "unknown",
-            "compliance_status": data.get("compliance_status") or "unknown",
+            "execution_status": execution_status,
+            "constraint_result": constraint_result,
+            "introduced_findings": introduced_count,
             "comparison_status": data.get("comparison_status") or "unknown",
             "duration_ms": data.get("duration_ms"),
             "backend_status": "none",
@@ -196,7 +213,7 @@ def load_data(paths: list[Path], experiments_dir: Path) -> tuple[list[dict[str, 
                 record[f"{scope_id}_status"] = scope_status
             if scope_type == "cross-stack":
                 record["cross_status"] = scope_status
-            if scope_status in {"error", "failed"}:
+            if scope_status == "error":
                 record["scope_errors"] += 1
 
             layers = scope.get("layers") or {}
@@ -436,7 +453,7 @@ def make_run_table(runs: list[dict[str, Any]]) -> str:
             f"<td>{e(run['session_label'])}</td><td>{e(run['task_id'])}</td>"
             f"<td>{e(run['agent'])} / {e(run['strategy'])}</td>"
             f"<td><span class='status status-{e(run['execution_status'])}'>{e(run['execution_status'])}</span></td>"
-            f"<td><span class='status status-{e(run['compliance_status'])}'>{e(run['compliance_status'])}</span></td>"
+            f"<td><span class='status status-{e(run['constraint_result'])}'>{e(run['constraint_result'])}</span></td>"
             f"<td><span class='status status-{e(run['comparison_status'])}'>{e(run['comparison_status'])}</span></td>"
             f"<td>{e(run['backend_status'])}</td><td>{e(run['frontend_status'])}</td><td>{e(run['cross_status'])}</td>"
             f"<td class='num'>{run['backend_findings']}</td><td class='num'>{run['frontend_findings']}</td>"
@@ -447,7 +464,7 @@ def make_run_table(runs: list[dict[str, Any]]) -> str:
     return (
         "<div class='table-wrap'><table><thead><tr>"
         "<th>Session</th><th>Task</th><th>Condition</th><th>Execution</th>"
-        "<th>Compliance</th><th>Comparison</th>"
+        "<th>Constraints</th><th>Comparison</th>"
         "<th>Backend</th><th>Frontend</th><th>Cross</th>"
         "<th>BE findings</th><th>FE findings</th><th>Cross findings</th>"
         "<th>Metric coverage</th><th>Metric errors</th><th>Runtime (s)</th>"
@@ -741,8 +758,8 @@ def main() -> None:
         "execution_status_counts": dict(
             Counter(row["execution_status"] for row in runs)
         ),
-        "compliance_status_counts": dict(
-            Counter(row["compliance_status"] for row in runs)
+        "constraint_result_counts": dict(
+            Counter(row["constraint_result"] for row in runs)
         ),
         "comparison_status_counts": dict(
             Counter(row["comparison_status"] for row in runs)

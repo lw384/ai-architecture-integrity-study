@@ -87,6 +87,8 @@ test('self comparison produces zero deltas', () => {
   });
 
   assert.equal(deltas.run_local.constraints.net_change, 0);
+  assert.equal(deltas.run_local.constraints.introduced_count, 0);
+  assert.equal(deltas.run_local.constraints.introduced_count === 0, true);
   assert.equal(deltas.run_local.constraints.unchanged_count, 1);
   assert.equal(deltas.run_local.metrics[0].delta, 0);
   assert.deepEqual(deltas.run_local, deltas.trajectory_cumulative);
@@ -107,6 +109,7 @@ test('constraint comparison preserves duplicate finding multiplicity', () => {
   });
 
   assert.equal(deltas.run_local.constraints.introduced_count, 1);
+  assert.equal(deltas.run_local.constraints.introduced_count === 0, false);
   assert.equal(deltas.run_local.constraints.resolved_count, 1);
   assert.equal(deltas.run_local.constraints.unchanged_count, 2);
   assert.equal(deltas.trajectory_cumulative.constraints.introduced_count, 2);
@@ -135,8 +138,8 @@ test('a missing source metric is unavailable instead of NaN', () => {
   assert.equal(deltas.run_local.metrics[0].delta, null);
 });
 
-test('Base, T0, and trajectory tasks share one semantic evaluation profile', () => {
-  const hashes = ['Base', 'T0', 'T1', 'T2', 'T3'].map(profileForTask);
+test('Base and trajectory tasks share one semantic evaluation profile', () => {
+  const hashes = ['Base', 'T1', 'T2', 'T3'].map(profileForTask);
   assert.equal(new Set(hashes).size, 1);
 });
 

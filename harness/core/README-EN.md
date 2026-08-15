@@ -75,8 +75,8 @@ The engine runs in this order:
 7. Build normalized baseline, pre, and post snapshots.
 8. Calculate local and cumulative deltas.
 9. Apply centrally calculated baseline deltas to scope metric results.
-10. Derive independent execution and compliance statuses.
-11. Validate the complete v0.2 artifact and write it atomically.
+10. Derive execution status; local introduced findings directly express the constraint decision.
+11. Validate the complete v0.3 artifact and write it atomically.
 
 The Python orchestration around this engine follows the same trajectory:
 
@@ -129,7 +129,7 @@ Workspace and pipeline evaluation use `trajectory` mode. Both `--baseline-evalua
 
 Each comparison artifact must satisfy all of these conditions:
 
-- valid JSON conforming to Evaluation Schema v0.2;
+- valid JSON conforming to Evaluation Schema v0.3;
 - `execution_status: completed`;
 - `comparison_status: valid`;
 - the same `evaluation_profile_hash` as the current run;
@@ -176,17 +176,16 @@ Constraint findings use a normalized fingerprint composed of scope, rule ID, sou
 
 All scope findings are included through one path. Absolute workspace prefixes are normalized so the same logical finding in E0 and an isolated session remains unchanged.
 
-## 6. Status model
+## 6. Status and constraint decision model
 
-Evaluation Schema v0.2 separates three concepts:
+Evaluation Schema v0.3 stores only execution reliability and comparison validity:
 
 | Field | Values | Meaning |
 | --- | --- | --- |
 | `execution_status` | `completed`, `partial`, `failed` | Whether analyzers executed reliably. |
-| `compliance_status` | `passed`, `failed`, `unknown` | Whether evaluated architecture rules passed. |
 | `comparison_status` | `valid`, `invalid` | Whether comparison inputs and deltas are trustworthy. |
 
-A baseline can correctly have `execution_status: completed` and `compliance_status: failed`: the Harness ran successfully and found existing violations. This does not invalidate E0. Analyzer errors produce `partial` execution and `unknown` compliance; such an artifact cannot become the pre input for the next task.
+Constraints are binary: a satisfied rule produces no finding and a violated rule produces a finding; findings have no warning/error level. The constraint layer's `ok/error` and the scope's `completed/error` describe execution reliability only, not rule satisfaction. The artifact has no top-level `compliance_status`. Only when `execution_status === "completed"`, the current change's constraint decision is derived directly: `deltas.run_local.constraints.introduced_count === 0` passes, while a value greater than `0` fails. A baseline uses self comparison, so its introduced count must be `0`; existing findings remain visible in the absolute result without being mistaken for newly introduced violations. Analyzer errors produce `partial` execution; such an artifact cannot become the pre input for the next task.
 
 The Python `harness_status` in `harness_execution.json` remains process-level status. A nonzero Node exit or invalid output makes it `failure`.
 

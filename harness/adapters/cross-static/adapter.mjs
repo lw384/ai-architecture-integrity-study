@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
+import { isProductionSourcePath } from '../_shared/production-files.mjs';
 import { collectDuplicateRuleEvents } from './duplicate-contracts.mjs';
 import { collectPropagationRuleEvents } from './propagation-contracts.mjs';
 import { collectTypeRuleEvents } from './type-contracts.mjs';
@@ -71,11 +72,14 @@ function listFiles(rootDir, predicate, files = []) {
         const entryPath = path.join(rootDir, entry.name);
 
         if (entry.isDirectory()) {
+            if (!isProductionSourcePath(entryPath)) {
+                continue;
+            }
             listFiles(entryPath, predicate, files);
             continue;
         }
 
-        if (predicate(entryPath)) {
+        if (isProductionSourcePath(entryPath) && predicate(entryPath)) {
             files.push(entryPath);
         }
     }

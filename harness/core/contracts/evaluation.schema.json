@@ -1,11 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Harness Evaluation Result",
-  "description": "Version 0.2 evaluation contract with explicit execution, compliance, and comparison semantics.",
+  "description": "Version 0.3 evaluation contract with execution reliability and finding-delta semantics.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "schema_version": { "const": "0.2.0" },
+    "schema_version": { "const": "0.3.0" },
     "evaluation_profile_hash": {
       "type": "string",
       "pattern": "^sha256:[a-f0-9]{64}$"
@@ -55,7 +55,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "constraints": { "$ref": "#/definitions/layer_array" },
+        "constraints": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/constraint_layer_entry" }
+        },
         "metrics": { "$ref": "#/definitions/layer_array" },
         "judgments": { "$ref": "#/definitions/layer_array" }
       },
@@ -93,10 +96,6 @@
       "type": "string",
       "enum": ["completed", "partial", "failed"]
     },
-    "compliance_status": {
-      "type": "string",
-      "enum": ["passed", "failed", "unknown"]
-    },
     "comparison_status": {
       "type": "string",
       "enum": ["valid", "invalid"]
@@ -123,7 +122,6 @@
     "deltas",
     "duration_ms",
     "execution_status",
-    "compliance_status",
     "comparison_status",
     "errors"
   ],
@@ -146,12 +144,11 @@
     },
     "constraint_finding": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "properties": {
         "rule_id": { "type": "string" },
         "rule_version": { "type": ["string", "null"] },
         "tier": { "type": ["integer", "null"] },
-        "severity": { "type": ["string", "null"] },
         "location": { "type": ["object", "null"], "additionalProperties": true },
         "message": { "type": "string" },
         "evidence": { "type": ["object", "null"], "additionalProperties": true }
@@ -163,7 +160,7 @@
       "additionalProperties": true,
       "properties": {
         "layer": { "type": "string" },
-        "status": { "type": "string", "enum": ["ok", "fail", "error"] },
+        "status": { "type": "string", "enum": ["ok", "error"] },
         "rules_evaluated": { "type": "integer", "minimum": 0 },
         "findings": {
           "type": "array",
@@ -224,7 +221,7 @@
         "rulepack_id": { "type": "string" },
         "rulepack_version": { "type": "string" },
         "adapters": { "type": "array", "items": { "type": "string" } },
-        "status": { "type": "string", "enum": ["completed", "failed", "error"] },
+        "status": { "type": "string", "enum": ["completed", "error"] },
         "layers": { "$ref": "#/definitions/scope_layers" }
       },
       "required": [
@@ -241,6 +238,18 @@
     "layer_array": {
       "type": "array",
       "items": { "$ref": "#/definitions/metric_or_judgment_result" }
+    },
+    "constraint_layer_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "status": { "type": "string", "enum": ["ok", "error"] },
+        "findings": { "type": "array", "items": { "type": "string" } },
+        "raw_artifact_path": { "type": "string" }
+      },
+      "required": ["name", "version", "status", "findings", "raw_artifact_path"]
     },
     "comparison_finding": {
       "type": "object",

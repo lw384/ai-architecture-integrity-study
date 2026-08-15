@@ -3,7 +3,6 @@ version: 0.1.0
 layer: constraints
 category: code-quality
 visibility: agent-visible
-severity: warning
 
 description: >
   TypeScript code in this subject should avoid explicit any.
@@ -21,4 +20,3 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  severity_class: soft_constraint

@@ -79,10 +79,11 @@ Main sections:
 - `layers`: constraints, metrics, and judgments outputs.
 - `scopes`: uniform detailed results for every configured evaluation scope.
 - `deltas`: finding-aware run-local and cumulative comparisons.
-- `execution_status`, `compliance_status`, `comparison_status`: independent status dimensions.
+- `execution_status`, `comparison_status`: execution reliability and comparison validity.
+- Constraint acceptance is not stored as a third status. Consumers derive it from `deltas.run_local.constraints.introduced_count` after confirming execution completed.
 - `duration_ms`, `errors`: execution summary.
 
-Version 0.2 is the only supported evaluation contract. Use this schema to validate both comparison inputs and final output before publishing or aggregation.
+Version 0.3 is the only supported evaluation contract. Use this schema to validate both comparison inputs and final output before publishing or aggregation.
 
 ## Typical Flow
 
