@@ -11,12 +11,12 @@ import { APP_DEFAULT_PATH } from 'config';
 
 // ==============================|| MAIN LOGO ||============================== //
 
-export default function LogoSection({ reverse, isIcon, sx, className, to }) {
+export default function LogoSection({ reverse, isIcon, sx, to }) {
   return (
-    <ButtonBase disableRipple component={Link} to={to || APP_DEFAULT_PATH} sx={sx} className={className} aria-label="Logo">
+    <ButtonBase disableRipple component={Link} to={to || APP_DEFAULT_PATH} sx={sx} aria-label="Logo">
       {isIcon ? <LogoIcon /> : <Logo reverse={reverse} />}
     </ButtonBase>
   );
 }
 
-LogoSection.propTypes = { reverse: PropTypes.bool, isIcon: PropTypes.bool, sx: PropTypes.any, className: PropTypes.string, to: PropTypes.any };
+LogoSection.propTypes = { reverse: PropTypes.bool, isIcon: PropTypes.bool, sx: PropTypes.any, to: PropTypes.any };

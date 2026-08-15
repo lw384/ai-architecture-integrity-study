@@ -1,0 +1,28 @@
+rule_id: CROSS-METHOD-C-001-http-method-matches-backend-route
+version: 0.2.0
+layer: constraints
+category: cross-endpoint-contract
+visibility: agent-visible
+severity: error
+
+description: >
+  When a frontend API path resolves to a backend public route, its HTTP method
+  must match at least one backend handler registered for that route.
+
+evidence_sources:
+  - adapter: cross-static
+    tool_rule_ids:
+      - "cross-static/frontend-endpoint-method-mismatch"
+    match_condition:
+      event_type: cross_contract_violation
+    aggregation: any
+
+agent_facing_message: >
+  Frontend endpoint {frontend_method} {frontend_path} in {frontend_file}
+  resolves to a backend route, but its method does not match any registered
+  handler. Registered methods: {backend_methods}.
+
+research_tags:
+  drift_type: erosion
+  severity_class: hard_constraint
+  erosion_dimension: cross-method-alignment

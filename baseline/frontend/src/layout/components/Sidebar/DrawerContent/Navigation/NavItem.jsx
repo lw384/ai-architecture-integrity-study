@@ -39,8 +39,9 @@ export default function NavItem({ item, level, isParents = false, setSelectedID,
 
   const Icon = item.icon;
   const itemIcon = item.icon ? (
-    <Icon
-      style={{
+    <Box
+      component={Icon}
+      sx={{
         fontSize: isSidebarExpanded ? '1rem' : '1.25rem',
         ...(isParents && { fontSize: 20, stroke: '1.5' })
       }}
@@ -152,7 +153,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID,
                 '&:hover': { borderColor: isSelected ? 'primary.main' : 'secondary.main' }
               }}
             >
-              <ActionIcon style={{ fontSize: '0.625rem' }} />
+              <Box component={ActionIcon} sx={{ fontSize: '0.625rem' }} />
             </IconButton>
           );
         })}

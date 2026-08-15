@@ -1,6 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
+import {
+    DEFAULT_IGNORED_STRUCTURE_FILES,
+    DEFAULT_TRANSPARENT_JSX_WRAPPERS,
+    getEffectiveJsxPosition,
+    isIgnoredStructureFile,
+} from '../../../../rulepacks/js-react-frontend/tool-configs/jsx-depth-utils.js';
 
 export function toPosixPath(value) {
     return value.split(path.sep).join('/');
@@ -130,44 +136,15 @@ export function analyzeComponentLineCounts(projectRoot, config = {}) {
     };
 }
 
-function isTransparentWrapper(node, transparentWrappers) {
-    if (node.type === 'JSXFragment') {
-        return true;
-    }
-
-    if (node.type === 'JSXElement' && node.openingElement?.name?.type === 'JSXIdentifier') {
-        return transparentWrappers.has(node.openingElement.name.name);
-    }
-
-    return false;
-}
-
-function jsxDepth(node, transparentWrappers) {
-    let depth = 0;
-    let current = node;
-
-    while (current) {
-        if ((current.type === 'JSXElement' || current.type === 'JSXFragment') && !isTransparentWrapper(current, transparentWrappers)) {
-            depth += 1;
-        }
-
-        current = current.parent ?? null;
-    }
-
-    return depth;
-}
-
 export function analyzeJsxDepth(projectRoot, config = {}) {
-    const transparentWrappers = new Set(config.transparent_wrappers ?? [
-        'Popper', 'Portal', 'Modal', 'Backdrop',
-        'ClickAwayListener', 'Fade', 'Grow', 'Zoom', 'Slide', 'Collapse', 'Transitions',
-    ]);
+    const transparentWrappers = new Set(config.transparent_wrappers ?? DEFAULT_TRANSPARENT_JSX_WRAPPERS);
+    const ignoredFilePatterns = config.ignored_file_patterns ?? DEFAULT_IGNORED_STRUCTURE_FILES;
     const details = [];
 
     for (const filePath of collectFrontendFiles(projectRoot, config)) {
         const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
 
-        if (!/\.(jsx|tsx)$/.test(relativeFile)) {
+        if (!/\.(jsx|tsx)$/.test(relativeFile) || isIgnoredStructureFile(relativeFile, ignoredFilePatterns)) {
             continue;
         }
 
@@ -182,7 +159,8 @@ export function analyzeJsxDepth(projectRoot, config = {}) {
             node.parent = parent;
 
             if (node.type === 'JSXElement') {
-                maxDepth = Math.max(maxDepth, jsxDepth(node, transparentWrappers));
+                const { depth } = getEffectiveJsxPosition(node, transparentWrappers);
+                maxDepth = Math.max(maxDepth, depth);
             }
         });
 

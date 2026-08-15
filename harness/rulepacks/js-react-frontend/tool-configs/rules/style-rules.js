@@ -21,6 +21,31 @@ function isModuleStylePath(sourcePath) {
     return /\.module\.(css|scss|sass)$/.test(sourcePath);
 }
 
+// A JSX style object is managed when it only transports runtime values into
+// CSS custom properties. Visual rules remain in the component's CSS Module.
+function containsOnlyCssCustomProperties(attributeValue) {
+    if (attributeValue?.type !== 'JSXExpressionContainer') {
+        return false;
+    }
+
+    const expression = attributeValue.expression;
+    if (expression?.type !== 'ObjectExpression' || expression.properties.length === 0) {
+        return false;
+    }
+
+    return expression.properties.every((property) => {
+        if (property.type !== 'Property' || property.computed) {
+            return false;
+        }
+
+        const propertyName = property.key.type === 'Identifier'
+            ? property.key.name
+            : property.key.value;
+
+        return typeof propertyName === 'string' && propertyName.startsWith('--');
+    });
+}
+
 function toComparableImportPath(sourcePath, importerPath) {
     if (!sourcePath) {
         return sourcePath;
@@ -56,13 +81,15 @@ export const noRawJsxStyleRule = {
         type: 'problem',
         schema: [],
         messages: {
-            rawJsxStyle: 'Raw JSX style props are not allowed. Use sx, styled, or approved shared styling abstractions instead.',
+            rawJsxStyle: 'Unmanaged JSX style props are not allowed. Use theme-aware sx, styled, MUI theme overrides, CSS Modules, or an approved shared abstraction.',
         },
     },
     create(context) {
         return {
             JSXAttribute(node) {
-                if (node.name?.type === 'JSXIdentifier' && node.name.name === 'style') {
+                const isStyleAttribute = node.name?.type === 'JSXIdentifier' && node.name.name === 'style';
+
+                if (isStyleAttribute && !containsOnlyCssCustomProperties(node.value)) {
                     context.report({ node, messageId: 'rawJsxStyle' });
                 }
             },

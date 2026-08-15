@@ -171,7 +171,7 @@ export default function CompaniesPage() {
             Delete {deleteTarget?.name}? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions className="crm-dialog-actions">
+        <DialogActions>
           <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button color="error" variant="contained" onClick={handleDelete}>
             Delete

@@ -102,7 +102,7 @@ export default function Notification() {
                     read > 0 ? (
                       <Tooltip title="Mark as all read">
                         <IconButton color="success" size="small" onClick={() => setRead(0)}>
-                          <CheckCircleOutlined style={{ fontSize: '1.15rem' }} />
+                          <Box component={CheckCircleOutlined} sx={{ fontSize: '1.15rem' }} />
                         </IconButton>
                       </Tooltip>
                     ) : null

@@ -1,15 +1,16 @@
 rule_id: FE-COM-C-002-jsx-max-depth
-version: 0.2.0
+version: 0.3.0
 layer: constraints
 category: component-structure
 visibility: agent-visible
 severity: warning
 
 description: >
-  Business-logic JSX nesting should stay within 5 levels to avoid unreadable
-  render trees and overly complex component bodies. Structural wrapper
-  components (portals, transitions, click-away listeners, fragments, render-prop
-  callbacks) are transparent and do not count toward the depth.
+  Production React render trees must not exceed an effective JSX nesting depth
+  of five. Ordinary JSX elements count as one level; fragments and configured
+  structural wrappers do not. Render-prop callbacks start independent render
+  trees. Each render tree produces at most one finding, and tests, stories, and
+  generated files are excluded.
 
 config:
   max_depth: 5
@@ -30,7 +31,14 @@ config:
     - Transitions
   transparent_patterns:
     - fragment # <> and <Fragment>
-    - render_prop # function-child expressions
+    - render_prop_boundary # callback output starts a separate render tree
+  ignored_file_patterns:
+    - "**/*.test.*"
+    - "**/*.spec.*"
+    - "**/*.stories.*"
+    - "**/__tests__/**"
+    - "src/test/**"
+    - "**/generated/**"
 
 evidence_sources:
   - adapter: eslint
@@ -41,12 +49,12 @@ evidence_sources:
     aggregation: any
 
 agent_facing_message: >
-  Business logic nesting is too deep in this component. Consider extracting
-  a section into a child component. Do not add pure wrapper components — the
-  rule ignores structural wrappers (portals, transitions, fragments) anyway.
+  {message} Extract a meaningful child component or simplify the render
+  structure; adding fragments or configured structural wrappers will not
+  reduce the measured depth.
 
 research_tags:
   drift_type: erosion
   severity_class: soft_constraint
   erosion_dimension: component-complexity
-  methodological_note: "v0.2.0 — counts business-layer depth only, ignoring transparent wrappers"
+  methodological_note: "v0.3.0 — one finding per production render tree; render-prop callbacks are independent boundaries"

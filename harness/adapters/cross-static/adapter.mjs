@@ -238,11 +238,45 @@ function normalizePublicPath(prefix, controllerPath = '', routePath = '') {
 }
 
 function normalizeFrontendPath(prefix, apiPath = '') {
-    const joined = toPosixJoin('/', prefix || '', apiPath || '');
+    const pathOnly = apiPath.split(/[?#]/, 1)[0];
+    const joined = toPosixJoin('/', prefix || '', pathOnly || '');
     return joined
         .replace(/\/+/g, '/')
         .replace(/\/:([^/]+)/g, '/:param')
         .replace(/\/$/, '') || '/';
+}
+
+// Endpoint constraints evaluate production API clients, not tests or fixture data.
+function isProductionFrontendFile(workspaceRoot, filePath) {
+    const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));
+
+    return !/(^|\/)(?:__tests__|fixtures?|stories?|mocks?|generated)(\/|$)/i.test(relativeFile)
+        && !/\.(?:test|spec|stories)\.(?:js|jsx|ts|tsx)$/i.test(relativeFile);
+}
+
+function splitRoutePath(routePath) {
+    return routePath.split('/').filter(Boolean);
+}
+
+/**
+ * Match one frontend path against a backend route pattern segment by segment.
+ * A backend parameter accepts either a concrete frontend segment or a frontend
+ * template parameter. A frontend parameter does not match a fixed backend
+ * segment because its runtime values cannot be proven to resolve to that route.
+ */
+function backendRouteMatchesFrontendPath(frontendPath, backendPath) {
+    const frontendSegments = splitRoutePath(frontendPath);
+    const backendSegments = splitRoutePath(backendPath);
+
+    if (frontendSegments.length !== backendSegments.length) {
+        return false;
+    }
+
+    return frontendSegments.every((frontendSegment, index) => {
+        const backendSegment = backendSegments[index];
+
+        return backendSegment === frontendSegment || backendSegment === ':param';
+    });
 }
 
 function canonicalizeResourceName(value) {
@@ -349,12 +383,212 @@ function extractBackendPrefix(workspaceRoot, config) {
     return requiredPrefix;
 }
 
+function resolveLocalTypeScriptFile(importerPath, importSource) {
+    if (typeof importSource !== 'string' || !importSource.startsWith('.')) {
+        return null;
+    }
+
+    const unresolvedPath = path.resolve(path.dirname(importerPath), importSource);
+    const candidates = [
+        unresolvedPath,
+        `${unresolvedPath}.ts`,
+        path.join(unresolvedPath, 'index.ts'),
+    ];
+
+    return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
+}
+
+function collectLocalImports(ast, importerPath) {
+    const imports = new Map();
+
+    for (const statement of ast.body ?? []) {
+        if (statement.type !== 'ImportDeclaration') {
+            continue;
+        }
+
+        const importedFile = resolveLocalTypeScriptFile(importerPath, statement.source?.value);
+
+        if (!importedFile) {
+            continue;
+        }
+
+        for (const specifier of statement.specifiers ?? []) {
+            if (specifier.local?.name) {
+                imports.set(specifier.local.name, importedFile);
+            }
+        }
+    }
+
+    return imports;
+}
+
+function getClassNodes(ast) {
+    return (ast.body ?? []).flatMap((statement) => {
+        const declaration = statement.type === 'ExportNamedDeclaration'
+            ? statement.declaration
+            : statement;
+
+        return declaration?.type === 'ClassDeclaration' ? [declaration] : [];
+    });
+}
+
+function getModuleMetadata(classNode) {
+    const moduleDecorator = (classNode.decorators ?? []).find(
+        (decorator) => getDecoratorName(decorator) === 'Module',
+    );
+    const metadata = moduleDecorator?.expression?.arguments?.[0];
+
+    return metadata?.type === 'ObjectExpression' ? metadata : null;
+}
+
+function getMetadataIdentifiers(metadata, propertyName) {
+    const property = (metadata?.properties ?? []).find(
+        (candidate) => candidate.type === 'Property'
+            && !candidate.computed
+            && getPropertyName(candidate.key) === propertyName,
+    );
+    const value = unwrapTsExpression(property?.value);
+
+    if (value?.type !== 'ArrayExpression') {
+        return [];
+    }
+
+    return value.elements.flatMap((element) => {
+        const unwrapped = unwrapTsExpression(element);
+        return unwrapped?.type === 'Identifier' ? [unwrapped.name] : [];
+    });
+}
+
+function collectNestModuleRecords(workspaceRoot, config) {
+    const moduleRoots = Array.isArray(config.backend_module_roots)
+        ? config.backend_module_roots
+        : ['backend/src'];
+    const records = new Map();
+
+    for (const root of moduleRoots) {
+        const files = listFiles(
+            path.resolve(workspaceRoot, root),
+            (filePath) => /\.module\.ts$/.test(filePath),
+        );
+
+        for (const filePath of files) {
+            const { ast } = parseFile(filePath);
+            const localImports = collectLocalImports(ast, filePath);
+
+            for (const classNode of getClassNodes(ast)) {
+                const metadata = getModuleMetadata(classNode);
+
+                if (!metadata) {
+                    continue;
+                }
+
+                records.set(path.resolve(filePath), {
+                    importedModules: getMetadataIdentifiers(metadata, 'imports')
+                        .map((name) => localImports.get(name))
+                        .filter(Boolean)
+                        .map((importedFile) => path.resolve(importedFile)),
+                    controllers: getMetadataIdentifiers(metadata, 'controllers')
+                        .map((name) => localImports.get(name))
+                        .filter(Boolean)
+                        .map((controllerFile) => path.resolve(controllerFile)),
+                });
+            }
+        }
+    }
+
+    return records;
+}
+
+function findApplicationRootModule(workspaceRoot, config) {
+    const candidates = Array.isArray(config.main_file_candidates)
+        ? config.main_file_candidates
+        : [];
+
+    for (const relativePath of candidates) {
+        const mainFile = path.resolve(workspaceRoot, relativePath);
+
+        if (!fs.existsSync(mainFile)) {
+            continue;
+        }
+
+        const { ast } = parseFile(mainFile);
+        const localImports = collectLocalImports(ast, mainFile);
+        let rootModuleName = null;
+
+        walkAst(ast, (node) => {
+            if (
+                node.type === 'CallExpression'
+                && node.callee?.type === 'MemberExpression'
+                && node.callee.object?.type === 'Identifier'
+                && node.callee.object.name === 'NestFactory'
+                && getPropertyName(node.callee.property) === 'create'
+                && node.arguments?.[0]?.type === 'Identifier'
+            ) {
+                rootModuleName = node.arguments[0].name;
+            }
+        });
+
+        const rootModuleFile = localImports.get(rootModuleName);
+
+        if (rootModuleFile) {
+            return path.resolve(rootModuleFile);
+        }
+    }
+
+    return null;
+}
+
+/** Resolve controllers reachable from the module passed to NestFactory.create(). */
+function collectReachableControllerFiles(workspaceRoot, config) {
+    if (config.verify_controller_reachability === false) {
+        return null;
+    }
+
+    const rootModule = findApplicationRootModule(workspaceRoot, config);
+    const moduleRecords = collectNestModuleRecords(workspaceRoot, config);
+
+    if (!rootModule || !moduleRecords.has(rootModule)) {
+        throw new Error('Unable to resolve the NestJS root module for endpoint reachability analysis.');
+    }
+
+    const controllers = new Set();
+    const visitedModules = new Set();
+    const pendingModules = [rootModule];
+
+    while (pendingModules.length > 0) {
+        const moduleFile = pendingModules.pop();
+
+        if (visitedModules.has(moduleFile)) {
+            continue;
+        }
+
+        visitedModules.add(moduleFile);
+        const record = moduleRecords.get(moduleFile);
+
+        if (!record) {
+            continue;
+        }
+
+        record.controllers.forEach((controllerFile) => controllers.add(controllerFile));
+        record.importedModules.forEach((importedModule) => {
+            if (moduleRecords.has(importedModule)) {
+                pendingModules.push(importedModule);
+            }
+        });
+    }
+
+    return controllers;
+}
+
 function collectBackendEndpoints(workspaceRoot, config) {
     const controllerRoots = Array.isArray(config.backend_controller_roots)
         ? config.backend_controller_roots
         : ['backend/src/modules'];
     const prefix = extractBackendPrefix(workspaceRoot, config);
+    const reachableControllerFiles = collectReachableControllerFiles(workspaceRoot, config);
     const endpoints = [];
+    let declaredControllerCount = 0;
+    let reachableControllerCount = 0;
     const methodDecorators = new Map([
         ['Get', 'GET'],
         ['Post', 'POST'],
@@ -368,6 +602,13 @@ function collectBackendEndpoints(workspaceRoot, config) {
         const files = listFiles(absoluteRoot, (filePath) => /\.controller\.ts$/.test(filePath));
 
         for (const filePath of files) {
+            declaredControllerCount += 1;
+
+            if (reachableControllerFiles && !reachableControllerFiles.has(path.resolve(filePath))) {
+                continue;
+            }
+
+            reachableControllerCount += 1;
             const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));
             const { ast } = parseFile(filePath);
             let controllerBasePath = '';
@@ -423,7 +664,13 @@ function collectBackendEndpoints(workspaceRoot, config) {
         }
     }
 
-    return endpoints;
+    return {
+        endpoints,
+        stats: {
+            backend_declared_controller_count: declaredControllerCount,
+            backend_reachable_controller_count: reachableControllerCount,
+        },
+    };
 }
 
 function collectFrontendEndpoints(workspaceRoot, config) {
@@ -435,7 +682,11 @@ function collectFrontendEndpoints(workspaceRoot, config) {
 
     for (const root of apiRoots) {
         const absoluteRoot = path.resolve(workspaceRoot, root);
-        const files = listFiles(absoluteRoot, (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
+        const files = listFiles(
+            absoluteRoot,
+            (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath)
+                && isProductionFrontendFile(workspaceRoot, filePath),
+        );
 
         for (const filePath of files) {
             const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));
@@ -1048,10 +1299,6 @@ function collectErrorRuleEvents(workspaceRoot, config) {
     };
 }
 
-function makeEndpointKey(endpoint) {
-    return `${endpoint.method} ${endpoint.path}`;
-}
-
 function uniqueSorted(values) {
     return [...new Set(values)].sort((left, right) => {
         if (typeof left === 'number' && typeof right === 'number') {
@@ -1065,22 +1312,15 @@ function uniqueSorted(values) {
 export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtimeContext }) {
     const config = readConfig(adapterConfig?.configPath);
     const inventoryConfig = config.endpoint_inventory ?? {};
-    const backendEndpoints = collectBackendEndpoints(targetDir, inventoryConfig);
+    const backendInventory = collectBackendEndpoints(targetDir, inventoryConfig);
+    const backendEndpoints = backendInventory.endpoints;
     const frontendEndpoints = collectFrontendEndpoints(targetDir, inventoryConfig);
-    const backendIndex = new Set(backendEndpoints.map(makeEndpointKey));
-    const backendByPath = new Map();
-    const backendByMethodAndPath = new Map();
     const normalizedEvents = [];
 
-    for (const endpoint of backendEndpoints) {
-        const byPath = backendByPath.get(endpoint.path) ?? [];
-        byPath.push(endpoint);
-        backendByPath.set(endpoint.path, byPath);
-        backendByMethodAndPath.set(makeEndpointKey(endpoint), endpoint);
-    }
-
     for (const endpoint of frontendEndpoints) {
-        const backendEndpointsForPath = backendByPath.get(endpoint.path) ?? [];
+        const backendEndpointsForPath = backendEndpoints.filter(
+            (backendEndpoint) => backendRouteMatchesFrontendPath(endpoint.path, backendEndpoint.path),
+        );
 
         if (backendEndpointsForPath.length === 0) {
             normalizedEvents.push({
@@ -1097,7 +1337,11 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtim
             continue;
         }
 
-        if (!backendIndex.has(makeEndpointKey(endpoint))) {
+        const backendEndpointsForMethod = backendEndpointsForPath.filter(
+            (backendEndpoint) => backendEndpoint.method === endpoint.method,
+        );
+
+        if (backendEndpointsForMethod.length === 0) {
             normalizedEvents.push({
                 source_tool: 'cross-static',
                 source_rule_id: 'cross-static/frontend-endpoint-method-mismatch',
@@ -1113,9 +1357,14 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtim
             continue;
         }
 
-        const backendEndpoint = backendByMethodAndPath.get(makeEndpointKey(endpoint));
+        const backendStatuses = uniqueSorted(
+            backendEndpointsForMethod.map((backendEndpoint) => backendEndpoint.status),
+        );
 
-        if (endpoint.expectedStatuses.length > 0 && backendEndpoint && !endpoint.expectedStatuses.includes(backendEndpoint.status)) {
+        if (
+            endpoint.expectedStatuses.length > 0
+            && !backendStatuses.some((status) => endpoint.expectedStatuses.includes(status))
+        ) {
             normalizedEvents.push({
                 source_tool: 'cross-static',
                 source_rule_id: 'cross-static/frontend-endpoint-status-mismatch',
@@ -1126,7 +1375,7 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtim
                     frontend_path: endpoint.path,
                     frontend_file: endpoint.file,
                     expected_statuses: endpoint.expectedStatuses.join(', '),
-                    backend_status: String(backendEndpoint.status),
+                    backend_status: backendStatuses.join(', '),
                 },
             });
         }
@@ -1148,6 +1397,7 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtim
             frontend_endpoint_count: frontendEndpoints.length,
             backend_endpoint_count: backendEndpoints.length,
             frontend_explicit_success_status_count: frontendEndpoints.filter((endpoint) => endpoint.expectedStatuses.length > 0).length,
+            ...backendInventory.stats,
             ...nameRule.stats,
             ...errorRule.stats,
             ...typeRule.stats,

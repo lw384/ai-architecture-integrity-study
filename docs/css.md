@@ -1,390 +1,286 @@
-# Frontend CSS Conventions
+# CSS 管理规范
 
-> Scope: `baseline/frontend`
->
-> Goal: define a practical split between the existing MUI styling system and the existing Tailwind styling system.
+本文档说明 baseline frontend 的样式架构、各类样式工具的职责，以及新增或修改样式时必须遵守的规则。
 
----
+## 1. 核心原则
 
-## 1. Current Direction
+MUI Theme 是项目唯一的设计系统来源。
 
-This frontend already uses **both** MUI and Tailwind.
-
-The rule for this repository is:
-
-- If a block is **substantially reusing MUI components**, modify styles with **MUI props, `sx`, or theme overrides**.
-- If a block is a **developer-owned layout or developer-owned wrapper component**, Tailwind is allowed and often simpler.
-
-Short version:
-
-- **MUI-heavy UI** -> use MUI styling
-- **Developer-owned layout / wrapper structure** -> use Tailwind
-
-This is a responsibility rule.
-
----
-
-## 2. What the Current MUI Theme Supports
-
-Primary files:
-
-- `baseline/frontend/src/themes/index.jsx`
-- `baseline/frontend/src/themes/palette.js`
-- `baseline/frontend/src/themes/typography.js`
-- `baseline/frontend/src/themes/custom-shadows.jsx`
-- `baseline/frontend/src/themes/overrides/index.js`
-
-The current theme already supports these concerns:
-
-### 2.1 Color schemes
-
-- light / dark color schemes
-- active theme mode switching through `state.themeMode`
-- palette-driven colors exposed through MUI theme tokens
-- CSS variable output through `cssVariables` in `themes/index.jsx`
-
-This means components can safely use MUI tokens such as:
-
-- `text.primary`
-- `text.secondary`
-- `background.default`
-- `background.paper`
-- `divider`
-- `grey.*`
-- `primary.*`
-- `secondary.*`
-
-### 2.2 Typography
-
-- typography is built from `themes/typography.js`
-- font family comes from layout state
-- base typography decisions should come from MUI variants and theme typography, not ad hoc utility classes
-
-### 2.3 Breakpoints
-
-The current MUI theme defines these breakpoints:
-
-- `xs: 0`
-- `sm: 768`
-- `md: 1024`
-- `lg: 1266`
-- `xl: 1440`
-
-These values are aligned with the Tailwind screen settings and should be treated as the canonical responsive scale for the frontend.
-
-### 2.4 Shadows and shared visual tokens
-
-- custom shadows are built in `themes/custom-shadows.jsx`
-- common visual tokens such as divider, background, and custom shadows are available through theme variables
-- component appearance should prefer these tokens over custom hard-coded CSS values
-
-### 2.5 Global component overrides
-
-The current theme override pipeline already covers these MUI components:
-
-- `Badge`
-- `Button`
-- `ButtonBase`
-- `CardContent`
-- `Checkbox`
-- `Chip`
-- `Drawer`
-- `FormHelperText`
-- `IconButton`
-- `InputLabel`
-- `LinearProgress`
-- `Link`
-- `ListItemButton`
-- `ListItemIcon`
-- `OutlinedInput`
-- `Tab`
-- `TableBody`
-- `TableCell`
-- `TableHead`
-- `TableRow`
-- `Tabs`
-- `Tooltip`
-- `Typography`
-
-If you are styling one of these MUI components and the change should be shared widely, the theme override layer is already the correct place to do it.
-
-### 2.6 What MUI should own in this repository
-
-Use MUI styling first for:
-
-- buttons
-- text fields
-- dialogs
-- autocomplete
-- tables and cells
-- chips
-- icon buttons
-- typography inside MUI-heavy views
-- interaction states such as hover, focus, disabled, selected
-- component spacing that is part of the component's visual design
-
-In practice, if you are touching `Dialog`, `TextField`, `Button`, `TableCell`, `Autocomplete`, `Paper`, or `Typography`, default to MUI `sx` or theme.
-
----
-
-## 3. What the Current Tailwind Setup Supports
-
-Primary files:
-
-- `baseline/frontend/tailwind.config.cjs`
-- `baseline/frontend/postcss.config.cjs`
-- `baseline/frontend/src/styles/globals.css`
-- `baseline/frontend/src/styles/tokens.css`
-
-The current frontend has a real Tailwind pipeline:
-
-- `@tailwind base`
-- `@tailwind components`
-- `@tailwind utilities`
-
-and Tailwind is loaded globally from `src/index.jsx` through `src/styles/globals.css`.
-
-### 3.1 Standard utility support
-
-The current setup supports normal Tailwind utility classes, including:
-
-- layout: `flex`, `grid`, `block`, `hidden`
-- spacing: `p-*`, `px-*`, `py-*`, `m-*`, `gap-*`
-- sizing: `w-*`, `h-*`, `min-w-*`, `max-w-*`
-- responsive variants: `sm:*`, `md:*`, `lg:*`, `xl:*`
-- arbitrary values: `z-[1200]`, `w-[260px]`, `transition-[width,margin]`
-
-### 3.2 Project-specific token support
-
-The current Tailwind config extends theme tokens with project-aware names.
-
-Supported color groups include:
-
-- `primary.*`
-- `secondary.*`
-- `text`, `text-primary`, `text-secondary`
-- `text-muted`
-- `divider`
-- `grey.100`, `grey.300`
-- `surface`
-- `surface-subtle`
-- `border`
-
-This is why classes such as these work:
-
-- `text-text`
-- `text-text-secondary`
-- `bg-grey-100`
-- `border-divider`
-- `bg-surface-subtle`
-
-These values are not random CSS. They are generated from Tailwind config and point at CSS variables or MUI palette variables.
-
-### 3.3 Shared Tailwind token extensions
-
-The current Tailwind setup also extends:
-
-- spacing: `base`
-- border radius: `sm`, `md`, `lg`
-- shadows: `soft`, `z1`
-- font families: `sans`, `display`
-- screen breakpoints: `xs`, `sm`, `md`, `lg`, `xl`
-
-### 3.4 What Tailwind should own in this repository
-
-Use Tailwind first for:
-
-- page-level layout wrappers
-- developer-owned sections that are not MUI components themselves
-- flex and grid arrangement
-- responsive container switching
-- spacing between blocks
-- utility-driven wrappers around MUI components
-
-Good examples:
-
-- table shell layout wrappers
-- page header layout wrappers
-- custom sections built from plain `div` containers
-- developer-defined cards or panels that are not trying to restyle a MUI primitive internally
-
----
-
-## 4. Rules for Splitting CSS Responsibilities
-
-The purpose of this split is not to avoid mixing libraries completely.
-The purpose is to avoid **unclear ownership**.
-
-### 4.1 Use MUI styling when the UI is MUI-owned
-
-Choose MUI props, `sx`, or theme overrides when:
-
-- the element is directly a MUI component
-- the visual result depends on MUI states or slots
-- the styling uses theme palette, typography, or component variants
-- the styling is really part of the component's appearance, not just placement
-
-Examples:
-
-- `DialogActions` padding
-- `TextField` height
-- `Autocomplete` input alignment
-- `Button` background / hover / disabled state
-- `Typography` color inside a MUI card or dialog
-
-### 4.2 Use Tailwind when the layout is developer-owned
-
-Choose Tailwind when:
-
-- the block is mostly custom layout structure
-- the block is mainly about arranging children
-- the wrapper is plain HTML or a developer-owned container
-- the goal is fast layout composition rather than MUI component customization
-
-Examples:
-
-- `flex items-center justify-between gap-3`
-- responsive grid sections
-- page wrappers and alignment helpers
-- spacing between custom sections
-
-### 4.3 Avoid unclear mixed ownership
-
-Do not use this pattern unless there is a strong reason:
-
-- MUI component
-- plus visual Tailwind tokens
-- plus additional `sx`
-
-For example, this is a bad ownership split:
-
-```jsx
-<Button className="text-text bg-grey-100" sx={{ borderRadius: 2 }} />
+```text
+MUI Theme
+├── MUI 组件：theme、sx、styled()、component overrides
+└── 非 MUI 复杂组件：Theme 导出的 --app-* CSS Variables → CSS Modules
 ```
 
-Here the component appearance is split across Tailwind and MUI. In this repository, that should be moved under MUI.
+项目不使用 Tailwind，也不维护独立的 CSS token 文件。颜色、字体、通用间距、圆角和阴影等设计值不能在业务代码中重新定义。
 
-### 4.4 Practical decision order
+## 2. 样式目录与职责
 
-When you change styles, use this order:
+### `src/themes/index.jsx`
 
-1. Ask whether the block is **MUI-owned** or **developer-owned**.
-2. If MUI-owned, use MUI props or `sx`.
-3. If developer-owned, Tailwind is acceptable.
-4. If the same MUI styling repeats broadly, promote it to theme override.
-5. If the same layout wrapper repeats broadly, extract a shared component.
+负责构建和提供 MUI Theme，包括：
 
----
+- light/dark color schemes
+- palette 和 preset color
+- typography
+- spacing
+- shape
+- breakpoints
+- transitions 和 z-index
+- custom shadows
+- component overrides
 
-## 5. Rules for `sx`
+业务组件不应直接维护另一份上述设计值。
 
-In this repository, `sx` is the default local styling tool for MUI-heavy UI.
+### `src/themes/overrides/`
 
-Use `sx` for:
+负责 MUI 组件的全局默认外观。多个页面或组件需要相同的 MUI 样式时，应优先在这里定义，而不是重复编写 `sx`。
 
-- local visual fixes on MUI components
-- runtime-dependent styling
-- small, clear component-scoped changes
+`CssBaseline.js` 还负责：
 
-Do not use `sx` for:
+- `html`、`body` 和 `#root` 的基础样式
+- 全局 `box-sizing`
+- `focus-visible`
+- 向 CSS Modules 暴露 `--app-*` 变量
 
-- large shared design rules that belong in the theme
-- layout wrappers that are simpler in Tailwind
-- repeated patterns that should become a shared component
+### `src/themes/cssVariables.js`
 
----
+这是 Theme 到普通 CSS 的桥接层。它只把当前 Theme 的值转换成稳定的 `--app-*` 变量，不是第二套 token 来源。
 
-## 6. Rules for Theme Overrides
+例如：
 
-Use theme overrides when a visual rule should apply across many MUI instances.
+```text
+theme.vars.palette.text.secondary
+                ↓
+--app-color-text-muted
+                ↓
+Component.module.scss
+```
 
-Typical candidates in this codebase:
+### `*.module.css` / `*.module.scss`
 
-- default input height
-- dialog paper policy
-- icon button treatment
-- table cell spacing
-- typography defaults for shared MUI surfaces
+CSS Modules 只用于非 MUI 的复杂 DOM 结构，例如复杂工具栏、编辑器、图表容器或第三方组件包装层。
 
-Do not use theme overrides for one-off page tweaks.
+CSS Module 必须与对应组件放在同一目录，并通过 `styles.xxx` 使用：
 
----
+```jsx
+import styles from './Toolbar.module.scss';
 
-## 7. Rules for Tailwind Usage
+export function Toolbar() {
+  return <div className={styles.root} />;
+}
+```
 
-Tailwind is allowed in this repository, but its best use is **layout-first**, not **component-skin-first**.
+### 第三方 CSS
 
-Preferred Tailwind usage:
+依赖包要求的全局 CSS 可以在 `src/index.jsx` 中直接导入，例如：
 
-- layout containers
-- spacing wrappers
-- responsive structure
-- alignment helpers
-- developer-owned custom sections
+```js
+import 'simplebar-react/dist/simplebar.min.css';
+```
 
-Use Tailwind more carefully when it starts to control:
+如果必须维护本地第三方覆盖文件，应放在 `src/assets/third-party/`。第三方文件不能成为业务组件全局样式的存放位置。
 
-- text color
-- background color
-- border color
-- radius
-- shadow
-- hover or focus styling
+## 3. 样式方式的选择顺序
 
-Those are not forbidden in absolute terms, because this project already exposes token-based Tailwind colors. But if the element is substantially a MUI component, those choices should still move back to MUI ownership.
+### MUI component overrides
 
----
+适合影响全项目同类 MUI 组件的规则：
 
-## 8. Default Policy
+```js
+export default function TableContainer() {
+  return {
+    MuiTableContainer: {
+      styleOverrides: {
+        root: { borderRadius: 0 }
+      }
+    }
+  };
+}
+```
 
-The default policy for this repository is:
+### `styled()`
 
-- **MUI component appearance belongs to MUI**
-- **Developer-owned layout can use Tailwind**
-- **Repeated MUI visuals go up into theme overrides**
-- **Repeated layout wrappers become shared components**
+适合可复用组件、复杂状态、伪元素和多个子选择器：
 
-This keeps the current stack practical:
+```jsx
+const NavigationItem = styled(ListItemButton)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius,
+  '&:hover': {
+    backgroundColor: theme.vars.palette.primary.lighter
+  }
+}));
+```
 
-- MUI remains the main source of truth for component styling
-- Tailwind remains available for fast custom layout work
-- ownership stays readable during maintenance and review
-- `text-xs`
-- `font-bold`
-- `bg-surface-subtle`
-- `border-border`
-- `hover:bg-white/80`
-- `dark:hover:bg-white/10`
+### `sx`
 
-These should move to theme tokens, component props, or `sx`.
+适合单个 MUI 组件上的局部布局和少量样式：
 
----
+```jsx
+<Stack
+  direction={{ xs: 'column', sm: 'row' }}
+  sx={{ gap: 2, color: 'text.secondary' }}
+/>
+```
 
-## 10. Practical Review Rules
+`sx` 中应优先使用 Theme 语义值：
 
-During review, treat the following as code smells:
+```jsx
+// 正确
+sx={{ p: 2, color: 'text.secondary', borderColor: 'divider' }}
 
-- a MUI component with a long `className` full of visual tokens
-- the same `sx` object repeated in multiple files
-- page files defining component defaults
-- utility classes setting text, color, border, shadow, or hover state
-- a local style fix that should clearly live in the theme
+// 不正确
+sx={{ padding: '16px', color: '#595959', borderColor: '#d9d9d9' }}
+```
 
-Use these review rules:
+### CSS Modules
 
-1. If it changes appearance, ask: why is this not in MUI?
-2. If it repeats, ask: why is this not a shared component or theme override?
-3. If it is a layout wrapper, ask: is utility class usage staying layout-only?
+适合非 MUI 的复杂结构：
 
----
+```scss
+.toolbar {
+  display: flex;
+  gap: var(--app-space-4);
+  color: var(--app-color-text-muted);
+  border-color: var(--app-color-border);
+}
+```
 
-## 11. Default Policy
+## 4. CSS Variables
 
-Unless there is a specific exception:
+当前公开变量由 `src/themes/cssVariables.js` 统一维护。
 
-- **Appearance defaults to MUI**
-- **Layout may use utility classes**
-- **Repeated patterns must be extracted**
-- **Global rules must move upward into the theme**
+### 颜色
 
-This policy is intentionally conservative. The goal is not to ban utility classes entirely, but to prevent the project from growing a second competing visual system next to MUI.
+```text
+--app-color-primary
+--app-color-primary-contrast
+--app-color-text-primary
+--app-color-text-muted
+--app-color-surface
+--app-color-background
+--app-color-border
+--app-color-focus-ring
+```
+
+### 字体
+
+```text
+--app-font-family
+--app-font-size-logo
+--app-font-weight-bold
+```
+
+### 间距
+
+```text
+--app-space-1
+--app-space-2
+--app-space-3
+--app-space-4
+```
+
+### 圆角与阴影
+
+```text
+--app-radius-sm
+--app-radius-md
+--app-shadow-z1
+```
+
+只有存在明确复用需求时才新增变量。新增变量必须从 `theme` 或 `theme.vars` 派生，不能在 `cssVariables.js` 中建立一套与 Theme 无关的颜色或尺寸系统。
+
+## 5. 哪些值必须来自 Theme
+
+以下设计值必须使用 Theme API 或 `--app-*`：
+
+- 颜色
+- 通用间距
+- 通用字号和字重
+- 通用圆角
+- 通用阴影
+- z-index
+- 动画时长与 easing
+- 响应式断点
+
+以下结构性 CSS 不需要变量化：
+
+```scss
+display: flex;
+flex-direction: column;
+width: 100%;
+overflow: hidden;
+grid-template-columns: 1fr auto;
+```
+
+组件独有的几何约束可以保留局部值，例如编辑区域最大宽度、图标 viewBox 尺寸或数据表格列宽。不要为了消除所有数字而创建缺少语义的变量。
+
+## 6. 响应式样式
+
+响应式布局优先使用 MUI breakpoint API：
+
+```jsx
+sx={{
+  display: { xs: 'none', lg: 'block' },
+  width: { xs: '100%', md: 420 }
+}}
+```
+
+CSS Variables 不能可靠地用于媒体查询条件，因此 CSS Module 必须使用媒体查询时，可以写与 Theme 相同的固定断点，并标明来源：
+
+```scss
+/* Matches theme.breakpoints.values.sm. */
+@media (min-width: 768px) {
+  /* ... */
+}
+```
+
+如果一个 CSS Module 出现大量响应式规则，应把响应式外层布局改为 MUI `Box`、`Stack` 或 `Grid`。
+
+## 7. 禁止事项
+
+项目中禁止：
+
+- Tailwind 依赖、配置、`@tailwind` 指令和 utility class
+- 独立的 `tokens.css`
+- 页面或业务组件级全局 class
+- 使用普通 CSS 覆盖 `.Mui*` 内部 class
+- 同一个属性同时由 `className`、`sx` 和 `style` 控制
+- 无说明的 JSX `style` 属性
+- 业务代码中的硬编码主题颜色
+- 使用 `!important` 解决普通样式优先级问题
+- 在多个组件中复制相同的大型 `sx` 对象
+
+以下情况可以使用有说明的 inline style：
+
+- 第三方 API 只接受 `style`
+- 拖拽、虚拟列表等高频动态几何值
+- 只向 CSS 传递运行时 custom property
+
+例如：
+
+```jsx
+{/* Runtime value consumed by the component CSS Module. */}
+<div style={{ '--progress': `${progress}%` }} />
+```
+
+## 8. 修改样式时的检查清单
+
+提交前确认：
+
+1. 这是全局 MUI 行为、可复用组件样式、局部 MUI 样式，还是复杂非 MUI 样式？
+2. 是否选择了对应的 override、`styled()`、`sx` 或 CSS Module？
+3. 颜色、间距、字体、圆角和阴影是否来自 Theme？
+4. 是否重复实现了 Theme 中已有的 token？
+5. 是否出现新的全局业务 class、`!important` 或 JSX `style`？
+6. light/dark 模式下是否都正确？
+7. preset color 切换后，CSS Module 是否随 Theme 一起更新？
+8. `pnpm check` 是否通过？该命令依次执行 CSS 架构检查、lint、test 和 build。
+
+`pnpm check:css` 会自动阻止：
+
+- Tailwind 配置或依赖重新出现
+- 在业务源码中新增非 Module 全局样式文件
+- CSS Modules 使用硬编码颜色或旧 CSS token
+- CSS Modules 使用 `!important`
+- CSS Modules 直接覆盖 `.Mui*` class

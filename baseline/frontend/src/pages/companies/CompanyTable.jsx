@@ -103,7 +103,7 @@ function ActionCell({ company, onView, onEdit, onDelete }) {
 
 export function CompanyTable({ companies, onDelete, onEdit, onView }) {
   return (
-    <TableContainer component={Paper} className="crm-table-shell">
+    <TableContainer component={Paper}>
       <Table>
         <TableHead>
           <TableRow>

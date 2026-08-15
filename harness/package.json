@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "eval": "node scripts/evaluate.mjs",
-    "test": "node --test core/tests/*.test.mjs",
+    "test": "node --test core/tests/*.test.mjs rulepacks/js-react-frontend/tests/*.test.mjs rulepacks/cross/tests/*.test.mjs",
     "lint": "find core -type f \\( -name '*.mjs' -o -name '*.js' -o -name '*.cjs' \\) -print0 | xargs -0 -n1 node --check"
   },
   "dependencies": {

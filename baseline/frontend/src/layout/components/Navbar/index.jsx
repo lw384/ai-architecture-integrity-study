@@ -10,6 +10,7 @@ import HeaderContent from './HeaderContent';
 import IconButton from 'components/IconButton';
 
 import useLayoutSettings from 'hooks/useLayoutSettings';
+import { DRAWER_WIDTH, MINI_DRAWER_WIDTH } from 'config';
 
 // assets
 import MenuFoldOutlined from '@ant-design/icons/MenuFoldOutlined';
@@ -41,7 +42,11 @@ export default function Navbar() {
         edge="start"
         color="secondary"
         variant="light"
-        className={`ml-0 lg:-ml-4 text-text ${drawerOpen ? 'bg-transparent' : 'bg-grey-100'}`}
+        sx={{
+          ml: { xs: 0, lg: -2 },
+          color: 'text.primary',
+          bgcolor: drawerOpen ? 'transparent' : 'grey.100'
+        }}
       >
         {!drawerOpen ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </IconButton>
@@ -49,17 +54,24 @@ export default function Navbar() {
     </Toolbar>
   );
 
-  // Desktop AppBar width/margin track the mini-drawer's collapsed (60px) / expanded (260px)
-  // width from src/config.js (DRAWER_WIDTH / MINI_DRAWER_WIDTH). Only two states exist, so we
-  // pick between two literal Tailwind class strings instead of computing one at runtime.
-  const desktopWidthClass = drawerOpen ? 'lg:ml-[260px] lg:w-[calc(100%-260px)]' : 'lg:w-[calc(100%-60px)]';
+  const desktopDrawerWidth = drawerOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH;
 
   return (
     <AppBar
       position="fixed"
       color="inherit"
       elevation={0}
-      className={`w-full z-[1200] border-b border-divider transition-[width,margin] duration-[225ms] ease-[cubic-bezier(0.4,0,0.6,1)] ${desktopWidthClass}`}
+      sx={{
+        width: { xs: '100%', lg: `calc(100% - ${desktopDrawerWidth}px)` },
+        zIndex: (theme) => theme.zIndex.drawer,
+        borderBottom: 1,
+        borderColor: 'divider',
+        transition: (theme) =>
+          theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen
+          })
+      }}
     >
       {mainHeader}
     </AppBar>

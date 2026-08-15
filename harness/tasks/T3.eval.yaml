@@ -82,13 +82,12 @@ evaluation_scopes:
     scope_type: cross-stack
     root_path: .
     rulepack_id: cross
-    rulepack_version: "0.1.0"
+    rulepack_version: "0.2.0"
     enabled:
       constraints:
         - CROSS-EP-C-001
         - CROSS-METHOD-C-001
         - CROSS-TYPE-C-001
-        - CROSS-NAME-C-001
         - CROSS-ERR-C-001
         - CROSS-PROP-C-001
         - CROSS-DUP-C-001

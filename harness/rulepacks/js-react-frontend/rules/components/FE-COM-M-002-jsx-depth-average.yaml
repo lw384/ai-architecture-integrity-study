@@ -1,5 +1,5 @@
 rule_id: FE-COM-M-002-jsx-depth-average
-version: 0.1.0
+version: 0.2.0
 layer: metrics
 category: component-structure
 visibility: agent-visible
@@ -8,7 +8,9 @@ adapter: computed-metrics
 implementation: frontend-jsx-depth-average
 
 description: >
-  Measures average maximum JSX nesting depth across frontend component files.
+  Measures the average maximum effective JSX depth across production frontend
+  component files using the same fragment, structural-wrapper, render-prop,
+  and ignored-file semantics as FE-COM-C-002.
 
 agent_facing_message: >
   Average JSX nesting depth is {value}. Lower values indicate flatter component

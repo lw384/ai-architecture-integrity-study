@@ -1,0 +1,10 @@
+.background {
+  fill: var(--app-color-primary);
+}
+
+.label {
+  fill: var(--app-color-primary-contrast);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-logo);
+  font-weight: var(--app-font-weight-bold);
+}

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { createContext, useCallback, useEffect, useMemo } from 'react';
+import { createContext, useCallback, useMemo } from 'react';
 
 import defaults from 'config';
 import { useLocalStorage } from 'hooks/useLocalStorage';
@@ -8,17 +8,6 @@ export const LayoutSettingsContext = createContext(undefined);
 
 export function LayoutSettingsProvider({ children }) {
   const { state, setState, setField, resetState } = useLocalStorage('crm-baseline-layout-settings', defaults);
-
-  useEffect(() => {
-    if (typeof document === 'undefined') {
-      return;
-    }
-
-    const nextTheme = state.themeMode === 'dark' ? 'dark' : 'light';
-
-    document.documentElement.dataset.theme = nextTheme;
-    document.documentElement.style.colorScheme = nextTheme;
-  }, [state.themeMode]);
 
   const setSidebarCollapsed = useCallback((isSidebarCollapsed) => setField('isSidebarCollapsed', isSidebarCollapsed), [setField]);
 

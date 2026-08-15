@@ -50,7 +50,7 @@ function ActionCell({ contact, onView, onEdit, onDelete }) {
 // --- 主表格组件 ---
 export function ContactTable({ contacts, onView, onDelete, onEdit }) {
   return (
-    <TableContainer component={Paper} className="crm-table-shell">
+    <TableContainer component={Paper}>
       <Table size="small">
         <TableHead>
           <TableRow>

@@ -13,7 +13,7 @@ import MainCard from 'components/MainCard';
 import RiseOutlined from '@ant-design/icons/RiseOutlined';
 import FallOutlined from '@ant-design/icons/FallOutlined';
 
-const iconSX = { fontSize: '0.75rem', color: 'inherit', marginLeft: 0, marginRight: 0 };
+const trendIconSx = { fontSize: '0.75rem', color: 'inherit', ml: 0, mr: 0 };
 
 export default function AnalyticEcommerce({ color = 'primary', title, count, percentage, isLoss, extra }) {
   return (
@@ -30,7 +30,7 @@ export default function AnalyticEcommerce({ color = 'primary', title, count, per
             <Chip
               variant="combined"
               color={color}
-              icon={isLoss ? <FallOutlined style={iconSX} /> : <RiseOutlined style={iconSX} />}
+              icon={<Box component={isLoss ? FallOutlined : RiseOutlined} sx={trendIconSx} />}
               label={`${percentage}%`}
               sx={{ ml: 1.25, pl: 1 }}
               size="small"

@@ -4,6 +4,7 @@ layer: constraints
 category: cross-resource-naming
 visibility: agent-visible
 severity: warning
+status:experimental
 
 description: >
   Use one canonical resource name across backend modules/controllers and the

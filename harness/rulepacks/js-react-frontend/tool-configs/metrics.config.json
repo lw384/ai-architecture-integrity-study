@@ -20,6 +20,14 @@
         "Collapse",
         "Transitions"
       ],
+      "ignored_file_patterns": [
+        "**/*.test.*",
+        "**/*.spec.*",
+        "**/*.stories.*",
+        "**/__tests__/**",
+        "src/test/**",
+        "**/generated/**"
+      ],
       "raw_artifact_path": "artifacts/metrics/jsx-depth-average.json"
     },
     "FE-STATE-M-001-context-provider-ratio": {

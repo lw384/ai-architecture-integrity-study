@@ -353,12 +353,12 @@ requirements take precedence where a conflict exists.
 
 - **CROSS-TYPE-C-001:** Frontend requests and response models match backend
   DTO names, types, requiredness, nullability, and enum values.
-- **CROSS-EP-C-001:** Every frontend API URL resolves to an implemented
-  backend route.
+- **CROSS-EP-C-001:** Every statically resolvable production frontend API path
+  matches a reachable backend public route pattern.
 - **CROSS-ERR-C-001:** Every frontend-handled error code is defined and emitted
   by the backend.
-- **CROSS-METHOD-C-001:** Frontend HTTP methods and expected statuses match
-  the corresponding backend endpoints.
+- **CROSS-METHOD-C-001:** When a frontend API path resolves, its HTTP method
+  matches a registered backend handler for that route.
 - **CROSS-NAME-C-001:** Use one canonical resource name across backend routes,
   modules, frontend features, API services, and UI terminology.
 - **CROSS-PROP-C-001:** Propagate API-facing changes to every affected DTO,

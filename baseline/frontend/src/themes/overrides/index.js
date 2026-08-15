@@ -8,6 +8,7 @@ import ButtonBase from './ButtonBase';
 import CardContent from './CardContent';
 import Checkbox from './Checkbox';
 import Chip from './Chip';
+import CssBaseline from './CssBaseline';
 import Drawer from './Drawer';
 import FormHelperText from './FormHelperText';
 import IconButton from './IconButton';
@@ -20,6 +21,7 @@ import OutlinedInput from './OutlinedInput';
 import Tab from './Tab';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
+import TableContainer from './TableContainer';
 import TableHead from './TableHead';
 import TableRow from './TableRow';
 import Tabs from './Tabs';
@@ -36,6 +38,7 @@ export default function ComponentsOverrides(theme) {
     CardContent(),
     Checkbox(theme),
     Chip(theme),
+    CssBaseline(theme),
     Drawer(),
     FormHelperText(),
     IconButton(theme),
@@ -48,6 +51,7 @@ export default function ComponentsOverrides(theme) {
     Tab(theme),
     TableBody(theme),
     TableCell(theme),
+    TableContainer(),
     TableHead(theme),
     TableRow(),
     Tabs(),

@@ -1,5 +1,5 @@
 rulepack_id: cross
-version: 0.1.0
+version: 0.2.0
 kind: cross-stack
 language: [javascript, typescript]
 frameworks: [react, nestjs]
@@ -7,14 +7,14 @@ frameworks: [react, nestjs]
 adapters:
   cross-static:
     source: cross-static
-    version: 0.1.0
+    version: 0.2.0
     config: tool-configs/cross-static.config.json
     emits: [constraints]
 
 rules:
   constraints:
     - rules/endpoints/CROSS-EP-C-001-frontend-api-url-resolves-to-backend-route.yaml
-    - rules/endpoints/CROSS-METHOD-C-001-http-method-and-explicit-status-alignment.yaml
+    - rules/endpoints/CROSS-METHOD-C-001-http-method-matches-backend-route.yaml
     - rules/types/CROSS-TYPE-C-001-request-query-body-contract-alignment.yaml
     - rules/naming/CROSS-NAME-C-001-canonical-resource-name-consistency.yaml
     - rules/errors/CROSS-ERR-C-001-frontend-handled-error-codes-defined-and-emitted.yaml

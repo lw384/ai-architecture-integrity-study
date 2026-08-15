@@ -126,7 +126,7 @@ export function ContactFormDialog({
         {mode === 'create' ? 'Create contact' : 'Edit contact'}
       </DialogTitle>
 
-      <DialogContent className="!p-5">
+      <DialogContent sx={{ p: 2.5 }}>
 
         <Stack component="form" spacing={2} onSubmit={handleSubmit} >
             <TextField
@@ -246,7 +246,7 @@ export function ContactFormDialog({
         </Stack>
       </DialogContent>
 
-      <DialogActions className="crm-dialog-actions">
+      <DialogActions>
         <Button onClick={onClose} disabled={isPending}>
           Cancel
         </Button>

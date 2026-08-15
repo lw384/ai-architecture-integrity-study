@@ -10,6 +10,10 @@
       "backend/src/main.ts",
       "src/main.ts"
     ],
+    "backend_module_roots": [
+      "backend/src"
+    ],
+    "verify_controller_reachability": true,
     "required_prefix": "api"
   },
   "naming_inventory": {

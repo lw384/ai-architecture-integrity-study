@@ -153,7 +153,7 @@ export function CompanyFormDialog({
         {mode === 'create' ? 'Create company' : 'Edit company'}
       </DialogTitle>
 
-      <DialogContent className="!p-5">
+      <DialogContent sx={{ p: 2.5 }}>
         <Stack direction="column" spacing={2} component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
 
           <CompanyFormField
@@ -231,7 +231,7 @@ export function CompanyFormDialog({
         </Stack>
       </DialogContent>
 
-      <DialogActions className="crm-dialog-actions">
+      <DialogActions>
         <Button onClick={onClose} disabled={isPending}>
           Cancel
         </Button>

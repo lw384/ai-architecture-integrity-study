@@ -6,6 +6,9 @@ export default [
     },
     {
         files: ['**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
+        linterOptions: {
+            reportUnusedDisableDirectives: 'error',
+        },
         languageOptions: {
             ecmaVersion: 2021,
             sourceType: 'module',
@@ -30,6 +33,10 @@ export default [
                     'Popper', 'Portal', 'Modal', 'Backdrop',
                     'ClickAwayListener', 'Fade', 'Grow', 'Zoom', 'Slide', 'Collapse',
                     'Transitions',
+                ],
+                ignored_file_patterns: [
+                    '**/*.test.*', '**/*.spec.*', '**/*.stories.*',
+                    '**/__tests__/**', 'src/test/**', '**/generated/**',
                 ],
             }],
             'architecture/no-usestate-in-deep-child-components': 'error',

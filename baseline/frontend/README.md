@@ -21,9 +21,8 @@ frontend/
 │   │   ├── contacts/
 │   │   └── dashboard/
 │   ├── routes/                   # Router configuration
-│   ├── styles/                   # Global styles
 │   ├── test/                     # Frontend test setup
-│   ├── themes/                   # MUI theme configuration
+│   ├── themes/                   # MUI theme, CSS variables and overrides
 │   └── utils/                    # Utility helpers
 ├── mock/                         # Mock assets/data for local use
 ├── index.html                    # Vite HTML entry
@@ -31,6 +30,9 @@ frontend/
 ├── package.json
 └── Dockerfile
 ```
+
+The MUI-first styling architecture and CSS Module rules are documented in
+[`css.md`](./css.md).
 
 ## 2. How to Start the Project
 

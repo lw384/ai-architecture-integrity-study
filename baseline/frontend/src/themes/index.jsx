@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 // material-ui
-import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, useColorScheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 // project imports
@@ -13,6 +13,18 @@ import { buildPalette } from './palette';
 import Typography from './typography';
 
 // ==============================|| DEFAULT THEME - MAIN ||============================== //
+
+function ThemeModeSynchronizer({ mode }) {
+  const { setMode } = useColorScheme();
+
+  useEffect(() => {
+    setMode(mode);
+  }, [mode, setMode]);
+
+  return null;
+}
+
+ThemeModeSynchronizer.propTypes = { mode: PropTypes.oneOf(['light', 'dark']).isRequired };
 
 export default function ThemeCustomization({ children }) {
   const { state } = useLayoutSettings();
@@ -71,16 +83,18 @@ export default function ThemeCustomization({ children }) {
     [activeColorScheme, customShadows, palette, themeTypography]
   );
 
-  const themes = createTheme(themeOptions);
-  themes.components = componentsOverride(themes);
+  const themes = useMemo(() => {
+    const nextTheme = createTheme(themeOptions);
+    nextTheme.components = componentsOverride(nextTheme);
+    return nextTheme;
+  }, [themeOptions]);
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider disableTransitionOnChange theme={themes} defaultMode={activeColorScheme}>
-        <CssBaseline enableColorScheme />
-        {children}
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <ThemeProvider disableTransitionOnChange theme={themes} defaultMode={activeColorScheme}>
+      <ThemeModeSynchronizer mode={activeColorScheme} />
+      <CssBaseline enableColorScheme />
+      {children}
+    </ThemeProvider>
   );
 }
 
