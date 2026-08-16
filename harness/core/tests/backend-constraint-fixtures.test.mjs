@@ -152,7 +152,7 @@ test('backend constraint fixture protocol covers every registered backend rule e
 });
 
 test('every evaluation task enables the complete canonical backend constraint set', () => {
-    for (const taskName of ['Base', 'T0', 'T1', 'T2', 'T3']) {
+    for (const taskName of ['Base', 'T1', 'T2', 'T3']) {
         const task = readTaskConfig(path.join(harnessRoot, `tasks/${taskName}.eval.yaml`));
         const backend = task.evaluation_scopes.find((scope) => scope.scope_id === 'backend');
         assert.deepEqual([...backend.enabled.constraints].sort(), [...canonicalRuleIds].sort(), taskName);

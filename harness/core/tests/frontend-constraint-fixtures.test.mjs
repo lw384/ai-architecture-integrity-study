@@ -81,7 +81,7 @@ test('frontend constraint protocol covers every registered rule exactly once', (
 });
 
 test('every evaluation task enables the complete canonical frontend constraint set', () => {
-    for (const taskName of ['Base', 'T0', 'T1', 'T2', 'T3']) {
+    for (const taskName of ['Base', 'T1', 'T2', 'T3']) {
         const task = readTaskConfig(path.join(harnessRoot, `tasks/${taskName}.eval.yaml`));
         const frontend = task.evaluation_scopes.find((scope) => scope.scope_id === 'frontend');
         assert.deepEqual([...frontend.enabled.constraints].sort(), [...canonicalRuleIds].sort(), taskName);

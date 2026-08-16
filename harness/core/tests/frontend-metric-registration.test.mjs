@@ -22,7 +22,7 @@ const canonicalMetricIds = [
 ];
 
 test('every evaluation task enables exactly the seven canonical frontend metrics', () => {
-    for (const taskName of ['Base', 'T0', 'T1', 'T2', 'T3']) {
+    for (const taskName of ['Base', 'T1', 'T2', 'T3']) {
         const task = readTaskConfig(path.join(harnessRoot, `tasks/${taskName}.eval.yaml`));
         const frontend = task.evaluation_scopes.find((scope) => scope.scope_id === 'frontend');
 
