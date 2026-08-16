@@ -1,7 +1,9 @@
 <!--
 Task: T2 (Contact↔Company and Deal↔Contact become many-to-many)
 Variant: minimal
+Rule IDs targeted: BE-CONTRACT-C-001, BE-CONTRACT-C-002, BE-CONTRACT-C-003, BE-CONTRACT-C-004, BE-DEP-C-001, BE-DEP-C-002, BE-DEP-C-003, BE-DEP-C-004, BE-DOM-C-001, BE-DOM-C-002, BE-DUP-C-001, BE-DUP-C-002, BE-DUP-C-003, BE-ERR-C-001, BE-ERR-C-002, BE-ERR-C-003, BE-ROUTE-C-001, BE-SIZE-C-001, BE-STRUCT-C-001, BE-TEST-C-001, CROSS-EP-C-001, CROSS-PROP-C-001, CROSS-TYPE-C-001, FE-COM-C-001, FE-COM-C-002, FE-COMM-C-001, FE-DATA-C-001, FE-DATA-C-002, FE-DUP-C-001, FE-DUP-C-002, FE-ROUTE-C-001, FE-ROUTE-C-002, FE-STATE-C-001, FE-STATE-C-002, FE-STYLE-C-001, FE-STYLE-C-002
 -->
+
 
 ## 1. Agent Role
 
@@ -171,7 +173,8 @@ Determine any necessary API additions or modifications from the functional requi
 
 Preserve existing public API behaviour unless a change is necessary to fulfil those requirements.
 
-## 6. Delivery & Verification Protocol:
+## 6. Delivery / Meta
+
 - Work directly in the provided workspace. Implement the task by modifying the
   relevant project files; do not merely describe a proposed solution.
 

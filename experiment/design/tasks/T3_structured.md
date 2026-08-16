@@ -1,7 +1,8 @@
 <!--
 Task: T3
-Variant: architecture-neutral
+Variant: structured
 Prompt schema: V2
+Rule IDs targeted: BE-CONTRACT-C-001, BE-CONTRACT-C-002, BE-CONTRACT-C-003, BE-CONTRACT-C-004, BE-DEP-C-001, BE-DEP-C-002, BE-DEP-C-003, BE-DEP-C-004, BE-DOM-C-001, BE-DOM-C-002, BE-DUP-C-001, BE-DUP-C-002, BE-DUP-C-003, BE-ERR-C-001, BE-ERR-C-002, BE-ERR-C-003, BE-ROUTE-C-001, BE-SIZE-C-001, BE-STRUCT-C-001, BE-TEST-C-001, CROSS-EP-C-001, CROSS-PROP-C-001, CROSS-TYPE-C-001, FE-COM-C-001, FE-COM-C-002, FE-COMM-C-001, FE-DATA-C-001, FE-DATA-C-002, FE-DUP-C-001, FE-DUP-C-002, FE-ROUTE-C-001, FE-ROUTE-C-002, FE-STATE-C-001, FE-STATE-C-002, FE-STYLE-C-001, FE-STYLE-C-002
 -->
 
 ## 1. Agent Role
@@ -70,13 +71,13 @@ and every Deal continues to belong to exactly one Company.
 
 ### Stage vocabulary and initial state
 
-1. A Deal stage SHALL be one of: `lead`, `qualified`, `active`,  
+1. A Deal stage SHALL be one of: `lead`, `qualified`, `active`,
    `negotiation`, `closed_won`, or `closed_lost`.
 
-2. A newly created Deal MAY specify only `lead` or `qualified` as its initial  
+2. A newly created Deal MAY specify only `lead` or `qualified` as its initial
    stage. When omitted, its initial stage SHALL default to `lead`.
 
-3. A create request specifying `active`, `negotiation`, `closed_won`, or  
+3. A create request specifying `active`, `negotiation`, `closed_won`, or
    `closed_lost` as its initial stage SHALL be rejected.
 
 4. Deal API responses SHALL return only canonical stage values.
@@ -95,18 +96,18 @@ and every Deal continues to belong to exactly one Company.
 
 10. From `closed_lost`, a Deal may transition only to `lead`.
 
-11. A request whose target stage equals the Deal's current stage SHALL succeed  
+11. A request whose target stage equals the Deal's current stage SHALL succeed
     without changing the stored stage.
 
 12. Any other stage change SHALL be rejected.
 
 ### Transition preconditions
 
-13. Transitioning to `active` requires the Deal to have at least one linked  
+13. Transitioning to `active` requires the Deal to have at least one linked
     Contact.
 
-14. Transitioning to `negotiation` requires the Deal to have a non-null  
-    `expectedCloseDate`. The date may already be stored on the Deal or be  
+14. Transitioning to `negotiation` requires the Deal to have a non-null
+    `expectedCloseDate`. The date may already be stored on the Deal or be
     supplied in the same generic Deal update request.
 
 15. Transitioning to `closed_won` has no additional preconditions.
@@ -115,90 +116,90 @@ and every Deal continues to belong to exactly one Company.
 
 ### Existing Deal update behaviour
 
-17. The existing Deal update endpoint SHALL apply the same transition matrix  
+17. The existing Deal update endpoint SHALL apply the same transition matrix
     and preconditions whenever its request changes `stage`.
 
-18. A Deal update request that does not include `stage` SHALL not modify or  
+18. A Deal update request that does not include `stage` SHALL not modify or
     revalidate the Deal's current stage.
 
-19. A successful stage change through either the existing Deal update endpoint  
-    or the dedicated stage-transition endpoint SHALL produce the same stored  
+19. A successful stage change through either the existing Deal update endpoint
+    or the dedicated stage-transition endpoint SHALL produce the same stored
     stage and the same observable validation behaviour.
 
 ### Migration of existing data
 
-20. Existing stage values matching a canonical stage case-insensitively SHALL  
+20. Existing stage values matching a canonical stage case-insensitively SHALL
     be migrated to that canonical value.
 
-21. Existing `won`, `lost`, `prospect`, and `proposal_sent` values SHALL be  
-    migrated to `closed_won`, `closed_lost`, `lead`, and `negotiation`,  
+21. Existing `won`, `lost`, `prospect`, and `proposal_sent` values SHALL be
+    migrated to `closed_won`, `closed_lost`, `lead`, and `negotiation`,
     respectively.
 
-22. Any other existing stage value, including a blank or null value, SHALL be  
+22. Any other existing stage value, including a blank or null value, SHALL be
     migrated to `lead`.
 
 23. After migration, every stored Deal SHALL have a canonical stage value.
 
-24. The migration SHALL be safe to apply once to an existing database and SHALL  
+24. The migration SHALL be safe to apply once to an existing database and SHALL
     not create invalid Deal stage values.
 
 ### Error semantics
 
-25. An unrecognised requested stage value SHALL return `400` with code  
+25. An unrecognised requested stage value SHALL return `400` with code
     `UNKNOWN_STAGE`.
 
-26. A create request specifying a disallowed initial stage SHALL return `400`  
+26. A create request specifying a disallowed initial stage SHALL return `400`
     with code `INVALID_INITIAL_STAGE`.
 
-27. A stage change that is not allowed by the transition matrix SHALL return  
+27. A stage change that is not allowed by the transition matrix SHALL return
     `422` with code `INVALID_STAGE_TRANSITION`.
 
-28. A stage change whose target preconditions are unmet SHALL return `422` with  
+28. A stage change whose target preconditions are unmet SHALL return `422` with
     code `TRANSITION_PRECONDITION_UNMET`.
 
-29. A stage update for an unknown Deal id SHALL return `404` with code  
+29. A stage update for an unknown Deal id SHALL return `404` with code
     `NOT_FOUND`.
 
 ### UI acceptance
 
-30. Deal create and edit surfaces SHALL present stage values as a controlled  
+30. Deal create and edit surfaces SHALL present stage values as a controlled
     selection rather than a free-text input.
 
-31. The Deal create surface SHALL offer only `lead` and `qualified` as initial  
+31. The Deal create surface SHALL offer only `lead` and `qualified` as initial
     stage choices, with `lead` selected by default.
 
-32. The Deal edit surface SHALL show only stages allowed from the Deal's current  
+32. The Deal edit surface SHALL show only stages allowed from the Deal's current
     stage as selectable transition targets.
 
-33. The Deal edit surface SHALL require an expected close date when the user  
+33. The Deal edit surface SHALL require an expected close date when the user
     selects `negotiation`.
 
-34. A Deal with no linked Contacts SHALL not offer `active` as a selectable  
+34. A Deal with no linked Contacts SHALL not offer `active` as a selectable
     transition target.
 
 35. A Deal in `closed_won` SHALL have no selectable stage-transition action.
 
-36. A Deal in `closed_lost` SHALL offer `lead` as its only selectable  
+36. A Deal in `closed_lost` SHALL offer `lead` as its only selectable
     transition target.
 
-37. A stage-transition error returned by the API SHALL be shown inline and  
+37. A stage-transition error returned by the API SHALL be shown inline and
     SHALL leave the displayed Deal stage unchanged.
 
 ### Data setup
 
-38. After the `demo` seed runs, at least one Deal SHALL exist in each canonical  
+38. After the `demo` seed runs, at least one Deal SHALL exist in each canonical
     stage.
 
-39. After the `edge-case` seed runs, at least one Deal SHALL have no linked  
-    Contacts. Attempting to transition that Deal to `active` SHALL fail with  
+39. After the `edge-case` seed runs, at least one Deal SHALL have no linked
+    Contacts. Attempting to transition that Deal to `active` SHALL fail with
     `TRANSITION_PRECONDITION_UNMET`.
 
 ## 5. API Contract
 
 All routes below include the global `/api` prefix.
 
-This section defines externally observable HTTP behaviour only. It does not  
-prescribe the internal architecture, file structure, class names, DTO names, or  
+This section defines externally observable HTTP behaviour only. It does not
+prescribe the internal architecture, file structure, class names, DTO names, or
 implementation patterns.
 
 ### Shared Error Contract
@@ -215,10 +216,10 @@ All error responses use the existing project error-response envelope.
 
 ### Create Deal — Modified
 
-**Route:** `POST /api/deals`  
+**Route:** `POST /api/deals`
 **Content-Type:** `application/json`
 
-The existing Create Deal contract remains in effect. Its optional `stage` field  
+The existing Create Deal contract remains in effect. Its optional `stage` field
 may contain only `lead` or `qualified`; when omitted, it defaults to `lead`.
 
 ```
@@ -236,10 +237,10 @@ The response is the created Deal with a canonical `stage`.
 
 ### Update Deal — Modified
 
-**Route:** `POST /api/deals/:id`  
+**Route:** `POST /api/deals/:id`
 **Content-Type:** `application/json`
 
-The existing partial-update contract remains in effect. If the request includes  
+The existing partial-update contract remains in effect. If the request includes
 `stage`, the requested change follows the transition matrix and preconditions.
 
 A transition to `negotiation` may provide the required date in the same request:
@@ -257,7 +258,7 @@ The response is the updated Deal with a canonical `stage`.
 
 ### Transition Deal Stage — New
 
-**Route:** `POST /api/deals/:id/stage`  
+**Route:** `POST /api/deals/:id/stage`
 **Content-Type:** `application/json`
 
 ```
@@ -285,7 +286,8 @@ requirements take precedence where a conflict exists.
 ### Backend
 
 - **BE-STRUCT-C-001:** Each business module uses separate module, controller,
-  service, and repository files.
+  service, and repository files, and registers the controller, service, and
+  repository in the module's `@Module` metadata.
 - **BE-DEP-C-001:** Dependencies follow Controller → Service → Repository →
   Entity.
 - **BE-DEP-C-002:** `src/common/` and `src/core/` must not import business
@@ -303,8 +305,8 @@ requirements take precedence where a conflict exists.
   silent or log-only catches.
 - **BE-CONTRACT-C-001:** Persistent entity or relationship changes require a
   corresponding executable migration.
-- **BE-CONTRACT-C-002:** Request DTOs use the project's `class-validator` and
-  `ValidationPipe` mechanism.
+- **BE-CONTRACT-C-002:** Fields on DTOs bound via `@Body`, `@Query`, `@Param`,
+  or `@Headers` declare `class-validator` decorators.
 - **BE-CONTRACT-C-003:** Optional request properties must validate supplied
   values; `@IsOptional()` alone is insufficient.
 - **BE-CONTRACT-C-004:** Preserve input whitelisting and rejection of unknown
@@ -319,14 +321,16 @@ requirements take precedence where a conflict exists.
   competing modules, controllers, routes, or entity-table owners.
 - **BE-DUP-C-002:** Each business policy or invariant has one authoritative
   implementation; all entry points delegate to it.
-- **BE-DUP-C-003:** Do not copy equivalent production functions or code
-  blocks; reuse or extract an existing shared implementation.
+- **BE-DUP-C-003:** Do not copy equivalent production functions; reuse or
+  extract an existing shared implementation.
 
 ### Frontend
 
 - **FE-COM-C-001:** React component files contain at most 300 non-blank,
   non-comment lines.
 - **FE-COM-C-002:** Business JSX nesting does not exceed five levels.
+  Structural wrapper elements (fragments, portals, modals, transitions) are
+  transparent and do not count toward the depth.
 - **FE-STATE-C-001:** Components under `src/components/` and
   `src/layout/components/` must not introduce `useState` or `useReducer`.
 - **FE-STATE-C-002:** Context providers appear only at the application root,
@@ -344,28 +348,21 @@ requirements take precedence where a conflict exists.
   context, or the established state mechanism.
 - **FE-DUP-C-001:** Each resource has one frontend feature, route, page, and
   form owner; do not create competing feature directories or UI surfaces.
-- **FE-DUP-C-002:** Repeated API, form, validation, transformation, or state
-  logic belongs in a shared service, hook, or utility.
-- **FE-DUP-C-003:** Do not copy equivalent production components, functions,
-  or code blocks; reuse or extract a cohesive shared implementation.
+- **FE-DUP-C-002:** Frontend logic has one authoritative implementation.
+  Repeated API, form, validation, transformation, state, component, or
+  function logic belongs in a shared service, hook, component, or utility.
 
 ### Cross-Stack
 
-- **CROSS-TYPE-C-001:** Frontend requests and response models match backend
-  DTO names, types, requiredness, nullability, and enum values.
 - **CROSS-EP-C-001:** Every frontend API URL resolves to an implemented
   backend route.
-- **CROSS-ERR-C-001:** Every frontend-handled error code is defined and emitted
-  by the backend.
-- **CROSS-METHOD-C-001:** Frontend HTTP methods and expected statuses match
-  the corresponding backend endpoints.
-- **CROSS-NAME-C-001:** Use one canonical resource name across backend routes,
-  modules, frontend features, API services, and UI terminology.
-- **CROSS-PROP-C-001:** Propagate API-facing changes to every affected DTO,
-  route, persistence artifact, frontend adapter, UI surface, seed, and test.
-- **CROSS-DUP-C-001:** Each cross-stack contract has one authoritative source
-  or an automated synchronization mechanism; do not maintain unsynchronized
-  duplicate definitions.
+- **CROSS-TYPE-C-001:** Frontend request route params, query fields, and body
+  fields match the backend controller/DTO contract (arity, field existence,
+  required fields, and statically resolvable enum/type values).
+- **CROSS-PROP-C-001:** Propagate API-facing backend (controller/DTO) or
+  frontend adapter changes to the resource's existing counterpart surfaces:
+  frontend adapter, frontend UI, backend contract, and tests.
+
 
 ## 7. Delivery and Verification Protocol
 

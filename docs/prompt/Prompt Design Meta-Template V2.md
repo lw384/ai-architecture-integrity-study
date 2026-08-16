@@ -28,15 +28,15 @@ Seven blocks, in this fixed order:
 | **2** | Codebase Orientation | Where the target files and reference modules live                        | Head            | Length only                      |
 | **3** | Problem Statement    | What to build, why, and the domain context                               | Head–mid        | **Byte-identical**               |
 | **4** | Requirements         | Testable "must" statements （Black-box Behavior Acceptance）               | Mid             | **Byte-identical**               |
-| **5** | API Contract         | External REST boundaries for black-box test alignment (task-conditional) | Mid             | **Byte-identical when enabled**  |
+| **5** | API Contract         | External REST boundaries for black-box test alignment (task-conditional) | Mid             | **Full ⇄ Absent**                |
 | **6** | Rules                | Cross-cutting conventions the code must respect                          | Tail            | Full ⇄ Absent                    |
 | **7** | Delivery / Meta      | Output contract, testing expectation, sequence continuity                | Tail            | Byte-identical                   |
 
 **Under prompt_strategy**:
 
-Only Block 6 fully toggles, serving as the sole independent variable (IV).
+Blocks 5 and 6 together form the independent variable (IV): interface/contract design is treated as an architectural decision, so structured carries full API-contract detail alongside the full rule set, while minimal withholds both.
 
-Blocks 1–5 and 7 stay stable (Blocks 3, 4, and 7 are byte-identical; Blocks 1–2 are length-adjusted).
+Blocks 1–4 and 7 stay stable (Blocks 3, 4, and 7 are byte-identical; Blocks 1–2 are length-adjusted).
 
 **Under task_class (T1/T2/T3/T4/T5):** Blocks 2, 3, 4 and 5 vary by content to reflect the iterative progression of the CRM features; the rest stay stable in structure.
 
@@ -138,24 +138,20 @@ Each block contains: **Purpose · Source · Length · Structured example · Mini
 
 ---
 
-### Block 5 — API Contact (task-conditional)
+### Block 5 — API Contract (task-conditional)
 
-**Purpose**: Define external REST boundaries for black-box test alignment.
+**Purpose**: Define external REST boundaries for black-box test alignment. Interface/contract shape is itself an architectural decision, so this block is part of the architectural-guidance IV alongside Block 6, not a stable block.
 **Source**: API schema or target test harness endpoints.
-**Length**: 0–150 w.
-**Variance rule**: Task-conditional.
+**Length**: structured 0–400 w (task-conditional) / minimal 0–40 w.
+**Variance rule**: Full ⇄ Absent, paired with Block 6.
 
-If the task introduces or modifies public endpoints (e.g., T1, T3), this block is enabled and must be byte-identical across structured and minimal variants.
+When a task is marked enabled in the Task-Specific Filling Table (§4), the **structured** variant includes the full REST contract: routes, field tables, request/response examples, and error codes. The **minimal** variant always uses the generic placeholder below, regardless of whether the task touches the API surface — working out the API shape autonomously is itself part of what minimal withholds.
 
-If the task is purely internal refactoring or state-machine logic enhancement without API changes, this block is explicitly defined as "No changes to existing API contracts are required." or omitted entirely.
-
-**Structured = Minimal (byte-identical).**
-
-### Example A: Enabled
+### Example: Structured (enabled)
 
 > **External API Contract**
 > 
-> The following REST endpoints must be updated to fulfill the frontend requirements. The internal architecture, file structure, and DTO definitions used to satisfy this contract are up to you.
+> The following REST endpoints must be updated to fulfill the frontend requirements.
 > 
 > **Endpoint 1: Fetch Customer List**
 > 
@@ -164,27 +160,20 @@ If the task is purely internal refactoring or state-machine logic enhancement wi
 > - **Request Body**: { "customerId": string, "amount": number }
 > 
 > - **Response:** Each customer object in the returned JSON array must include a new top-level field: `"healthScore": number` (integer).
-> 
-> **Endpoint 2: Fetch Single Customer**
-> 
-> - **Route:** `GET /api/customers/:id`
-> 
-> - **Request Body**: { "customerId": string, "amount": number }
-> 
-> - **Response:** The returned single customer JSON object must include a new top-level field: `"healthScore": number` (integer).
 
-### Example B: Disabled
+### Example: Minimal (always used)
 
-> External API Contract
-> No changes to the existing public API contracts are required. The frontend will continue to use the current endpoints and payload structures. Ensure your internal logic enhancements do not break the existing REST interfaces.
+> Determine any necessary API additions or modifications from the functional requirements.
+> 
+> Preserve existing public API behaviour unless a change is necessary to fulfil those requirements.
 
-**Variance rule**: Byte-identical across both variants. If Example A is used in structured, the exact same Example A must be used in minimal. The agent's decision on where and how to implement this contract is left entirely to Block 6 (Rules) in structured or its own autonomy in minimal.
+**Variance rule**: Structured and minimal are not byte-identical. Minimal always uses the generic placeholder text above; structured includes the full contract whenever Block 5 is enabled for that task.
 
 ---
 
 ### Block 6 — Rules
 
-**Purpose**: Cross-cutting conventions the code must respect. This block acts as the **Sole Independent Variable (IV)** of the experiment. Its contents are strictly mapped 1:1 to the automated evaluation harness (`rulepacks/` directory).
+**Purpose**: Cross-cutting conventions the code must respect. This block, together with Block 5, forms the **architectural-guidance independent variable (IV)** of the experiment. Its contents are strictly mapped 1:1 to the automated evaluation harness (`rulepacks/` directory).
 
 **Source**: The `rulepacks/` directory definitions (specifically YAML configs under `js-react-frontend/rules` , `ts-nestjs-backend/rules`, `cross/rules`).
 
@@ -214,11 +203,11 @@ Below are the mapped sub-blocks. Each shows purpose, the corresponding Harness R
 
 **Length**: 100–200 w.
 
-**Rule IDs covered**: ARCH-1, ARCH-2, ARCH-3, ARCH-4, ARCH-5.
+**Rule IDs covered**: BE-STRUCT-C-001, BE-DEP-C-001–004, BE-DOM-C-001–002, BE-ERR-C-001–003, BE-CONTRACT-C-001–004, BE-TEST-C-001, BE-ROUTE-C-001, BE-SIZE-C-001, BE-DUP-C-001–003.
 
 ##### Backend Architecture & Boundaries
 
-##### Dependancy
+##### Dependency
 
 ##### Domain Boundaries
 
@@ -234,7 +223,7 @@ Below are the mapped sub-blocks. Each shows purpose, the corresponding Harness R
 
 **Purpose**: RFC 9110 semantics and URL conventions.
 
-**Rule IDs covered**: WEB-1, WEB-2, WEB-3, WEB-4, WEB-5, WEB-6, SEC-4.
+**Rule IDs covered**: FE-COM-C-001–002, FE-STATE-C-001–002, FE-ROUTE-C-001–002, FE-STYLE-C-001–002, FE-DATA-C-001–002, FE-COMM-C-001, FE-DUP-C-001–002.
 
 **Length**: 120–250 w.
 
@@ -251,17 +240,14 @@ Inter-component Communication
 
 #### R3 — Cross-Stack Quality & Conventions
 
-**Purpose**: Consistent error-response construction.
+**Purpose**: Endpoint existence, request/response contract alignment, and change-propagation completeness across the stack.
 
-**Rule IDs covered**: STY-5, WEB-7, WEB-8.
+**Rule IDs covered**: CROSS-EP-C-001, CROSS-TYPE-C-001, CROSS-PROP-C-001.
 
-**Length**: 100–180 w.
+**Length**: 60–120 w.
 
-Type Contract Consistency
 Endpoint Existence
-Error Code Convention
-Resource Naming Alignment
-
+Type Contract Consistency
 Change Propagation Completeness
 
 **Structured example**:
@@ -298,11 +284,11 @@ Change Propagation Completeness
 | 2. Codebase Orientation | ✅ same               | ✅ same               |       |
 | 3. Problem Statement    | ✅                    | ✅                    |       |
 | 4. Requirements         | ✅                    | ✅                    |       |
-| 5. API Contact          | ✅ (task-conditional) | ✅ (task-conditional) |       |
+| 5. API Contract         | ✅ full detail        | ❌ generic placeholder |       |
 | 6. Rules (R1-R3)        | ✅ all                | ❌  absent            |       |
 | 7. Meta Behaviour       | ✅                    | ✅                    |       |
 
-**Aggregate length**: structured ≈ 1400–2600 w; minimal ≈ 350–650 w.
+**Aggregate length**: structured ≈ 1400–2900 w; minimal ≈ 350–650 w.
 
 ---
 
@@ -311,20 +297,19 @@ Change Propagation Completeness
 | Task                          | Block 3 source         | Block 4 source                         | Block 5 enabled               | Block 7.c enabled |
 | ----------------------------- | ---------------------- | -------------------------------------- | ----------------------------- | ----------------- |
 | **T1** Deal CRUD              | §4.1 real-world + task | §4.1 rules                             | ✅ (new CRUD endpoints)        | ❌                 |
-| **T2** Pipeline state machine | §4.2 real-world + task | §4.2 rules + orphan-reference          | ⚠️ only if new public methods | ❌                 |
-| **T3** Health score           | §4.3 real-world + task | §4.3 rules + list-endpoint perf        | ✅ (new aggregation service)   | ❌                 |
-| **T4** step 1                 | §4.4 T4.1              | §4.4 T4.1                              | ✅                             | ❌                 |
-| **T4** step k (k ≥ 2)         | §4.4 T4.k              | §4.4 T4.k                              | ⚠️ per step                   | ✅                 |
-| **T5a** Vague                 | §4.5a verbatim         | §4.5a (empty by design)                | ❌                             | ❌                 |
-| **T5b** Conflict              | §4.5b verbatim         | §4.5b (contradiction — do NOT resolve) | ❌                             | ❌                 |
+| **T2** Contact/Company & Deal/Contact many-to-many | §4.2 real-world + task | §4.2 rules + migration      | ⚠️ only if new public methods | ❌                 |
+| **T3** Deal pipeline state machine | §4.3 real-world + task | §4.3 rules + transition matrix    | ✅ (new stage-transition endpoint) | ❌            |
+| **T4** step 1 (planned)       | §4.4 T4.1              | §4.4 T4.1                              | ✅                             | ❌                 |
+| **T4** step k (k ≥ 2, planned)| §4.4 T4.k              | §4.4 T4.k                              | ⚠️ per step                   | ✅                 |
+| **T5** Architecture self-review | verbatim review brief | n/a (review-only, no code changes)     | ❌                             | ❌                 |
 
-**T5 preservation rule**: The ambiguity or conflict IS the treatment; do not clarify it in either variant. Both variants present the same source text verbatim.
+**T5**: Review-only task; the agent inspects the current workspace for architecture-consistency issues and reports findings without modifying files, running migrations, or creating commits.
 
 ---
 
 ## 5. Block Ordering Policy
 
-Blocks appear in the prompt file in this fixed orde
+Blocks appear in the prompt file in this fixed order
 
 ```
 1. Agent Role                     (head — anchors identity)
@@ -332,7 +317,7 @@ Blocks appear in the prompt file in this fixed orde
 3. Problem Statement              (head-mid — sets goal)
 4. Requirements                   (mid — the contract)
 5. API contact (if enabled)       (mid — test alignment)
-6. Rules (R1 → R7)                (tail — high-attention zone)
+6. Rules (R1 → R3)                (tail — high-attention zone)
 7. Meta                           (tail — final instructions)
 ```
 
@@ -349,25 +334,22 @@ prompts/
 ├── T2_minimal.md
 ├── T3_structured.md
 ├── T3_minimal.md
-├── T4-step1_structured.md
-├── T4-step1_minimal.md
-├── ... (T4-step2 … step8)
-├── T5a_structured.md
-├── T5a_minimal.md
-├── T5b_structured.md
-└── T5b_minimal.md
+├── T4-step1_structured.md   (planned)
+├── T4-step1_minimal.md      (planned)
+├── ... (T4-step2 … step8, planned)
+└── T5.md                    (single review-only file, no minimal/structured split)
 ```
 
 **Header** (top of every prompt file):
 
 ```markdown
 <!--
-Task: T3 (Health Score)
+Task: T1 (Deal CRUD)
 Variant: structured
 Blocks enabled: 1, 2, 3, 4, 5, 6, 7 (all)
-Rule IDs targeted: ARCH-1, ARCH-4, WEB-1, WEB-2, WEB-9, STY-3, BIZ-*, LLM-1, LLM-2, LLM-6
-Derived from: prompt_meta_template_v3.md
-Source documents: PRD_v1.docx, CRM_Scope_v2_Task_Design.docx §4.3, Rule_Registry_v0.1.md
+Rule IDs targeted: BE-STRUCT-C-001, BE-DEP-C-001, BE-CONTRACT-C-002, FE-COM-C-001, FE-DATA-C-001, CROSS-EP-C-001, CROSS-TYPE-C-001
+Derived from: prompt_meta_template_v2.md
+Source documents: PRD_v1.docx, CRM_Scope_v2_Task_Design.docx §4.1, Rule_Registry_v0.1.md
 Content hash (SHA-256 of blocks 3+4+5): [pending — set at freeze commit]
 Frozen at: [pending — set at freeze commit]
 -->
