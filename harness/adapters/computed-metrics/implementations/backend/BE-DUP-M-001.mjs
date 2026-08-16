@@ -26,7 +26,7 @@ function toPosixPath(value) {
     return value.split(path.sep).join('/');
 }
 
-function listProductionTsFiles(projectRoot, sourceRoots) {
+function listProductionFiles(projectRoot, sourceRoots, sourceExtensions) {
     const files = [];
 
     function walk(dir) {
@@ -42,7 +42,7 @@ function listProductionTsFiles(projectRoot, sourceRoots) {
                 continue;
             }
 
-            if (!/\.tsx?$/.test(entry.name) || !isProductionSourcePath(entryPath)) {
+            if (!sourceExtensions.has(path.extname(entry.name)) || !isProductionSourcePath(entryPath)) {
                 continue;
             }
 
@@ -80,7 +80,7 @@ function tokenizeFile(filePath, relativeFile) {
         loc: true,
         range: true,
         tokens: true,
-        jsx: filePath.endsWith('.tsx'),
+        jsx: /\.[jt]sx$/.test(filePath),
     });
 
     return {
@@ -247,7 +247,12 @@ function summarize(projectRoot, config = {}) {
     const sourceRoots = Array.isArray(config.source_roots) && config.source_roots.length > 0
         ? config.source_roots
         : ['src'];
-    const files = listProductionTsFiles(projectRoot, sourceRoots);
+    const sourceExtensions = new Set(
+        Array.isArray(config.source_extensions) && config.source_extensions.length > 0
+            ? config.source_extensions
+            : ['.ts', '.tsx'],
+    );
+    const files = listProductionFiles(projectRoot, sourceRoots, sourceExtensions);
     const fileTokenLists = files.map((filePath) =>
         tokenizeFile(filePath, toPosixPath(path.relative(projectRoot, filePath)))
     );

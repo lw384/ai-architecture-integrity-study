@@ -6,10 +6,10 @@ Variant: minimal
 <!--
 Task: T1
 Variant: structured
-Blocks enabled: 1, 2, 3, 4, 5, 6, 7 
-Rule IDs targeted: 
+Blocks enabled: 1, 2, 3, 4, 5, 6, 7
+Rule IDs targeted:
 Derived from: prompt_meta_template_v2.md
-Source documents: 
+Source documents:
 Content hash (SHA-256 of blocks 3+4+5): [pending — must match T1_structured.md]
 Frozen at: [pending — set at freeze commit]
 -->

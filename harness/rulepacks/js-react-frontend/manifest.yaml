@@ -1,5 +1,5 @@
 rulepack_id: js-react-frontend
-version: 0.2.0
+version: 0.4.0
 kind: subject
 language: [javascript]
 frameworks: [react]
@@ -34,18 +34,13 @@ rules:
     - rules/duplication/FE-DUP-C-001-single-resource-owner.yaml
     - rules/duplication/FE-DUP-C-002-single-authoritative-implementation.yaml
   metrics:
-    - rules/components/FE-COM-M-001-component-line-average.yaml
-    - rules/components/FE-COM-M-002-jsx-depth-average.yaml
+    - rules/components/FE-COM-M-001-jsx-depth-average.yaml
     - rules/states/FE-STATE-M-001-context-provider-ratio.yaml
-    - rules/states/FE-STATE-M-002-context-consumer-per-provider-ratio.yaml
-    - rules/routes/FE-ROUTE-M-001-route-count.yaml
-    - rules/routes/FE-ROUTE-M-002-route-param-complexity.yaml
+    - rules/routes/FE-ROUTE-M-001-route-param-complexity.yaml
     - rules/styles/FE-STYLE-M-001-style-mixing-ratio.yaml
-    - rules/styles/FE-STYLE-M-002-global-style-rule-count.yaml
     - rules/data/FE-DATA-M-001-data-access-wrapping-ratio.yaml
-    - rules/data/FE-DATA-M-002-useeffect-missing-dependency-ratio.yaml
-    - rules/communication/FE-COMM-M-001-prop-count-average.yaml
-    - rules/communication/FE-COMM-M-002-prop-drilling-average.yaml
+    - rules/communication/FE-COMM-M-001-prop-drilling-average.yaml
+    - rules/duplication/FE-DUP-M-001-clone-ratio.yaml
   judgments: []
 
 metadata:

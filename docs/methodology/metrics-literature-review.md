@@ -2,13 +2,13 @@
 
 Grounds the harness's architectural-integrity metrics (`harness/adapters/computed-metrics/`) in established software engineering literature, plus the AI-coding-agent empirical work motivating the study's core claim.
 
-**Compiled:** 2026-08-16 | **Verification:** every citation below was located and confirmed via live web search/fetch (title, authors, venue, and — where available — DOI cross-checked against publisher/arXiv/ACM pages). No entry is included on memory alone; where a metric has no defensible academic anchor, that is stated explicitly rather than forcing a citation.
+**Compiled:** 2026-08-16 | **Verification:** every citation below was located and confirmed via live web search/fetch (title, authors, venue, and — where available — DOI cross-checked against publisher/arXiv/ACM pages). No entry is included on memory alone; where a metric has no defensible academic anchor, that is stated explicitly rather than forcing a citation. All implementation paths and computation steps below were read directly from the current source, not paraphrased from memory.
 
 ---
 
 ## Part 1 — Backend Metrics Matrix
 
-This is the finalized **minimum covering set** for the 9 backend constraint categories (`harness/rulepacks/ts-nestjs-backend/rules/`): one metric per category, each entry giving its reference (if any), what it targets, and exactly how it is computed — read directly from source, not paraphrased from memory.
+This is the finalized **minimum covering set** for the 9 backend constraint categories (`harness/rulepacks/ts-nestjs-backend/rules/`): one metric per category, each entry giving its reference (if any), what it targets, and exactly how it is computed.
 
 Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 
@@ -16,15 +16,17 @@ Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 
 ### STRUCT — `module-composition-violation-ratio` (`BE-STRUCT-M-001`)
 
-**参考文献**：无。这是仓库自定义的结构性检查（模块目录是否具备该模块类型所要求的文件层），未见对应的学术指标定义，直接照搬约束规则 `BE-STRUCT-C-001-module-composition` 的判定逻辑。
+**参考文献**：无。这是仓库自定义的结构性检查（模块目录是否具备该模块类型所要求的文件层），未见对应的学术指标定义，直接照搬约束规则 `BE-STRUCT-C-001-module-composition` 的判定意图（但判定标准并不完全一致，见下）。
 
 **作用**：检测每个后端模块目录是否"配齐"了该类型模块应有的文件层——例如一个带 `*.entity.ts` 的实体模块，理应同时存在 controller、service、repository 三层文件；如果 agent 改动后只留下部分文件（比如删掉了 repository 却继续在 service 里裸写 SQL），这里就会被标记为"不完整模块"。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/module-composition-violation-ratio.mjs`）：
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-STRUCT-M-001.mjs`）：
 1. 在 `module_roots`（默认 `backend/src/module(s)`、`src/module(s)`）下逐个子目录寻找 `*.module.ts`（排除 `app.module.ts`）
 2. 按目录名分类："以 `-link`/`-relation` 结尾" → 关联模块（要求 controller + service）；"含 `*.entity.ts`" → 实体模块（要求 controller + service + repository）；否则 → 纯服务模块（仅要求 service）
 3. 检查每个必需层文件 `{moduleBase}.{layer}.ts` 是否存在，缺一个即判该模块"不完整"
 4. `ratio = 不完整模块数 / 模块总数`（无模块时记 0）
+
+> **口径提示**：这套判定完全靠文件系统扫描，不检查对应约束规则要求的"`@Module` 元数据是否实际登记"，必需层也是按有没有 `*.entity.ts` 动态决定，跟约束规则固定要求三层齐全不是同一套标准。
 
 ---
 
@@ -34,13 +36,20 @@ Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 - Tarjan, R. E. (1972). Depth-first search and linear graph algorithms. *SIAM Journal on Computing, 1*(2), 146–160. https://doi.org/10.1137/0201010 —— 循环依赖检测部分直接实现的就是这篇论文提出的强连通分量（SCC）算法
 - Melton, H., & Tempero, E. (2007). An empirical study of cycles among classes in Java. *Empirical Software Engineering, 12*(4), 389–415. https://doi.org/10.1007/s10664-006-9033-1 —— "为什么循环依赖是架构健康问题"的实证支撑
 
-**作用**：同时监控 `BE-DEP-C-001`（分层方向：controller→service→repository）与 `BE-DEP-C-004`（禁循环依赖）两条约束，把"依赖图形状是否符合分层架构"折算成一个连续密度值，而不是单纯的通过/不通过判定。
+**作用**：同时监控 `BE-DEP-C-001`（分层方向：controller→service→repository→entity）与 `BE-DEP-C-004`（禁循环依赖）两条约束，把"依赖图形状是否符合分层架构"折算成一个连续密度值，而不是单纯的通过/不通过判定。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/dependency-violation-density.mjs`）：
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-DEP-M-001.mjs`）：
 1. 从 dependency-cruiser 报告收集全部导入边 `(source → target)`
-2. 按文件名后缀判定层级（`.controller.ts`/`.service.ts`/`.repository.ts`），若某条边的方向不在 `allowed_transitions`（默认 `controller→service`、`service→service|repository`、`repository→repository`）之内，记一次 **MVC 方向违规**
-3. 用 Tarjan 算法（代码里的 `strongConnect` 函数）对整张依赖图求强连通分量；任何大小 > 1 的分量、或存在自环的节点，其内部所有边都记为 **循环依赖边**
-4. `value = (MVC方向违规边数 + 循环依赖边数) / 总导入边数`
+2. 按文件名后缀判定层级（`.controller.ts`/`.service.ts`/`.repository.ts`/`.entity.ts`），复用
+   `adapters/backend-static/rules/dependencies.mjs` 导出的 `FORBIDDEN_LAYER_PAIRS` 禁止层对表判定，
+   且只在两端属于同一个业务模块时才算数——与约束规则 `BE-DEP-C-001` 共用同一份判定依据，记一次
+   **分层违规**
+3. 用 Tarjan 算法（`findSccs`/`strongConnect`）对整张依赖图求强连通分量；只有两端落在**同一个**强连通
+   分量内的边才记为 **循环依赖边**（避免把连接两个不同环状聚集的桥接边也误判为循环依赖）
+4. `value = (分层违规边数 + 循环依赖边数) / 总导入边数`
+
+> **口径提示**：分层违规部分已与约束规则共享判定依据（保证不会分叉）；循环依赖部分仍是独立于
+> dependency-cruiser 配置的 `BE-DEP-C-004-no-circular` 规则的第二套自研环检测。
 
 ---
 
@@ -48,27 +57,31 @@ Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 
 **参考文献**：Parnas, D. L. (1972). On the criteria to be used in decomposing systems into modules. *Communications of the ACM, 15*(12), 1053–1058. https://doi.org/10.1145/361598.361623 —— "模块该隐藏什么、暴露什么"的信息隐藏原则，是这条约束（禁止跨模块深导入内部文件）的理论源头。
 
-**作用**：统计有多少次导入"越过"了目标模块的公开边界，直接伸手进别的模块内部实现细节——这是模块封装被破坏的直接信号,也是（架构侵蚀 architecture erosion）里"实际实现偏离既定边界"的一种具体形式。
+**作用**：统计有多少次导入"越过"了目标模块的公开边界，直接伸手进别的模块内部实现细节——这是模块封装被破坏的直接信号，也是架构侵蚀（architecture erosion）里"实际实现偏离既定边界"的一种具体形式。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/cross-module-deep-import-count.mjs`）：
-1. 复用同一份 dependency-cruiser 报告，只保留被 dep-cruiser 规则 `BE-DOM-C-001-no-cross-module-deep-import` 标记过的边（即已经在约束层判定为"深导入"的边，这里不重新跑规则，只是计数汇总）
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-DOM-M-001.mjs`）：
+1. 复用同一份 dependency-cruiser 报告，只保留被 dep-cruiser 规则 `BE-DOM-C-001-no-cross-module-deep-import` 标记过的边（即已经在 dep-cruiser 自己的规则引擎里判定为"深导入"的边，这里不重新判定，只是计数汇总）
 2. `value = 命中该规则的边总数`（原始计数，非比例——因为深导入本应为零，任何非零值都值得关注）
 3. 按 `module_root_pattern`（默认 `^src/modules?/([^/]+)/`）解析每条边的来源/目标模块名，供细粒度归因
 
+> **口径提示**：这里复用的是 dep-cruiser 自己配置的同名规则标记，跟约束规则 `BE-DOM-C-001`（backend-static AST 实现）是两套独立引擎在各自判定同一件事，只是恰好用了同一个规则名。
+
 ---
 
-### DUP — Clone Ratio（**建议新增，目前无实现**）
+### DUP — `clone-ratio` (`BE-DUP-M-001`)
 
 **参考文献**：
 - Juergens, E., Deissenboeck, F., Hummel, B., & Wagner, S. (2009). Do code clones matter? In *Proceedings of the 31st International Conference on Software Engineering (ICSE 2009)* (pp. 485–495). IEEE. https://doi.org/10.1109/ICSE.2009.5070547 —— 实证证明重复代码不是风格问题而是缺陷预测因子（52% 的克隆被不一致修改，其中 15% 导致真实故障）
 - Roy, C. K., Cordy, J. R., & Koschke, R. (2009). Comparison and evaluation of code clone detection techniques and tools: A qualitative approach. *Science of Computer Programming, 74*(7), 470–495. https://doi.org/10.1016/j.scico.2009.02.007 —— 克隆检测技术分类法（Type-1/2/3/4），是下面计算方式的算法依据
 
-**作用**：填补 `BE-DUP-C-001`（单一资源所有者）、`BE-DUP-C-002`（单一策略实现）、`BE-DUP-C-003`（禁等价重复代码）这三条约束目前**零指标覆盖**的空白——约束层能抓到"是否存在重复"，但抓不到"重复的严重程度随迭代如何变化"。这在 AI agent 场景下尤其关键：GitClear (2026) 的产业数据显示 agent 辅助开发中复制粘贴行为在两年内增长约 4 倍。
+**作用**：填补 `BE-DUP-C-001`（单一资源所有者）、`BE-DUP-C-002`（单一策略实现）、`BE-DUP-C-003`（禁等价重复代码）这三条约束此前零指标覆盖的空白——约束层能抓到"是否存在重复"，但抓不到"重复的严重程度随迭代如何变化"。这在 AI agent 场景下尤其关键：GitClear (2026) 的产业数据显示 agent 辅助开发中复制粘贴行为在两年内增长约 4 倍。
 
-**计算方式**（建议实现，仓库内目前没有对应 `.mjs` 文件）：
-1. 对 backend 生产代码（排除测试文件）做 token 化或 AST 子树归一化
-2. 用滑动窗口检测长度 ≥ 阈值（例如连续 ≥5 行或 ≥50 token）的重复片段，对应 Roy et al. 分类法里的 Type-1（完全一致）/Type-2（改了变量名/字面量）克隆
-3. `ratio = 被判定为重复片段覆盖的代码行数 / 生产代码总行数`
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-DUP-M-001.mjs`）：
+1. 对生产 `.ts`/`.tsx` 文件（排除测试文件）逐个解析并分词，标识符和字面量归一化成占位符（`«ID»`/`«LIT»`），关键字/运算符/标点保留原样——这样 Type-1（完全一致）和 Type-2（改了变量名/字面量）克隆的归一化 token 序列会完全相同
+2. 把所有文件的 token 拼成一条带文件/行号标注的全局序列，用固定窗口（默认 50 token）滑动，按窗口哈希分桶（桶内位置数超过 40 视为无意义的常见样板，跳过以避免 O(k²) 爆炸）
+3. 对同一个桶内的每对不同位置，向后逐 token 扩展找最大匹配长度，长度满足 ≥50 token 或对应行数 ≥5 行任一条件即判定为一处克隆
+4. 每处克隆的两个出现位置各自覆盖的所有行号，都存进一个去重的 `Set`（避免同一行被多处重叠克隆重复计数）
+5. `ratio = 覆盖行数（Set 大小）/ 生产代码总的"含 token"行数`
 
 ---
 
@@ -78,40 +91,49 @@ Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 
 **作用**：把 `BE-ERR-C-001`（禁止在 service 抛 HTTP 异常）、`BE-ERR-C-002`（只能抛 AppException）、`BE-ERR-C-003`（禁止静默 catch）这三条规则的命中数，按 service 文件规模归一化成一个密度值，衡量异常处理规范被破坏的"浓度"而不只是"有没有"。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/exception-unification-violation-density.mjs`）：
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-ERR-M-001.mjs`）：
 1. 直接复用 constraints 层已经产出的三条规则命中数（`findings_by_rule[ruleId].length`），不重新跑 AST 扫描
 2. 按 `weights` 加权求和：`Σ(count_i × weight_i)`（默认权重均为 1）
 3. 分母 = 遍历 `targetDir/src` 统计的 `*.service.ts` 文件数（排除 `node_modules`/`dist`/`build`），至少取 1 避免除零
 4. `value = 加权命中总数 / service 文件数`
 
+> **口径提示**：这是全表里唯一分子直接复用约束规则真实判定结果的 metric，因此也是唯一放弃
+> `delta_vs_baseline`（基线对比）的——约束层只对当前目标目录跑过一次，没有对应的基线版本可比。
+
 ---
 
 ### ROUTE — `route-prefix-violation-ratio` (`BE-ROUTE-M-001`)
 
-**参考文献**：无。纯 API 命名规范检查（全局前缀 + kebab-case），是项目约定而非学术构念,文献 10 类里没有对应项。
+**参考文献**：无。纯 API 命名规范检查（全局前缀 + kebab-case），是项目约定而非学术构念，文献 10 类里没有对应项。
 
 **作用**：衡量对外暴露的 HTTP 端点有多少比例偏离了既定的路由规范（缺失全局 `api` 前缀，或路径不是 kebab-case）——路由是前后端契约的一部分，命名漂移会直接影响 API 的可预测性和一致性。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/route-prefix-violation-ratio.mjs` → `analyzeRoutes`）：
-1. 解析 `main.ts`，检查是否调用了 `setGlobalPrefix('api')`
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-ROUTE-M-001.mjs` → `analyzeRoutes`）：
+1. 解析 `main.ts`，收集该文件顶层 `const` 声明，用 `evaluateStatic()` 求值 `setGlobalPrefix(...)` 的参数——支持解析 `const API_PREFIX = 'api'; setGlobalPrefix(API_PREFIX)` 这种先声明常量再引用的写法，不止认字面量字符串
 2. 遍历所有 `*.controller.ts`，取 `@Controller(path)` 的类级路径和每个 HTTP 方法装饰器（`@Get`/`@Post`/…）的路径
-3. 用正则校验路径每一段是否符合 kebab-case（`^[a-z0-9]+(-[a-z0-9]+)*$`，路径参数 `:xxx` 单独放行）
-4. 若缺全局前缀，或类级/方法级路径任一不符合 kebab-case，该端点记为违规
+3. 用 `isKebabRoute()`（与约束规则 `BE-ROUTE-C-001` 共用同一份实现，直接从 `adapters/backend-static/rules/routes.mjs` 导入）校验路径每一段：允许纯 kebab-case、`:param` 参数段、`v\d+` 版本号段、`*`/`{*splat}` 通配段
+4. 若缺全局前缀，或类级/方法级路径任一不符合规则，该端点记为违规
 5. `ratio = 违规端点数 / 端点总数`
+
+> **口径提示**：前缀解析和 kebab-case 校验都已与约束规则共享判定依据，不再是两套独立维护、可能相互
+> 矛盾的实现。
 
 ---
 
-### SIZE — Cyclomatic Complexity（**建议替换** `method-parameter-violation-ratio`，目前无实现）
+### SIZE — `cyclomatic-complexity-ratio` (`BE-SIZE-M-001`)
 
 **参考文献**：McCabe, T. J. (1976). A complexity measure. *IEEE Transactions on Software Engineering, SE-2*(4), 308–320. https://doi.org/10.1109/TSE.1976.233837
 
-**作用**：衡量单个方法内部的分支路径复杂度——比现有的"参数数量"指标更贴近"这个方法是不是做了太多事"这一核心问题；参数膨胀往往只是复杂度膨胀的一个弱相关副产品，圈复杂度直接测的是控制流本身。
+**作用**：衡量单个方法内部的分支路径复杂度——比参数数量更贴近"这个方法是不是做了太多事"这一核心问题；参数膨胀往往只是复杂度膨胀的一个弱相关副产品，圈复杂度直接测的是控制流本身。
 
-**计算方式**（建议实现，替换现有的参数计数逻辑）：
-- `V(G) = E − N + 2P`（边数 − 节点数 + 2×连通分量数），实践中等价于 `V(G) = 1 + 分支判断语句数`（每个 `if`/`while`/`for`/`case`/`&&`/`||`/三元表达式 +1）
-- 对 controller/service/repository 每个非构造函数方法逐一计算，取全体方法的平均值，或"超阈值方法占比"作为归一化输出
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-SIZE-M-001.mjs` → `analyzeCyclomaticComplexity`）：
+1. 对 controller/service/repository 每个非构造函数方法，`V(G) = 1 + 分支判断计数`：每个 `if`/`while`/`for`/`case`（排除 `default`）/`&&`/`||`/三元表达式各 +1
+2. 计数时遇到嵌套函数/箭头函数边界即停止下探——回调内部的分支不会污染外层方法自身的复杂度
+3. `ratio = 复杂度超过 max_complexity（默认 10，McCabe 本人给出的"开始有风险"分界线）的方法数 / 方法总数`；同时报告全体方法的平均复杂度作为补充统计
 
-> **现有实现对照**（`method-parameter-violation-ratio.mjs`，本轮建议由上面的指标取代）：解析同一批文件里每个非构造函数方法的参数个数，`ratio = 参数数超过 max_parameters（默认 3）的方法数 / 方法总数`。逻辑保留在仓库中，但作为 SIZE 类目的代表指标建议切换为圈复杂度。
+> **口径提示**：约束规则 `BE-SIZE-C-001` 检测的仍是方法参数个数是否超过 3，跟这条 metric 衡量的圈复杂度
+> 已经是"方法过大"这个问题的两个不同侧面，不再是同一件事的连续化版本。原本的参数比例统计逻辑
+> （`analyzeMethodParameters()`）仍留在 `backend-source-analysis.mjs` 里，但不再被任何规则引用。
 
 ---
 
@@ -119,27 +141,33 @@ Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 
 **参考文献**：Meyer, B. (1992). Applying design by contract. *IEEE Computer, 25*(10), 40–51. https://doi.org/10.1109/2.161279 —— "契约"（前置/后置条件、不变量）作为组件间协作的显式规范，是这条指标要衡量的"输入契约是否被严格校验"的理论出处。
 
-**作用**：衡量请求 DTO 的字段有多大比例真正挂了 class-validator 校验装饰器——这是 `BE-CONTRACT-C-002`（DTO 必须用 class-validator）和 `BE-CONTRACT-C-003`（可选属性也要校验取值）两条规则的连续化版本,直接覆盖 4 条 CONTRACT 约束里的 2 条（另外 2 条——迁移文件要求、全局 ValidationPipe 白名单——本质是二元全局配置判定，不适合做比例型指标，留给 constraint 层判定即可，不算覆盖缺口）。
+**作用**：衡量请求 DTO 的字段有多大比例真正挂了 class-validator 校验装饰器——这是 `BE-CONTRACT-C-002`（DTO 必须用 class-validator）和 `BE-CONTRACT-C-003`（可选属性也要校验取值）两条规则的连续化版本，直接覆盖 4 条 CONTRACT 约束里的 2 条（另外 2 条——迁移文件要求、全局 ValidationPipe 白名单——本质是二元全局配置判定，不适合做比例型指标，留给 constraint 层判定即可，不算覆盖缺口）。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/dto-validator-coverage.mjs` → `analyzeDtoValidatorCoverage`）：
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-CONTRACT-M-001.mjs` → `analyzeDtoValidatorCoverage`）：
 1. 在 `dto_roots`（默认 `src/modules`）下找所有 `dto/*.ts` 生产代码文件
-2. 解析出被判定为"请求 DTO"的 class（`isRequestDtoClass`），收集该文件里 class-validator 的导入名
+2. 解析出被判定为"请求 DTO"的 class（类名以 `Dto` 结尾且不以 `ResponseDto` 结尾），收集该文件里 class-validator 的导入名
 3. 对每个非 static 属性字段，检查其装饰器列表里是否有一个是 class-validator 校验装饰器（如 `@IsString`、`@IsOptional` 等）
 4. `ratio = 有校验装饰器的字段数 / 总字段数`（无字段时记 1，视为满分）
 
+> **口径提示**：约束规则 `BE-CONTRACT-C-002` 只统计"确实被某个 controller 方法引用"的 DTO；这条 metric
+> 统计的是所有符合命名规则的 DTO 文件，不要求被实际引用，分母可能包含从未被当作请求体使用过的 DTO 类。
+
 ---
 
-### TEST — `mock-per-test-case` (`BE-TEST-M-002`)
+### TEST — `mock-per-test-case` (`BE-MOCK-M-001`)
 
 **参考文献**：Fowler, M. (2004). *Inversion of control containers and the dependency injection pattern*. https://martinfowler.com/articles/injection.html —— 依赖注入/控制反转的经典阐述，是 `BE-TEST-C-001`（禁止在测试里直接 `new Repository()`）这条约束的理论依据：测试应该通过 DI 注入替身，而不是绕开容器直接构造真实依赖。
 
 **作用**：`BE-TEST-C-001` 本身是二元判定（有没有直接构造 repository），`mock-per-test-case` 是目前仓库里能找到的最接近的连续代理信号——如果 agent 绕开 DI 直接实例化依赖，测试用例通常会连带表现出 mock 使用密度偏低。**这是全表里覆盖最弱的一环**：它测的是"平均每个测试用例用了多少次 mock"，不是"是否直接构造了 repository"本身，两者只是相关，不是等价，需要在论文里如实标注为代理指标而非直接指标。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/mock-per-test-case.mjs` → `analyzeMockUsage`）：
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-MOCK-M-001.mjs` → `analyzeMockUsage`）：
 1. 遍历 `test_roots`（默认 `src`、`test`）下的 `*.spec.ts`/`*.test.ts` 文件
 2. 统计 `it(...)`/`test(...)` 调用次数为"测试用例数"
-3. 统计 mock 相关调用：`jest.mock()`、`jest.spyOn()`，以及对象字面量里出现的 `useValue`/`useFactory`/`useClass` 属性，计为"mock 使用次数"
+3. 统计 mock 相关信号，有两种独立的计数方式：① `jest.mock()`/`jest.spyOn()` 调用，以及任意方法调用只要方法名是 `useValue`/`useFactory`/`useClass`（覆盖 `moduleRef.overrideProvider(X).useValue(Y)` 这类 NestJS 测试模块常见的链式调用）；② 对象字面量里直接出现的 `useValue`/`useFactory`/`useClass` 属性（覆盖 `{ provide: X, useValue: Y }` 这类 provider 声明写法）——两种都计为"mock 使用次数"
 4. `ratio = mock 使用次数 / 测试用例数`（若测试用例数为 0，指标记为 `null`，即不适用）
+
+> **口径提示**：属性名/方法名匹配不检查上下文，理论上任何跟 mock 无关但恰好用了这几个名字的代码
+> 也会被计入。
 
 ---
 
@@ -147,14 +175,14 @@ Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 
 | 类目 | Constraint 条数 | 选定 Metric | 状态 | 覆盖方式 |
 |---|---|---|---|---|
-| STRUCT | 1 | `module-composition-violation-ratio` | ✅ 已实现 | 直接 |
-| DEP | 4 | `dependency-violation-density` | ✅ 已实现 | 直接（含 Tarjan SCC 环检测） |
-| DOM | 2 | `cross-module-deep-import-count` | ✅ 已实现 | 直接（覆盖第 1 条，第 2 条经架构上的深导入模式间接覆盖） |
-| DUP | 3 | Clone Ratio | ❌ **建议新增** | 直接，目前零实现 |
-| ERR | 3 | `exception-unification-violation-density` | ✅ 已实现 | 直接 |
-| ROUTE | 1 | `route-prefix-violation-ratio` | ✅ 已实现 | 直接 |
-| SIZE | 1 | Cyclomatic Complexity | ❌ **建议替换现有实现** | 直接 |
-| CONTRACT | 4 | `dto-validator-coverage` | ✅ 已实现 | 直接覆盖 2 条，另 2 条为二元判定留给 constraint 层 |
+| STRUCT | 1 | `module-composition-violation-ratio` | ✅ 已实现 | 直接，但判定标准比约束规则更宽（不检查 `@Module` 登记） |
+| DEP | 4 | `dependency-violation-density` | ✅ 已实现 | 分层违规部分已复用约束规则判定依据；循环依赖部分仍是独立的 Tarjan SCC 实现 |
+| DOM | 2 | `cross-module-deep-import-count` | ✅ 已实现 | 直接（覆盖第 1 条，第 2 条无对应 metric） |
+| DUP | 3 | `clone-ratio` | ✅ 已实现 | 独立填补空白，衡量通用代码克隆而非三条约束各自的具体判定条件 |
+| ERR | 3 | `exception-unification-violation-density` | ✅ 已实现 | 直接复用约束规则的真实 finding 数 |
+| ROUTE | 1 | `route-prefix-violation-ratio` | ✅ 已实现 | 直接，前缀解析与 kebab-case 校验均已复用约束规则判定依据 |
+| SIZE | 1 | `cyclomatic-complexity-ratio` | ✅ 已实现 | 概念上已与约束规则（参数个数）分道，衡量控制流复杂度而非方法签名宽度 |
+| CONTRACT | 4 | `dto-validator-coverage` | ✅ 已实现 | 直接覆盖 2 条，判定范围比约束规则更宽（不要求 DTO 被实际引用）；另 2 条为二元判定留给 constraint 层 |
 | TEST | 1 | `mock-per-test-case` | ✅ 已实现 | **代理**（相关但非等价） |
 
 ---

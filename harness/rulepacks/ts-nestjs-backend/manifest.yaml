@@ -1,5 +1,5 @@
 rulepack_id: ts-nestjs-backend
-version: 0.2.0
+version: 0.3.0
 kind: subject
 language: [typescript]
 frameworks: [nestjs]
@@ -67,7 +67,7 @@ rules:
     - rules/error/BE-ERR-M-001-exception-unification-violation-density.yaml
     - rules/contracts/BE-CONTRACT-M-001-dto-validator-coverage.yaml
     - rules/test/BE-TEST-M-001-test-coverage.yaml
-    - rules/test/BE-TEST-M-002-mock-per-test-case.yaml
+    - rules/test/BE-MOCK-M-001-mock-per-test-case.yaml
     - rules/routes/BE-ROUTE-M-001-route-prefix-violation-ratio.yaml
     - rules/size/BE-SIZE-M-001-cyclomatic-complexity-ratio.yaml
     - rules/duplication/BE-DUP-M-001-clone-ratio.yaml

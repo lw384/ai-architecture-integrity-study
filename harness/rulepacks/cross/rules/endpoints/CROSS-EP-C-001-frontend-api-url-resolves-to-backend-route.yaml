@@ -3,6 +3,7 @@ version: 0.1.0
 layer: constraints
 category: cross-endpoint-contract
 visibility: agent-visible
+severity: error
 
 description: >
   Every frontend API URL must resolve to an implemented backend public path.

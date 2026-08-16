@@ -1,0 +1,20 @@
+rule_id: FE-ROUTE-M-001-route-param-complexity
+version: 0.1.0
+layer: metrics
+category: routing
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: FE-ROUTE-M-001
+
+description: >
+  Measures average dynamic-parameter count across statically declared
+  frontend routes.
+
+agent_facing_message: >
+  Average route parameter complexity is {value}. Lower values indicate simpler
+  route signatures.
+
+research_tags:
+  metric_family: route-complexity
+  erosion_dimension: route-parameter-complexity

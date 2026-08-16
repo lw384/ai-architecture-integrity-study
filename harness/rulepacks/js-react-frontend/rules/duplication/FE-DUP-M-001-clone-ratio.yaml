@@ -1,0 +1,20 @@
+rule_id: FE-DUP-M-001-clone-ratio
+version: 1.0.0
+layer: metrics
+category: duplication
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: FE-DUP-M-001
+
+description: >
+  Measures the share of token-bearing frontend production lines covered by
+  Type-1 or token-normalized Type-2 code clones.
+
+agent_facing_message: >
+  Frontend clone ratio is {value}. Lower values indicate less duplicated
+  implementation logic.
+
+research_tags:
+  metric_family: code-clones
+  erosion_dimension: implementation-duplication

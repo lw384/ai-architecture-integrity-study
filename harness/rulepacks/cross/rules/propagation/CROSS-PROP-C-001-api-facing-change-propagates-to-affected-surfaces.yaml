@@ -3,6 +3,7 @@ version: 0.1.0
 layer: constraints
 category: cross-change-propagation
 visibility: agent-visible
+severity: warn
 
 description: >
   API-facing backend or frontend adapter changes must propagate to the

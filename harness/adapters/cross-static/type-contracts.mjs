@@ -1397,12 +1397,28 @@ export function collectTypeRuleEvents(workspaceRoot, config) {
     const hookMappings = collectFrontendHookMappings(workspaceRoot, typeConfig);
     const frontendEvidences = collectFrontendContractEvidences(workspaceRoot, typeConfig, apiOperations, hookMappings);
     const normalizedEvents = [];
+    // Full enumeration of statically-resolvable contract positions, not only the
+    // ones that end up violating — this is the denominator CROSS-TYPE-M-001 needs
+    // and that a violations-only event stream cannot provide on its own.
+    let routeParamPositionCount = 0;
+    let queryFieldPositionCount = 0;
+    let bodyFieldPositionCount = 0;
 
     for (const evidence of frontendEvidences) {
         const backendContract = backendContracts.get(evidence.endpointKey);
 
         if (!backendContract) {
             continue;
+        }
+
+        routeParamPositionCount += evidence.pathParamCount;
+
+        if (evidence.queryEvidence?.kind === 'object') {
+            queryFieldPositionCount += evidence.queryEvidence.keys.size;
+        }
+
+        if (evidence.bodyEvidence?.kind === 'object') {
+            bodyFieldPositionCount += evidence.bodyEvidence.keys.size;
         }
 
         if (evidence.pathParamCount !== backendContract.pathParamCount) {
@@ -1580,6 +1596,10 @@ export function collectTypeRuleEvents(workspaceRoot, config) {
             enum_registry_size: enumRegistry.size,
             frontend_query_hook_count: hookMappings.queryHooks.size,
             frontend_mutation_hook_count: hookMappings.mutationHooks.size,
+            route_param_position_count: routeParamPositionCount,
+            query_field_position_count: queryFieldPositionCount,
+            body_field_position_count: bodyFieldPositionCount,
+            contract_position_count: routeParamPositionCount + queryFieldPositionCount + bodyFieldPositionCount,
         },
     };
 }

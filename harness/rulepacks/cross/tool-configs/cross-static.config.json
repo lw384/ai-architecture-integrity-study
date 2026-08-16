@@ -12,28 +12,6 @@
     ],
     "required_prefix": "api"
   },
-  "naming_inventory": {
-    "frontend_api_roots": [
-      "frontend/src/api"
-    ],
-    "backend_controller_roots": [
-      "backend/src/modules"
-    ],
-    "frontend_route_files": [
-      "frontend/src/routes/route-registry.js"
-    ]
-  },
-  "error_inventory": {
-    "backend_error_catalog_files": [
-      "backend/src/common/errors/error-codes.ts"
-    ],
-    "backend_error_scan_roots": [
-      "backend/src"
-    ],
-    "frontend_error_scan_roots": [
-      "frontend/src"
-    ]
-  },
   "type_inventory": {
     "required_prefix": "api",
     "backend_controller_roots": [
@@ -73,17 +51,5 @@
       "backend/test",
       "frontend/src"
     ]
-  },
-  "duplicate_inventory": {
-    "backend_contract_roots": [
-      "backend/src/modules",
-      "backend/src/common"
-    ],
-    "frontend_contract_roots": [
-      "frontend/src/pages",
-      "frontend/src/api"
-    ],
-    "min_shared_values": 2,
-    "min_shared_transition_edges": 2
   }
 }

@@ -3,6 +3,7 @@ version: 0.1.0
 layer: constraints
 category: cross-data-contract
 visibility: agent-visible
+severity: error
 
 description: >
   Frontend request paths, query objects, and body payloads should align with

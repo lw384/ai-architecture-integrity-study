@@ -7,7 +7,8 @@ requirements take precedence where a conflict exists.
 ### Backend
 
 - **BE-STRUCT-C-001:** Each business module uses separate module, controller,
-  service, and repository files.
+  service, and repository files, and registers the controller, service, and
+  repository in the module's `@Module` metadata.
 - **BE-DEP-C-001:** Dependencies follow Controller → Service → Repository →
   Entity.
 - **BE-DEP-C-002:** `src/common/` and `src/core/` must not import business
@@ -25,8 +26,8 @@ requirements take precedence where a conflict exists.
   silent or log-only catches.
 - **BE-CONTRACT-C-001:** Persistent entity or relationship changes require a
   corresponding executable migration.
-- **BE-CONTRACT-C-002:** Request DTOs use the project's `class-validator` and
-  `ValidationPipe` mechanism.
+- **BE-CONTRACT-C-002:** Fields on DTOs bound via `@Body`, `@Query`, `@Param`,
+  or `@Headers` declare `class-validator` decorators.
 - **BE-CONTRACT-C-003:** Optional request properties must validate supplied
   values; `@IsOptional()` alone is insufficient.
 - **BE-CONTRACT-C-004:** Preserve input whitelisting and rejection of unknown
@@ -41,14 +42,16 @@ requirements take precedence where a conflict exists.
   competing modules, controllers, routes, or entity-table owners.
 - **BE-DUP-C-002:** Each business policy or invariant has one authoritative
   implementation; all entry points delegate to it.
-- **BE-DUP-C-003:** Do not copy equivalent production functions or code
-  blocks; reuse or extract an existing shared implementation.
+- **BE-DUP-C-003:** Do not copy equivalent production functions; reuse or
+  extract an existing shared implementation.
 
 ### Frontend
 
 - **FE-COM-C-001:** React component files contain at most 300 non-blank,
   non-comment lines.
 - **FE-COM-C-002:** Business JSX nesting does not exceed five levels.
+  Structural wrapper elements (fragments, portals, modals, transitions) are
+  transparent and do not count toward the depth.
 - **FE-STATE-C-001:** Components under `src/components/` and
   `src/layout/components/` must not introduce `useState` or `useReducer`.
 - **FE-STATE-C-002:** Context providers appear only at the application root,
@@ -67,23 +70,16 @@ requirements take precedence where a conflict exists.
 - **FE-DUP-C-001:** Each resource has one frontend feature, route, page, and
   form owner; do not create competing feature directories or UI surfaces.
 - **FE-DUP-C-002:** Frontend logic has one authoritative implementation.
-  Repeated API, form, validation, transformation, state, component, function,
-  or code-block logic belongs in a shared service, hook, component, or utility.
+  Repeated API, form, validation, transformation, state, component, or
+  function logic belongs in a shared service, hook, component, or utility.
 
 ### Cross-Stack
 
-- **CROSS-TYPE-C-001:** Frontend requests and response models match backend
-  DTO names, types, requiredness, nullability, and enum values.
 - **CROSS-EP-C-001:** Every frontend API URL resolves to an implemented
   backend route.
-- **CROSS-ERR-C-001:** Every frontend-handled error code is defined and emitted
-  by the backend.
-- **CROSS-METHOD-C-001:** Frontend HTTP methods and expected statuses match
-  the corresponding backend endpoints.
-- **CROSS-NAME-C-001:** Use one canonical resource name across backend routes,
-  modules, frontend features, API services, and UI terminology.
-- **CROSS-PROP-C-001:** Propagate API-facing changes to every affected DTO,
-  route, persistence artifact, frontend adapter, UI surface, seed, and test.
-- **CROSS-DUP-C-001:** Each cross-stack contract has one authoritative source
-  or an automated synchronization mechanism; do not maintain unsynchronized
-  duplicate definitions.
+- **CROSS-TYPE-C-001:** Frontend request route params, query fields, and body
+  fields match the backend controller/DTO contract (arity, field existence,
+  required fields, and statically resolvable enum/type values).
+- **CROSS-PROP-C-001:** Propagate API-facing backend (controller/DTO) or
+  frontend adapter changes to the resource's existing counterpart surfaces:
+  frontend adapter, frontend UI, backend contract, and tests.

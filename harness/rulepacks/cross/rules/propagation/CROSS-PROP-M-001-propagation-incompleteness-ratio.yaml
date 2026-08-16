@@ -1,0 +1,47 @@
+rule_id: CROSS-PROP-M-001-propagation-incompleteness-ratio
+version: 0.1.0
+layer: metrics
+category: cross-change-propagation
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: CROSS-PROP-M-001
+
+description: >
+  Continuous view of CROSS-PROP-C-001: for resources with an API-facing
+  change in this run's diff, measures what fraction of their already-existing
+  counterpart surfaces (backend contract, frontend adapter, frontend UI) were
+  not updated alongside the change. Unlike CROSS-EP-M-001 and
+  CROSS-TYPE-M-001, this is diff-driven, not snapshot-driven: it only
+  produces a value when a comparable preCommit/postCommit range is available.
+
+formula: missing_counterpart_surfaces / total_counterpart_surfaces
+
+agent_facing_message: >
+  Propagation incompleteness ratio is {value}. {missingCounterpartSurfaceCount}
+  of {totalCounterpartSurfaceCount} counterpart surfaces were not updated
+  alongside this run's API-facing changes.
+
+research_tags:
+  metric_family: cross-change-propagation
+  erosion_dimension: change-propagation-completeness
+
+methodological_note: >
+  Reuses CROSS-PROP-C-001's own execution_meta stats
+  (propagation_counterpart_surface_missing /
+  propagation_counterpart_surface_total) instead of re-running its own diff
+  pass. This is a deliberate reuse, not a shortcut: core/layers/metrics_runner
+  .mjs never forwards runtimeContext (preCommit/postCommit) to metric
+  implementations, so a metric implementation cannot independently reproduce
+  a diff-driven result — the constraint layer already ran with the real
+  runtimeContext earlier in the same scope evaluation
+  (core/evaluate.mjs's runScopeEvaluations), and its adapter_meta is passed
+  into the metrics layer via constraintsLayer. The counterpart-surface
+  enumeration itself lives in adapters/cross-static/propagation-contracts.mjs,
+  computed additively alongside the constraint's existing violation-detection
+  loop so the constraint's own judgment logic is unchanged. When no
+  comparable diff range is available, value is null (not 0), consistent with
+  every other metric's "no data" convention. There is no evidence_sources
+  block on this rule: core/layers/metrics_runner.mjs never reads that field
+  for metric rules — dispatch is driven entirely by the adapter/implementation
+  fields above.

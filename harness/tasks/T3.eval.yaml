@@ -9,7 +9,7 @@ evaluation_scopes:
     scope_type: subject
     root_path: backend/
     rulepack_id: ts-nestjs-backend
-    rulepack_version: "0.2.0"
+    rulepack_version: "0.3.0"
     enabled:
       constraints:
         - BE-STRUCT-C-001
@@ -39,7 +39,7 @@ evaluation_scopes:
         - BE-ERR-M-001
         - BE-CONTRACT-M-001
         - BE-TEST-M-001
-        - BE-TEST-M-002
+        - BE-MOCK-M-001
         - BE-ROUTE-M-001
         - BE-SIZE-M-001
         - BE-DUP-M-001
@@ -54,7 +54,7 @@ evaluation_scopes:
     scope_type: subject
     root_path: frontend/
     rulepack_id: js-react-frontend
-    rulepack_version: "0.2.0"
+    rulepack_version: "0.4.0"
     enabled:
       constraints:
         - FE-COM-C-001
@@ -72,17 +72,12 @@ evaluation_scopes:
         - FE-DUP-C-002
       metrics:
         - FE-COM-M-001
-        - FE-COM-M-002
         - FE-STATE-M-001
-        - FE-STATE-M-002
         - FE-ROUTE-M-001
-        - FE-ROUTE-M-002
         - FE-STYLE-M-001
-        - FE-STYLE-M-002
         - FE-DATA-M-001
-        - FE-DATA-M-002
         - FE-COMM-M-001
-        - FE-COMM-M-002
+        - FE-DUP-M-001
       judgments: []
     expected_diff_scope: []
 
@@ -94,13 +89,12 @@ evaluation_scopes:
     enabled:
       constraints:
         - CROSS-EP-C-001
-        - CROSS-METHOD-C-001
         - CROSS-TYPE-C-001
-        - CROSS-NAME-C-001
-        - CROSS-ERR-C-001
         - CROSS-PROP-C-001
-        - CROSS-DUP-C-001
-      metrics: []
+      metrics:
+        - CROSS-EP-M-001
+        - CROSS-TYPE-M-001
+        - CROSS-PROP-M-001
       judgments: []
     thresholds: {}
     expected_diff_scope: []

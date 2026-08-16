@@ -1,0 +1,20 @@
+rule_id: FE-COMM-M-001-prop-drilling-average
+version: 0.1.0
+layer: metrics
+category: communication
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: FE-COMM-M-001
+
+description: >
+  Measures the average prop fanout of JSX elements that exceed the configured
+  prop-drilling threshold.
+
+agent_facing_message: >
+  Average prop-drilling candidate fanout is {value}. Lower values indicate
+  narrower cross-component data flow.
+
+research_tags:
+  metric_family: prop-drilling
+  erosion_dimension: communication-fanout

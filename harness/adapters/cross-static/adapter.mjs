@@ -2,50 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
 import { isProductionSourcePath } from '../_shared/production-files.mjs';
-import { collectDuplicateRuleEvents } from './duplicate-contracts.mjs';
 import { collectPropagationRuleEvents } from './propagation-contracts.mjs';
 import { collectTypeRuleEvents } from './type-contracts.mjs';
-
-const HTTP_STATUS_VALUES = {
-    CONTINUE: 100,
-    SWITCHING_PROTOCOLS: 101,
-    PROCESSING: 102,
-    EARLYHINTS: 103,
-    OK: 200,
-    CREATED: 201,
-    ACCEPTED: 202,
-    NON_AUTHORITATIVE_INFORMATION: 203,
-    NO_CONTENT: 204,
-    RESET_CONTENT: 205,
-    PARTIAL_CONTENT: 206,
-    AMBIGUOUS: 300,
-    MOVED_PERMANENTLY: 301,
-    FOUND: 302,
-    SEE_OTHER: 303,
-    NOT_MODIFIED: 304,
-    TEMPORARY_REDIRECT: 307,
-    PERMANENT_REDIRECT: 308,
-    BAD_REQUEST: 400,
-    UNAUTHORIZED: 401,
-    PAYMENT_REQUIRED: 402,
-    FORBIDDEN: 403,
-    NOT_FOUND: 404,
-    METHOD_NOT_ALLOWED: 405,
-    NOT_ACCEPTABLE: 406,
-    PROXY_AUTHENTICATION_REQUIRED: 407,
-    REQUEST_TIMEOUT: 408,
-    CONFLICT: 409,
-    GONE: 410,
-    PAYLOAD_TOO_LARGE: 413,
-    UNSUPPORTED_MEDIA_TYPE: 415,
-    UNPROCESSABLE_ENTITY: 422,
-    TOO_MANY_REQUESTS: 429,
-    INTERNAL_SERVER_ERROR: 500,
-    NOT_IMPLEMENTED: 501,
-    BAD_GATEWAY: 502,
-    SERVICE_UNAVAILABLE: 503,
-    GATEWAY_TIMEOUT: 504,
-};
 
 function readConfig(configPath) {
     if (!configPath || !fs.existsSync(configPath)) {
@@ -153,62 +111,6 @@ function getStaticString(node) {
     return null;
 }
 
-function getStaticNumber(node) {
-    const unwrapped = unwrapTsExpression(node);
-
-    if (!unwrapped) {
-        return null;
-    }
-
-    if (unwrapped.type === 'Literal' && typeof unwrapped.value === 'number') {
-        return unwrapped.value;
-    }
-
-    if (unwrapped.type === 'UnaryExpression' && unwrapped.operator === '-' && unwrapped.argument?.type === 'Literal' && typeof unwrapped.argument.value === 'number') {
-        return -unwrapped.argument.value;
-    }
-
-    if (
-        unwrapped.type === 'MemberExpression'
-        && unwrapped.object?.type === 'Identifier'
-        && unwrapped.object.name === 'HttpStatus'
-    ) {
-        const statusName = getPropertyName(unwrapped.property);
-
-        if (statusName && HTTP_STATUS_VALUES[statusName] !== undefined) {
-            return HTTP_STATUS_VALUES[statusName];
-        }
-    }
-
-    return null;
-}
-
-function getPropertyName(node) {
-    if (!node) {
-        return null;
-    }
-
-    if (node.type === 'Identifier') {
-        return node.name;
-    }
-
-    if (node.type === 'Literal' && typeof node.value === 'string') {
-        return node.value;
-    }
-
-    return null;
-}
-
-function unwrapTsExpression(node) {
-    let current = node;
-
-    while (current?.type === 'TSAsExpression' || current?.type === 'TSSatisfiesExpression' || current?.type === 'TSNonNullExpression') {
-        current = current.expression;
-    }
-
-    return current;
-}
-
 function getDecoratorName(decorator) {
     const expression = decorator.expression;
 
@@ -247,88 +149,6 @@ function normalizeFrontendPath(prefix, apiPath = '') {
         .replace(/\/+/g, '/')
         .replace(/\/:([^/]+)/g, '/:param')
         .replace(/\/$/, '') || '/';
-}
-
-function canonicalizeResourceName(value) {
-    if (!value || typeof value !== 'string') {
-        return null;
-    }
-
-    const normalized = value
-        .replace(/\.(js|jsx|ts|tsx)$/i, '')
-        .replace(/api$/i, '')
-        .replace(/-detail$/i, '')
-        .replace(/detail$/i, '')
-        .replace(/[_-]/g, ' ')
-        .trim()
-        .toLowerCase()
-        .split(/\s+/)[0];
-
-    if (!normalized) {
-        return null;
-    }
-
-    if (normalized.endsWith('ies') && normalized.length > 3) {
-        return `${normalized.slice(0, -3)}y`;
-    }
-
-    if (normalized.endsWith('s') && !normalized.endsWith('ss') && normalized.length > 1) {
-        return normalized.slice(0, -1);
-    }
-
-    return normalized;
-}
-
-function firstPathSegment(routePath) {
-    if (!routePath) {
-        return null;
-    }
-
-    return routePath
-        .replace(/^\/+/, '')
-        .split('/')
-        .find((segment) => segment && !segment.startsWith(':')) ?? null;
-}
-
-function memberExpressionChain(node) {
-    const parts = [];
-    let current = node;
-
-    while (current?.type === 'MemberExpression') {
-        if (current.property?.type === 'Identifier') {
-            parts.unshift(current.property.name);
-        } else if (current.property?.type === 'Literal' && typeof current.property.value === 'string') {
-            parts.unshift(current.property.value);
-        }
-
-        current = current.object;
-    }
-
-    if (current?.type === 'Identifier') {
-        parts.unshift(current.name);
-    }
-
-    return parts;
-}
-
-function expressionReferencesCode(node) {
-    if (!node || typeof node !== 'object') {
-        return false;
-    }
-
-    if (node.type === 'Identifier') {
-        return node.name === 'code';
-    }
-
-    if (node.type === 'MemberExpression') {
-        return memberExpressionChain(node).includes('code');
-    }
-
-    if (node.type === 'ChainExpression') {
-        return expressionReferencesCode(node.expression);
-    }
-
-    return false;
 }
 
 function extractBackendPrefix(workspaceRoot, config) {
@@ -407,19 +227,11 @@ function collectBackendEndpoints(workspaceRoot, config) {
                         }
 
                         const routePath = getDecoratorFirstArgString(decorator) ?? '';
-                        const explicitStatusDecorator = (member.decorators ?? []).find(
-                            (item) => getDecoratorName(item) === 'HttpCode',
-                        );
-                        const explicitStatus = explicitStatusDecorator
-                            ? getStaticNumber(unwrapTsExpression(explicitStatusDecorator.expression.arguments?.[0]))
-                            : null;
-                        const defaultStatus = method === 'POST' ? 201 : 200;
 
                         endpoints.push({
                             file: relativeFile,
                             method,
                             path: normalizePublicPath(prefix, controllerBasePath, routePath),
-                            status: explicitStatus ?? defaultStatus,
                         });
                     }
                 }
@@ -474,7 +286,6 @@ function collectFrontendEndpoints(workspaceRoot, config) {
                 }
 
                 let method = 'GET';
-                let expectedStatuses = [];
                 const options = node.arguments[1];
 
                 if (options?.type === 'ObjectExpression') {
@@ -487,31 +298,6 @@ function collectFrontendEndpoints(workspaceRoot, config) {
                         ) {
                             method = (getStaticString(property.value) ?? method).toUpperCase();
                         }
-
-                        if (
-                            property?.type === 'Property'
-                            && !property.computed
-                            && property.key?.type === 'Identifier'
-                            && property.key.name === 'expectedStatus'
-                        ) {
-                            const value = getStaticNumber(property.value);
-
-                            if (value !== null) {
-                                expectedStatuses = [value];
-                            }
-                        }
-
-                        if (
-                            property?.type === 'Property'
-                            && !property.computed
-                            && property.key?.type === 'Identifier'
-                            && property.key.name === 'expectedStatuses'
-                            && unwrapTsExpression(property.value)?.type === 'ArrayExpression'
-                        ) {
-                            expectedStatuses = unwrapTsExpression(property.value).elements
-                                .map((element) => getStaticNumber(element))
-                                .filter((value) => value !== null);
-                        }
                     }
                 }
 
@@ -519,7 +305,6 @@ function collectFrontendEndpoints(workspaceRoot, config) {
                     file: relativeFile,
                     method,
                     path: normalizeFrontendPath(prefix, apiPath),
-                    expectedStatuses,
                     location: node.loc
                         ? {
                             file: relativeFile,
@@ -541,546 +326,18 @@ function collectFrontendEndpoints(workspaceRoot, config) {
     return endpoints;
 }
 
-function collectBackendNamingSurfaces(workspaceRoot, config) {
-    const controllerRoots = Array.isArray(config.backend_controller_roots)
-        ? config.backend_controller_roots
-        : ['backend/src/modules'];
-    const surfaces = [];
-
-    for (const root of controllerRoots) {
-        const absoluteRoot = path.resolve(workspaceRoot, root);
-        const files = listFiles(absoluteRoot, (filePath) => /\.controller\.ts$/.test(filePath));
-
-        for (const filePath of files) {
-            const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));
-            const { ast } = parseFile(filePath);
-            const moduleDir = relativeFile.match(/\/modules\/([^/]+)\//)?.[1] ?? null;
-            let controllerPath = null;
-
-            for (const statement of ast.body ?? []) {
-                const classNode = statement.type === 'ExportNamedDeclaration' ? statement.declaration : statement;
-
-                if (!classNode || classNode.type !== 'ClassDeclaration') {
-                    continue;
-                }
-
-                for (const decorator of classNode.decorators ?? []) {
-                    if (getDecoratorName(decorator) === 'Controller') {
-                        controllerPath = getDecoratorFirstArgString(decorator);
-                    }
-                }
-            }
-
-            surfaces.push({
-                type: 'backend-controller',
-                file: relativeFile,
-                moduleName: moduleDir,
-                routeResource: firstPathSegment(controllerPath),
-                canonicalModule: canonicalizeResourceName(moduleDir),
-                canonicalRoute: canonicalizeResourceName(firstPathSegment(controllerPath)),
-            });
-        }
-    }
-
-    return surfaces;
-}
-
-function collectFrontendApiNamingSurfaces(workspaceRoot, config) {
-    const apiRoots = Array.isArray(config.frontend_api_roots)
-        ? config.frontend_api_roots
-        : ['frontend/src/api'];
-    const surfaces = [];
-
-    for (const root of apiRoots) {
-        const absoluteRoot = path.resolve(workspaceRoot, root);
-        const files = listFiles(absoluteRoot, (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
-
-        for (const filePath of files) {
-            const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));
-            const fileBaseName = path.basename(relativeFile).replace(/\.(js|jsx|ts|tsx)$/i, '');
-            const { ast } = parseFile(filePath);
-            const requestAliases = new Set();
-            const routeSegments = new Set();
-
-            walkAst(ast, (node) => {
-                if (
-                    node.type === 'ImportDeclaration'
-                    && typeof node.source?.value === 'string'
-                    && /(\/|^)request$/.test(node.source.value.replace(/\.(js|jsx|ts|tsx)$/, ''))
-                ) {
-                    for (const specifier of node.specifiers ?? []) {
-                        if (specifier.type === 'ImportSpecifier' && specifier.imported?.name === 'request') {
-                            requestAliases.add(specifier.local.name);
-                        }
-                    }
-                }
-            });
-
-            walkAst(ast, (node) => {
-                if (node.type !== 'CallExpression' || node.callee?.type !== 'Identifier' || !requestAliases.has(node.callee.name)) {
-                    return;
-                }
-
-                const apiPath = getStaticString(node.arguments[0]);
-                const segment = firstPathSegment(apiPath);
-
-                if (segment) {
-                    routeSegments.add(segment);
-                }
-            });
-
-            if (routeSegments.size === 0) {
-                continue;
-            }
-
-            surfaces.push({
-                type: 'frontend-api',
-                file: relativeFile,
-                apiFileName: fileBaseName,
-                routeResources: [...routeSegments],
-                canonicalFile: canonicalizeResourceName(fileBaseName),
-                canonicalRoutes: [...routeSegments].map((segment) => canonicalizeResourceName(segment)).filter(Boolean),
-            });
-        }
-    }
-
-    return surfaces;
-}
-
-function collectFrontendRouteNamingSurfaces(workspaceRoot, config) {
-    const routeFiles = Array.isArray(config.frontend_route_files)
-        ? config.frontend_route_files
-        : ['frontend/src/routes/route-registry.js'];
-    const surfaces = [];
-
-    for (const relativePath of routeFiles) {
-        const filePath = path.resolve(workspaceRoot, relativePath);
-
-        if (!fs.existsSync(filePath)) {
-            continue;
-        }
-
-        const normalizedFile = normalizePath(path.relative(workspaceRoot, filePath));
-        const { ast } = parseFile(filePath);
-
-        walkAst(ast, (node) => {
-            if (node.type !== 'ObjectExpression') {
-                return;
-            }
-
-            let pathValue = null;
-            let loaderImport = null;
-            let idValue = null;
-
-            for (const property of node.properties ?? []) {
-                if (property?.type !== 'Property' || property.computed) {
-                    continue;
-                }
-
-                const keyName = getPropertyName(property.key);
-
-                if (keyName === 'path') {
-                    pathValue = getStaticString(property.value);
-                }
-
-                if (keyName === 'id') {
-                    idValue = getStaticString(property.value);
-                }
-
-                if (
-                    keyName === 'loader'
-                    && property.value?.type
-                    && ['ArrowFunctionExpression', 'FunctionExpression'].includes(property.value.type)
-                ) {
-                    if (property.value.body?.type === 'ImportExpression') {
-                        loaderImport = getStaticString(property.value.body.source);
-                    }
-                }
-            }
-
-            if (!pathValue || !loaderImport || !loaderImport.startsWith('pages/')) {
-                return;
-            }
-
-            const routeResource = firstPathSegment(pathValue);
-            const loaderResource = loaderImport.replace(/^pages\//, '').split('/')[0];
-
-            surfaces.push({
-                type: 'frontend-route',
-                file: normalizedFile,
-                routeId: idValue,
-                routeResource,
-                loaderResource,
-                canonicalRoute: canonicalizeResourceName(routeResource),
-                canonicalLoader: canonicalizeResourceName(loaderResource),
-                canonicalId: canonicalizeResourceName(idValue),
-            });
-        });
-    }
-
-    return surfaces;
-}
-
-function collectBackendDefinedErrorCodes(workspaceRoot, config) {
-    const candidates = Array.isArray(config.backend_error_catalog_files)
-        ? config.backend_error_catalog_files
-        : ['backend/src/common/errors/error-codes.ts'];
-    const codes = new Map();
-
-    for (const relativePath of candidates) {
-        const filePath = path.resolve(workspaceRoot, relativePath);
-
-        if (!fs.existsSync(filePath)) {
-            continue;
-        }
-
-        const normalizedFile = normalizePath(path.relative(workspaceRoot, filePath));
-        const { ast } = parseFile(filePath);
-
-        walkAst(ast, (node) => {
-            if (node.type !== 'VariableDeclarator' || node.id?.type !== 'Identifier' || node.id.name !== 'BUSINESS_ERROR_CODES') {
-                return;
-            }
-
-            const init = unwrapTsExpression(node.init);
-
-            if (init?.type !== 'ObjectExpression') {
-                return;
-            }
-
-            for (const property of init.properties ?? []) {
-                if (property?.type !== 'Property' || property.computed) {
-                    continue;
-                }
-
-                const key = getPropertyName(property.key);
-                const value = getStaticString(property.value);
-
-                if (key && value) {
-                    codes.set(value, normalizedFile);
-                }
-            }
-        });
-    }
-
-    return codes;
-}
-
-function extractBusinessErrorCodeFromExpression(node) {
-    if (!node) {
-        return null;
-    }
-
-    if (node.type === 'MemberExpression') {
-        const chain = memberExpressionChain(node);
-
-        if (chain[0] === 'BUSINESS_ERROR_CODES' && chain.length >= 2) {
-            return chain[1];
-        }
-    }
-
-    if (node.type === 'Literal' && typeof node.value === 'string' && /^[A-Z0-9_]+$/.test(node.value)) {
-        return node.value;
-    }
-
-    return null;
-}
-
-function collectBackendEmittedErrorCodes(workspaceRoot, config) {
-    const roots = Array.isArray(config.backend_error_scan_roots)
-        ? config.backend_error_scan_roots
-        : ['backend/src'];
-    const codes = new Map();
-
-    for (const root of roots) {
-        const absoluteRoot = path.resolve(workspaceRoot, root);
-        const files = listFiles(absoluteRoot, (filePath) => /\.(ts|tsx|js|jsx)$/.test(filePath) && !/\.spec\./.test(filePath));
-
-        for (const filePath of files) {
-            const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));
-            const { ast } = parseFile(filePath);
-
-            walkAst(ast, (node) => {
-                if (node.type === 'NewExpression' && node.callee?.type === 'Identifier' && node.callee.name === 'AppException') {
-                    const options = node.arguments[0];
-
-                    if (options?.type !== 'ObjectExpression') {
-                        return;
-                    }
-
-                    for (const property of options.properties ?? []) {
-                        if (
-                            property?.type === 'Property'
-                            && !property.computed
-                            && getPropertyName(property.key) === 'code'
-                        ) {
-                            const code = extractBusinessErrorCodeFromExpression(property.value);
-
-                            if (code) {
-                                codes.set(code, relativeFile);
-                            }
-                        }
-                    }
-                }
-
-                if (node.type === 'Property' && !node.computed && getPropertyName(node.key) === 'code') {
-                    const code = extractBusinessErrorCodeFromExpression(node.value);
-
-                    if (code) {
-                        codes.set(code, relativeFile);
-                    }
-                }
-            });
-        }
-    }
-
-    return codes;
-}
-
-function collectFrontendHandledErrorCodes(workspaceRoot, config) {
-    const roots = Array.isArray(config.frontend_error_scan_roots)
-        ? config.frontend_error_scan_roots
-        : ['frontend/src'];
-    const findings = [];
-
-    for (const root of roots) {
-        const absoluteRoot = path.resolve(workspaceRoot, root);
-        const files = listFiles(absoluteRoot, (filePath) => /\.(js|jsx|ts|tsx)$/.test(filePath));
-
-        for (const filePath of files) {
-            const relativeFile = normalizePath(path.relative(workspaceRoot, filePath));
-            const { ast } = parseFile(filePath);
-
-            walkAst(ast, (node) => {
-                if (node.type !== 'BinaryExpression' || !['===', '==', '!==', '!='].includes(node.operator)) {
-                    return;
-                }
-
-                const leftValue = getStaticString(node.left);
-                const rightValue = getStaticString(node.right);
-
-                if (leftValue && expressionReferencesCode(node.right) && /^[A-Z0-9_]+$/.test(leftValue)) {
-                    findings.push({
-                        code: leftValue,
-                        file: relativeFile,
-                        location: node.loc
-                            ? {
-                                file: relativeFile,
-                                start: node.loc.start,
-                                end: node.loc.end,
-                            }
-                            : { file: relativeFile },
-                    });
-                }
-
-                if (rightValue && expressionReferencesCode(node.left) && /^[A-Z0-9_]+$/.test(rightValue)) {
-                    findings.push({
-                        code: rightValue,
-                        file: relativeFile,
-                        location: node.loc
-                            ? {
-                                file: relativeFile,
-                                start: node.loc.start,
-                                end: node.loc.end,
-                            }
-                            : { file: relativeFile },
-                    });
-                }
-            });
-        }
-    }
-
-    return findings;
-}
-
-function collectNameRuleEvents(workspaceRoot, config) {
-    const namingConfig = config.naming_inventory ?? {};
-    const backendSurfaces = collectBackendNamingSurfaces(workspaceRoot, {
-        backend_controller_roots: namingConfig.backend_controller_roots,
-    });
-    const frontendApiSurfaces = collectFrontendApiNamingSurfaces(workspaceRoot, {
-        frontend_api_roots: namingConfig.frontend_api_roots,
-    });
-    const frontendRouteSurfaces = collectFrontendRouteNamingSurfaces(workspaceRoot, {
-        frontend_route_files: namingConfig.frontend_route_files,
-    });
-    const normalizedEvents = [];
-    const backendCanonicalResources = new Set(
-        backendSurfaces.flatMap((surface) => [surface.canonicalModule, surface.canonicalRoute]).filter(Boolean),
-    );
-
-    for (const surface of backendSurfaces) {
-        if (surface.canonicalModule && surface.canonicalRoute && surface.canonicalModule !== surface.canonicalRoute) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/canonical-resource-name-mismatch',
-                event_type: 'cross_contract_violation',
-                location: { file: surface.file },
-                payload: {
-                    surface: 'backend-module-controller',
-                    file: surface.file,
-                    expected_resource: surface.moduleName,
-                    actual_resource: surface.routeResource,
-                },
-            });
-        }
-    }
-
-    for (const surface of frontendApiSurfaces) {
-        const routeCanonicals = [...new Set(surface.canonicalRoutes)];
-
-        if (surface.canonicalFile && routeCanonicals.length === 1 && routeCanonicals[0] && surface.canonicalFile !== routeCanonicals[0]) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/canonical-resource-name-mismatch',
-                event_type: 'cross_contract_violation',
-                location: { file: surface.file },
-                payload: {
-                    surface: 'frontend-api',
-                    file: surface.file,
-                    expected_resource: surface.apiFileName,
-                    actual_resource: surface.routeResources.join(', '),
-                },
-            });
-        }
-
-        for (const canonicalRoute of routeCanonicals) {
-            if (canonicalRoute && !backendCanonicalResources.has(canonicalRoute)) {
-                normalizedEvents.push({
-                    source_tool: 'cross-static',
-                    source_rule_id: 'cross-static/canonical-resource-name-mismatch',
-                    event_type: 'cross_contract_violation',
-                    location: { file: surface.file },
-                    payload: {
-                        surface: 'frontend-api-backend',
-                        file: surface.file,
-                        expected_resource: surface.routeResources.join(', '),
-                        actual_resource: 'no matching backend resource',
-                    },
-                });
-            }
-        }
-    }
-
-    for (const surface of frontendRouteSurfaces) {
-        if (surface.canonicalRoute && surface.canonicalLoader && surface.canonicalRoute !== surface.canonicalLoader) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/canonical-resource-name-mismatch',
-                event_type: 'cross_contract_violation',
-                location: { file: surface.file },
-                payload: {
-                    surface: 'frontend-route-page',
-                    file: surface.file,
-                    expected_resource: surface.routeResource,
-                    actual_resource: surface.loaderResource,
-                },
-            });
-        }
-
-        if (surface.canonicalRoute && !backendCanonicalResources.has(surface.canonicalRoute)) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/canonical-resource-name-mismatch',
-                event_type: 'cross_contract_violation',
-                location: { file: surface.file },
-                payload: {
-                    surface: 'frontend-route-backend',
-                    file: surface.file,
-                    expected_resource: surface.routeResource,
-                    actual_resource: 'no matching backend resource',
-                },
-            });
-        }
-    }
-
-    return {
-        normalizedEvents,
-        stats: {
-            backend_surface_count: backendSurfaces.length,
-            frontend_api_surface_count: frontendApiSurfaces.length,
-            frontend_route_surface_count: frontendRouteSurfaces.length,
-        },
-    };
-}
-
-function collectErrorRuleEvents(workspaceRoot, config) {
-    const errorConfig = config.error_inventory ?? {};
-    const definedCodes = collectBackendDefinedErrorCodes(workspaceRoot, errorConfig);
-    const emittedCodes = collectBackendEmittedErrorCodes(workspaceRoot, errorConfig);
-    const handledCodes = collectFrontendHandledErrorCodes(workspaceRoot, errorConfig);
-    const normalizedEvents = [];
-
-    for (const handled of handledCodes) {
-        if (!definedCodes.has(handled.code)) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/frontend-handled-error-code-not-defined',
-                event_type: 'cross_contract_violation',
-                location: handled.location,
-                payload: {
-                    frontend_code: handled.code,
-                    frontend_file: handled.file,
-                    reason: 'not defined by backend error catalog',
-                },
-            });
-            continue;
-        }
-
-        if (!emittedCodes.has(handled.code)) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/frontend-handled-error-code-not-emitted',
-                event_type: 'cross_contract_violation',
-                location: handled.location,
-                payload: {
-                    frontend_code: handled.code,
-                    frontend_file: handled.file,
-                    reason: 'defined by backend but not emitted from backend flows',
-                },
-            });
-        }
-    }
-
-    return {
-        normalizedEvents,
-        stats: {
-            backend_defined_error_codes: definedCodes.size,
-            backend_emitted_error_codes: emittedCodes.size,
-            frontend_handled_error_codes: handledCodes.length,
-        },
-    };
-}
-
-function makeEndpointKey(endpoint) {
-    return `${endpoint.method} ${endpoint.path}`;
-}
-
-function uniqueSorted(values) {
-    return [...new Set(values)].sort((left, right) => {
-        if (typeof left === 'number' && typeof right === 'number') {
-            return left - right;
-        }
-
-        return String(left).localeCompare(String(right));
-    });
-}
-
 export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtimeContext }) {
     const config = readConfig(adapterConfig?.configPath);
     const inventoryConfig = config.endpoint_inventory ?? {};
     const backendEndpoints = collectBackendEndpoints(targetDir, inventoryConfig);
     const frontendEndpoints = collectFrontendEndpoints(targetDir, inventoryConfig);
-    const backendIndex = new Set(backendEndpoints.map(makeEndpointKey));
     const backendByPath = new Map();
-    const backendByMethodAndPath = new Map();
     const normalizedEvents = [];
 
     for (const endpoint of backendEndpoints) {
         const byPath = backendByPath.get(endpoint.path) ?? [];
         byPath.push(endpoint);
         backendByPath.set(endpoint.path, byPath);
-        backendByMethodAndPath.set(makeEndpointKey(endpoint), endpoint);
     }
 
     for (const endpoint of frontendEndpoints) {
@@ -1098,50 +355,12 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtim
                     frontend_file: endpoint.file,
                 },
             });
-            continue;
-        }
-
-        if (!backendIndex.has(makeEndpointKey(endpoint))) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/frontend-endpoint-method-mismatch',
-                event_type: 'cross_contract_violation',
-                location: endpoint.location,
-                payload: {
-                    frontend_method: endpoint.method,
-                    frontend_path: endpoint.path,
-                    frontend_file: endpoint.file,
-                    backend_methods: uniqueSorted(backendEndpointsForPath.map((item) => item.method)).join(', '),
-                },
-            });
-            continue;
-        }
-
-        const backendEndpoint = backendByMethodAndPath.get(makeEndpointKey(endpoint));
-
-        if (endpoint.expectedStatuses.length > 0 && backendEndpoint && !endpoint.expectedStatuses.includes(backendEndpoint.status)) {
-            normalizedEvents.push({
-                source_tool: 'cross-static',
-                source_rule_id: 'cross-static/frontend-endpoint-status-mismatch',
-                event_type: 'cross_contract_violation',
-                location: endpoint.location,
-                payload: {
-                    frontend_method: endpoint.method,
-                    frontend_path: endpoint.path,
-                    frontend_file: endpoint.file,
-                    expected_statuses: endpoint.expectedStatuses.join(', '),
-                    backend_status: String(backendEndpoint.status),
-                },
-            });
         }
     }
 
-    const nameRule = collectNameRuleEvents(targetDir, config);
-    const errorRule = collectErrorRuleEvents(targetDir, config);
     const typeRule = collectTypeRuleEvents(targetDir, config);
     const propagationRule = collectPropagationRuleEvents(targetDir, config.propagation_inventory ?? {}, runtimeContext, toolVersion);
-    const duplicateRule = collectDuplicateRuleEvents(targetDir, config.duplicate_inventory ?? {}, toolVersion);
-    normalizedEvents.push(...nameRule.normalizedEvents, ...errorRule.normalizedEvents, ...typeRule.normalizedEvents, ...propagationRule.normalizedEvents, ...duplicateRule.normalizedEvents);
+    normalizedEvents.push(...typeRule.normalizedEvents, ...propagationRule.normalizedEvents);
 
     return {
         normalized_events: normalizedEvents,
@@ -1151,12 +370,8 @@ export async function runAdapter({ targetDir, adapterConfig, toolVersion, runtim
             config_path: adapterConfig?.configPath ?? null,
             frontend_endpoint_count: frontendEndpoints.length,
             backend_endpoint_count: backendEndpoints.length,
-            frontend_explicit_success_status_count: frontendEndpoints.filter((endpoint) => endpoint.expectedStatuses.length > 0).length,
-            ...nameRule.stats,
-            ...errorRule.stats,
             ...typeRule.stats,
             ...propagationRule.stats,
-            ...duplicateRule.stats,
         },
     };
 }

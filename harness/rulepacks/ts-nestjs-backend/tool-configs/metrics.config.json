@@ -54,7 +54,7 @@
       "coverage_summary_path": "coverage/coverage-summary.json",
       "raw_artifact_path": "artifacts/metrics/test-coverage.json"
     },
-    "BE-TEST-M-002-mock-per-test-case": {
+    "BE-MOCK-M-001-mock-per-test-case": {
       "test_roots": [
         "backend/src",
         "backend/test",

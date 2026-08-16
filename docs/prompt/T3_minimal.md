@@ -70,13 +70,13 @@ and every Deal continues to belong to exactly one Company.
 
 ### Stage vocabulary and initial state
 
-1. A Deal stage SHALL be one of: `lead`, `qualified`, `active`,  
+1. A Deal stage SHALL be one of: `lead`, `qualified`, `active`,
    `negotiation`, `closed_won`, or `closed_lost`.
 
-2. A newly created Deal MAY specify only `lead` or `qualified` as its initial  
+2. A newly created Deal MAY specify only `lead` or `qualified` as its initial
    stage. When omitted, its initial stage SHALL default to `lead`.
 
-3. A create request specifying `active`, `negotiation`, `closed_won`, or  
+3. A create request specifying `active`, `negotiation`, `closed_won`, or
    `closed_lost` as its initial stage SHALL be rejected.
 
 4. Deal API responses SHALL return only canonical stage values.
@@ -95,18 +95,18 @@ and every Deal continues to belong to exactly one Company.
 
 10. From `closed_lost`, a Deal may transition only to `lead`.
 
-11. A request whose target stage equals the Deal's current stage SHALL succeed  
+11. A request whose target stage equals the Deal's current stage SHALL succeed
     without changing the stored stage.
 
 12. Any other stage change SHALL be rejected.
 
 ### Transition preconditions
 
-13. Transitioning to `active` requires the Deal to have at least one linked  
+13. Transitioning to `active` requires the Deal to have at least one linked
     Contact.
 
-14. Transitioning to `negotiation` requires the Deal to have a non-null  
-    `expectedCloseDate`. The date may already be stored on the Deal or be  
+14. Transitioning to `negotiation` requires the Deal to have a non-null
+    `expectedCloseDate`. The date may already be stored on the Deal or be
     supplied in the same generic Deal update request.
 
 15. Transitioning to `closed_won` has no additional preconditions.
@@ -115,82 +115,82 @@ and every Deal continues to belong to exactly one Company.
 
 ### Existing Deal update behaviour
 
-17. The existing Deal update endpoint SHALL apply the same transition matrix  
+17. The existing Deal update endpoint SHALL apply the same transition matrix
     and preconditions whenever its request changes `stage`.
 
-18. A Deal update request that does not include `stage` SHALL not modify or  
+18. A Deal update request that does not include `stage` SHALL not modify or
     revalidate the Deal's current stage.
 
-19. A successful stage change through either the existing Deal update endpoint  
-    or the dedicated stage-transition endpoint SHALL produce the same stored  
+19. A successful stage change through either the existing Deal update endpoint
+    or the dedicated stage-transition endpoint SHALL produce the same stored
     stage and the same observable validation behaviour.
 
 ### Migration of existing data
 
-20. Existing stage values matching a canonical stage case-insensitively SHALL  
+20. Existing stage values matching a canonical stage case-insensitively SHALL
     be migrated to that canonical value.
 
-21. Existing `won`, `lost`, `prospect`, and `proposal_sent` values SHALL be  
-    migrated to `closed_won`, `closed_lost`, `lead`, and `negotiation`,  
+21. Existing `won`, `lost`, `prospect`, and `proposal_sent` values SHALL be
+    migrated to `closed_won`, `closed_lost`, `lead`, and `negotiation`,
     respectively.
 
-22. Any other existing stage value, including a blank or null value, SHALL be  
+22. Any other existing stage value, including a blank or null value, SHALL be
     migrated to `lead`.
 
 23. After migration, every stored Deal SHALL have a canonical stage value.
 
-24. The migration SHALL be safe to apply once to an existing database and SHALL  
+24. The migration SHALL be safe to apply once to an existing database and SHALL
     not create invalid Deal stage values.
 
 ### Error semantics
 
-25. An unrecognised requested stage value SHALL return `400` with code  
+25. An unrecognised requested stage value SHALL return `400` with code
     `UNKNOWN_STAGE`.
 
-26. A create request specifying a disallowed initial stage SHALL return `400`  
+26. A create request specifying a disallowed initial stage SHALL return `400`
     with code `INVALID_INITIAL_STAGE`.
 
-27. A stage change that is not allowed by the transition matrix SHALL return  
+27. A stage change that is not allowed by the transition matrix SHALL return
     `422` with code `INVALID_STAGE_TRANSITION`.
 
-28. A stage change whose target preconditions are unmet SHALL return `422` with  
+28. A stage change whose target preconditions are unmet SHALL return `422` with
     code `TRANSITION_PRECONDITION_UNMET`.
 
-29. A stage update for an unknown Deal id SHALL return `404` with code  
+29. A stage update for an unknown Deal id SHALL return `404` with code
     `NOT_FOUND`.
 
 ### UI acceptance
 
-30. Deal create and edit surfaces SHALL present stage values as a controlled  
+30. Deal create and edit surfaces SHALL present stage values as a controlled
     selection rather than a free-text input.
 
-31. The Deal create surface SHALL offer only `lead` and `qualified` as initial  
+31. The Deal create surface SHALL offer only `lead` and `qualified` as initial
     stage choices, with `lead` selected by default.
 
-32. The Deal edit surface SHALL show only stages allowed from the Deal's current  
+32. The Deal edit surface SHALL show only stages allowed from the Deal's current
     stage as selectable transition targets.
 
-33. The Deal edit surface SHALL require an expected close date when the user  
+33. The Deal edit surface SHALL require an expected close date when the user
     selects `negotiation`.
 
-34. A Deal with no linked Contacts SHALL not offer `active` as a selectable  
+34. A Deal with no linked Contacts SHALL not offer `active` as a selectable
     transition target.
 
 35. A Deal in `closed_won` SHALL have no selectable stage-transition action.
 
-36. A Deal in `closed_lost` SHALL offer `lead` as its only selectable  
+36. A Deal in `closed_lost` SHALL offer `lead` as its only selectable
     transition target.
 
-37. A stage-transition error returned by the API SHALL be shown inline and  
+37. A stage-transition error returned by the API SHALL be shown inline and
     SHALL leave the displayed Deal stage unchanged.
 
 ### Data setup
 
-38. After the `demo` seed runs, at least one Deal SHALL exist in each canonical  
+38. After the `demo` seed runs, at least one Deal SHALL exist in each canonical
     stage.
 
-39. After the `edge-case` seed runs, at least one Deal SHALL have no linked  
-    Contacts. Attempting to transition that Deal to `active` SHALL fail with  
+39. After the `edge-case` seed runs, at least one Deal SHALL have no linked
+    Contacts. Attempting to transition that Deal to `active` SHALL fail with
     `TRANSITION_PRECONDITION_UNMET`.
 
 ## 5. API Contract

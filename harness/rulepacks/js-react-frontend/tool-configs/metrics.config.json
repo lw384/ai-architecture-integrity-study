@@ -1,12 +1,6 @@
 {
   "metrics": {
-    "FE-COM-M-001-component-line-average": {
-      "component_patterns": [
-        "\\.(jsx|tsx)$"
-      ],
-      "raw_artifact_path": "artifacts/metrics/component-line-average.json"
-    },
-    "FE-COM-M-002-jsx-depth-average": {
+    "FE-COM-M-001-jsx-depth-average": {
       "transparent_wrappers": [
         "Popper",
         "Portal",
@@ -25,25 +19,12 @@
     "FE-STATE-M-001-context-provider-ratio": {
       "raw_artifact_path": "artifacts/metrics/context-provider-ratio.json"
     },
-    "FE-STATE-M-002-context-consumer-per-provider-ratio": {
-      "raw_artifact_path": "artifacts/metrics/context-consumer-per-provider-ratio.json"
-    },
-    "FE-ROUTE-M-001-route-count": {
-      "routes_root": "src/routes",
-      "raw_artifact_path": "artifacts/metrics/route-count.json"
-    },
-    "FE-ROUTE-M-002-route-param-complexity": {
+    "FE-ROUTE-M-001-route-param-complexity": {
       "routes_root": "src/routes",
       "raw_artifact_path": "artifacts/metrics/route-param-complexity.json"
     },
     "FE-STYLE-M-001-style-mixing-ratio": {
       "raw_artifact_path": "artifacts/metrics/style-mixing-ratio.json"
-    },
-    "FE-STYLE-M-002-global-style-rule-count": {
-      "global_style_roots": [
-        "src/styles"
-      ],
-      "raw_artifact_path": "artifacts/metrics/global-style-rule-count.json"
     },
     "FE-DATA-M-001-data-access-wrapping-ratio": {
       "approved_data_paths": [
@@ -53,15 +34,17 @@
       ],
       "raw_artifact_path": "artifacts/metrics/data-access-wrapping-ratio.json"
     },
-    "FE-DATA-M-002-useeffect-missing-dependency-ratio": {
-      "raw_artifact_path": "artifacts/metrics/useeffect-missing-dependency-ratio.json"
-    },
-    "FE-COMM-M-001-prop-count-average": {
-      "raw_artifact_path": "artifacts/metrics/prop-count-average.json"
-    },
-    "FE-COMM-M-002-prop-drilling-average": {
+    "FE-COMM-M-001-prop-drilling-average": {
       "prop_drilling_threshold": 4,
       "raw_artifact_path": "artifacts/metrics/prop-drilling-average.json"
+    },
+    "FE-DUP-M-001-clone-ratio": {
+      "source_roots": [
+        "src"
+      ],
+      "min_tokens": 50,
+      "min_lines": 5,
+      "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
     }
   }
 }

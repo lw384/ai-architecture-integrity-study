@@ -10,17 +10,23 @@ adapters:
     version: 0.1.0
     config: tool-configs/cross-static.config.json
     emits: [constraints]
+  computed-metrics:
+    source: computed-metrics
+    version: 0.1.0
+    config: tool-configs/metrics.config.json
+    emits: [metrics]
+    options:
+      implementations_root: implementations/cross
 
 rules:
   constraints:
     - rules/endpoints/CROSS-EP-C-001-frontend-api-url-resolves-to-backend-route.yaml
-    - rules/endpoints/CROSS-METHOD-C-001-http-method-and-explicit-status-alignment.yaml
     - rules/types/CROSS-TYPE-C-001-request-query-body-contract-alignment.yaml
-    - rules/naming/CROSS-NAME-C-001-canonical-resource-name-consistency.yaml
-    - rules/errors/CROSS-ERR-C-001-frontend-handled-error-codes-defined-and-emitted.yaml
     - rules/propagation/CROSS-PROP-C-001-api-facing-change-propagates-to-affected-surfaces.yaml
-    - rules/duplication/CROSS-DUP-C-001-authoritative-cross-contract-source-or-synchronization.yaml
-  metrics: []
+  metrics:
+    - rules/endpoints/CROSS-EP-M-001-endpoint-resolution-miss-ratio.yaml
+    - rules/types/CROSS-TYPE-M-001-contract-field-drift-density.yaml
+    - rules/propagation/CROSS-PROP-M-001-propagation-incompleteness-ratio.yaml
   judgments: []
 
 metadata:

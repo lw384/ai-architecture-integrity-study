@@ -321,6 +321,8 @@ export function collectPropagationRuleEvents(workspaceRoot, config, runtimeConte
                 propagation_changed_files: 0,
                 propagation_triggered_resources: 0,
                 propagation_violation_count: 0,
+                propagation_counterpart_surface_total: 0,
+                propagation_counterpart_surface_missing: 0,
                 propagation_reason: 'No comparable diff range was provided.',
             },
         };
@@ -335,6 +337,8 @@ export function collectPropagationRuleEvents(workspaceRoot, config, runtimeConte
                 propagation_changed_files: 0,
                 propagation_triggered_resources: 0,
                 propagation_violation_count: 0,
+                propagation_counterpart_surface_total: 0,
+                propagation_counterpart_surface_missing: 0,
                 propagation_error: changedFilesResult.stderr.trim(),
             },
         };
@@ -353,6 +357,14 @@ export function collectPropagationRuleEvents(workspaceRoot, config, runtimeConte
 
     const normalizedEvents = [];
     let triggeredResources = 0;
+    // Full enumeration of counterpart-surface "slots" per triggered resource
+    // (not only the ones a resource ends up missing) — the denominator
+    // CROSS-PROP-M-001 needs. A "slot" exists whenever a resource that had an
+    // API-facing change also already has a counterpart surface on disk that
+    // could have been updated; this mirrors the two checks below exactly, it
+    // just also counts the slots that were satisfied.
+    let counterpartSurfaceTotal = 0;
+    let counterpartSurfaceMissing = 0;
 
     for (const [resource, state] of resourceStates.entries()) {
         const backendChanged = state.changedBackendContract.length > 0;
@@ -368,16 +380,22 @@ export function collectPropagationRuleEvents(workspaceRoot, config, runtimeConte
         triggeredResources += 1;
         const missingSurfaces = [];
 
-        if (backendControllerChanged && (state.hasFrontendAdapter || state.hasFrontendUi) && !frontendAdapterChanged && !frontendUiChanged) {
-            missingSurfaces.push('frontend adapter or UI surface');
+        if ((backendControllerChanged || backendDtoChanged) && (state.hasFrontendAdapter || state.hasFrontendUi)) {
+            counterpartSurfaceTotal += 1;
+
+            if (!frontendAdapterChanged && !frontendUiChanged) {
+                counterpartSurfaceMissing += 1;
+                missingSurfaces.push('frontend adapter or UI surface');
+            }
         }
 
-        if (backendDtoChanged && (state.hasFrontendAdapter || state.hasFrontendUi) && !frontendAdapterChanged && !frontendUiChanged) {
-            missingSurfaces.push('frontend adapter or UI surface');
-        }
+        if (frontendAdapterChanged && state.hasBackendContract) {
+            counterpartSurfaceTotal += 1;
 
-        if (frontendAdapterChanged && state.hasBackendContract && state.changedBackendContract.length === 0) {
-            missingSurfaces.push('backend DTO/controller');
+            if (state.changedBackendContract.length === 0) {
+                counterpartSurfaceMissing += 1;
+                missingSurfaces.push('backend DTO/controller');
+            }
         }
 
         if (missingSurfaces.length === 0) {
@@ -430,6 +448,8 @@ export function collectPropagationRuleEvents(workspaceRoot, config, runtimeConte
             propagation_changed_files: changedFiles.length,
             propagation_triggered_resources: triggeredResources,
             propagation_violation_count: normalizedEvents.length,
+            propagation_counterpart_surface_total: counterpartSurfaceTotal,
+            propagation_counterpart_surface_missing: counterpartSurfaceMissing,
         },
     };
 }

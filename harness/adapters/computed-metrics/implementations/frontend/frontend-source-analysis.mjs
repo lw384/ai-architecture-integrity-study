@@ -97,43 +97,6 @@ function collectFrontendFiles(projectRoot, config = {}) {
     return files;
 }
 
-export function analyzeComponentLineCounts(projectRoot, config = {}) {
-    const includePatterns = Array.isArray(config.component_patterns) && config.component_patterns.length > 0
-        ? config.component_patterns.map((pattern) => new RegExp(pattern))
-        : [/\.jsx$/, /\.tsx$/];
-    const details = [];
-
-    for (const filePath of collectFrontendFiles(projectRoot, config)) {
-        const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
-
-        if (!includePatterns.some((pattern) => pattern.test(relativeFile))) {
-            continue;
-        }
-
-        const code = fs.readFileSync(filePath, 'utf8');
-        const nonBlankLines = code
-            .split('\n')
-            .map((line) => line.trim())
-            .filter(Boolean).length;
-
-        details.push({
-            file: relativeFile,
-            nonBlankLines,
-        });
-    }
-
-    const total = details.length;
-    const average = total === 0
-        ? 0
-        : Number((details.reduce((sum, item) => sum + item.nonBlankLines, 0) / total).toFixed(2));
-
-    return {
-        totalComponents: total,
-        averageLines: average,
-        details,
-    };
-}
-
 function isTransparentWrapper(node, transparentWrappers) {
     if (node.type === 'JSXFragment') {
         return true;
@@ -414,38 +377,6 @@ export function analyzeStyleMixing(projectRoot, config = {}) {
     };
 }
 
-export function analyzeGlobalStyleRuleCount(projectRoot, config = {}) {
-    const styleRoots = Array.isArray(config.global_style_roots) && config.global_style_roots.length > 0
-        ? config.global_style_roots
-        : ['src/styles'];
-    const details = [];
-
-    for (const styleRoot of styleRoots) {
-        const absoluteRoot = path.resolve(projectRoot, styleRoot);
-
-        for (const filePath of listFiles(
-            absoluteRoot,
-            (candidate) => /\.(css|scss|sass)$/.test(candidate) && isProductionSourcePath(candidate),
-        )) {
-            const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
-            const content = fs.readFileSync(filePath, 'utf8');
-            const ruleCount = (content.match(/\{/g) ?? []).length;
-
-            details.push({
-                file: relativeFile,
-                ruleCount,
-            });
-        }
-    }
-
-    const totalRules = details.reduce((sum, item) => sum + item.ruleCount, 0);
-
-    return {
-        totalRules,
-        details,
-    };
-}
-
 function collectAxiosAliases(ast) {
     const aliases = new Set();
 
@@ -528,109 +459,6 @@ export function analyzeDataAccessWrapping(projectRoot, config = {}) {
         totalCalls,
         approvedCalls,
         ratio,
-        details,
-    };
-}
-
-export function analyzeUseEffectDependencyArrays(projectRoot, config = {}) {
-    let totalUseEffects = 0;
-    let missingDependencyArrays = 0;
-    const details = [];
-
-    for (const filePath of collectFrontendFiles(projectRoot, config)) {
-        const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
-        const { ast } = parseFrontendFile(filePath);
-        let fileUseEffects = 0;
-        let fileMissing = 0;
-
-        walkAst(ast, (node) => {
-            if (node.type !== 'CallExpression') {
-                return;
-            }
-
-            const calleeName = node.callee?.type === 'Identifier'
-                ? node.callee.name
-                : node.callee?.type === 'MemberExpression'
-                    && node.callee.object?.type === 'Identifier'
-                    && node.callee.object.name === 'React'
-                    && node.callee.property?.type === 'Identifier'
-                        ? node.callee.property.name
-                        : null;
-
-            if (calleeName !== 'useEffect') {
-                return;
-            }
-
-            fileUseEffects += 1;
-
-            if (node.arguments.length < 2 || node.arguments[1]?.type !== 'ArrayExpression') {
-                fileMissing += 1;
-            }
-        });
-
-        if (fileUseEffects > 0) {
-            details.push({
-                file: relativeFile,
-                useEffects: fileUseEffects,
-                missingDependencyArrays: fileMissing,
-            });
-        }
-
-        totalUseEffects += fileUseEffects;
-        missingDependencyArrays += fileMissing;
-    }
-
-    const ratio = totalUseEffects === 0 ? 0 : Number((missingDependencyArrays / totalUseEffects).toFixed(6));
-
-    return {
-        totalUseEffects,
-        missingDependencyArrays,
-        ratio,
-        details,
-    };
-}
-
-export function analyzePropCounts(projectRoot, config = {}) {
-    const details = [];
-
-    for (const filePath of collectFrontendFiles(projectRoot, config)) {
-        const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
-        const { ast } = parseFrontendFile(filePath);
-
-        walkAst(ast, (node) => {
-            if (!['FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression'].includes(node.type)) {
-                return;
-            }
-
-            if (!node.params || node.params.length === 0) {
-                return;
-            }
-
-            const firstParam = node.params[0];
-
-            if (firstParam.type !== 'ObjectPattern') {
-                return;
-            }
-
-            const propCount = firstParam.properties.length;
-            const componentName = node.id?.name ?? '<anonymous>';
-
-            details.push({
-                file: relativeFile,
-                componentName,
-                propCount,
-            });
-        });
-    }
-
-    const totalComponents = details.length;
-    const averagePropCount = totalComponents === 0
-        ? 0
-        : Number((details.reduce((sum, item) => sum + item.propCount, 0) / totalComponents).toFixed(2));
-
-    return {
-        totalComponents,
-        averagePropCount,
         details,
     };
 }
@@ -732,59 +560,6 @@ export function analyzeUncachedApiCalls(projectRoot, config = {}) {
         totalNetworkCalls,
         uncachedCalls,
         ratio,
-        details,
-    };
-}
-
-export function analyzeContextUsageDepth(projectRoot, config = {}) {
-    const details = [];
-    let providerUsages = 0;
-    let consumerHookUsages = 0;
-
-    for (const filePath of collectFrontendFiles(projectRoot, config)) {
-        const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
-        const { ast } = parseFrontendFile(filePath);
-        let fileProviders = 0;
-        let fileConsumers = 0;
-
-        walkAst(ast, (node) => {
-            if (
-                node.type === 'JSXOpeningElement'
-                && node.name?.type === 'JSXMemberExpression'
-                && node.name.property?.type === 'JSXIdentifier'
-                && node.name.property.name === 'Provider'
-            ) {
-                fileProviders += 1;
-            }
-
-            if (
-                node.type === 'CallExpression'
-                && node.callee?.type === 'Identifier'
-                && /^use[A-Z].+/.test(node.callee.name)
-                && /Access|Context|Settings/.test(node.callee.name)
-            ) {
-                fileConsumers += 1;
-            }
-        });
-
-        if (fileProviders > 0 || fileConsumers > 0) {
-            details.push({
-                file: relativeFile,
-                providerUsages: fileProviders,
-                consumerHookUsages: fileConsumers,
-            });
-        }
-
-        providerUsages += fileProviders;
-        consumerHookUsages += fileConsumers;
-    }
-
-    const ratio = providerUsages === 0 ? consumerHookUsages : Number((consumerHookUsages / providerUsages).toFixed(2));
-
-    return {
-        providerUsages,
-        consumerHookUsages,
-        consumerPerProviderRatio: ratio,
         details,
     };
 }

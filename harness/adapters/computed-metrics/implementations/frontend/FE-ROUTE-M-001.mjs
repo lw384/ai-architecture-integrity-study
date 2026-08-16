@@ -10,16 +10,16 @@ export const VERSION = '1.0.0';
 export async function run({ targetDir, baselineDir, config }) {
     const target = analyzeRoutes(targetDir, config ?? {});
     const baseline = baselineDir ? analyzeRoutes(baselineDir, config ?? {}) : null;
-    const delta = computeDelta(target.totalRoutes, baseline?.totalRoutes, 2);
+    const delta = computeDelta(target.averageParamCount, baseline?.averageParamCount, 2);
     const findings = appendBaselineDeltaFinding([
-        `Frontend route count: ${target.totalRoutes}`,
+        `Average route parameter count: ${target.averageParamCount}`,
     ], delta, {
-        missingBaselineMessage: 'Baseline route count unavailable; delta_vs_baseline is set to null.',
+        missingBaselineMessage: 'Baseline route parameter complexity unavailable; delta_vs_baseline is set to null.',
     });
 
     return buildMetricResult({
-        value: target.totalRoutes,
-        unit: 'count',
+        value: target.averageParamCount,
+        unit: 'params',
         direction: 'lower_is_better',
         delta,
         findings,

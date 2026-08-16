@@ -1,5 +1,5 @@
 rule_id: BE-DEP-M-001-dependency-violation-density
-version: 0.1.0
+version: 0.2.0
 layer: metrics
 category: architecture
 visibility: agent-visible
@@ -9,23 +9,33 @@ implementation: BE-DEP-M-001
 
 description: >
   Measures the density of illegal dependency edges in the backend module
-  graph. Combines two failure modes: (a) imports that cross the MVC
-  direction (controller → service → repository), and (b) cyclic import
-  chains between modules. Density is the sum of both violation counts
-  divided by the total number of import edges, giving a [0.0, 1.0] ratio
-  comparable across sprints regardless of codebase size growth.
+  graph. Combines two failure modes: (a) intra-module layering violations
+  (controller → service → repository → entity, including the entity layer,
+  scoped to same-module edges only), and (b) cyclic import chains between
+  modules. Density is the sum of both violation counts divided by the total
+  number of import edges, giving a [0.0, 1.0] ratio comparable across
+  sprints regardless of codebase size growth.
 
-formula: (mvc_direction_violations + cyclic_dependency_count) / total_import_edges
+formula: (layering_violations + cyclic_dependency_count) / total_import_edges
 
-evidence_sources:
-  - adapter: dep-cruiser
-    tool_rule_ids:
-      - no-orphans
-      - no-circular
-    match_condition:
-      artifact: baseline/reports/depcruise-raw.json
-    aggregation: sum
+agent_facing_message: >
+  Dependency violation density is {value}. Fix layering violations and break
+  circular dependencies to reduce architectural entanglement.
 
 research_tags:
-  metric_family:
-  erosion_dimension:
+  metric_family: dependency-architecture
+  erosion_dimension: layering-and-entanglement
+
+methodological_note: >
+  The layering-violation half reads
+  adapters/backend-static/rules/dependencies.mjs's exported
+  FORBIDDEN_LAYER_PAIRS constant directly, so it cannot drift from what
+  BE-DEP-C-001-intra-module-layering itself enforces. The cyclic-dependency
+  half is computed independently via Tarjan's strongly-connected-components
+  algorithm over the dependency-cruiser report
+  (adapters/computed-metrics/implementations/backend/report-io.mjs reads
+  report_path, default reports/depcruise-raw.json) rather than by reading
+  BE-DEP-C-004-no-circular-dependencies's own findings. There is no
+  evidence_sources block on this rule: core/layers/metrics_runner.mjs never
+  reads that field for metric rules — dispatch is driven entirely by the
+  adapter/implementation fields above.

@@ -79,10 +79,163 @@ Data setup
 
 ## 5. API Contract
 
-Determine any necessary API additions or modifications from the functional requirements.
+All routes below include the global `/api` prefix.
 
-Preserve existing public API behaviour unless a change is necessary to fulfil those requirements.
+This section defines externally observable HTTP behaviour only. It does not
+prescribe the internal architecture, file structure, class names, DTO names, or
+implementation patterns.
 
+### Shared Error Contract
+
+All error responses use the existing project error-response envelope.
+
+- Invalid path parameters, request bodies, query parameters, unknown fields,
+  invalid UUIDs, and invalid field values return `400` with code
+  `VALIDATION_ERROR`.
+- A Deal, Company, or Contact that does not exist returns `404` with code
+  `NOT_FOUND`.
+
+### Deal Representation
+
+Unless stated otherwise, a Deal returned by the API includes:
+
+`contactId` and `expectedCloseDate` may be `null`.
+
+### 1. Create Deal
+
+**Route:** `POST /api/deals`
+**Content-Type:** `application/json`
+
+| Field               | Type                    | Required | Constraints                                         |
+| ------------------- | ----------------------- | -------- | --------------------------------------------------- |
+| `name`              | string                  | Yes      | Non-empty; maximum length 255                       |
+| `value`             | number                  | Yes      | Must be non-negative                                |
+| `companyId`         | UUID v4                 | Yes      | Must reference an existing Company                  |
+| `stage`             | string                  | No       | Maximum length 100; defaults to `lead`              |
+| `contactId`         | UUID v4 or `null`       | No       | A non-null value must reference an existing Contact |
+| `expectedCloseDate` | ISO 8601 date or `null` | No       | Nullable                                            |
+
+Example request:
+
+```
+{
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "companyId": "b4e9d2f3-1234-5678-9ab0-def012345678",
+  "stage": "qualified",
+  "contactId": "c5f0e3a4-1234-5678-9ab0-def012345678",
+  "expectedCloseDate": "2026-09-30"
+}
+```
+
+**Success:** `201 Created`
+
+```
+{
+  "id": "a3f8c1e2-1234-5678-9ab0-def012345678"
+}
+```
+
+### 2. List Deals
+
+**Route:** `GET /api/deals`
+
+Supported query parameters:
+
+| Parameter   | Type    | Default | Constraints                           | Behaviour                |
+| ----------- | ------- | ------- | ------------------------------------- | ------------------------ |
+| `page`      | integer | `1`     | Minimum `1`                           | Pagination page          |
+| `pageSize`  | integer | `10`    | Minimum `10`; no maximum is specified | Number of items per page |
+| `stage`     | string  | —       | Exact-match                           | Filter by stage          |
+| `companyId` | UUID v4 | —       | Must be valid when supplied           | Filter by Company        |
+
+Unknown query parameters follow the Shared Error Contract.
+
+**Success:** `200 OK`
+
+```
+{
+  "items": [
+    {
+      "id": "a3f8c1e2-1234-5678-9ab0-def012345678",
+      "name": "Acme Q3 renewal",
+      "value": 50000,
+      "stage": "qualified",
+      "companyId": "b4e9d2f3-1234-5678-9ab0-def012345678",
+      "contactId": null,
+      "expectedCloseDate": null,
+      "createdAt": "2026-07-03T10:30:00.000Z",
+      "updatedAt": "2026-07-19T14:22:11.000Z"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 10,
+  "totalPages": 1
+}
+```
+
+A page beyond the final page returns an empty `items` list and the correct
+`total` value.
+
+### 3. Get Deal
+
+**Route:** `GET /api/deals/:id`
+
+The `id` path parameter must be a UUID v4. The request accepts no body and no
+query parameters.
+
+**Success:** `200 OK`
+
+```
+{
+  "id": "a3f8c1e2-1234-5678-9ab0-def012345678",
+  "name": "Acme Q3 renewal",
+  "value": 50000,
+  "stage": "qualified",
+  "companyId": "b4e9d2f3-1234-5678-9ab0-def012345678",
+  "contactId": null,
+  "expectedCloseDate": null,
+  "createdAt": "2026-07-03T10:30:00.000Z",
+  "updatedAt": "2026-07-19T14:22:11.000Z",
+  "company": {
+    "id": "b4e9d2f3-1234-5678-9ab0-def012345678",
+    "name": "Acme Corporation"
+  }
+}
+```
+
+### 4. Update Deal
+
+**Route:** `POST /api/deals/:id`
+**Content-Type:** `application/json`
+
+The `id` path parameter must be a UUID v4.
+
+The request body accepts any non-empty subset of these mutable fields:
+
+| Field               | Type                    | Constraints                                         |
+| ------------------- | ----------------------- | --------------------------------------------------- |
+| `name`              | string                  | Non-empty; maximum length 255                       |
+| `value`             | number                  | Must be non-negative                                |
+| `stage`             | string                  | Maximum length 100                                  |
+| `contactId`         | UUID v4 or `null`       | A non-null value must reference an existing Contact |
+| `expectedCloseDate` | ISO 8601 date or `null` | Nullable                                            |
+
+The following fields are not accepted in an update request:
+
+```
+companyId, id, createdAt, updatedAt, deletedAt
+```
+
+An empty request body, an unknown field, an immutable field, or an invalid
+mutable-field value follows the Shared Error Contract.
+
+**Success:** `200 OK`
+
+```
+The response is the updated Deal Representation.
+```
 ## 6. Architecture Rules
 
 Apply these rules to all production code added or modified for this task. Do

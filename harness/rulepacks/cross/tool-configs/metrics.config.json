@@ -1,0 +1,20 @@
+{
+  "metrics": {
+    "CROSS-EP-M-001-endpoint-resolution-miss-ratio": {
+      "source_rule_id": "CROSS-EP-C-001-frontend-api-url-resolves-to-backend-route",
+      "raw_artifact_path": "artifacts/metrics/endpoint-resolution-miss-ratio.json"
+    },
+    "CROSS-TYPE-M-001-contract-field-drift-density": {
+      "source_rule_id": "CROSS-TYPE-C-001-request-query-body-contract-alignment",
+      "weights": {
+        "cross-static/frontend-route-param-arity-mismatch": 1,
+        "cross-static/frontend-query-key-mismatch": 1,
+        "cross-static/frontend-body-key-mismatch": 2
+      },
+      "raw_artifact_path": "artifacts/metrics/contract-field-drift-density.json"
+    },
+    "CROSS-PROP-M-001-propagation-incompleteness-ratio": {
+      "raw_artifact_path": "artifacts/metrics/propagation-incompleteness-ratio.json"
+    }
+  }
+}

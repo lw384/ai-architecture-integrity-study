@@ -1,0 +1,43 @@
+rule_id: CROSS-TYPE-M-001-contract-field-drift-density
+version: 0.1.0
+layer: metrics
+category: cross-data-contract
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: CROSS-TYPE-M-001
+
+description: >
+  Weighted density view of CROSS-TYPE-C-001's three sub-checks (route-param
+  arity, query field, body field mismatches). Each mismatch kind is weighted
+  by how likely it is to actually break the request at runtime (body-field
+  mismatches weighted highest by default), then normalized by the total
+  number of statically resolvable request-contract positions — not only the
+  ones that happen to violate — so the ratio is comparable across sprints
+  regardless of how many API call sites the codebase grows to.
+
+formula: sum(weight_i * mismatch_count_i) / total_contract_position_count
+
+agent_facing_message: >
+  Contract field drift density is {value}. Align frontend route params, query
+  keys, and body keys with the backend DTO/controller contract to reduce
+  request-time failures.
+
+research_tags:
+  metric_family: cross-data-contract
+  erosion_dimension: cross-request-contract-alignment
+
+methodological_note: >
+  Reuses CROSS-TYPE-C-001's own findings_by_rule output rather than
+  re-scanning frontend/backend contracts. That constraint merges three
+  tool_rule_ids (frontend-route-param-arity-mismatch, frontend-query-key
+  -mismatch, frontend-body-key-mismatch) into one finding list, so this
+  metric regroups by finding.evidence.source_rule_id to apply per-kind
+  weights. The denominator (route-param + query + body contract positions)
+  comes from cross-static's route_param_position_count /
+  query_field_position_count / body_field_position_count execution_meta
+  stats, computed alongside the constraint's own evidence collection in
+  adapters/cross-static/type-contracts.mjs. There is no evidence_sources
+  block on this rule: core/layers/metrics_runner.mjs never reads that field
+  for metric rules — dispatch is driven entirely by the adapter/implementation
+  fields above.

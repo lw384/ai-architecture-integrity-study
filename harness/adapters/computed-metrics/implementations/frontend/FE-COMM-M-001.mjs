@@ -3,22 +3,22 @@ import {
     buildMetricResult,
     computeDelta,
 } from '../_shared/metric-result.mjs';
-import { analyzePropCounts } from './frontend-source-analysis.mjs';
+import { analyzePropDrilling } from './frontend-source-analysis.mjs';
 
 export const VERSION = '1.0.0';
 
 export async function run({ targetDir, baselineDir, config }) {
-    const target = analyzePropCounts(targetDir, config ?? {});
-    const baseline = baselineDir ? analyzePropCounts(baselineDir, config ?? {}) : null;
-    const delta = computeDelta(target.averagePropCount, baseline?.averagePropCount, 2);
+    const target = analyzePropDrilling(targetDir, config ?? {});
+    const baseline = baselineDir ? analyzePropDrilling(baselineDir, config ?? {}) : null;
+    const delta = computeDelta(target.averagePropFanout, baseline?.averagePropFanout, 2);
     const findings = appendBaselineDeltaFinding([
-        `Average prop count across destructured components: ${target.averagePropCount}`,
+        `Average prop-drilling candidate fanout: ${target.averagePropFanout}`,
     ], delta, {
-        missingBaselineMessage: 'Baseline prop-count metric unavailable; delta_vs_baseline is set to null.',
+        missingBaselineMessage: 'Baseline prop-drilling metric unavailable; delta_vs_baseline is set to null.',
     });
 
     return buildMetricResult({
-        value: target.averagePropCount,
+        value: target.averagePropFanout,
         unit: 'props',
         direction: 'lower_is_better',
         delta,

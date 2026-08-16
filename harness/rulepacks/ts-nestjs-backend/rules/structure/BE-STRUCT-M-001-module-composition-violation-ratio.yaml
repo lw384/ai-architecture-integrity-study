@@ -1,5 +1,5 @@
 rule_id: BE-STRUCT-M-001-module-composition-violation-ratio
-version: 0.1.0
+version: 0.2.0
 layer: metrics
 category: module-structure
 visibility: agent-visible
@@ -9,24 +9,31 @@ implementation: BE-STRUCT-M-001
 
 description: >
   Measures continuous drift for module composition completeness.
-  Violating module ratio = modules missing any required component
-  (controller/service) divided by total modules in scope.
-  Repository remains optional to stay consistent with C-001.
+  Violating module ratio = modules missing any required component divided by
+  total modules in scope. Required components are inferred per module from
+  the file system alone: a module directory named with a "-link"/"-relation"
+  suffix requires controller+service; a module directory containing an
+  *.entity.ts file requires controller+service+repository; every other
+  module requires only a service. This metric does not check whether the
+  discovered files are actually registered in @Module metadata.
 
   Formula: violating_modules / total_modules
-  CHINESE: 违规 module 占比 = 缺失 controller/service 的 module 数 / 总 module 数
-  （repository 可选，与 C-001 保持一致）
 
 agent_facing_message: >
-  Module composition violation ratio is {value}. Reduce modules missing required
-  files (controller/service) to control structural erosion. Repository is
-  optional under the current policy.
+  Module composition violation ratio is {value}. Reduce modules missing the
+  files required for their inferred type (controller/service, plus
+  repository for entity-backed modules) to control structural erosion.
 
 research_tags:
   metric_family: module-composition
   erosion_dimension: missing-components-ratio
 
 methodological_note: >
-  This metric should reuse the same module-composition criteria as
-  BE-STRUCT-C-001-module-composition and compare target ratio against baseline
-  via delta_vs_baseline.
+  This metric's required-component logic is independent of, and narrower
+  than, BE-STRUCT-C-001-module-composition: the constraint always requires
+  controller+service+repository together and additionally verifies @Module
+  registration, while this metric infers required layers purely from
+  file-system heuristics (entity-file presence) and never inspects @Module
+  metadata. The two are not guaranteed to agree on the same input — this
+  metric's ratio should not be read as a continuous version of
+  BE-STRUCT-C-001's pass/fail judgment.
