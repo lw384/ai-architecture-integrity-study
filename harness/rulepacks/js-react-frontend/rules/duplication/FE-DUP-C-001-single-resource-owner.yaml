@@ -1,17 +1,17 @@
-rule_id: FE-STYLE-C-001-no-raw-jsx-style
-version: 0.2.0
+rule_id: FE-DUP-C-001-single-resource-owner
+version: 0.1.0
 layer: constraints
-category: styling
+category: duplication
 visibility: agent-visible
 
 description: >
-  React components should not use raw JSX style props. Prefer MUI sx, styled,
-  or approved shared styling abstractions.
+  Each resource has one frontend feature, route, page, and form owner; related
+  list, detail, and edit surfaces remain within that owner.
 
 evidence_sources:
   - adapter: frontend-static
     tool_rule_ids:
-      - FE-STYLE-C-001
+      - FE-DUP-C-001
     match_condition:
       event_type: frontend_architecture_violation
     aggregation: any
@@ -21,4 +21,4 @@ agent_facing_message: >
 
 research_tags:
   drift_type: erosion
-  erosion_dimension: styling-discipline
+  erosion_dimension: resource-ownership

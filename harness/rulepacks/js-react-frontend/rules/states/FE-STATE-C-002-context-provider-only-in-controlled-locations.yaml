@@ -1,5 +1,5 @@
 rule_id: FE-STATE-C-002-context-provider-only-in-controlled-locations
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: state-management
 visibility: agent-visible
@@ -9,16 +9,15 @@ description: >
   shells, route layouts, or dedicated provider entry files.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - architecture/context-provider-only-in-controlled-locations
+      - FE-STATE-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  Move this context provider to a controlled boundary such as app providers,
-  a route layout, or another approved entry point.
+  {message}
 
 research_tags:
   drift_type: erosion

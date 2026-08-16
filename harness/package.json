@@ -8,7 +8,7 @@
     "eval": "node scripts/evaluate.mjs",
     "test": "node --test core/tests/*.test.mjs",
     "test:rulepack-integrity": "node --test core/integrity-tests/*.test.mjs",
-    "lint": "find core adapters rulepacks/ts-nestjs-backend -type f \\( -name '*.mjs' -o -name '*.js' -o -name '*.cjs' \\) -print0 | xargs -0 -n1 node --check"
+    "lint": "find core adapters rulepacks/ts-nestjs-backend rulepacks/js-react-frontend -type f \\( -name '*.mjs' -o -name '*.js' -o -name '*.cjs' \\) -print0 | xargs -0 -n1 node --check"
   },
   "dependencies": {
     "ajv": "^8.17.1",

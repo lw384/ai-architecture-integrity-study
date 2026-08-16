@@ -1,23 +1,22 @@
 rule_id: FE-STYLE-C-002-global-styles-only-in-approved-locations
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: styling
 visibility: agent-visible
 
 description: >
-  Global stylesheet imports must resolve to approved shared style locations
-  used by the baseline, rather than being introduced ad hoc across the app.
+  Non-module global stylesheets live only under src/styles/global/.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - "architecture/global-styles-only-in-approved-locations"
+      - FE-STYLE-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  Global stylesheet imports must stay in approved shared style locations.
+  {message}
 
 research_tags:
   drift_type: erosion

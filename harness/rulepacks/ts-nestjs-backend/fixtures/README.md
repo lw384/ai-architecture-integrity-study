@@ -16,6 +16,5 @@ three cases assert an empty finding set. Run the protocol with:
 node --test core/tests/backend-constraint-fixtures.test.mjs
 ```
 
-The canonical 20-rule set is enabled in every backend evaluation task. The
-legacy `BE-STRUCT-C-002` rule remains registered and receives the same fixture
-coverage, but is not part of the canonical experiment set.
+The canonical 20-rule set is enabled in every backend evaluation task, and is
+the complete set of rules registered in this rulepack.

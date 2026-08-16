@@ -1,5 +1,5 @@
 rule_id: FE-COM-C-002-jsx-max-depth
-version: 0.2.0
+version: 0.3.0
 layer: constraints
 category: component-structure
 visibility: agent-visible
@@ -32,17 +32,15 @@ config:
     - render_prop # function-child expressions
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - architecture/business-jsx-max-depth
+      - FE-COM-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  Business logic nesting is too deep in this component. Consider extracting
-  a section into a child component. Do not add pure wrapper components — the
-  rule ignores structural wrappers (portals, transitions, fragments) anyway.
+  {message}
 
 research_tags:
   drift_type: erosion

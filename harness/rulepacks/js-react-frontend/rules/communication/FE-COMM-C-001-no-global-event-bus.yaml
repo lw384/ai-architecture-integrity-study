@@ -1,5 +1,5 @@
 rule_id: FE-COMM-C-001-no-global-event-bus
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: communication
 visibility: agent-visible
@@ -8,16 +8,15 @@ description: >
   Frontend modules should not introduce a global event bus pattern.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - "architecture/no-global-event-bus"
+      - FE-COMM-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  Do not introduce a global event bus. Use props, controlled context, or
-  explicit state flow instead.
+  {message}
 
 research_tags:
   drift_type: erosion

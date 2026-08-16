@@ -12,7 +12,7 @@ import { runAdapter as runEslint } from '../../adapters/eslint/adapter.mjs';
 import { runConstraints } from '../layers/constraints_runner.mjs';
 import { readTaskConfig } from '../io/task_config_reader.mjs';
 import { isProductionSourcePath } from '../../adapters/_shared/production-files.mjs';
-import { backendConstraintFixtures } from '../../rulepacks/ts-nestjs-backend/fixtures/constraints/backend-constraint-protocol.fixtures.mjs';
+import { backendConstraintFixtures } from '../../rulepacks/ts-nestjs-backend/fixtures/backend-constraint-protocol.fixtures.mjs';
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const harnessRoot = path.resolve(testDir, '../..');
@@ -39,8 +39,6 @@ const canonicalRuleIds = [
     'BE-DUP-C-002',
     'BE-DUP-C-003',
 ];
-const expectedRuleIds = [...canonicalRuleIds, 'BE-STRUCT-C-002'];
-
 const adapterConfigs = {
     'backend-static': path.join(rulepackDir, 'tool-configs/backend-static.config.json'),
     'contract-diff': path.join(rulepackDir, 'tool-configs/contract-diff.config.json'),
@@ -144,8 +142,8 @@ async function evaluateFixture(fixture, fixtureCase) {
 }
 
 test('backend constraint fixture protocol covers every registered backend rule exactly once', () => {
-    assert.deepEqual(backendConstraintFixtures.map((fixture) => fixture.ruleId).sort(), [...expectedRuleIds].sort());
-    assert.equal(new Set(backendConstraintFixtures.map((fixture) => fixture.ruleId)).size, expectedRuleIds.length);
+    assert.deepEqual(backendConstraintFixtures.map((fixture) => fixture.ruleId).sort(), [...canonicalRuleIds].sort());
+    assert.equal(new Set(backendConstraintFixtures.map((fixture) => fixture.ruleId)).size, canonicalRuleIds.length);
 
     for (const fixture of backendConstraintFixtures) {
         assert.deepEqual(Object.keys(fixture.cases).sort(), ['ignored', 'nearMiss', 'negative', 'positive']);

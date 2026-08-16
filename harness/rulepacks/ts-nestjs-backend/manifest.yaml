@@ -39,7 +39,6 @@ adapters:
 rules:
   constraints:
     - rules/structure/BE-STRUCT-C-001-module-composition.yaml
-    - rules/name/BE-STRUCT-C-002-no-explicit-any.yaml
     - rules/dependencies/BE-DEP-C-001-intra-module-layering.yaml
     - rules/dependencies/BE-DEP-C-002-infrastructure-isolation.yaml
     - rules/dependencies/BE-DEP-C-003-framework-layer-purity.yaml

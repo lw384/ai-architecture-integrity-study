@@ -1,0 +1,25 @@
+{
+  "component_max_lines": 300,
+  "jsx_max_depth": 5,
+  "transparent_wrappers": [
+    "Fragment",
+    "Popper",
+    "Portal",
+    "Modal",
+    "Backdrop",
+    "ClickAwayListener",
+    "Fade",
+    "Grow",
+    "Zoom",
+    "Slide",
+    "Collapse",
+    "Transitions"
+  ],
+  "data_access_paths": [
+    "src/api/",
+    "src/services/",
+    "src/hooks/",
+    "/hooks/"
+  ],
+  "resource_aliases": {}
+}

@@ -1,5 +1,5 @@
 rule_id: FE-ROUTE-C-002-route-maps-to-page-component
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: routing
 visibility: agent-visible
@@ -9,16 +9,15 @@ description: >
   elements should resolve to modules under pages/.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - architecture/route-must-map-to-page-component
+      - FE-ROUTE-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  Update this route so it maps to a page component. Prefer loader imports from
-  pages/* or route elements backed by a pages import.
+  {message}
 
 research_tags:
   drift_type: erosion

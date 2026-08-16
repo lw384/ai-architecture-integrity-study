@@ -1,7 +1,7 @@
 // Convert shared backend analysis results into the harness event contract.
 import fs from 'node:fs';
 import { buildProject } from './project.mjs';
-import { analyzeBackendRules } from './rules.mjs';
+import { analyzeBackendRules } from './rules/index.mjs';
 
 function readConfig(configPath) {
     if (!configPath || !fs.existsSync(configPath)) {

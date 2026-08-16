@@ -344,10 +344,9 @@ requirements take precedence where a conflict exists.
   context, or the established state mechanism.
 - **FE-DUP-C-001:** Each resource has one frontend feature, route, page, and
   form owner; do not create competing feature directories or UI surfaces.
-- **FE-DUP-C-002:** Repeated API, form, validation, transformation, or state
-  logic belongs in a shared service, hook, or utility.
-- **FE-DUP-C-003:** Do not copy equivalent production components, functions,
-  or code blocks; reuse or extract a cohesive shared implementation.
+- **FE-DUP-C-002:** Frontend logic has one authoritative implementation.
+  Repeated API, form, validation, transformation, state, component, function,
+  or code-block logic belongs in a shared service, hook, component, or utility.
 
 ### Cross-Stack
 

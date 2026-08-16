@@ -69,8 +69,7 @@ UI
 
 21. Users SHALL create and edit Deals from the same UI surface.
 
-22. 
-The Deals list SHALL be reachable from the primary navigation.
+22. The Deals list SHALL be reachable from the primary navigation.
 
 Data setup
  23. After 'demo' seed runs, at least 8 Deals SHALL exist across at least 4

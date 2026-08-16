@@ -1,0 +1,25 @@
+rule_id: FE-DUP-C-002-single-authoritative-implementation
+version: 0.1.0
+layer: constraints
+category: duplication
+visibility: agent-visible
+
+description: >
+  Frontend logic has one authoritative implementation. Repeated API, form,
+  validation, transformation, state, component, function, or code-block logic
+  belongs in a shared service, hook, component, or utility.
+
+evidence_sources:
+  - adapter: frontend-static
+    tool_rule_ids:
+      - FE-DUP-C-002
+    match_condition:
+      event_type: frontend_architecture_violation
+    aggregation: any
+
+agent_facing_message: >
+  {message}
+
+research_tags:
+  drift_type: erosion
+  erosion_dimension: authoritative-implementation

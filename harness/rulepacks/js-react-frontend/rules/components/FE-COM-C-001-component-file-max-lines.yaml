@@ -1,24 +1,22 @@
 rule_id: FE-COM-C-001-component-file-max-lines
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: component-structure
 visibility: agent-visible
 
 description: >
-  React component files should stay under 300 lines to preserve readability
-  and local reasoning.
+  React component files contain at most 300 non-blank, non-comment lines.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - max-lines
+      - FE-COM-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  This component file is too large. Keep component files under 300 lines or
-  split UI and logic into smaller units.
+  {message}
 
 research_tags:
   drift_type: erosion

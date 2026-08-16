@@ -1,14 +1,14 @@
 rulepack_id: js-react-frontend
-version: 0.1.0
+version: 0.2.0
 kind: subject
 language: [javascript]
 frameworks: [react]
 
 adapters:
-  eslint:
-    source: eslint
-    version: 0.1.0
-    config: tool-configs/eslint.config.js
+  frontend-static:
+    source: frontend-static
+    version: 0.2.0
+    config: tool-configs/frontend-static.config.json
     emits: [constraints]
   computed-metrics:
     source: computed-metrics
@@ -29,6 +29,8 @@ rules:
     - rules/data/FE-DATA-C-001-network-calls-only-in-approved-modules.yaml
     - rules/data/FE-DATA-C-002-useeffect-requires-dependency-array.yaml
     - rules/communication/FE-COMM-C-001-no-global-event-bus.yaml
+    - rules/duplication/FE-DUP-C-001-single-resource-owner.yaml
+    - rules/duplication/FE-DUP-C-002-single-authoritative-implementation.yaml
   metrics:
     - rules/components/FE-COM-M-001-component-line-average.yaml
     - rules/components/FE-COM-M-002-jsx-depth-average.yaml
@@ -45,7 +47,9 @@ rules:
   judgments: []
 
 metadata:
-  migration_status: minimal-schema-valid
+  migration_status: frontend-constraint-protocol-v2
   notes:
-    - Frontend constraints are calibrated to the current baseline structure.
+    - All 13 frontend constraints share one production-source evidence inventory.
+    - Every registered constraint has positive, negative, near-miss, and ignored fixtures.
+    - FE-DUP-C-002 includes semantic duplicates and component/function clones.
     - Frontend metrics run through the shared computed-metrics adapter.

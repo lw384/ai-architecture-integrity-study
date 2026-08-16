@@ -20,7 +20,7 @@ import {
   analyzeMethodParameters,
 } from '../../adapters/computed-metrics/implementations/_shared/backend-source-analysis.mjs';
 import { runAdapter as runCrossStaticAdapter } from '../../adapters/cross-static/adapter.mjs';
-import frontendEslintConfig from '../../rulepacks/js-react-frontend/tool-configs/eslint.config.js';
+import { buildFrontendInventory } from '../../adapters/frontend-static/inventory.mjs';
 import backendEslintConfig from '../../rulepacks/ts-nestjs-backend/tool-configs/eslint.config.js';
 
 const require = createRequire(import.meta.url);
@@ -57,12 +57,28 @@ test('production path policy excludes test, spec, story, and generated sources',
   assert.equal(isGeneratedSourcePath('src/Widget.generated.ts'), true);
 });
 
-test('frontend and backend ESLint configs share the production ignore policy', () => {
-  const frontendIgnores = frontendEslintConfig[0].ignores;
+test('frontend inventory and backend ESLint share the production ignore policy', (t) => {
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'harness-production-frontend-'));
+  t.after(() => fs.rmSync(projectRoot, { recursive: true, force: true }));
+  writeFixture(projectRoot, 'src/Widget.jsx', 'export const Widget = () => <div />;');
+
+  for (const relative of [
+    'src/Widget.test.jsx',
+    'src/Widget.spec.jsx',
+    'src/Widget.story.jsx',
+    'src/Widget.generated.jsx',
+    'src/__tests__/Widget.jsx',
+    'src/generated/Widget.jsx',
+  ]) {
+    writeFixture(projectRoot, relative, 'export const Widget = () => <div />;');
+  }
+
+  const inventory = buildFrontendInventory(projectRoot);
   const backendIgnores = backendEslintConfig[0].ignores;
 
+  assert.deepEqual(inventory.files.map((file) => file.relative), ['src/Widget.jsx']);
+
   for (const pattern of PRODUCTION_IGNORE_GLOBS) {
-    assert.ok(frontendIgnores.includes(pattern), `frontend missing ${pattern}`);
     assert.ok(backendIgnores.includes(pattern), `backend missing ${pattern}`);
   }
 });

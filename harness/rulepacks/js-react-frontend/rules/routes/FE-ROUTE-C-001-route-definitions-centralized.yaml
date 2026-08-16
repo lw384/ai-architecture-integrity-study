@@ -1,5 +1,5 @@
 rule_id: FE-ROUTE-C-001-route-definitions-centralized
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: routing
 visibility: agent-visible
@@ -9,16 +9,15 @@ description: >
   discoverable and avoid split ownership.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - architecture/route-definitions-only-in-routes-dir
+      - FE-ROUTE-C-001
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  Move route definition logic into src/routes. Keep route APIs and route object
-  declarations centralized in the routing layer.
+  {message}
 
 research_tags:
   drift_type: erosion

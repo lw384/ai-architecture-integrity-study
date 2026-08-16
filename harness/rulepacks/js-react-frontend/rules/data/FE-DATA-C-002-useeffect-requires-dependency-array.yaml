@@ -1,22 +1,23 @@
 rule_id: FE-DATA-C-002-useeffect-requires-dependency-array
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: data-access
 visibility: agent-visible
 
 description: >
-  Every useEffect call should declare an explicit dependency array.
+  Every useEffect declares all referenced reactive values in its dependency
+  array.
 
 evidence_sources:
-  - adapter: eslint
+  - adapter: frontend-static
     tool_rule_ids:
-      - "architecture/useeffect-requires-dependency-array"
+      - FE-DATA-C-002
     match_condition:
-      event_type: file_structure_violation
+      event_type: frontend_architecture_violation
     aggregation: any
 
 agent_facing_message: >
-  Add an explicit dependency array to this useEffect call.
+  {message}
 
 research_tags:
   drift_type: erosion

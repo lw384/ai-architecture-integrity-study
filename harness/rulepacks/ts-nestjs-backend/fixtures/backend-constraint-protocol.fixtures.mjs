@@ -478,37 +478,9 @@ export const backendConstraintFixtures = [
             }),
         },
     },
-    {
-        ruleId: 'BE-STRUCT-C-002',
-        findingRuleId: 'BE-STRUCT-C-002-no-explicit-any',
-        adapter: 'eslint',
-        cases: {
-            positive: scenario({ 'src/modules/users/value.ts': code`export const value: unknown = 1;` }),
-            negative: scenario({ 'src/modules/users/value.ts': code`export const value: any = 1;` }),
-            nearMiss: scenario({ 'src/modules/users/value.ts': code`export type JsonMap = Record<string, unknown>;` }),
-            ignored: scenario({
-                'src/index.ts': code`export const value: unknown = 1;`,
-                'src/modules/users/value.spec.ts': code`export const value: any = 1;`,
-            }),
-        },
-    },
 ];
 
 const negativeExpectations = {
-    'BE-STRUCT-C-002': [{
-        rule_id: 'BE-STRUCT-C-002-no-explicit-any',
-        location: { file: 'src/modules/users/value.ts', line: 1, column: 21 },
-        evidence: {
-            source_tool: 'eslint',
-            source_rule_id: '@typescript-eslint/no-explicit-any',
-            payload: {
-                message: 'Unexpected any. Specify a different type.',
-                severity: 1,
-                eslint_rule_id: '@typescript-eslint/no-explicit-any',
-                architecture_rule_id: null,
-            },
-        },
-    }],
     'BE-STRUCT-C-001': [{
         rule_id: 'BE-STRUCT-C-001-module-composition',
         location: { file: 'src/modules/users/users.module.ts', line: 4, column: 1 },
