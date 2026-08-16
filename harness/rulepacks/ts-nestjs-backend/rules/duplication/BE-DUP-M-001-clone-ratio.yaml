@@ -1,0 +1,33 @@
+rule_id: BE-DUP-M-001-clone-ratio
+version: 0.1.0
+layer: metrics
+category: duplication
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: BE-DUP-M-001
+
+description: >
+  Measures the share of production backend source lines covered by detected code clones.
+  Uses token-normalized sliding-window matching over production .ts/.tsx files: identifiers
+  and literals are collapsed to placeholders so Type-1 (exact) and Type-2 (renamed
+  identifiers/literals) clones, per Roy et al. (2009)'s taxonomy, both hash identically.
+  Fills the metric gap for BE-DUP-C-001/002/003, which previously had zero metric coverage.
+
+formula: duplicated_lines_covered / total_token_bearing_production_lines
+
+agent_facing_message: >
+  Clone ratio is {value}. Extract shared logic into one reusable implementation instead of
+  copy-pasting code blocks.
+
+research_tags:
+  metric_family: duplication
+  erosion_dimension: clone-density
+
+methodological_note: >
+  Independent of the constraints layer (no constraintsLayer dependency), so baseline
+  comparison and delta_vs_baseline work normally, unlike BE-ERR-M-001. Detection uses a
+  sliding window (default 50 tokens / 5 lines, either threshold qualifies) with hash bucketing
+  and seed-and-extend matching; the reported `matches` sample (capped at 20) is not
+  deduplicated across overlapping seeds from the same underlying clone region, but the
+  reported ratio itself is unaffected since covered lines are tracked as a set.

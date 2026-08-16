@@ -11,19 +11,7 @@
     },
     "BE-DEP-M-001-dependency-violation-density": {
       "report_path": "reports/depcruise-raw.json",
-      "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json",
-      "allowed_transitions": {
-        "controller": [
-          "service"
-        ],
-        "service": [
-          "service",
-          "repository"
-        ],
-        "repository": [
-          "repository"
-        ]
-      }
+      "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json"
     },
     "BE-DOM-M-001-cross-module-deep-import-count": {
       "report_path": "reports/depcruise-raw.json",
@@ -87,13 +75,22 @@
       "required_prefix": "api",
       "raw_artifact_path": "artifacts/metrics/route-prefix-violation-ratio.json"
     },
-    "BE-SIZE-M-001-method-parameter-violation-ratio": {
+    "BE-SIZE-M-001-cyclomatic-complexity-ratio": {
       "source_roots": [
         "backend/src",
         "src"
       ],
-      "max_parameters": 3,
-      "raw_artifact_path": "artifacts/metrics/method-parameter-violation-ratio.json"
+      "max_complexity": 10,
+      "raw_artifact_path": "artifacts/metrics/cyclomatic-complexity-ratio.json"
+    },
+    "BE-DUP-M-001-clone-ratio": {
+      "source_roots": [
+        "backend/src",
+        "src"
+      ],
+      "min_tokens": 50,
+      "min_lines": 5,
+      "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
     }
   }
 }

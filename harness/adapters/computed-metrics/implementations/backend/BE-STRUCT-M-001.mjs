@@ -4,7 +4,7 @@ import {
     appendBaselineDeltaFinding,
     buildMetricResult,
     computeDelta,
-} from './_shared/metric-result.mjs';
+} from '../_shared/metric-result.mjs';
 
 // Associated metric rule: BE-STRUCT-M-001-module-composition-violation-ratio.
 // Reuses the module composition policy from constraint rule BE-STRUCT-C-001-module-composition.

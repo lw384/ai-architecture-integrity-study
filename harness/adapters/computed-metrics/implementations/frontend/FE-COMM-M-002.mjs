@@ -2,8 +2,8 @@ import {
     appendBaselineDeltaFinding,
     buildMetricResult,
     computeDelta,
-} from './_shared/metric-result.mjs';
-import { analyzePropDrilling } from './_shared/frontend-source-analysis.mjs';
+} from '../_shared/metric-result.mjs';
+import { analyzePropDrilling } from './frontend-source-analysis.mjs';
 
 export const VERSION = '1.0.0';
 

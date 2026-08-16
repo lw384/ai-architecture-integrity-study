@@ -2,19 +2,19 @@ import {
     appendBaselineDeltaFinding,
     buildMetricResult,
     computeDelta,
-} from './_shared/metric-result.mjs';
-import { analyzeUseEffectDependencyArrays } from './_shared/frontend-source-analysis.mjs';
+} from '../_shared/metric-result.mjs';
+import { analyzeStyleMixing } from './frontend-source-analysis.mjs';
 
 export const VERSION = '1.0.0';
 
 export async function run({ targetDir, baselineDir, config }) {
-    const target = analyzeUseEffectDependencyArrays(targetDir, config ?? {});
-    const baseline = baselineDir ? analyzeUseEffectDependencyArrays(baselineDir, config ?? {}) : null;
+    const target = analyzeStyleMixing(targetDir, config ?? {});
+    const baseline = baselineDir ? analyzeStyleMixing(baselineDir, config ?? {}) : null;
     const delta = computeDelta(target.ratio, baseline?.ratio, 6);
     const findings = appendBaselineDeltaFinding([
-        `useEffect calls missing dependency arrays: ${target.missingDependencyArrays}/${target.totalUseEffects} (${target.ratio})`,
+        `Style mixing ratio: ${target.mixedFiles}/${target.totalFiles} (${target.ratio})`,
     ], delta, {
-        missingBaselineMessage: 'Baseline useEffect dependency-array metric unavailable; delta_vs_baseline is set to null.',
+        missingBaselineMessage: 'Baseline style mixing ratio unavailable; delta_vs_baseline is set to null.',
     });
 
     return buildMetricResult({

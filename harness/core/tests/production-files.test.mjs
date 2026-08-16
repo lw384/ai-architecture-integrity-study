@@ -15,10 +15,10 @@ import {
 } from '../../adapters/_shared/production-files.mjs';
 import {
   analyzeStateDistribution,
-} from '../../adapters/computed-metrics/implementations/_shared/frontend-source-analysis.mjs';
+} from '../../adapters/computed-metrics/implementations/frontend/frontend-source-analysis.mjs';
 import {
   analyzeMethodParameters,
-} from '../../adapters/computed-metrics/implementations/_shared/backend-source-analysis.mjs';
+} from '../../adapters/computed-metrics/implementations/backend/backend-source-analysis.mjs';
 import { runAdapter as runCrossStaticAdapter } from '../../adapters/cross-static/adapter.mjs';
 import { buildFrontendInventory } from '../../adapters/frontend-static/inventory.mjs';
 import backendEslintConfig from '../../rulepacks/ts-nestjs-backend/tool-configs/eslint.config.js';

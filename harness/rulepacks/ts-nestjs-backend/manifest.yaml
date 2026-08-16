@@ -30,6 +30,8 @@ adapters:
     version: 0.1.0
     config: tool-configs/metrics.config.json
     emits: [metrics]
+    options:
+      implementations_root: implementations/backend
   test-coverage:
     source: test-coverage
     version: 0.1.0
@@ -67,7 +69,8 @@ rules:
     - rules/test/BE-TEST-M-001-test-coverage.yaml
     - rules/test/BE-TEST-M-002-mock-per-test-case.yaml
     - rules/routes/BE-ROUTE-M-001-route-prefix-violation-ratio.yaml
-    - rules/size/BE-SIZE-M-001-method-parameter-violation-ratio.yaml
+    - rules/size/BE-SIZE-M-001-cyclomatic-complexity-ratio.yaml
+    - rules/duplication/BE-DUP-M-001-clone-ratio.yaml
   judgments: []
 
 metadata:

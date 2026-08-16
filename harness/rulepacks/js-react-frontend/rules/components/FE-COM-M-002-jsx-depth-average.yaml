@@ -5,7 +5,7 @@ category: component-structure
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: frontend-jsx-depth-average
+implementation: FE-COM-M-002
 
 description: >
   Measures average maximum JSX nesting depth across frontend component files.

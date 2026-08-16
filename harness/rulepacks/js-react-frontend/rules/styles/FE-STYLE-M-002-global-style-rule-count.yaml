@@ -5,7 +5,7 @@ category: styling
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: frontend-global-style-rule-count
+implementation: FE-STYLE-M-002
 
 description: >
   Measures the total number of CSS rules in approved global style files.

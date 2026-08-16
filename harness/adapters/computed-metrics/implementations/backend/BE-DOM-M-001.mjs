@@ -1,9 +1,9 @@
-import { resolveMetricReports } from './_shared/report-io.mjs';
+import { resolveMetricReports } from './report-io.mjs';
 import {
     appendBaselineDeltaFinding,
     buildMetricResult,
     computeDelta,
-} from './_shared/metric-result.mjs';
+} from '../_shared/metric-result.mjs';
 
 // Associated metric rule: BE-DOM-M-001-cross-module-deep-import-count.
 // Counts dep-cruiser edges tagged by constraint rule BE-DOM-C-001-no-cross-module-deep-import.

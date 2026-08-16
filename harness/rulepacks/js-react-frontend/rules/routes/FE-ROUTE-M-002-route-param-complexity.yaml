@@ -5,7 +5,7 @@ category: routing
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: frontend-route-param-complexity
+implementation: FE-ROUTE-M-002
 
 description: >
   Measures average dynamic-parameter count across statically declared

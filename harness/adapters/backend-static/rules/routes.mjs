@@ -5,7 +5,10 @@ import { violation } from './shared.mjs';
 
 const HTTP_DECORATORS = new Set(['Get', 'Post', 'Put', 'Patch', 'Delete', 'Options', 'Head', 'All']);
 
-function isKebabRoute(value) {
+// Exported so computed-metrics/implementations/backend/backend-source-analysis.mjs can reuse
+// the exact same kebab-case rules (including version-segment and wildcard passthroughs)
+// instead of maintaining a second, drifting copy.
+export function isKebabRoute(value) {
     if (typeof value !== 'string') return false;
     const segments = value.trim().replace(/^\/+|\/+$/g, '').split('/').filter(Boolean);
     return segments.every((segment) => {

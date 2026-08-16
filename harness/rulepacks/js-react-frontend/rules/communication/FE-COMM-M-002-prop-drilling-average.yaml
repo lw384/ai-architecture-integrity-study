@@ -5,7 +5,7 @@ category: communication
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: frontend-prop-drilling-average
+implementation: FE-COMM-M-002
 
 description: >
   Measures the average prop fanout of JSX elements that exceed the configured

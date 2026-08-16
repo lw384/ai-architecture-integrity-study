@@ -5,7 +5,7 @@ category: testability
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: mock-per-test-case
+implementation: BE-TEST-M-002
 
 description: >
   Measures average mock usage intensity in backend tests.

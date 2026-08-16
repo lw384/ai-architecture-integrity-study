@@ -2,18 +2,22 @@
 // purity. All three walk the same import edges, so they share one pass over project.files.
 import { layerOf, moduleParts, targetFiles, violation } from './shared.mjs';
 
+// Shared with computed-metrics/implementations/backend/BE-DEP-M-001.mjs so the metric's
+// layering-violation count can never drift from what this constraint actually enforces.
+export const FORBIDDEN_LAYER_PAIRS = new Set([
+    'controller:controller',
+    'controller:repository',
+    'service:controller',
+    'repository:controller',
+    'repository:service',
+    'entity:controller',
+    'entity:service',
+    'entity:repository',
+]);
+
 export function analyzeDependencies(project) {
     const findings = [];
-    const forbiddenLayerPairs = new Set([
-        'controller:controller',
-        'controller:repository',
-        'service:controller',
-        'repository:controller',
-        'repository:service',
-        'entity:controller',
-        'entity:service',
-        'entity:repository',
-    ]);
+    const forbiddenLayerPairs = FORBIDDEN_LAYER_PAIRS;
 
     for (const file of project.files) {
         const sourceModule = moduleParts(file.relative);

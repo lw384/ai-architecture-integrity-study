@@ -42,6 +42,7 @@ evaluation_scopes:
         - BE-TEST-M-002
         - BE-ROUTE-M-001
         - BE-SIZE-M-001
+        - BE-DUP-M-001
       judgments: []
     thresholds:
       BE-DEP-M-001:

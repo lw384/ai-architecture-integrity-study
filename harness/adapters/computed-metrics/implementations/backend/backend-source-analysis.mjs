@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
 import { isProductionSourcePath } from '../../../_shared/production-files.mjs';
+import { evaluateStatic } from '../../../backend-static/project.mjs';
+import { isKebabRoute } from '../../../backend-static/rules/routes.mjs';
 
 const HTTP_DECORATORS = new Set(['Get', 'Post', 'Put', 'Patch', 'Delete', 'Options', 'Head', 'All']);
 const MAPPED_TYPE_CALLS = new Set(['PartialType', 'PickType', 'OmitType', 'IntersectionType']);
@@ -320,26 +322,134 @@ export function analyzeMethodParameters(projectRoot, config = {}) {
     };
 }
 
-function isKebabCaseRoutePath(pathValue) {
-    if (typeof pathValue !== 'string') {
-        return true;
+// analyzeMethodParameters() above is no longer wired to any rule as of the SIZE category's
+// switch to cyclomatic complexity (BE-SIZE-M-001-cyclomatic-complexity-ratio); kept in the
+// repo per the migration note rather than deleted.
+
+const DECISION_STATEMENT_TYPES = new Set([
+    'IfStatement',
+    'WhileStatement',
+    'DoWhileStatement',
+    'ForStatement',
+    'ForInStatement',
+    'ForOfStatement',
+]);
+const FUNCTION_LIKE_TYPES = new Set(['FunctionExpression', 'ArrowFunctionExpression', 'FunctionDeclaration']);
+const AST_TRAVERSAL_SKIP_KEYS = new Set(['parent', 'tokens', 'comments', 'loc', 'range']);
+
+// McCabe (1976): V(G) = 1 + decision points. Counts if/while/for/case/&&/||/ternary within one
+// method body. Stops at nested function boundaries so a callback's branches are not folded
+// into the enclosing method's score — each closure is its own unit of complexity.
+function countDecisionPoints(node, isRoot = true) {
+    if (!node || typeof node !== 'object') {
+        return 0;
     }
 
-    const trimmed = pathValue.trim();
-
-    if (!trimmed || trimmed === '/') {
-        return true;
+    if (!isRoot && FUNCTION_LIKE_TYPES.has(node.type)) {
+        return 0;
     }
 
-    const segments = trimmed.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean);
+    let count = 0;
 
-    return segments.every((segment) => {
-        if (segment.startsWith(':')) {
-            return /^[A-Za-z][A-Za-z0-9_]*$/.test(segment.slice(1));
+    if (DECISION_STATEMENT_TYPES.has(node.type)) {
+        count += 1;
+    } else if (node.type === 'SwitchCase' && node.test !== null) {
+        count += 1;
+    } else if (node.type === 'LogicalExpression' && (node.operator === '&&' || node.operator === '||')) {
+        count += 1;
+    } else if (node.type === 'ConditionalExpression') {
+        count += 1;
+    }
+
+    for (const [key, child] of Object.entries(node)) {
+        if (AST_TRAVERSAL_SKIP_KEYS.has(key)) {
+            continue;
         }
 
-        return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(segment);
-    });
+        if (Array.isArray(child)) {
+            for (const item of child) {
+                count += countDecisionPoints(item, false);
+            }
+        } else if (child && typeof child === 'object') {
+            count += countDecisionPoints(child, false);
+        }
+    }
+
+    return count;
+}
+
+export function analyzeCyclomaticComplexity(projectRoot, config = {}) {
+    const roots = Array.isArray(config.source_roots) && config.source_roots.length > 0
+        ? config.source_roots
+        : ['src'];
+    const maxComplexity = config.max_complexity ?? 10;
+    const methods = [];
+
+    for (const root of roots) {
+        const absoluteRoot = path.resolve(projectRoot, root);
+
+        for (const filePath of listFiles(absoluteRoot, (candidate) => isRelevantMethodFile(toPosixPath(candidate)))) {
+            const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
+            const { ast } = parseTypescriptFile(filePath);
+
+            walkAst(ast, (node) => {
+                if (node.type !== 'MethodDefinition' || node.kind === 'constructor') {
+                    return;
+                }
+
+                const methodName = node.key?.type === 'Identifier' ? node.key.name : '<unknown>';
+                const complexity = 1 + countDecisionPoints(node.value?.body);
+
+                methods.push({
+                    file: relativeFile,
+                    methodName,
+                    complexity,
+                    line: node.loc?.start?.line ?? null,
+                });
+            });
+        }
+    }
+
+    const violatingMethods = methods.filter((item) => item.complexity > maxComplexity).length;
+    const averageComplexity = methods.length === 0
+        ? 0
+        : Number((methods.reduce((sum, item) => sum + item.complexity, 0) / methods.length).toFixed(4));
+
+    return {
+        totalMethods: methods.length,
+        violatingMethods,
+        maxComplexity,
+        averageComplexity,
+        ratio: methods.length === 0 ? 0 : Number((violatingMethods / methods.length).toFixed(6)),
+        details: methods,
+    };
+}
+
+// Minimal same-file top-level binding collector — mirrors what
+// adapters/backend-static/project.mjs's buildProject() records per file, just enough for the
+// shared evaluateStatic() to resolve `const X = 'literal'; fn(X)`-style same-file references
+// without pulling in that module's full import-graph machinery.
+function collectTopLevelBindings(ast) {
+    const constants = new Map();
+    const functions = new Map();
+
+    for (const statement of ast.body ?? []) {
+        const declaration = statement.type === 'ExportNamedDeclaration' ? statement.declaration : statement;
+
+        if (declaration?.type === 'VariableDeclaration' && declaration.kind === 'const') {
+            for (const item of declaration.declarations ?? []) {
+                if (item.id?.type === 'Identifier') {
+                    constants.set(item.id.name, item.init);
+                }
+            }
+        }
+
+        if (declaration?.type === 'FunctionDeclaration' && declaration.id?.name) {
+            functions.set(declaration.id.name, declaration);
+        }
+    }
+
+    return { constants, functions };
 }
 
 export function analyzeRoutes(projectRoot, config = {}) {
@@ -361,6 +471,7 @@ export function analyzeRoutes(projectRoot, config = {}) {
         }
 
         const { ast } = parseTypescriptFile(mainPath);
+        const fileBindings = collectTopLevelBindings(ast);
 
         walkAst(ast, (node) => {
             if (
@@ -368,7 +479,7 @@ export function analyzeRoutes(projectRoot, config = {}) {
                 && node.callee?.type === 'MemberExpression'
                 && node.callee.property?.type === 'Identifier'
                 && node.callee.property.name === 'setGlobalPrefix'
-                && getLiteralStringValue(node.arguments?.[0]) === requiredPrefix
+                && evaluateStatic(fileBindings, node.arguments?.[0]) === requiredPrefix
             ) {
                 hasGlobalPrefix = true;
             }
@@ -411,7 +522,7 @@ export function analyzeRoutes(projectRoot, config = {}) {
                             ? decorator.expression
                             : null;
                         const methodPath = getLiteralStringValue(callExpr?.arguments?.[0]) ?? '';
-                        const violatesPath = !isKebabCaseRoutePath(controllerPath) || !isKebabCaseRoutePath(methodPath);
+                        const violatesPath = !isKebabRoute(controllerPath) || !isKebabRoute(methodPath);
 
                         endpoints.push({
                             file: relativeFile,

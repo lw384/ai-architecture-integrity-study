@@ -1,30 +1,44 @@
-import { resolveMetricReports } from './_shared/report-io.mjs';
+import { resolveMetricReports } from './report-io.mjs';
 import {
     appendBaselineDeltaFinding,
     buildMetricResult,
     computeDelta,
-} from './_shared/metric-result.mjs';
+} from '../_shared/metric-result.mjs';
+import { FORBIDDEN_LAYER_PAIRS } from '../../../backend-static/rules/dependencies.mjs';
 
 // Associated metric rule: BE-DEP-M-001-dependency-violation-density.
-// Aggregates dependency drift signals aligned with BE-DEP-C-002 (layering) and
+// Aggregates dependency drift signals aligned with BE-DEP-C-001 (layering) and
 // BE-DEP-C-004 (circular dependencies).
 
 export const VERSION = '1.0.0';
 
+// Mirrors BE-DEP-C-001's own layer detection (adapters/backend-static/rules/shared.mjs::layerOf),
+// including the entity layer, which the previous controller/service/repository-only detector missed.
 function detectLayer(filePath) {
-    if (filePath.endsWith('.controller.ts')) return 'controller';
-    if (filePath.endsWith('.service.ts')) return 'service';
-    if (filePath.endsWith('.repository.ts')) return 'repository';
-    return null;
+    const match = filePath.match(/\.(controller|service|repository|entity)\.[cm]?[jt]sx?$/);
+    return match?.[1] ?? null;
 }
 
-function isMcvDirectionViolation(sourceLayer, targetLayer, allowedTransitions) {
+// BE-DEP-C-001 only governs imports within the same business module. Mirrors
+// adapters/backend-static/rules/shared.mjs::moduleParts()'s module-boundary pattern exactly.
+function moduleOwner(filePath) {
+    const match = filePath.match(/^src\/modules\/([^/]+)\//);
+    return match ? match[1] : null;
+}
+
+function isLayeringViolation(sourceFile, targetFile, forbiddenPairs) {
+    const sourceLayer = detectLayer(sourceFile);
+    const targetLayer = detectLayer(targetFile);
+
     if (!sourceLayer || !targetLayer) {
         return false;
     }
 
-    const allowedTargets = allowedTransitions[sourceLayer] ?? [];
-    return !allowedTargets.includes(targetLayer);
+    if (moduleOwner(sourceFile) !== moduleOwner(targetFile)) {
+        return false;
+    }
+
+    return forbiddenPairs.has(`${sourceLayer}:${targetLayer}`);
 }
 
 function collectEdges(report) {
@@ -127,38 +141,34 @@ function countCyclicEdges(edges) {
 
     const adjacency = makeAdjacency(edges);
     const sccs = findSccs(adjacency);
-    const cyclicNodeSet = new Set();
+    // Track which cyclic component each node belongs to, rather than a flat set of "any
+    // cyclic node" — otherwise a bridge edge between two unrelated cyclic clusters would be
+    // miscounted as a cyclic edge even though it never participates in either cycle.
+    const sccIndexByNode = new Map();
 
-    for (const scc of sccs) {
-        if (scc.length > 1) {
-            for (const node of scc) {
-                cyclicNodeSet.add(node);
-            }
-        } else {
-            const only = scc[0];
-            const hasSelfLoop = adjacency.get(only)?.has(only) ?? false;
-            if (hasSelfLoop) {
-                cyclicNodeSet.add(only);
-            }
+    sccs.forEach((scc, index) => {
+        const hasCycle = scc.length > 1 || (adjacency.get(scc[0])?.has(scc[0]) ?? false);
+
+        if (!hasCycle) {
+            return;
         }
-    }
 
-    return edges.filter((edge) => cyclicNodeSet.has(edge.source) && cyclicNodeSet.has(edge.target)).length;
+        for (const node of scc) {
+            sccIndexByNode.set(node, index);
+        }
+    });
+
+    return edges.filter((edge) =>
+        sccIndexByNode.has(edge.source)
+        && sccIndexByNode.get(edge.source) === sccIndexByNode.get(edge.target)
+    ).length;
 }
 
-function evaluateReport(report, config = {}) {
-    const allowedTransitions = config.allowed_transitions ?? {
-        controller: ['service'],
-        service: ['service', 'repository'],
-        repository: ['repository'],
-    };
-
+function evaluateReport(report) {
     const edges = collectEdges(report);
-    const mvcViolations = edges.filter((edge) => {
-        const sourceLayer = detectLayer(edge.source);
-        const targetLayer = detectLayer(edge.target);
-        return isMcvDirectionViolation(sourceLayer, targetLayer, allowedTransitions);
-    }).length;
+    const mvcViolations = edges.filter((edge) =>
+        isLayeringViolation(edge.source, edge.target, FORBIDDEN_LAYER_PAIRS)
+    ).length;
     const cyclicDependencyCount = countCyclicEdges(edges);
     const totalImportEdges = edges.length;
     const numerator = mvcViolations + cyclicDependencyCount;
@@ -179,8 +189,8 @@ export async function run({ targetDir, baselineDir, config }) {
         config,
         baselineOptional: true,
     });
-    const target = evaluateReport(targetReport, config ?? {});
-    const baseline = baselineReport ? evaluateReport(baselineReport, config ?? {}) : null;
+    const target = evaluateReport(targetReport);
+    const baseline = baselineReport ? evaluateReport(baselineReport) : null;
     const delta = computeDelta(target.value, baseline?.value, 6);
 
     const findings = appendBaselineDeltaFinding([

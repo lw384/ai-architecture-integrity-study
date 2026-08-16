@@ -5,7 +5,7 @@ category: architecture
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: dependency-violation-density
+implementation: BE-DEP-M-001
 
 description: >
   Measures the density of illegal dependency edges in the backend module

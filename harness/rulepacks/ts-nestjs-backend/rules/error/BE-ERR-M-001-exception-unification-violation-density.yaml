@@ -5,7 +5,7 @@ category: error-handling
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: exception-unification-violation-density
+implementation: BE-ERR-M-001
 
 description: >
   Measures exception-handling drift in service layer by aggregating

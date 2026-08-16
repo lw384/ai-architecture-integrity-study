@@ -5,7 +5,7 @@ category: data-contract
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: dto-validator-coverage
+implementation: BE-CONTRACT-M-001
 
 description: >
   Measures request DTO validation coverage.

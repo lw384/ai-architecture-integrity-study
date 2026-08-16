@@ -3,7 +3,7 @@ import path from 'node:path';
 import {
     appendBaselineDeltaFinding,
     buildMetricResult,
-} from './_shared/metric-result.mjs';
+} from '../_shared/metric-result.mjs';
 
 // Associated metric rule: BE-ERR-M-001-exception-unification-violation-density.
 // Reuses findings already produced by BE-ERR-C-001/002/003 instead of re-running AST scans.

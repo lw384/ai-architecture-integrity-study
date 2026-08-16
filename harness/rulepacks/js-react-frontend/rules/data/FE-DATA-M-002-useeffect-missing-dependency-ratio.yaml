@@ -5,7 +5,7 @@ category: data-access
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: frontend-useeffect-missing-deps-ratio
+implementation: FE-DATA-M-002
 
 description: >
   Measures the share of useEffect calls that do not declare a dependency array.

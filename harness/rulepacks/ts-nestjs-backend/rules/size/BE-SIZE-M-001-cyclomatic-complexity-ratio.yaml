@@ -1,0 +1,30 @@
+rule_id: BE-SIZE-M-001-cyclomatic-complexity-ratio
+version: 0.2.0
+layer: metrics
+category: size-complexity
+visibility: agent-visible
+severity: warn
+adapter: computed-metrics
+implementation: BE-SIZE-M-001
+
+description: >
+  Measures the share of production controller/service/repository methods whose McCabe (1976)
+  cyclomatic complexity exceeds the configured limit. V(G) = 1 + count(if/while/for/case/
+  &&/||/ternary) within the method body, not descending into nested closures. Replaces the
+  former parameter-count-based SIZE metric: parameter width is a weak proxy for "does this
+  method do too much"; cyclomatic complexity measures the control flow directly.
+  Value = methods with complexity above max_complexity (default 10) / all production methods.
+
+agent_facing_message: >
+  Cyclomatic complexity violation ratio is {value}. Break down high-branching methods in
+  production code — extract sub-conditions into named helpers or early returns.
+
+research_tags:
+  metric_family: control-flow-complexity
+  erosion_dimension: interface-complexity
+
+methodological_note: >
+  Supersedes BE-SIZE-M-001-method-parameter-violation-ratio (schema_version 0.1.0). The
+  retired parameter-count logic remains in
+  adapters/computed-metrics/implementations/backend/backend-source-analysis.mjs::
+  analyzeMethodParameters() but is no longer wired to any rule.

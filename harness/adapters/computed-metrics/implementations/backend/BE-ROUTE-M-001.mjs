@@ -2,8 +2,8 @@ import {
     appendBaselineDeltaFinding,
     buildMetricResult,
     computeDelta,
-} from './_shared/metric-result.mjs';
-import { analyzeRoutes } from './_shared/backend-source-analysis.mjs';
+} from '../_shared/metric-result.mjs';
+import { analyzeRoutes } from './backend-source-analysis.mjs';
 
 export const VERSION = '1.0.0';
 
