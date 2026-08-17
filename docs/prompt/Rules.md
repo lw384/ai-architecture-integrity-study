@@ -73,7 +73,8 @@ requirements take precedence where a conflict exists.
   form owner; do not create competing feature directories or UI surfaces.
 - **FE-DUP-C-002:** Frontend logic has one authoritative implementation.
   Repeated API, form, validation, transformation, state, component, or
-  function logic belongs in a shared service, hook, component, or utility.
+  substantive function logic belongs in a shared service, hook, component,
+  or utility. Low-complexity UI event-to-state adapters are excluded.
 
 ### Cross-Stack
 

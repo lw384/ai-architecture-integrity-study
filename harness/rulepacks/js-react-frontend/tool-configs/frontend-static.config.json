@@ -11,5 +11,7 @@
     "src/hooks/",
     "/hooks/"
   ],
+  "duplication_function_min_ast_nodes": 10,
+  "duplication_ui_adapter_max_ast_nodes": 20,
   "resource_aliases": {}
 }

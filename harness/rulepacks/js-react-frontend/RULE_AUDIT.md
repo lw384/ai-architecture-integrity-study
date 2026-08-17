@@ -11,11 +11,11 @@
 | 项目 | 结论 |
 |---|---|
 | 13 条 constraint 的接入情况 | 全部登记在 `manifest.yaml`，并由 Base、T1、T2、T3 的 frontend scope 启用；统一通过 `frontend-static` adapter 进入评估 pipeline |
-| constraint fixture 覆盖 | 每条都有 positive/negative/nearMiss/ignored 四类用例；另有 7 类 `FE-DUP-C-002` 重复原因测试和 2 条协议/任务完整性测试。`node --test core/tests/frontend-constraint-fixtures.test.mjs` 实测 **61/61 通过** |
+| constraint fixture 覆盖 | 每条都有 positive/negative/nearMiss/ignored 四类用例；另有 7 类 `FE-DUP-C-002` 重复原因测试、3 条过滤/聚合回归测试和 2 条协议/任务完整性测试。`node --test core/tests/frontend-constraint-fixtures.test.mjs` 实测 **64/64 通过** |
 | 7 条 metric 的接入情况 | 全部登记在 manifest，并由四份任务配置启用；`computed-metrics` 能解析并执行全部 7 个 `FE-*-M-001.mjs` 实现 |
-| metric 测试覆盖 | `FE-COM-M-001` 有 3 条专用行为测试，其余 6 条 metric 各有 2 条，共 15 条；另有 2 条注册/全链路执行测试和 5 条 render-decision constraint/metric 统一性测试。前端 constraint + metric 定向测试实测 **83/83 通过** |
+| metric 测试覆盖 | `FE-COM-M-001` 有 3 条专用行为测试，其余 6 条 metric 各有 2 条，共 15 条；另有 2 条注册/全链路执行测试和 5 条 render-decision constraint/metric 统一性测试。前端 constraint + metric 定向测试共 **86 条** |
 | metric 与 constraint 的一致性 | `FE-COM-M-001` 与 `FE-COM-C-002` 复用同一个组件级 render-decision 分析结果，扫描对象和每组件深度完全一致；`FE-DATA-M-001` 与 `FE-DATA-C-001` 衡量同一类网络调用位置问题，但调用识别和允许路径不一致；其余 5 条主要是同分类的独立代理指标 |
-| 文档/配置与实现的一致性 | 有 3 组需要在解读时注意的差异：data-access 允许路径不同、prop-drilling 实为单节点属性扇出、duplication YAML 的“code-block”范围宽于实际实现 |
+| 文档/配置与实现的一致性 | 有 3 组需要在解读时注意的差异：data-access 允许路径不同、prop-drilling 实为单节点属性扇出、duplication constraint 与 metric 分别使用语义候选和通用 token clone 口径 |
 
 ---
 
@@ -118,16 +118,16 @@ fixture 协议对每条 constraint 统一定义四类用例：
 | 规则 | 工具 / 实现 | 实际检测逻辑 | Fixture | 可信度与边界 |
 |---|---|---|---|---|
 | **FE-DUP-C-001**<br>single-resource-owner | frontend-static<br>`analyzeResourceDuplication()`<br>`rules.mjs:640` | 从 `src/features/<name>/**`、page component、`*Form` 函数和 route object 收集 owner；资源名经驼峰拆词、忽略 page/list/detail/edit 等词、取首个有效词并单数化/应用 alias。按 `owner kind + resource` 分组，同种 owner 出现两个不同目录/文件即违规 | 4/4 | ✅ 验证同资源双 page owner、同一资源的 page+route 不冲突及 ignored 文件。⚠️ 资源归一化主要取首个 token，复合资源名可能被过度合并；不同 owner kind 本来就不会互相冲突 |
-| **FE-DUP-C-002**<br>single-authoritative-implementation | frontend-static<br>`analyzeImplementationDuplication()`<br>`rules.mjs:772` | 为生产实现生成 7 类指纹：静态 API method+endpoint、form 字段集合、validation object AST、transform 函数 AST、state/reducer AST、component AST、普通 function AST。仅比较不同文件；同一文件对只按优先级报告一种原因。函数体 AST size 小于 10 的函数不参与 | 4/4 + 7 类原因测试 | ✅ 7 种 `reason` 都有独立可执行证据。⚠️ 不是任意“code-block”克隆检测；AST 指纹会归一化 identifier，但保留 literal/成员属性等结构，覆盖范围比通用 Type-2 clone detector 窄 |
+| **FE-DUP-C-002**<br>single-authoritative-implementation | frontend-static<br>`analyzeImplementationDuplication()`<br>`rules.mjs:805` | 为生产实现生成 7 类指纹：静态 API method+endpoint、form 字段集合、validation object AST、transform 函数 AST、state/reducer AST、component AST、普通 function AST。仅比较不同文件；函数体 AST size 小于配置阈值 10 不参与；名称为 `handle*`/`on*`、AST size 不超过 20、且只调用 state setter 或事件传播方法的低复杂度 UI adapter 被排除。其余重复按完全相同的文件集合聚合为一条 finding，全部组写入 `duplicate_groups` | 4/4 + 7 类原因测试 + 3 条过滤/聚合测试 | ✅ 7 种 `reason`、简单 UI adapter 排除、实质 handler 保留及多组 evidence 聚合均有可执行证据。⚠️ AST 指纹会归一化 identifier，但保留 literal/成员属性等结构；constraint 是窄语义检测，不等价于通用 Type-2 clone detector |
 
 **Constraint 小结**：
 
 ```text
 $ node --test core/tests/frontend-constraint-fixtures.test.mjs
-# tests 61 / pass 61 / fail 0
+# tests 64 / pass 64 / fail 0
 ```
 
-61 条由 **13 × 4 = 52 条统一协议用例 + 7 条 FE-DUP-C-002 原因测试 + 2 条完整性测试**组成。
+64 条由 **13 × 4 = 52 条统一协议用例 + 7 条 FE-DUP-C-002 原因测试 + 3 条过滤/聚合回归测试 + 2 条完整性测试**组成。
 完整性测试还断言 Base、T1-T3 四份任务启用完全一致的 13 条 constraint，因此这些规则不只是存在于目录中，
 而是确实接入当前评估 pipeline。
 
@@ -183,9 +183,9 @@ YAML 的 `adapter: computed-metrics` 和 `implementation: FE-*-M-001` 也与实�
 2. **`FE-COMM-M-001` 的 prop-drilling 表述过强**：实现不追踪同一 prop 跨几层传递，只统计单个 JSX
    opening element 的普通 attribute 数；`agent_facing_message` 中“cross-component data flow”的解释只能
    当作代理假设，不能当作已观测事实。
-3. **`FE-DUP-C-002` 的 code-block 范围**：YAML 写到 repeated code-block logic，实际候选是 7 种明确形状，
-   一般函数/组件之外的任意语句块不会单独生成指纹；通用 Type-1/Type-2 片段重复由 `FE-DUP-M-001`
-   补充，但两者不是同一判定引擎。
+3. **duplication constraint 与 metric 的口径不同**：`FE-DUP-C-002` 检查 7 种明确的语义候选，排除低复杂度
+   UI adapter，并按文件集合聚合 evidence；`FE-DUP-M-001` 对生产源码执行通用 Type-1/Type-2 token clone
+   扫描。两者是同一质量维度下的互补信号，不是同一判定引擎。
 
 此外，`frontend-source-analysis.mjs` 仍导出 `analyzeUncachedApiCalls()`，但 manifest、metric YAML 和
 implementations 入口均未引用它；当前 pipeline 不会执行这段分析。实现可达性测试关注的是
@@ -198,7 +198,7 @@ implementations 入口均未引用它；当前 pipeline 不会执行这段分析
 - **接入完整性高**：13 条 constraint 和 7 条 metric 都在 manifest 中注册，并由 Base/T1-T3 的 frontend
   scope 启用；测试同时验证了 selector、YAML、adapter 与实现文件之间的可达链路。
 - **Constraint 行为可信度较高**：13 条规则都有统一四象限 fixture，negative 使用完整 finding 快照，
-  nearMiss 和 ignored 能直接防止常见误报；专用测试 **61/61 通过**。不过 stateless boundary、resource、page
+  nearMiss 和 ignored 能直接防止常见误报；专用测试 **64/64 通过**。不过 stateless boundary、resource、page
   mapping”等本质上仍是静态启发式，其可信边界应按第 2 节理解，不能推断为运行时语义证明。
 - **Metric 实现可运行且有直接测试证据**：7 条均有专用测试，注册测试还真实执行全部实现。公式、常见边界
   和生产文件排除已有覆盖；其中 FE-COM 有 3 条专用测试和 5 条跨层一致性测试，其余 metric 各 2 条，尚未

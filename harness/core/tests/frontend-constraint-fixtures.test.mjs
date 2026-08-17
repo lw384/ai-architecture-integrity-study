@@ -100,8 +100,61 @@ for (const reasonFixture of frontendDuplicationReasonFixtures) {
         assert.equal(actual[0].evidence.source_rule_id, 'FE-DUP-C-002');
         assert.equal(actual[0].evidence.payload.reason, reasonFixture.reason);
         assert.equal(actual[0].evidence.payload.implementations.length, 2);
+        assert.equal(
+            actual[0].evidence.payload.duplicate_group_count,
+            actual[0].evidence.payload.duplicate_groups.length,
+        );
+        const reasonGroup = actual[0].evidence.payload.duplicate_groups
+            .find((group) => group.reason === reasonFixture.reason);
+        assert.ok(reasonGroup, reasonFixture.reason);
+        assert.equal(reasonGroup.implementations.length, 2);
     });
 }
+
+test('FE-DUP-C-002 ignores low-complexity UI event-to-state adapters', async () => {
+    const handler = `export const handleChange = (field) => (event) => {\n`
+        + `  setValues((current) => ({ ...current, [field]: event.target.value }));\n`
+        + `};\n`;
+    const actual = await evaluateFixture({ ruleId: 'FE-DUP-C-002' }, { files: {
+        'src/features/users/change.ts': handler,
+        'src/pages/users/change.ts': handler,
+    } });
+
+    assert.deepEqual(actual, []);
+});
+
+test('FE-DUP-C-002 retains substantive duplicated event handlers', async () => {
+    const handler = `export async function handleSave(api, input) {\n`
+        + `  const response = await api.save(input);\n`
+        + `  return response.data;\n`
+        + `}\n`;
+    const actual = await evaluateFixture({ ruleId: 'FE-DUP-C-002' }, { files: {
+        'src/features/users/save.ts': handler,
+        'src/pages/users/save.ts': handler,
+    } });
+
+    assert.equal(actual.length, 1);
+    assert.equal(actual[0].evidence.payload.reason, 'function-clone');
+    assert.equal(actual[0].evidence.payload.duplicate_group_count, 1);
+});
+
+test('FE-DUP-C-002 aggregates all substantive clone groups for one file set', async () => {
+    const implementations = `export function normalizeUser(input) {\n`
+        + `  return { id: String(input.id), name: input.name.trim() };\n`
+        + `}\n`
+        + `export function serializeUser(input) {\n`
+        + `  return JSON.stringify({ id: input.id, name: input.name.trim() });\n`
+        + `}\n`;
+    const actual = await evaluateFixture({ ruleId: 'FE-DUP-C-002' }, { files: {
+        'src/features/users/operations.ts': implementations,
+        'src/pages/users/operations.ts': implementations,
+    } });
+
+    assert.equal(actual.length, 1);
+    assert.equal(actual[0].evidence.payload.duplicate_group_count, 2);
+    assert.equal(actual[0].evidence.payload.duplicate_groups.length, 2);
+    assert.equal(new Set(actual[0].evidence.payload.duplicate_groups.map((group) => group.fingerprint)).size, 2);
+});
 
 for (const fixture of frontendConstraintFixtures) {
     for (const [caseName, fixtureCase] of Object.entries(fixture.cases)) {

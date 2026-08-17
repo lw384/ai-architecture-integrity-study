@@ -1,5 +1,5 @@
 rulepack_id: js-react-frontend
-version: 0.6.0
+version: 0.7.0
 kind: subject
 language: [javascript]
 frameworks: [react]
@@ -7,7 +7,7 @@ frameworks: [react]
 adapters:
   frontend-static:
     source: frontend-static
-    version: 0.3.0
+    version: 0.4.0
     config: tool-configs/frontend-static.config.json
     emits: [constraints]
   computed-metrics:
@@ -48,6 +48,6 @@ metadata:
   notes:
     - All 13 frontend constraints share one production-source evidence inventory.
     - Every registered constraint has positive, negative, near-miss, and ignored fixtures.
-    - FE-DUP-C-002 includes semantic duplicates and component/function clones.
+    - FE-DUP-C-002 aggregates substantive clone groups per exact file set and excludes low-complexity UI adapters.
     - FE-COM-C-002 and FE-COM-M-001 share one component-level render-decision analysis.
     - Frontend metrics run through the shared computed-metrics adapter.

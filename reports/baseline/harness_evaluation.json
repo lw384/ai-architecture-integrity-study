@@ -1,41 +1,41 @@
 {
   "schema_version": "0.3.0",
-  "evaluation_profile_hash": "sha256:59de1669128cd0fca8a3df2028e34ae935e2697af6d02ff4123c31e24c8556f4",
-  "run_id": "baseline_Base_20260817_010651",
+  "evaluation_profile_hash": "sha256:a23fb707be4dd352f5c2863d6682f5edafffbc8eaadc3bbdcf625f2769184cc7",
+  "run_id": "baseline_Base_20260817_012519",
   "trajectory_id": "baseline",
   "task_id": "Base",
   "rulepack_id": "task::Base",
   "target": {
     "workspace_path": "/Users/luowei/project/ai-architecture-integrity-study/baseline",
-    "pre_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4",
-    "post_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4",
-    "baseline_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4"
+    "pre_commit": "4d825862cd480ec5933900eb820832d406f412dc",
+    "post_commit": "4d825862cd480ec5933900eb820832d406f412dc",
+    "baseline_commit": "4d825862cd480ec5933900eb820832d406f412dc"
   },
   "comparison": {
     "mode": "self",
     "baseline": {
       "path": null,
       "sha256": null,
-      "run_id": "baseline_Base_20260817_010651",
-      "post_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4"
+      "run_id": "baseline_Base_20260817_012519",
+      "post_commit": "4d825862cd480ec5933900eb820832d406f412dc"
     },
     "pre": {
       "path": null,
       "sha256": null,
-      "run_id": "baseline_Base_20260817_010651",
-      "post_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4"
+      "run_id": "baseline_Base_20260817_012519",
+      "post_commit": "4d825862cd480ec5933900eb820832d406f412dc"
     },
     "post": {
       "path": null,
       "sha256": null,
-      "run_id": "baseline_Base_20260817_010651",
-      "post_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4"
+      "run_id": "baseline_Base_20260817_012519",
+      "post_commit": "4d825862cd480ec5933900eb820832d406f412dc"
     }
   },
   "env_snapshot": {
     "node_version": "v20.20.2",
     "pnpm_version": "9.0.0",
-    "harness_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4",
+    "harness_commit": "4d825862cd480ec5933900eb820832d406f412dc",
     "os": "Darwin 25.4.0 (arm64)",
     "tool_versions": {
       "backend-static": "0.2.0",
@@ -44,7 +44,7 @@
       "contract-diff": "0.1.0",
       "computed-metrics": "0.1.0",
       "test-coverage": "0.1.0",
-      "frontend-static": "0.3.0",
+      "frontend-static": "0.4.0",
       "cross-static": "0.1.0"
     }
   },
@@ -59,14 +59,13 @@
       },
       {
         "name": "frontend:constraints",
-        "version": "0.6.0",
+        "version": "0.7.0",
         "status": "ok",
         "findings": [
           "Context providers must stay at an approved application or route boundary.",
           "Context providers must stay at an approved application or route boundary.",
           "function-clone logic has more than one production implementation.",
-          "function-clone logic has more than one production implementation.",
-          "function-clone logic has more than one production implementation.",
+          "3 substantive duplicate implementation groups exist across the same files.",
           "component-clone logic has more than one production implementation."
         ],
         "raw_artifact_path": "scopes/frontend/constraints.json"
@@ -336,13 +335,13 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 0.235434,
+          "value": 0.231043,
           "unit": "ratio",
           "direction": "lower_is_better"
         },
         "delta_vs_baseline": 0,
         "findings": [
-          "Duplicated lines: 1192/5063 (0.235434)",
+          "Duplicated lines: 1170/5064 (0.231043)",
           "Clone matches found: 20+ (sample capped)"
         ],
         "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
@@ -455,13 +454,13 @@
           "adapter_meta": {
             "backend-static": {
               "status": "ok",
-              "duration_ms": 165,
+              "duration_ms": 153,
               "files_scanned": 39,
               "parse_errors": []
             },
             "dep-cruiser": {
               "status": "ok",
-              "duration_ms": 960,
+              "duration_ms": 899,
               "warnings": [],
               "cwd": "/Users/luowei/project/ai-architecture-integrity-study/baseline/backend",
               "targets": [
@@ -650,7 +649,7 @@
       "scope_type": "subject",
       "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/baseline/frontend",
       "rulepack_id": "js-react-frontend",
-      "rulepack_version": "0.6.0",
+      "rulepack_version": "0.7.0",
       "adapters": [
         "frontend-static",
         "computed-metrics"
@@ -718,7 +717,7 @@
             },
             {
               "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-              "rule_version": "0.1.0",
+              "rule_version": "0.2.0",
               "tier": null,
               "location": {
                 "file": "src/layout/components/Navbar/HeaderContent/Notification.jsx",
@@ -737,29 +736,17 @@
                     "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
                     "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
                   ],
-                  "message": "function-clone logic has more than one production implementation."
-                }
-              }
-            },
-            {
-              "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-              "rule_version": "0.1.0",
-              "tier": null,
-              "location": {
-                "file": "src/pages/contacts/ContactForm.jsx",
-                "line": 26,
-                "column": 32
-              },
-              "message": "function-clone logic has more than one production implementation.",
-              "evidence": {
-                "source_tool": "frontend-static",
-                "source_rule_id": "FE-DUP-C-002",
-                "payload": {
-                  "reason": "function-clone",
-                  "fingerprint": "5703981385ad",
-                  "implementations": [
-                    "src/pages/companies/CompanyForm.jsx:24",
-                    "src/pages/contacts/ContactForm.jsx:26"
+                  "duplicate_group_count": 1,
+                  "duplicate_groups": [
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "fdfdad21fe8b",
+                      "implementations": [
+                        "src/layout/components/Navbar/HeaderContent/MobileSection.jsx:30",
+                        "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
+                        "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
+                      ]
+                    }
                   ],
                   "message": "function-clone logic has more than one production implementation."
                 }
@@ -767,14 +754,14 @@
             },
             {
               "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-              "rule_version": "0.1.0",
+              "rule_version": "0.2.0",
               "tier": null,
               "location": {
                 "file": "src/pages/contacts/contactQueries.js",
                 "line": 25,
                 "column": 8
               },
-              "message": "function-clone logic has more than one production implementation.",
+              "message": "3 substantive duplicate implementation groups exist across the same files.",
               "evidence": {
                 "source_tool": "frontend-static",
                 "source_rule_id": "FE-DUP-C-002",
@@ -785,13 +772,40 @@
                     "src/pages/companies/companyQueries.js:24",
                     "src/pages/contacts/contactQueries.js:25"
                   ],
-                  "message": "function-clone logic has more than one production implementation."
+                  "duplicate_group_count": 3,
+                  "duplicate_groups": [
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "4824e53681a4",
+                      "implementations": [
+                        "src/pages/companies/companyQueries.js:24",
+                        "src/pages/contacts/contactQueries.js:25"
+                      ]
+                    },
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "6b681c197531",
+                      "implementations": [
+                        "src/pages/companies/companyQueries.js:32",
+                        "src/pages/contacts/contactQueries.js:33"
+                      ]
+                    },
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "dbe94b113a36",
+                      "implementations": [
+                        "src/pages/companies/companyQueries.js:36",
+                        "src/pages/contacts/contactQueries.js:61"
+                      ]
+                    }
+                  ],
+                  "message": "3 substantive duplicate implementation groups exist across the same files."
                 }
               }
             },
             {
               "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-              "rule_version": "0.1.0",
+              "rule_version": "0.2.0",
               "tier": null,
               "location": {
                 "file": "src/pages/contacts/ContactTable.jsx",
@@ -808,6 +822,17 @@
                   "implementations": [
                     "src/pages/companies/CompanyTable.jsx:73",
                     "src/pages/contacts/ContactTable.jsx:18"
+                  ],
+                  "duplicate_group_count": 1,
+                  "duplicate_groups": [
+                    {
+                      "reason": "component-clone",
+                      "fingerprint": "1ce590a380e8",
+                      "implementations": [
+                        "src/pages/companies/CompanyTable.jsx:73",
+                        "src/pages/contacts/ContactTable.jsx:18"
+                      ]
+                    }
                   ],
                   "message": "component-clone logic has more than one production implementation."
                 }
@@ -885,7 +910,7 @@
             "FE-DUP-C-002-single-authoritative-implementation": [
               {
                 "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-                "rule_version": "0.1.0",
+                "rule_version": "0.2.0",
                 "tier": null,
                 "location": {
                   "file": "src/layout/components/Navbar/HeaderContent/Notification.jsx",
@@ -904,29 +929,17 @@
                       "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
                       "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
                     ],
-                    "message": "function-clone logic has more than one production implementation."
-                  }
-                }
-              },
-              {
-                "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-                "rule_version": "0.1.0",
-                "tier": null,
-                "location": {
-                  "file": "src/pages/contacts/ContactForm.jsx",
-                  "line": 26,
-                  "column": 32
-                },
-                "message": "function-clone logic has more than one production implementation.",
-                "evidence": {
-                  "source_tool": "frontend-static",
-                  "source_rule_id": "FE-DUP-C-002",
-                  "payload": {
-                    "reason": "function-clone",
-                    "fingerprint": "5703981385ad",
-                    "implementations": [
-                      "src/pages/companies/CompanyForm.jsx:24",
-                      "src/pages/contacts/ContactForm.jsx:26"
+                    "duplicate_group_count": 1,
+                    "duplicate_groups": [
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "fdfdad21fe8b",
+                        "implementations": [
+                          "src/layout/components/Navbar/HeaderContent/MobileSection.jsx:30",
+                          "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
+                          "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
+                        ]
+                      }
                     ],
                     "message": "function-clone logic has more than one production implementation."
                   }
@@ -934,14 +947,14 @@
               },
               {
                 "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-                "rule_version": "0.1.0",
+                "rule_version": "0.2.0",
                 "tier": null,
                 "location": {
                   "file": "src/pages/contacts/contactQueries.js",
                   "line": 25,
                   "column": 8
                 },
-                "message": "function-clone logic has more than one production implementation.",
+                "message": "3 substantive duplicate implementation groups exist across the same files.",
                 "evidence": {
                   "source_tool": "frontend-static",
                   "source_rule_id": "FE-DUP-C-002",
@@ -952,13 +965,40 @@
                       "src/pages/companies/companyQueries.js:24",
                       "src/pages/contacts/contactQueries.js:25"
                     ],
-                    "message": "function-clone logic has more than one production implementation."
+                    "duplicate_group_count": 3,
+                    "duplicate_groups": [
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "4824e53681a4",
+                        "implementations": [
+                          "src/pages/companies/companyQueries.js:24",
+                          "src/pages/contacts/contactQueries.js:25"
+                        ]
+                      },
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "6b681c197531",
+                        "implementations": [
+                          "src/pages/companies/companyQueries.js:32",
+                          "src/pages/contacts/contactQueries.js:33"
+                        ]
+                      },
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "dbe94b113a36",
+                        "implementations": [
+                          "src/pages/companies/companyQueries.js:36",
+                          "src/pages/contacts/contactQueries.js:61"
+                        ]
+                      }
+                    ],
+                    "message": "3 substantive duplicate implementation groups exist across the same files."
                   }
                 }
               },
               {
                 "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-                "rule_version": "0.1.0",
+                "rule_version": "0.2.0",
                 "tier": null,
                 "location": {
                   "file": "src/pages/contacts/ContactTable.jsx",
@@ -976,6 +1016,17 @@
                       "src/pages/companies/CompanyTable.jsx:73",
                       "src/pages/contacts/ContactTable.jsx:18"
                     ],
+                    "duplicate_group_count": 1,
+                    "duplicate_groups": [
+                      {
+                        "reason": "component-clone",
+                        "fingerprint": "1ce590a380e8",
+                        "implementations": [
+                          "src/pages/companies/CompanyTable.jsx:73",
+                          "src/pages/contacts/ContactTable.jsx:18"
+                        ]
+                      }
+                    ],
                     "message": "component-clone logic has more than one production implementation."
                   }
                 }
@@ -987,7 +1038,7 @@
           "adapter_meta": {
             "frontend-static": {
               "status": "ok",
-              "duration_ms": 326,
+              "duration_ms": 250,
               "files_scanned": 98,
               "parse_errors": []
             }
@@ -1089,13 +1140,13 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 0.235434,
+              "value": 0.231043,
               "unit": "ratio",
               "direction": "lower_is_better"
             },
             "delta_vs_baseline": 0,
             "findings": [
-              "Duplicated lines: 1192/5063 (0.235434)",
+              "Duplicated lines: 1170/5064 (0.231043)",
               "Clone matches found: 20+ (sample capped)"
             ],
             "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
@@ -1231,11 +1282,11 @@
   "deltas": {
     "run_local": {
       "constraints": {
-        "before_count": 6,
-        "after_count": 6,
+        "before_count": 5,
+        "after_count": 5,
         "introduced_count": 0,
         "resolved_count": 0,
-        "unchanged_count": 6,
+        "unchanged_count": 5,
         "net_change": 0,
         "introduced": [],
         "resolved": []
@@ -1405,8 +1456,8 @@
           "key": "frontend:FE-DUP-M-001-clone-ratio",
           "name": "FE-DUP-M-001-clone-ratio",
           "scope": "frontend",
-          "from": 0.235434,
-          "to": 0.235434,
+          "from": 0.231043,
+          "to": 0.231043,
           "delta": 0,
           "direction": "lower_is_better",
           "status": "available"
@@ -1446,11 +1497,11 @@
     },
     "trajectory_cumulative": {
       "constraints": {
-        "before_count": 6,
-        "after_count": 6,
+        "before_count": 5,
+        "after_count": 5,
         "introduced_count": 0,
         "resolved_count": 0,
-        "unchanged_count": 6,
+        "unchanged_count": 5,
         "net_change": 0,
         "introduced": [],
         "resolved": []
@@ -1620,8 +1671,8 @@
           "key": "frontend:FE-DUP-M-001-clone-ratio",
           "name": "FE-DUP-M-001-clone-ratio",
           "scope": "frontend",
-          "from": 0.235434,
-          "to": 0.235434,
+          "from": 0.231043,
+          "to": 0.231043,
           "delta": 0,
           "direction": "lower_is_better",
           "status": "available"
@@ -1660,7 +1711,7 @@
       "judgments": []
     }
   },
-  "duration_ms": 11800,
+  "duration_ms": 8370,
   "execution_status": "completed",
   "comparison_status": "valid",
   "errors": []

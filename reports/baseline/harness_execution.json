@@ -1,6 +1,6 @@
 {
   "harness_status": "success",
-  "run_id": "baseline_Base_20260817_010651",
+  "run_id": "baseline_Base_20260817_012519",
   "exit_code": 0,
   "timed_out": false,
   "command": [
@@ -17,11 +17,11 @@
     "--baseline",
     "/Users/luowei/project/ai-architecture-integrity-study/baseline",
     "--pre-commit",
-    "b0c7381951e8ed2c3e7a666adee9ef32537772d4",
+    "4d825862cd480ec5933900eb820832d406f412dc",
     "--post-commit",
-    "b0c7381951e8ed2c3e7a666adee9ef32537772d4",
+    "4d825862cd480ec5933900eb820832d406f412dc",
     "--run-id",
-    "baseline_Base_20260817_010651",
+    "baseline_Base_20260817_012519",
     "--trajectory-id",
     "baseline",
     "--output",

@@ -413,6 +413,12 @@ export const frontendConstraintFixtures = [
                 reason: 'transformation-duplicate',
                 fingerprint: '6d8dc1965239',
                 implementations: ['src/features/users/normalize.ts:1', 'src/pages/users/normalize.ts:1'],
+                duplicate_group_count: 1,
+                duplicate_groups: [{
+                    reason: 'transformation-duplicate',
+                    fingerprint: '6d8dc1965239',
+                    implementations: ['src/features/users/normalize.ts:1', 'src/pages/users/normalize.ts:1'],
+                }],
                 message: 'transformation-duplicate logic has more than one production implementation.',
             })]),
             nearMiss: empty({

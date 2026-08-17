@@ -680,6 +680,47 @@ function astSize(node) {
         .reduce((total, [, value]) => total + astSize(value), 0);
 }
 
+function visitAst(node, visitor) {
+    if (!node || typeof node !== 'object') return;
+    if (Array.isArray(node)) {
+        for (const child of node) visitAst(child, visitor);
+        return;
+    }
+
+    visitor(node);
+    for (const [key, child] of Object.entries(node)) {
+        if (['loc', 'range', 'parent', 'tokens', 'comments'].includes(key)) continue;
+        visitAst(child, visitor);
+    }
+}
+
+function isLowComplexityUiAdapter(record, config) {
+    if (record.component || !/^(?:handle|on)[A-Z]/.test(record.name ?? '')) return false;
+
+    const maxAstNodes = config.duplication_ui_adapter_max_ast_nodes ?? 20;
+    if (astSize(record.node.body) > maxAstNodes) return false;
+
+    let hasUiAdapterSignal = false;
+    let hasSubstantiveOperation = false;
+
+    visitAst(record.node.body, (node) => {
+        if (['AwaitExpression', 'ThrowStatement', 'NewExpression'].includes(node.type)) {
+            hasSubstantiveOperation = true;
+        }
+        if (node.type !== 'CallExpression') return;
+
+        const callee = expressionName(node.callee) ?? '';
+        if (/^set[A-Z]\w*$/.test(callee) || /\.(?:preventDefault|stopPropagation)$/.test(callee)) {
+            hasUiAdapterSignal = true;
+            return;
+        }
+
+        hasSubstantiveOperation = true;
+    });
+
+    return hasUiAdapterSignal && !hasSubstantiveOperation;
+}
+
 function staticEndpoint(call) {
     const calleeName = expressionName(call.callee) ?? '';
     if (calleeName === 'fetch' || calleeName.endsWith('.fetch')) {
@@ -716,7 +757,7 @@ function formFingerprint(element) {
     return fields.length >= 2 ? [...new Set(fields)].sort().join('|') : null;
 }
 
-function implementationCandidates(inventory) {
+function implementationCandidates(inventory, config) {
     const candidates = [];
     const add = (reason, fingerprint, file, node) => {
         if (fingerprint) candidates.push({ reason, fingerprint, file, node });
@@ -745,7 +786,9 @@ function implementationCandidates(inventory) {
         }
 
         for (const record of file.functionRecords) {
-            if (!record.name || astSize(record.node.body) < 10) continue;
+            const minAstNodes = config.duplication_function_min_ast_nodes ?? 10;
+            if (!record.name || astSize(record.node.body) < minAstNodes) continue;
+            if (isLowComplexityUiAdapter(record, config)) continue;
             const shape = astShape(record.node.body);
             if (/(?:transform|normalize|serialize|deserialize|map)[A-Z_]|^(?:transform|normalize|serialize|deserialize)/.test(record.name)) {
                 add('transformation-duplicate', shape, file, record.node);
@@ -759,36 +802,57 @@ function implementationCandidates(inventory) {
     return candidates;
 }
 
-function analyzeImplementationDuplication(inventory) {
+function analyzeImplementationDuplication(inventory, config) {
     const findings = [];
     const priority = [
         'api-duplicate', 'form-duplicate', 'validation-duplicate', 'transformation-duplicate',
         'state-duplicate', 'component-clone', 'function-clone',
     ];
     const groups = new Map();
-    for (const candidate of implementationCandidates(inventory)) {
+    for (const candidate of implementationCandidates(inventory, config)) {
         const key = `${candidate.reason}:${shapeHash(candidate.fingerprint)}`;
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key).push(candidate);
     }
 
-    const usedPairs = new Set();
+    const groupsByFileSet = new Map();
     for (const reason of priority) {
         for (const records of [...groups.values()].filter((items) => items[0].reason === reason)) {
             const uniqueByFile = new Map(records.map((item) => [item.file.relative, item]));
             const sorted = [...uniqueByFile.values()].sort((left, right) => left.file.relative.localeCompare(right.file.relative));
             if (sorted.length < 2) continue;
-            const pair = sorted.map((item) => item.file.relative).join('|');
-            if (usedPairs.has(pair)) continue;
-            usedPairs.add(pair);
-            const implementations = sorted.map((item) => `${item.file.relative}:${item.node.loc.start.line}`);
-            findings.push(violation('FE-DUP-C-002', sorted[1].file, sorted[1].node, {
+
+            const fileSet = sorted.map((item) => item.file.relative).join('|');
+            if (!groupsByFileSet.has(fileSet)) groupsByFileSet.set(fileSet, []);
+            groupsByFileSet.get(fileSet).push({
                 reason,
                 fingerprint: shapeHash(sorted[0].fingerprint),
-                implementations,
-                message: `${reason} logic has more than one production implementation.`,
-            }));
+                implementations: sorted.map((item) => `${item.file.relative}:${item.node.loc.start.line}`),
+                records: sorted,
+            });
         }
+    }
+
+    for (const duplicateGroups of groupsByFileSet.values()) {
+        const primary = duplicateGroups[0];
+        const representative = primary.records[1];
+        const payloadGroups = duplicateGroups.map(({ reason, fingerprint, implementations }) => ({
+            reason,
+            fingerprint,
+            implementations,
+        }));
+        const message = duplicateGroups.length === 1
+            ? `${primary.reason} logic has more than one production implementation.`
+            : `${duplicateGroups.length} substantive duplicate implementation groups exist across the same files.`;
+
+        findings.push(violation('FE-DUP-C-002', representative.file, representative.node, {
+            reason: primary.reason,
+            fingerprint: primary.fingerprint,
+            implementations: primary.implementations,
+            duplicate_group_count: duplicateGroups.length,
+            duplicate_groups: payloadGroups,
+            message,
+        }));
     }
     return findings;
 }
@@ -802,7 +866,7 @@ export function analyzeFrontendRules(inventory, config = {}) {
         ...analyzeData(inventory, config),
         ...analyzeCommunication(inventory),
         ...analyzeResourceDuplication(inventory, config),
-        ...analyzeImplementationDuplication(inventory),
+        ...analyzeImplementationDuplication(inventory, config),
     ].sort((left, right) =>
         left.ruleId.localeCompare(right.ruleId)
         || left.location.file.localeCompare(right.location.file)

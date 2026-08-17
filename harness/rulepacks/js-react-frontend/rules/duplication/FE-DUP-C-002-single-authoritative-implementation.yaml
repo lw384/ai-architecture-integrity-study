@@ -1,13 +1,16 @@
 rule_id: FE-DUP-C-002-single-authoritative-implementation
-version: 0.1.0
+version: 0.2.0
 layer: constraints
 category: duplication
 visibility: agent-visible
 
 description: >
-  Frontend logic has one authoritative implementation. Repeated API, form,
-  validation, transformation, state, component, function, or code-block logic
-  belongs in a shared service, hook, component, or utility.
+  Substantive frontend logic has one authoritative implementation. Repeated
+  API, form, validation, transformation, state, component, or function logic
+  belongs in a shared service, hook, component, or utility. Low-complexity UI
+  event-to-state adapters are excluded. One finding is emitted per exact
+  implementation file set, with every substantive clone group retained in
+  evidence.duplicate_groups.
 
 evidence_sources:
   - adapter: frontend-static
