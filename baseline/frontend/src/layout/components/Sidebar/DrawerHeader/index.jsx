@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types';
 
+// material-ui
+import Box from '@mui/material/Box';
+
 // project imports
 import Logo from 'components/Logo';
 
@@ -7,9 +10,19 @@ import Logo from 'components/Logo';
 
 export default function DrawerHeader({ open }) {
   return (
-    <div className={`flex min-h-[60px] w-auto items-center pt-2 pb-2 ${open ? 'justify-start pl-6' : 'justify-center pl-0'}`}>
-      <Logo isIcon={!open} className={`h-[35px] ${open ? 'w-auto' : 'w-[35px]'}`} />
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: 60,
+        width: 'auto',
+        alignItems: 'center',
+        py: 1,
+        justifyContent: open ? 'flex-start' : 'center',
+        pl: open ? 3 : 0,
+      }}
+    >
+      <Logo isIcon={!open} sx={{ height: 35, width: open ? 'auto' : 35 }} />
+    </Box>
   );
 }
 

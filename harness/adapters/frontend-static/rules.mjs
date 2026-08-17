@@ -14,11 +14,11 @@ import {
     propertyName,
     staticString,
 } from './inventory.mjs';
+import { analyzeRenderDecisionDepthInventory } from './render-decision-depth.mjs';
 
 const SOURCE_EXT_RE = /\.[cm]?[jt]sx?$/;
 const STYLE_MODULE_RE = /\.module\.(?:css|scss|sass)$/;
 const ROUTES_DIR_RE = /^src\/routes\//;
-const COMPONENT_STATE_DIR_RE = /^src\/(?:components|layout\/components)\//;
 const GLOBAL_OBJECTS = new Set([
     'Array', 'Boolean', 'Date', 'Error', 'JSON', 'Map', 'Math', 'Number', 'Object',
     'Promise', 'RegExp', 'Set', 'String', 'URL', 'URLSearchParams', 'console',
@@ -83,37 +83,10 @@ function importedBinding(file, localName) {
     return { ...binding, edge };
 }
 
-function isTransparentJsx(file, node, transparent) {
-    if (node.type === 'JSXFragment') return true;
-    const localName = lastName(jsxName(node.openingElement?.name));
-    const importedName = file.importBindings.get(localName)?.imported;
-    return transparent.has(localName) || transparent.has(importedName);
-}
-
-function jsxDepth(file, node, transparent) {
-    let depth = 0;
-    let current = node;
-
-    while (current) {
-        if ((current.type === 'JSXElement' || current.type === 'JSXFragment') && !isTransparentJsx(file, current, transparent)) {
-            depth += 1;
-        }
-
-        if (['ArrowFunctionExpression', 'FunctionExpression'].includes(current.type)) {
-            const container = file.parents.get(current);
-            if (container?.type === 'JSXExpressionContainer' && container.expression === current) break;
-        }
-        current = file.parents.get(current);
-    }
-
-    return depth;
-}
-
 function analyzeComponents(inventory, config) {
     const findings = [];
     const maxLines = config.component_max_lines ?? 300;
-    const maxDepth = config.jsx_max_depth ?? 5;
-    const transparent = new Set(config.transparent_wrappers ?? []);
+    const maxDecisionDepth = config.render_decision_max_depth ?? 3;
 
     for (const file of inventory.files) {
         if (file.isComponent && file.lineCount > maxLines) {
@@ -124,17 +97,25 @@ function analyzeComponents(inventory, config) {
             }));
         }
 
-        for (const element of file.jsxElements) {
-            const depth = jsxDepth(file, element, transparent);
-            if (depth === maxDepth + 1) {
-                findings.push(violation('FE-COM-C-002', file, element.openingElement, {
-                    depth,
-                    max_depth: maxDepth,
-                    element: jsxName(element.openingElement.name),
-                    message: `Business JSX nesting depth ${depth} exceeds ${maxDepth}.`,
-                }));
-            }
-        }
+    }
+
+    const filesByRelative = new Map(inventory.files.map((file) => [file.relative, file]));
+    for (const detail of analyzeRenderDecisionDepthInventory(inventory)) {
+        if (detail.maxDecisionDepth <= maxDecisionDepth) continue;
+        const file = filesByRelative.get(detail.file);
+        findings.push(violation(
+            'FE-COM-C-002',
+            file,
+            detail.deepestDecisionNode ?? detail.componentNode,
+            {
+                component: detail.component,
+                decision_depth: detail.maxDecisionDepth,
+                max_decision_depth: maxDecisionDepth,
+                deepest_decision: detail.deepestDecision,
+                decision_path: detail.decisionPath,
+                message: `Component ${detail.component} has render decision nesting depth ${detail.maxDecisionDepth}; maximum is ${maxDecisionDepth}.`,
+            },
+        ));
     }
 
     return findings;
@@ -143,6 +124,15 @@ function analyzeComponents(inventory, config) {
 function hookCall(file, call, directBindings, memberName) {
     if (call.callee?.type === 'Identifier') return directBindings.has(call.callee.name);
     return inventoryHelpers.memberMatches(call.callee, file.bindings.reactNamespaces, new Set([memberName]));
+}
+
+function configuredPathPatterns(config, key) {
+    const patterns = config[key];
+    return Array.isArray(patterns) ? patterns.map((pattern) => new RegExp(pattern)) : [];
+}
+
+function matchesConfiguredPath(relative, patterns) {
+    return patterns.some((pattern) => pattern.test(relative));
 }
 
 function providerAllowed(relative) {
@@ -167,21 +157,21 @@ function contextNames(file) {
     return names;
 }
 
-function analyzeState(inventory) {
+function analyzeState(inventory, config) {
     const findings = [];
+    const statelessPaths = configuredPathPatterns(config, 'stateless_component_paths');
 
     for (const file of inventory.files) {
-        if (COMPONENT_STATE_DIR_RE.test(file.relative)) {
+        if (matchesConfiguredPath(file.relative, statelessPaths)) {
+            const boundary = statelessPaths.find((pattern) => pattern.test(file.relative))?.source;
             for (const call of file.calls) {
                 const stateHook = hookCall(file, call, file.bindings.stateHooks, 'useState')
                     || hookCall(file, call, file.bindings.stateHooks, 'useReducer');
                 if (!stateHook) continue;
                 findings.push(violation('FE-STATE-C-001', file, call, {
                     hook: expressionName(call.callee),
-                    boundary: file.relative.startsWith('src/layout/components/')
-                        ? 'src/layout/components/'
-                        : 'src/components/',
-                    message: 'Local state hooks are not allowed in controlled child-component directories.',
+                    boundary,
+                    message: 'Local React state is not allowed in an explicitly stateless component boundary.',
                 }));
             }
         }
@@ -806,7 +796,7 @@ function analyzeImplementationDuplication(inventory) {
 export function analyzeFrontendRules(inventory, config = {}) {
     return [
         ...analyzeComponents(inventory, config),
-        ...analyzeState(inventory),
+        ...analyzeState(inventory, config),
         ...analyzeRoutes(inventory),
         ...analyzeStyles(inventory),
         ...analyzeData(inventory, config),

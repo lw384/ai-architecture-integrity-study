@@ -15,14 +15,7 @@ import {
 import DeleteOutlined from '@ant-design/icons/DeleteOutlined';
 import EditOutlined from '@ant-design/icons/EditOutlined';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
-
-function formatDate(value) {
-  if (!value) return '—';
-  return new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value));
-}
+import formatDate from 'utils/formatDate';
 
 const statusColors = {
   "1": 'success',

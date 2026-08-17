@@ -1,19 +1,9 @@
 {
   "component_max_lines": 300,
-  "jsx_max_depth": 5,
-  "transparent_wrappers": [
-    "Fragment",
-    "Popper",
-    "Portal",
-    "Modal",
-    "Backdrop",
-    "ClickAwayListener",
-    "Fade",
-    "Grow",
-    "Zoom",
-    "Slide",
-    "Collapse",
-    "Transitions"
+  "render_decision_max_depth": 3,
+  "stateless_component_paths": [
+    "^src/components/presentational/",
+    "^src/components/ui/"
   ],
   "data_access_paths": [
     "src/api/",

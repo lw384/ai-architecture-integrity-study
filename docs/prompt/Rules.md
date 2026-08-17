@@ -49,11 +49,13 @@ requirements take precedence where a conflict exists.
 
 - **FE-COM-C-001:** React component files contain at most 300 non-blank,
   non-comment lines.
-- **FE-COM-C-002:** Business JSX nesting does not exceed five levels.
-  Structural wrapper elements (fragments, portals, modals, transitions) are
-  transparent and do not count toward the depth.
-- **FE-STATE-C-001:** Components under `src/components/` and
-  `src/layout/components/` must not introduce `useState` or `useReducer`.
+- **FE-COM-C-002:** Each React component has at most three nested render
+  decisions and produces at most one depth finding. Pure structural JSX
+  nesting, layout wrappers, fragments, list iteration, text fallbacks, and
+  non-JSX prop conditions do not count toward the depth.
+- **FE-STATE-C-001:** Components inside explicitly configured stateless or
+  presentational boundaries must not introduce `useState` or `useReducer`;
+  interactive components outside those boundaries may keep local UI state.
 - **FE-STATE-C-002:** Context providers appear only at the application root,
   route layouts, `src/providers/`, or `src/contexts/`.
 - **FE-ROUTE-C-001:** Route definitions live under `src/routes/`.

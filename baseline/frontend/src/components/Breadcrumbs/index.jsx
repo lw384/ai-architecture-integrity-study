@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -89,7 +90,11 @@ export default function Breadcrumbs({
   }, [custom, customLocation]);
 
   const SeparatorIcon = separator;
-  const separatorIcon = separator ? <SeparatorIcon style={{ fontSize: '0.75rem', marginTop: 2 }} /> : '/';
+  const separatorIcon = separator ? (
+    <Box component={SeparatorIcon} sx={{ fontSize: '0.75rem', marginTop: 2 }} />
+  ) : (
+    '/'
+  );
 
   let mainContent;
   let itemContent;
@@ -106,7 +111,7 @@ export default function Breadcrumbs({
         variant={window.location.pathname === main.url ? 'subtitle1' : 'h6'}
         sx={{ textDecoration: 'none', color: window.location.pathname === main.url ? 'text.primary' : 'text.secondary' }}
       >
-        {icons && <CollapseIcon style={iconSX} />}
+        {icons && <Box component={CollapseIcon} sx={iconSX} />}
         {main?.title}
       </Typography>
     );
@@ -126,8 +131,8 @@ export default function Breadcrumbs({
           >
             <MuiBreadcrumbs aria-label="breadcrumb" maxItems={maxItems || 8} separator={separatorIcon}>
               <Typography component={Link} to="/" variant="h6" sx={{ color: 'text.secondary', textDecoration: 'none' }}>
-                {icons && <HomeOutlined style={iconSX} />}
-                {icon && !icons && <HomeFilled style={{ ...iconSX, marginRight: 0 }} />}
+                {icons && <Box component={HomeOutlined} sx={iconSX} />}
+                {icon && !icons && <Box component={HomeFilled} sx={{ ...iconSX, marginRight: 0 }} />}
                 {(!icon || icons) && 'Home'}
               </Typography>
               {mainContent}
@@ -150,7 +155,7 @@ export default function Breadcrumbs({
     ItemIcon = item?.icon ? item.icon : ApartmentOutlined;
     itemContent = (
       <Typography variant="subtitle1" sx={{ color: 'text.primary' }}>
-        {icons && <ItemIcon style={iconSX} />}
+        {icons && <Box component={ItemIcon} sx={iconSX} />}
         {itemTitle}
       </Typography>
     );
@@ -158,8 +163,8 @@ export default function Breadcrumbs({
     let tempContent = (
       <MuiBreadcrumbs aria-label="breadcrumb" maxItems={maxItems || 8} separator={separatorIcon}>
         <Typography component={Link} to="/" variant="h6" sx={{ color: 'text.secondary', textDecoration: 'none' }}>
-          {icons && <HomeOutlined style={iconSX} />}
-          {icon && !icons && <HomeFilled style={{ ...iconSX, marginRight: 0 }} />}
+          {icons && <Box component={HomeOutlined} sx={iconSX} />}
+          {icon && !icons && <Box component={HomeFilled} sx={{ ...iconSX, marginRight: 0 }} />}
           {(!icon || icons) && 'Home'}
         </Typography>
         {mainContent}
@@ -180,7 +185,7 @@ export default function Breadcrumbs({
                 variant={!link.to ? 'subtitle1' : 'h6'}
                 sx={{ textDecoration: 'none', color: !link.to ? 'text.primary' : 'text.secondary' }}
               >
-                {link.icon && <CollapseIcon style={iconSX} />}
+                {link.icon && <Box component={CollapseIcon} sx={iconSX} />}
                 {link.title}
               </Typography>
             );

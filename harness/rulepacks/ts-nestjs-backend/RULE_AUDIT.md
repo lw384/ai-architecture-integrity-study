@@ -88,9 +88,11 @@ fixture 协议对每条规则统一四类用例（见 `fixtures/README.md`）：
 | 规则 | 工具 | 实现位置 | 检测逻辑 | Fixture | 可信度 |
 |---|---|---|---|---|---|
 | **BE-DEP-C-001**<br>intra-module-layering | backend-static | `analyzeDependencies()`<br>`rules/dependencies.mjs:18-82` | 维护一张禁止的层对表（`export const FORBIDDEN_LAYER_PAIRS`，如 `controller:repository`、`service:controller`——现已导出，供 `BE-DEP-M-001` metric 直接复用），对同模块内的每条 import 边按文件名后缀（`.controller.ts`/`.service.ts`/`.repository.ts`/`.entity.ts`）识别源/目标层，命中禁止表即报违规 | 4/4 齐全 | ✅ 通过 |
-| **BE-DEP-C-002**<br>infrastructure-isolation | backend-static | 同函数第二段 | `src/common/**` 或 `src/core/**` 下的文件，若其 import（含动态 `import()`）解析目标落在 `src/modules/**`，即违规；`resolveImportPath` 支持 tsconfig `paths` 别名解析，因此 `@modules/*` 这种别名也能被追踪到 | 4/4 齐全（negative 用例专门覆盖了别名 + 动态 import 的组合） | ✅ 通过 |
+| **BE-DEP-C-002**<br>infrastructure-isolation | backend-static | 同函数第二段 | `src/common/**` 或 `src/core/**` 下的文件，若其 import（含动态 `import()`）解析目标落在 `src/modules/**`，即违规；`resolveImportPath` 支持 tsconfig `paths` 别名解析，因此 `@modules/*` 这种别名也能被追踪到；`tool-configs/backend-static.config.json` 的 `infrastructure_isolation_exempt_paths`（正则数组，默认 `["^src/core/seed/"]`）可按路径豁免，见下方说明 | 4/4 齐全（negative 用例专门覆盖了别名 + 动态 import 的组合）+ `core/tests/backend-dep-c002-exemption.test.mjs` 4 个专项用例覆盖豁免开关本身 | ✅ 通过 |
 | **BE-DEP-C-003**<br>framework-layer-purity | backend-static | 同函数第三段 | 文件路径匹配 `guards?/interceptors?/filters?` 目录或 `.guard./.interceptor./.filter.` 后缀时，若其 import 目标层是 `entity` 或 `repository`，即违规 | 4/4 齐全 | ✅ 通过 |
 | **BE-DEP-C-004**<br>no-circular-dependencies | dep-cruiser | `tool-configs/dep-cruiser.config.cjs`（`forbidden` 规则 `BE-DEP-C-004-no-circular`，`circular: true` 且排除纯 type-only 边）+ `adapters/dep-cruiser/adapter.mjs` | 真正调用 dependency-cruiser CLI 做环检测，而非自研图算法；type-only 边通过 `dependencyTypesNot: ['type-only']` 被排除，因此 `nearMiss` 用例（互相 `import type`）不应报违规 | 4/4 齐全，另有专门的 adapter 层错误路径测试（超时 / 解析失败） | ✅ 通过 |
+
+> **BE-DEP-C-002 的 seed 豁免**：`baseline/backend/src/core/seed/**` 下的种子脚手架（`seed.utils.ts`、`factories/*.ts`、`scenarios/*.ts`）需要 `dataSource.getRepository(CompanyEntity)` 这类调用——TypeORM 在这里要求传入真实的实体类（运行时值，不只是类型），因此天然需要从 `src/modules/**` import 实体类及其同文件声明的枚举。把 seed 挪到 `src/modules/` 下、或让模块入口文件导出实体，分别会触发 BE-DOM-C-001（跨模块只能走 `.module.ts`/`index.ts`）和 BE-DOM-C-002（入口不准导出 entity/repository）——三条规则一起把"直接拿到 Entity 类"这条路堵死了，不管 seed 物理上放在哪。这是一处经过评估后有意保留的、按路径精确豁免的例外（正则要求尾部 `/`，`src/core/seed.ts` 这种同前缀文件不受影响，见测试用例），不是规则实现的疏漏；其余 `src/common/**`、`src/core/**` 下的文件不受影响，仍按原逻辑检测。
 
 ### 2.3 Domain boundary
 

@@ -26,7 +26,7 @@ test('every evaluation task enables exactly the seven canonical frontend metrics
         const task = readTaskConfig(path.join(harnessRoot, `tasks/${taskName}.eval.yaml`));
         const frontend = task.evaluation_scopes.find((scope) => scope.scope_id === 'frontend');
 
-        assert.equal(frontend.rulepack_version, '0.4.0', taskName);
+        assert.equal(frontend.rulepack_version, '0.6.0', taskName);
         assert.deepEqual([...frontend.enabled.metrics].sort(), [...canonicalMetricIds].sort(), taskName);
     }
 });

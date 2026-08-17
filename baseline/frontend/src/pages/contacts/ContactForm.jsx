@@ -10,6 +10,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { formatForDatetimeLocal } from 'utils/formatDate';
 import { useCompanyList } from '../companies/companyQueries';
 
 
@@ -22,11 +23,6 @@ const emptyValues = {
   lastContactedAt: '',
 };
 
-
-const formatForDatetimeLocal = (isoString) => {
-  if (!isoString) return '';
-  return isoString.slice(0, 16);
-};
 
 export function ContactFormDialog({
   initialValues,
@@ -126,7 +122,7 @@ export function ContactFormDialog({
         {mode === 'create' ? 'Create contact' : 'Edit contact'}
       </DialogTitle>
 
-      <DialogContent className="!p-5">
+      <DialogContent sx={{ p: 2.5 }}>
 
         <Stack component="form" spacing={2} onSubmit={handleSubmit} >
             <TextField

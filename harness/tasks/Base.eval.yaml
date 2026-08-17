@@ -55,7 +55,7 @@ evaluation_scopes:
     scope_type: subject
     root_path: frontend/
     rulepack_id: js-react-frontend
-    rulepack_version: "0.4.0"
+    rulepack_version: "0.6.0"
     enabled:
       constraints:
         - FE-COM-C-001

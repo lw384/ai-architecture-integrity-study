@@ -1,0 +1,33 @@
+rule_id: FE-COM-C-002-render-decision-max-depth
+version: 0.4.0
+layer: constraints
+category: component-structure
+visibility: agent-visible
+
+description: >
+  A React component must not contain more than three nested render decisions.
+  Render decisions include if/switch control flow and conditional or logical
+  expressions whose branches contain JSX. Pure structural JSX nesting, layout
+  wrappers, fragments, list iteration, text fallbacks, and non-JSX prop
+  expressions do not contribute to the depth.
+
+config:
+  render_decision_max_depth: 3
+  aggregation_unit: component
+  maximum_findings_per_component: 1
+
+evidence_sources:
+  - adapter: frontend-static
+    tool_rule_ids:
+      - FE-COM-C-002
+    match_condition:
+      event_type: frontend_architecture_violation
+    aggregation: any
+
+agent_facing_message: >
+  {message}
+
+research_tags:
+  drift_type: erosion
+  erosion_dimension: component-complexity
+  methodological_note: "v0.4.0 — measures component-level render-decision nesting; structural JSX depth is excluded"

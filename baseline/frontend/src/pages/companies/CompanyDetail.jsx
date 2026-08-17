@@ -9,15 +9,11 @@ import { Link, useParams } from 'react-router-dom';
 import MainCard from 'components/MainCard';
 import IconButton from 'components/IconButton';
 import { isTransportError } from 'api/request';
+import formatDate from 'utils/formatDate';
 import { useCompany } from './companyQueries';
 import { useContactList } from '../contacts/contactQueries';
 
 // constants
-function formatDate(value) {
-  if (!value) return '—';
-  return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
-}
-
 const statusColors = {
   "1": 'success',
   "0": 'default',

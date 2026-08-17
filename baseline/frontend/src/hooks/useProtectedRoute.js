@@ -3,19 +3,10 @@ import useRouteAccess from 'hooks/useRouteAccess';
 import { getDefaultAccessiblePath } from '../config/route-access.config';
 
 export default function useProtectedRoute(routeId, pathname) {
-    const { allowedRouteIds, isLoading, isRouteAllowed } = useRouteAccess();
-
-    if (isLoading) {
-        return {
-            isLoading: true,
-            isAllowed: false,
-            redirectTo: null
-        };
-    }
+    const { allowedRouteIds, isRouteAllowed } = useRouteAccess();
 
     if (isRouteAllowed(routeId)) {
         return {
-            isLoading: false,
             isAllowed: true,
             redirectTo: null
         };
@@ -24,7 +15,6 @@ export default function useProtectedRoute(routeId, pathname) {
     const fallbackPath = getDefaultAccessiblePath(allowedRouteIds);
 
     return {
-        isLoading: false,
         isAllowed: false,
         redirectTo: pathname === fallbackPath ? null : fallbackPath
     };

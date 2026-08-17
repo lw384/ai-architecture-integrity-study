@@ -13,7 +13,7 @@ import { analyzeResourceOwners, analyzePolicyAndCodeDuplication } from './duplic
 export function analyzeBackendRules(project, config = {}) {
     return [
         ...analyzeStructure(project),
-        ...analyzeDependencies(project),
+        ...analyzeDependencies(project, config),
         ...analyzeDomainBoundaries(project),
         ...analyzeErrors(project, config),
         ...analyzeDtoContracts(project),

@@ -5,7 +5,7 @@
   "description": "Static analysis + evaluation pipeline for NestJS/React codebases",
   "type": "module",
   "scripts": {
-    "test:constraints": "node --test core/tests/constraint-model.test.mjs core/tests/backend-constraint-fixtures.test.mjs core/tests/frontend-constraint-fixtures.test.mjs",
+    "test:constraints": "node --test core/tests/constraint-model.test.mjs core/tests/backend-constraint-fixtures.test.mjs core/tests/frontend-constraint-fixtures.test.mjs core/tests/backend-dep-c002-exemption.test.mjs core/tests/frontend-render-decision-depth-unification.test.mjs",
     "test:metrics": "node --test core/tests/*-metric.test.mjs core/tests/computed-metric-naming.test.mjs core/tests/frontend-metric-registration.test.mjs",
     "test:rulepack-integrity": "node --test core/tests/rulepack-manifest-completeness.test.mjs",
     "test:rules": "npm run test:rulepack-integrity && npm run test:constraints && npm run test:metrics",

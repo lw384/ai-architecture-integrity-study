@@ -1,12 +1,13 @@
-rule_id: FE-STATE-C-001-no-usestate-in-deep-child-components
-version: 0.2.0
+rule_id: FE-STATE-C-001-no-local-state-in-stateless-components
+version: 0.3.0
 layer: constraints
 category: state-management
 visibility: agent-visible
 
 description: >
-  useState should not appear in deep child components. Local state must stay in
-  controlled component layers and be pushed down through props when possible.
+  Components inside explicitly configured stateless or presentational
+  boundaries must not own local React state through useState or useReducer.
+  Interactive components outside those boundaries may keep local UI state.
 
 evidence_sources:
   - adapter: frontend-static

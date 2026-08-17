@@ -3,18 +3,18 @@ import {
     buildMetricResult,
     computeDelta,
 } from '../_shared/metric-result.mjs';
-import { analyzeJsxDepth } from './frontend-source-analysis.mjs';
+import { analyzeRenderDecisionDepth } from './frontend-source-analysis.mjs';
 
-export const VERSION = '1.0.0';
+export const VERSION = '2.0.0';
 
 export async function run({ targetDir, baselineDir, config }) {
-    const target = analyzeJsxDepth(targetDir, config ?? {});
-    const baseline = baselineDir ? analyzeJsxDepth(baselineDir, config ?? {}) : null;
+    const target = analyzeRenderDecisionDepth(targetDir, config ?? {});
+    const baseline = baselineDir ? analyzeRenderDecisionDepth(baselineDir, config ?? {}) : null;
     const delta = computeDelta(target.averageDepth, baseline?.averageDepth, 2);
     const findings = appendBaselineDeltaFinding([
-        `Average JSX depth: ${target.averageDepth}`,
+        `Average maximum render-decision depth: ${target.averageDepth}`,
     ], delta, {
-        missingBaselineMessage: 'Baseline JSX depth distribution unavailable; delta_vs_baseline is set to null.',
+        missingBaselineMessage: 'Baseline render-decision depth distribution unavailable; delta_vs_baseline is set to null.',
     });
 
     return buildMetricResult({

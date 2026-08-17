@@ -2,7 +2,7 @@
 
 Frontend 版的最小覆盖矩阵——7 个 constraint 类目（`harness/rulepacks/js-react-frontend/rules/`），每类目只保留一个代表指标。格式与 `metrics-literature-review.md`（backend 版）一致：**参考文献 → 作用 → 计算方式**，计算方式全部直接读自源码，不凭印象转写。
 
-**Compiled:** 2026-08-16 | **Verification:** 引用均经过实时检索确认（标题/作者/期刊卷期，能查到 DOI 的都做了交叉核对）。没有学术锚点的指标明确写"无"，不硬凑引用。
+**Compiled:** 2026-08-17 | **Verification:** 引用均经过实时检索确认（标题/作者/期刊卷期，能查到 DOI 的都做了交叉核对）。没有学术锚点的指标明确写"无"，不硬凑引用。
 
 ---
 
@@ -12,17 +12,18 @@ Frontend 版的最小覆盖矩阵——7 个 constraint 类目（`harness/rulepa
 
 ---
 
-### COM — `jsx-depth-average` (`FE-COM-M-001`)
+### COM — `render-decision-depth-average` (`FE-COM-M-001`)
 
-**参考文献**：Harrison, W. A., & Magel, K. I. (1981). A complexity measure based on nesting level. *ACM SIGPLAN Notices, 16*(3), 63–74. https://doi.org/10.1145/947825.947829 —— 提出用嵌套层级本身衡量复杂度，弥补 McCabe 圈复杂度"只数分支、不管嵌套深浅"的盲区，是 JSX 嵌套深度这个指标最直接的理论对应。
+**参考文献**：Harrison, W. A., & Magel, K. I. (1981). A complexity measure based on nesting level. *ACM SIGPLAN Notices, 16*(3), 63–74. https://doi.org/10.1145/947825.947829 —— 提出用控制结构的嵌套层级衡量理解复杂度，弥补 McCabe 圈复杂度“只数分支、不管嵌套深浅”的盲区；这与 React 条件渲染中需要同时维护多层分支上下文的认知负担直接对应，而不是把普通 JSX 父子结构误当作控制流。
 
-**作用**：直接覆盖 `FE-COM-C-002`（业务 JSX 嵌套不超过 5 层）；同时可作为 `FE-COM-C-001`（文件行数 ≤300 行）的弱代理——嵌套越深的组件往往行数也越多，且嵌套深度比行数更难被"拆文件"这类表面手段规避，两个候选（`component-line-average` vs `jsx-depth-average`）里选它。
+**作用**：直接覆盖 `FE-COM-C-002`（单个 React 组件的渲染决策嵌套不超过 3 层，每组件最多一条 finding）；同时可作为 `FE-COM-C-001`（文件行数 ≤300 行）的弱代理。它只测会选择 JSX 子树的 `if`/`switch`/ternary/logical 控制流，普通布局组件、Fragment、map、文本 fallback 和非 JSX prop 条件不计，因此比原来的 JSX 标签祖先深度更接近真实可读性负担。两个候选（`component-line-average` vs `render-decision-depth-average`）里选它。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/frontend/FE-COM-M-001.mjs` → `analyzeJsxDepth`）：
-1. 对每个 `.jsx`/`.tsx` 文件解析 AST，遍历所有 `JSXElement` 节点
-2. 对每个 `JSXElement`，沿父节点链向上数，统计经过多少层"非透明包装"的 `JSXElement`/`JSXFragment`——`transparent_wrappers`（默认 `Popper`/`Portal`/`Modal`/`Backdrop`/`ClickAwayListener`/`Fade`/`Grow`/`Zoom`/`Slide`/`Collapse`/`Transitions`）不计入深度，避免把 MUI 自身的技术性包装误判成业务嵌套
-3. 取每个文件里所有 `JSXElement` 的最大深度作为该文件的 `maxDepth`
-4. `averageDepth = Σ(每文件 maxDepth) / 文件总数`
+**计算方式**（`harness/adapters/computed-metrics/implementations/frontend/FE-COM-M-001.mjs` → `analyzeRenderDecisionDepth`）：
+1. 使用 frontend inventory 识别所有生产 React 组件；同一文件中的多个组件分别计算，test/spec/story/generated 排除
+2. 将会返回、赋值或选择 JSX 的 `IfStatement`、`SwitchStatement`、`ConditionalExpression` 和 `LogicalExpression` 识别为 render decision；连续 logical chain 视为同一层，`else-if` 保持同级
+3. 对每个组件取任意渲染路径上的最大嵌套决策层数 `D(c)`；结构性 JSX 嵌套不参与计算
+4. `averageDepth = Σ D(c) / 生产组件总数`；无组件时为 0
+5. raw details 同时输出每组件 `maxDecisionDepth`/`decisionCount`，以及全局 `maxDepth`、`p90Depth` 和 `componentsOverLimit`
 
 ---
 
@@ -30,7 +31,7 @@ Frontend 版的最小覆盖矩阵——7 个 constraint 类目（`harness/rulepa
 
 **参考文献**：无。仓库自定义的状态分布检查，未见对应的独立学术指标——本质是把两种状态管理方式（本地 hook vs. context）的用量做比例化，性质更接近工程规范而非通用理论构念。
 
-**作用**：同时反映 `FE-STATE-C-001`（禁止在深层子组件用 `useState`）和 `FE-STATE-C-002`（context provider 只能出现在受控位置）——分母本身就是"本地 state hook 数 + context provider 数"的总量，context 占比升高意味着状态管理正在从本地 hook 向 context 迁移，值得关注是否伴随位置违规。两个候选（`context-provider-ratio` vs `context-consumer-per-provider-ratio`）里，前者的分母覆盖面更大，选它。
+**作用**：观察本地 state hook 与 context provider 的总体分布变化。它不判断 state hook 是否位于 `FE-STATE-C-001` 明确配置的 stateless/presentational boundary，也不判断 provider 是否位于 `FE-STATE-C-002` 的批准位置，因此只是同一状态管理分类下的辅助趋势信号，不能替代两条 constraint 的 finding。context 占比发生明显变化时，应结合具体位置违规解读，而不能把升高或降低本身视为架构改善。两个候选（`context-provider-ratio` vs `context-consumer-per-provider-ratio`）里，前者的分母覆盖面更大，选它。
 
 **计算方式**（`harness/adapters/computed-metrics/implementations/frontend/FE-STATE-M-001.mjs` → `analyzeStateDistribution`）：
 1. 遍历所有 frontend 文件，AST 扫描两类信号：`useState`/`useReducer`（含 `React.useState` 形式）调用计为一次"本地 state hook"；JSX 里形如 `<XXX.Provider>` 的开标签（`JSXMemberExpression` 且属性名为 `Provider`）计为一次"context provider"
@@ -112,7 +113,7 @@ Frontend 版的最小覆盖矩阵——7 个 constraint 类目（`harness/rulepa
 
 | 类目 | Constraint 条数 | 选定 Metric | 状态 | 覆盖方式 |
 |---|---|---|---|---|
-| COM | 2 | `jsx-depth-average` | ✅ 已实现 | 直接（覆盖 C-002）+ 弱代理（对 C-001） |
+| COM | 2 | `render-decision-depth-average` | ✅ 已实现 | 直接（与 C-002 复用每组件决策深度）+ 弱代理（对 C-001） |
 | STATE | 2 | `context-provider-ratio` | ✅ 已实现 | 直接，同时反映两条约束 |
 | ROUTE | 2 | `route-param-complexity` | ✅ 已实现 | **代理**（测复杂度，约束测位置/映射，非等价） |
 | STYLE | 2 | `style-mixing-ratio` | ✅ 已实现 | 直接 |

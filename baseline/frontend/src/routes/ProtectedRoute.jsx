@@ -5,11 +5,7 @@ import useProtectedRoute from 'hooks/useProtectedRoute';
 
 export default function ProtectedRoute({ children, routeId }) {
   const location = useLocation();
-  const { isAllowed, isLoading, redirectTo } = useProtectedRoute(routeId, location.pathname);
-
-  if (isLoading) {
-    return null;
-  }
+  const { isAllowed, redirectTo } = useProtectedRoute(routeId, location.pathname);
 
   if (isAllowed) {
     return children;

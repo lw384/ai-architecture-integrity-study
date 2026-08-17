@@ -1,0 +1,39 @@
+{
+  "task_id": "T1",
+  "variant_coverage": ["structured"],
+  "variant_coverage_note": "Structured pins down the exact API Contract (routes/fields) this suite asserts against; Minimal leaves API shape up to the agent and is intentionally not covered.",
+  "db": {
+    "compose_file": "docker-compose.yml",
+    "compose_service": "postgres-test",
+    "compose_profile": "test",
+    "health_check_timeout_seconds": 60
+  },
+  "suites": [
+    {
+      "id": "backend",
+      "spec_files": ["deal.e2e-spec.ts"],
+      "workspace_subdir": "backend",
+      "overlay_dir": "test/acceptance/T1",
+      "commands": {
+        "install": "pnpm install",
+        "test": "pnpm exec jest --config test/jest-e2e.json --runInBand --testPathPattern=acceptance/T1 --json --outputFile=acceptance-report.json"
+      },
+      "json_report_file": "acceptance-report.json",
+      "env": { "NODE_ENV": "test" },
+      "timeout_seconds": 300
+    },
+    {
+      "id": "frontend",
+      "spec_files": ["deal.render.test.jsx"],
+      "workspace_subdir": "frontend",
+      "overlay_dir": "src/test/acceptance/T1",
+      "commands": {
+        "install": "pnpm install",
+        "test": "pnpm exec vitest run src/test/acceptance/T1 --reporter=json --outputFile=acceptance-report.json"
+      },
+      "json_report_file": "acceptance-report.json",
+      "env": {},
+      "timeout_seconds": 180
+    }
+  ]
+}

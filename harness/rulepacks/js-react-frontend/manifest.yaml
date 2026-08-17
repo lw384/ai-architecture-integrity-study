@@ -1,5 +1,5 @@
 rulepack_id: js-react-frontend
-version: 0.4.0
+version: 0.6.0
 kind: subject
 language: [javascript]
 frameworks: [react]
@@ -7,12 +7,12 @@ frameworks: [react]
 adapters:
   frontend-static:
     source: frontend-static
-    version: 0.2.0
+    version: 0.3.0
     config: tool-configs/frontend-static.config.json
     emits: [constraints]
   computed-metrics:
     source: computed-metrics
-    version: 0.1.0
+    version: 0.2.0
     config: tool-configs/metrics.config.json
     emits: [metrics]
     options:
@@ -21,8 +21,8 @@ adapters:
 rules:
   constraints:
     - rules/components/FE-COM-C-001-component-file-max-lines.yaml
-    - rules/components/FE-COM-C-002-jsx-max-depth.yaml
-    - rules/states/FE-STATE-C-001-no-usestate-in-deep-child-components.yaml
+    - rules/components/FE-COM-C-002-render-decision-max-depth.yaml
+    - rules/states/FE-STATE-C-001-no-local-state-in-stateless-components.yaml
     - rules/states/FE-STATE-C-002-context-provider-only-in-controlled-locations.yaml
     - rules/routes/FE-ROUTE-C-001-route-definitions-centralized.yaml
     - rules/routes/FE-ROUTE-C-002-route-maps-to-page-component.yaml
@@ -34,7 +34,7 @@ rules:
     - rules/duplication/FE-DUP-C-001-single-resource-owner.yaml
     - rules/duplication/FE-DUP-C-002-single-authoritative-implementation.yaml
   metrics:
-    - rules/components/FE-COM-M-001-jsx-depth-average.yaml
+    - rules/components/FE-COM-M-001-render-decision-depth-average.yaml
     - rules/states/FE-STATE-M-001-context-provider-ratio.yaml
     - rules/routes/FE-ROUTE-M-001-route-param-complexity.yaml
     - rules/styles/FE-STYLE-M-001-style-mixing-ratio.yaml
@@ -49,4 +49,5 @@ metadata:
     - All 13 frontend constraints share one production-source evidence inventory.
     - Every registered constraint has positive, negative, near-miss, and ignored fixtures.
     - FE-DUP-C-002 includes semantic duplicates and component/function clones.
+    - FE-COM-C-002 and FE-COM-M-001 share one component-level render-decision analysis.
     - Frontend metrics run through the shared computed-metrics adapter.

@@ -17,14 +17,6 @@ export const defaultAllowedRouteIds = Object.values(routeAccessRegistry)
     .filter((routeDefinition) => routeDefinition.menu)
     .map((routeDefinition) => routeDefinition.id);
 
-export function normalizeAllowedRouteIds(routeIds) {
-    if (!Array.isArray(routeIds)) {
-        return defaultAllowedRouteIds;
-    }
-
-    return [...new Set(routeIds.filter((routeId) => routeAccessRegistry[routeId]))];
-}
-
 export function getDefaultAccessiblePath(allowedRouteIds) {
     const prioritizedRouteIds = routeDefinitions.filter((definition) => definition.menu && !definition.public).map((definition) => definition.id);
 

@@ -1,20 +1,8 @@
 {
   "metrics": {
-    "FE-COM-M-001-jsx-depth-average": {
-      "transparent_wrappers": [
-        "Popper",
-        "Portal",
-        "Modal",
-        "Backdrop",
-        "ClickAwayListener",
-        "Fade",
-        "Grow",
-        "Zoom",
-        "Slide",
-        "Collapse",
-        "Transitions"
-      ],
-      "raw_artifact_path": "artifacts/metrics/jsx-depth-average.json"
+    "FE-COM-M-001-render-decision-depth-average": {
+      "render_decision_max_depth": 3,
+      "raw_artifact_path": "artifacts/metrics/render-decision-depth-average.json"
     },
     "FE-STATE-M-001-context-provider-ratio": {
       "raw_artifact_path": "artifacts/metrics/context-provider-ratio.json"

@@ -44,35 +44,70 @@ export const frontendConstraintFixtures = [
         cases: {
             positive: empty({
                 'src/pages/Dashboard.jsx': code`
-                    export function Dashboard() {
-                      return <main><section><div><article><span>ok</span></article></div></section></main>;
+                    export function Dashboard({ first, second, third }) {
+                      return (
+                        <main>
+                          {first && (
+                            <section>
+                              {second ? (
+                                <article>{third && <span>three levels</span>}</article>
+                              ) : null}
+                            </section>
+                          )}
+                        </main>
+                      );
                     }
                 `,
             }),
             negative: scenario({
                 'src/pages/Dashboard.jsx': code`
-                    export function Dashboard() {
-                      return <main><section><div><article><span><button>too deep</button></span></article></div></section></main>;
+                    export function Dashboard({ first, second, third, fourth }) {
+                      return (
+                        <main>
+                          {first && (
+                            <section>
+                              {second ? (
+                                <article>
+                                  {third && (
+                                    <div>{fourth ? <span>too deep</span> : null}</div>
+                                  )}
+                                </article>
+                              ) : null}
+                            </section>
+                          )}
+                        </main>
+                      );
                     }
                 `,
-            }, [finding('FE-COM-C-002', 'jsx-max-depth', 'src/pages/Dashboard.jsx', 2, 45, {
-                depth: 6,
-                max_depth: 5,
-                element: 'button',
-                message: 'Business JSX nesting depth 6 exceeds 5.',
+            }, [finding('FE-COM-C-002', 'render-decision-max-depth', 'src/pages/Dashboard.jsx', 9, 23, {
+                component: 'Dashboard',
+                decision_depth: 4,
+                max_decision_depth: 3,
+                deepest_decision: 'ConditionalExpression',
+                decision_path: [
+                    'LogicalExpression(&&)',
+                    'ConditionalExpression',
+                    'LogicalExpression(&&)',
+                    'ConditionalExpression',
+                ],
+                message: 'Component Dashboard has render decision nesting depth 4; maximum is 3.',
             })]),
             nearMiss: empty({
                 'src/pages/Dashboard.jsx': code`
-                    import { Portal as Layer } from '@mui/material';
-                    function Data({ children }) { return children(); }
                     export function Dashboard() {
-                      return <Layer><main><section><Data>{() => <div><article><span><button><i>ok</i></button></span></article></div>}</Data></section></main></Layer>;
+                      return (
+                        <main><section><div><article><span><b><i><em><strong><button>
+                          structural depth is not decision depth
+                        </button></strong></em></i></b></span></article></div></section></main>
+                      );
                     }
                 `,
             }),
             ignored: empty({
                 'src/pages/Dashboard.story.jsx': code`
-                    export const Dashboard = () => <main><section><div><article><span><button>ignored</button></span></article></div></section></main>;
+                    export function Dashboard({ a, b, c, d }) {
+                      return <main>{a && <section>{b && <div>{c && <span>{d && <b>ignored</b>}</span>}</div>}</section>}</main>;
+                    }
                 `,
             }),
         },
@@ -81,29 +116,33 @@ export const frontendConstraintFixtures = [
         ruleId: 'FE-STATE-C-001',
         cases: {
             positive: empty({
-                'src/pages/UsersPage.jsx': code`
+                'src/components/interactive/Menu.jsx': code`
                     import { useState } from 'react';
-                    export function UsersPage() { const [open] = useState(false); return <main>{String(open)}</main>; }
+                    export function Menu() { const [open] = useState(false); return <nav>{String(open)}</nav>; }
+                `,
+                'src/layout/components/Navbar/Profile.jsx': code`
+                    import { useState } from 'react';
+                    export function Profile() { const [tab] = useState(0); return <aside>{tab}</aside>; }
                 `,
             }),
             negative: scenario({
-                'src/components/UserCard.jsx': code`
+                'src/components/presentational/UserCard.jsx': code`
                     import { useState as useLocal } from 'react';
                     export function UserCard() { const [open] = useLocal(false); return <article>{String(open)}</article>; }
                 `,
-            }, [finding('FE-STATE-C-001', 'no-usestate-in-deep-child-components', 'src/components/UserCard.jsx', 2, 45, {
+            }, [finding('FE-STATE-C-001', 'no-local-state-in-stateless-components', 'src/components/presentational/UserCard.jsx', 2, 45, {
                 hook: 'useLocal',
-                boundary: 'src/components/',
-                message: 'Local state hooks are not allowed in controlled child-component directories.',
+                boundary: '^src\\/components\\/presentational\\/',
+                message: 'Local React state is not allowed in an explicitly stateless component boundary.',
             })]),
             nearMiss: empty({
-                'src/components/value.js': code`
+                'src/components/presentational/value.js': code`
                     function useState(value) { return value; }
                     export const value = useState(1);
                 `,
             }),
             ignored: empty({
-                'src/components/UserCard.test.jsx': code`
+                'src/components/presentational/UserCard.test.jsx': code`
                     import { useReducer } from 'react';
                     export function UserCard() { const [value] = useReducer((x) => x, 0); return <div>{value}</div>; }
                 `,

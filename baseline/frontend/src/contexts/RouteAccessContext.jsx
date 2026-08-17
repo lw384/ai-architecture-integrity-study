@@ -1,16 +1,11 @@
 import PropTypes from 'prop-types';
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useMemo } from 'react';
 
 import menuItems from 'mock/menu';
 
-import { defaultAllowedRouteIds, normalizeAllowedRouteIds, routeAccessRegistry } from '../config/route-access.config';
+import { defaultAllowedRouteIds, routeAccessRegistry } from '../config/route-access.config';
 
 export const RouteAccessContext = createContext(undefined);
-
-const mockRouteAccessResponse = {
-  allowedRouteIds: defaultAllowedRouteIds,
-  source: 'mock'
-};
 
 function filterMenuItems(items, allowedRouteIds) {
   return items
@@ -36,64 +31,8 @@ function filterMenuItems(items, allowedRouteIds) {
     .filter(Boolean);
 }
 
-async function fetchRouteAccess() {
-  const endpoint = import.meta.env.VITE_ROUTE_ACCESS_ENDPOINT;
-
-  if (!endpoint) {
-    return mockRouteAccessResponse;
-  }
-
-  try {
-    const response = await fetch(endpoint, {
-      headers: {
-        Accept: 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Route access request failed with status ${response.status}`);
-    }
-
-    const payload = await response.json();
-    const allowedRouteIds = normalizeAllowedRouteIds(payload?.allowedRouteIds ?? payload?.routes);
-
-    return {
-      allowedRouteIds,
-      source: 'api'
-    };
-  } catch (error) {
-    console.warn('Falling back to mock route access config.', error);
-
-    return mockRouteAccessResponse;
-  }
-}
-
 export function RouteAccessProvider({ children }) {
-  const [allowedRouteIds, setAllowedRouteIds] = useState(defaultAllowedRouteIds);
-  const [isLoading, setIsLoading] = useState(true);
-  const [source, setSource] = useState('mock');
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadRouteAccess() {
-      const nextRouteAccess = await fetchRouteAccess();
-
-      if (!isMounted) {
-        return;
-      }
-
-      setAllowedRouteIds(nextRouteAccess.allowedRouteIds);
-      setSource(nextRouteAccess.source);
-      setIsLoading(false);
-    }
-
-    loadRouteAccess();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const allowedRouteIds = defaultAllowedRouteIds;
 
   const filteredMenuGroups = useMemo(() => filterMenuItems(menuItems.items, allowedRouteIds), [allowedRouteIds]);
 
@@ -118,11 +57,9 @@ export function RouteAccessProvider({ children }) {
     () => ({
       allowedRouteIds,
       filteredMenuGroups,
-      isLoading,
-      isRouteAllowed,
-      source
+      isRouteAllowed
     }),
-    [allowedRouteIds, filteredMenuGroups, isLoading, isRouteAllowed, source]
+    [allowedRouteIds, filteredMenuGroups, isRouteAllowed]
   );
 
   return <RouteAccessContext.Provider value={value}>{children}</RouteAccessContext.Provider>;

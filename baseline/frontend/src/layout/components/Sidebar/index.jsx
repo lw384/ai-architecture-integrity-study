@@ -81,7 +81,6 @@ export default function Sidebar({ window }) {
           open={state.isMobileSidebarOpen}
           onClose={() => setMobileSidebarOpen(false)}
           ModalProps={{ keepMounted: true }}
-          className={`${state.isMobileSidebarOpen ? 'block' : 'hidden'} lg:hidden`}
           slotProps={{
             paper: {
               sx: {

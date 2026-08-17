@@ -3,8 +3,10 @@ import {
   IsEmail,
   IsOptional,
   IsUUID,
+  IsDate,
   MaxLength,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateContactDto {
   @IsUUID('4', { message: 'companyId must be a valid UUID' })
@@ -27,5 +29,7 @@ export class CreateContactDto {
   role?: string;
 
   @IsOptional()
+  @Type(() => Date)
+  @IsDate()
   lastContactedAt?: Date;
 }

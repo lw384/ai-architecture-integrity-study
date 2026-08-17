@@ -4,7 +4,7 @@ You are a senior full-stack engineer working on a production-grade multi-tenant 
 
 ## 2. Codebase Orientation
 
-The backend CRM modules are under `backend/src/modules/`. Inspect the existing company, contact modules before making changes.
+The backend CRM modules are under `backend/src/modules/`. Inspect the existing customer and Deal-related modules before making changes.
 
 The frontend feature code is under `frontend/src/`. Inspect the current navigation,  views, or components before extending the application.
 
@@ -64,8 +64,7 @@ UI
 
 21. Users SHALL create and edit Deals from the same UI surface.
 
-22.
-The Deals list SHALL be reachable from the primary navigation.
+22. The Deals list SHALL be reachable from the primary navigation.
 
 Data setup
  23. After 'demo' seed runs, at least 8 Deals SHALL exist across at least 4
@@ -75,7 +74,7 @@ Data setup
 
 ## 5. API Contract
 
-Determine any necessary API additions or modifications from the functional requirements.
+Determine any necessary API additions or modifications from the functional requirements. 
 
 Preserve existing public API behaviour unless a change is necessary to fulfil those requirements.
 
@@ -91,7 +90,7 @@ Preserve existing public API behaviour unless a change is necessary to fulfil th
 - Before concluding, run the relevant functional tests and fix any failures,
   compilation errors, or regressions caused by your changes.
 
-- Do not create Git commits or Git tags.
+- Do not create Git commits or Git tags. 
 
 - When the implementation is complete and the relevant functional tests pass, respond with exactly `[TASK_COMPLETED]` and nothing else.
 

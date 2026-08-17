@@ -10,12 +10,12 @@
 
 | 项目 | 结论 |
 |---|---|
-| 13 条 constraint 的接入情况 | 全部登记在 `manifest.yaml`，并由 Base、T0、T1、T2、T3 的 frontend scope 启用；统一通过 `frontend-static` adapter 进入评估 pipeline |
+| 13 条 constraint 的接入情况 | 全部登记在 `manifest.yaml`，并由 Base、T1、T2、T3 的 frontend scope 启用；统一通过 `frontend-static` adapter 进入评估 pipeline |
 | constraint fixture 覆盖 | 每条都有 positive/negative/nearMiss/ignored 四类用例；另有 7 类 `FE-DUP-C-002` 重复原因测试和 2 条协议/任务完整性测试。`node --test core/tests/frontend-constraint-fixtures.test.mjs` 实测 **61/61 通过** |
-| 7 条 metric 的接入情况 | 全部登记在 manifest，并由五份任务配置启用；`computed-metrics` 能解析并执行全部 7 个 `FE-*-M-001.mjs` 实现 |
-| metric 测试覆盖 | 7 条 metric 各有 2 条专用行为测试，共 14 条；另有 2 条注册/全链路执行测试。前端 constraint + metric 定向测试实测 **77/77 通过** |
-| metric 与 constraint 的一致性 | 只有 `FE-DATA-M-001` 与 `FE-DATA-C-001` 衡量同一类“网络调用位置”问题，但两者调用识别和允许路径仍不一致；其余 6 条主要是同分类的独立代理指标，不能用 metric 数值替代对应 constraint finding |
-| 文档/配置与实现的一致性 | 有 5 组需要在解读时注意的差异：深层组件由目录代理、`Fragment` 在 depth constraint/metric 中口径不同、data-access 允许路径不同、prop-drilling 实为单节点属性扇出、duplication YAML 的“code-block”范围宽于实际实现 |
+| 7 条 metric 的接入情况 | 全部登记在 manifest，并由四份任务配置启用；`computed-metrics` 能解析并执行全部 7 个 `FE-*-M-001.mjs` 实现 |
+| metric 测试覆盖 | `FE-COM-M-001` 有 3 条专用行为测试，其余 6 条 metric 各有 2 条，共 15 条；另有 2 条注册/全链路执行测试和 5 条 render-decision constraint/metric 统一性测试。前端 constraint + metric 定向测试实测 **83/83 通过** |
+| metric 与 constraint 的一致性 | `FE-COM-M-001` 与 `FE-COM-C-002` 复用同一个组件级 render-decision 分析结果，扫描对象和每组件深度完全一致；`FE-DATA-M-001` 与 `FE-DATA-C-001` 衡量同一类网络调用位置问题，但调用识别和允许路径不一致；其余 5 条主要是同分类的独立代理指标 |
+| 文档/配置与实现的一致性 | 有 3 组需要在解读时注意的差异：data-access 允许路径不同、prop-drilling 实为单节点属性扇出、duplication YAML 的“code-block”范围宽于实际实现 |
 
 ---
 
@@ -25,7 +25,7 @@
 
 ```text
 manifest.yaml（声明 13 constraints + 7 metrics，并配置 adapter）
-   → tasks/Base.eval.yaml、T0-T3.eval.yaml（frontend scope 启用规则短 ID）
+   → tasks/Base.eval.yaml、T1-T3.eval.yaml（frontend scope 启用规则短 ID）
    → core/layers/constraints_runner.mjs
        → adapters/frontend-static/adapter.mjs
        → inventory.mjs 一次性构建生产代码 AST / import / route / component / style inventory
@@ -77,13 +77,13 @@ fixture 协议对每条 constraint 统一定义四类用例：
 | 规则 | 工具 / 实现 | 实际检测逻辑 | Fixture | 可信度与边界 |
 |---|---|---|---|---|
 | **FE-COM-C-001**<br>component-file-max-lines | frontend-static<br>`analyzeComponents()`<br>`rules.mjs:112` | 先把“含大写命名且返回 JSX 的函数”，或“文件名大写且文件含 JSX”的文件识别为 component；再统计非空、非纯注释行，超过配置 `component_max_lines`（当前 300）时报 1 条 finding | 4/4 | ✅ 已验证 300/301 边界、非组件大文件和测试文件排除。⚠️ 行数统计是轻量文本算法，行内块注释仍可能按代码行计数 |
-| **FE-COM-C-002**<br>jsx-max-depth | frontend-static<br>`analyzeComponents()` | 对每个 JSX element 沿父节点向上计算业务层深度；fragment、配置的 transparent wrapper、以及 render-prop 回调外层不计。仅在 `depth === maxDepth + 1` 时报告跨过阈值的边界节点，当前阈值 5 | 4/4 | ✅ 验证 5/6 层边界、wrapper import alias、render-prop 和非生产文件。只报告每条过深分支首次跨过阈值的位置，不枚举该分支后续所有更深节点 |
+| **FE-COM-C-002**<br>render-decision-max-depth | frontend-static<br>`analyzeComponents()` → `analyzeRenderDecisionDepthInventory()` | 按最近 React 组件归属 `if`/`switch` 和分支含 JSX 的 ternary/logical render decision；普通 JSX/布局层级、Fragment、map、文本 fallback 和非 JSX prop 条件不计。连续 logical chain 计一层，`else-if` 保持同级。每组件取最大决策深度，超过配置 `render_decision_max_depth`（当前 3）时只报 1 条 | 4/4 + 5 条跨层统一测试 | ✅ 验证 3/4 层边界、纯结构深嵌套、同组件多条超限分支仍只报一次、同文件多组件分别上报、flat logical/else-if、memo/forwardRef/class、constraint/metric 同值和非生产文件 |
 
 ### 2.2 State management
 
 | 规则 | 工具 / 实现 | 实际检测逻辑 | Fixture | 可信度与边界 |
 |---|---|---|---|---|
-| **FE-STATE-C-001**<br>no-usestate-in-deep-child-components | frontend-static<br>`analyzeState()`<br>`rules.mjs:170` | 把 `src/components/**` 和 `src/layout/components/**` 定义为受控 child-component 目录；其中出现从 React 导入（含别名）或通过 React namespace 调用的 `useState`/`useReducer` 即违规 | 4/4 | ✅ import binding 可防止把本地同名函数误判为 React hook。⚠️ “deep child”不是按组件树深度推导，而是完全由文件目录代理；YAML 只写 `useState`，实现还包含 `useReducer` |
+| **FE-STATE-C-001**<br>no-local-state-in-stateless-components | frontend-static<br>`analyzeState()`<br>`rules.mjs:201` | 从 `stateless_component_paths` 读取显式声明的无状态/展示型目录正则；仅当文件路径命中这些边界时，React import-bound（含别名/namespace）的 `useState`/`useReducer` 才违规。当前边界为 `src/components/presentational/**` 和 `src/components/ui/**` | 4/4 | ✅ 验证 stateless 目录违规、本地同名函数不误报、非生产文件排除，并回归验证 `src/components/interactive/**` 与 `src/layout/components/**` 可以保留本地 UI state。⚠️ 规则检查的是外部配置声明，不推断变量名或 state 的业务语义 |
 | **FE-STATE-C-002**<br>context-provider-only-in-controlled-locations | frontend-static<br>`analyzeState()` | 放行 `src/App.*`、`src/index.*`、`src/main.*`、`src/providers/**`、`src/contexts/**`、`src/routes/**/*Layout.*`；其余文件中的 `<X.Provider>`、名字以 `Provider` 结尾的 JSX 节点、或可追踪到 contexts 目录的 context JSX 使用均报违规 | 4/4 | ✅ 验证合法 layout、非法 child、仅名字含 Provider 的 near miss 和 ignored 文件。⚠️ 这是基于位置和命名/import 来源的启发式，不验证 provider 是否真正由 `createContext` 产生 |
 
 ### 2.3 Routes
@@ -128,7 +128,7 @@ $ node --test core/tests/frontend-constraint-fixtures.test.mjs
 ```
 
 61 条由 **13 × 4 = 52 条统一协议用例 + 7 条 FE-DUP-C-002 原因测试 + 2 条完整性测试**组成。
-完整性测试还断言 Base、T0-T3 五份任务启用完全一致的 13 条 constraint，因此这些规则不只是存在于目录中，
+完整性测试还断言 Base、T1-T3 四份任务启用完全一致的 13 条 constraint，因此这些规则不只是存在于目录中，
 而是确实接入当前评估 pipeline。
 
 ---
@@ -141,8 +141,8 @@ artifact path；无 baseline 时 delta 为 `null`。除 state ratio 的解释需
 
 | 规则 | 实现与公式 | 数据来源 / 边界 | 与 constraint 的口径一致性 |
 |---|---|---|---|
-| **FE-COM-M-001**<br>jsx-depth-average | `FE-COM-M-001.mjs` → `analyzeJsxDepth()`<br>`average(max JSX depth per .jsx/.tsx file)`；无文件为 0；`lower_is_better` | 扫描所有生产 `.jsx/.tsx`，不先证明文件是 component；fragment 和配置中的 exact wrapper 名透明 | ⚠️ **同类但不完全一致**：与 `FE-COM-C-002` 都测 JSX 深度，但 metric 不复用 constraint inventory/深度函数，不处理 import alias，也不在 render-prop 回调处截断；当前 metric 配置还缺少 constraint 配置中的 `Fragment` wrapper。与文件行数 constraint `FE-COM-C-001` 无直接公式关系 |
-| **FE-STATE-M-001**<br>context-provider-ratio | `FE-STATE-M-001.mjs` → `analyzeStateDistribution()`<br>`provider usages / (useState + useReducer + provider usages)`；无信号为 0；当前声明 `lower_is_better` | hook 仅按 `useState/useReducer` 或 `React.*` 语法名计数，不验证 import binding；provider 只计 `<X.Provider>` | ⚠️ **独立分布指标**：不判断 hook 是否位于 deep-child 目录，也不判断 provider 是否位于批准目录，不能替代 `FE-STATE-C-001/002`。此外低值不天然代表更合规，跨版本“偏移”比绝对方向更适合解释 |
+| **FE-COM-M-001**<br>render-decision-depth-average | `FE-COM-M-001.mjs` → `analyzeRenderDecisionDepth()`<br>`average(max render-decision depth per production React component)`；无组件为 0；`lower_is_better` | 使用与 constraint 相同的 inventory 和 `analyzeRenderDecisionDepthInventory()`；raw details 同时输出每组件 depth/count、全局 max、p90、超限组件数 | ✅ **直接一致**：两层使用同一组件集合和同一个 `maxDecisionDepth`；constraint 对 `depth > 3` 的组件各报一次，metric 对全部组件的该值求平均。与文件行数 constraint `FE-COM-C-001` 无直接公式关系 |
+| **FE-STATE-M-001**<br>context-provider-ratio | `FE-STATE-M-001.mjs` → `analyzeStateDistribution()`<br>`provider usages / (useState + useReducer + provider usages)`；无信号为 0；当前声明 `lower_is_better` | hook 仅按 `useState/useReducer` 或 `React.*` 语法名计数，不验证 import binding；provider 只计 `<X.Provider>` | ⚠️ **独立分布指标**：不判断 hook 是否位于 `FE-STATE-C-001` 配置的 stateless boundary，也不判断 provider 是否位于批准目录，不能替代 `FE-STATE-C-001/002`。此外低值不天然代表更合规，跨版本“偏移”比绝对方向更适合解释 |
 | **FE-ROUTE-M-001**<br>route-param-complexity | `FE-ROUTE-M-001.mjs` → `analyzeRoutes()`<br>`sum(static path 的 :param 段数) / static path object 数`；无 route 为 0；`lower_is_better` | 只扫描 `routes_root` 下任意带静态 `path` 属性的 object；不要求它是已识别 route，不统计 JSX `<Route>` | ⚠️ **独立复杂度指标**：`FE-ROUTE-C-001/002` 检查定义位置和 page 映射，metric 只测动态参数个数；breadcrumb 等普通 path object 也可能进入分母 |
 | **FE-STYLE-M-001**<br>style-mixing-ratio | `FE-STYLE-M-001.mjs` → `analyzeStyleMixing()`<br>`使用 >1 种 style signal 的生产文件数 / 全部生产 JS/TS 文件数`；无文件为 0；`lower_is_better` | signal 为 JSX `sx/className/style` 和直接 `styled(...)`；同一 signal 在文件内去重，无 style 的文件仍进入分母 | ⚠️ **弱代理**：只用 raw `style` 的文件会违反 `FE-STYLE-C-001`，但不会被判为 mixing；metric 完全不读取 CSS/SCSS/SASS，因此不覆盖 `FE-STYLE-C-002` |
 | **FE-DATA-M-001**<br>data-access-wrapping-ratio | `FE-DATA-M-001.mjs` → `analyzeDataAccessWrapping()`<br>`approved network calls / all detected network calls`；无调用为 1；`higher_is_better` | 识别直接 `fetch` 和从 axios import 的 alias 调用；按 `approved_data_paths` 正则判断整个文件是否批准 | ⚠️ **问题相同、实现口径不同**：它与 `FE-DATA-C-001` 都测网络调用位置，但 metric 不识别 `window/globalThis.fetch`、不处理 fetch shadowing/axios.create 实例；当前允许 `src/api/**`、`pages/*Queries.*`、特定 context，而 constraint 允许 api/services/hooks。两层结果可能直接相反。与 `FE-DATA-C-002` 无关系 |
@@ -153,18 +153,21 @@ artifact path；无 baseline 时 delta 为 `null`。除 state ratio 的解释需
 
 | Metric | 测试文件 | 用例数 | 当前断言重点 |
 |---|---|---:|---|
-| FE-COM-M-001 | `core/tests/frontend-com-metric.test.mjs` | 2 | 文件最大深度均值、transparent wrapper/fragment、test 排除 |
+| FE-COM-M-001 | `core/tests/frontend-com-metric.test.mjs` | 3 | 每组件最大决策深度均值、结构/文本/非 JSX 条件排除、JSX-valued prop、test 排除、超限统计 |
 | FE-STATE-M-001 | `core/tests/frontend-state-metric.test.mjs` | 2 | hook/provider 计数、无信号边界、test 排除 |
 | FE-ROUTE-M-001 | `core/tests/frontend-route-metric.test.mjs` | 2 | 静态 path 参数均值、可配置 routes root、动态 path/非生产排除 |
 | FE-STYLE-M-001 | `core/tests/frontend-style-metric.test.mjs` | 2 | 四种 signal、文件分母、signal 去重、test 排除 |
 | FE-DATA-M-001 | `core/tests/frontend-data-metric.test.mjs` | 2 | fetch/axios alias、批准位置比例、零调用边界、test 排除 |
 | FE-COMM-M-001 | `core/tests/frontend-comm-metric.test.mjs` | 2 | threshold 候选、普通 attribute 计数、spread 排除、阈值配置 |
 | FE-DUP-M-001 | `core/tests/frontend-dup-metric.test.mjs` | 2 | Type-2 JSX clone、前端扩展名、test 排除 |
-| 全部 7 条注册与执行 | `core/tests/frontend-metric-registration.test.mjs` | 2 | Base/T0-T3 精确启用七条；manifest → YAML → implementation 全链路执行 |
+| 全部 7 条注册与执行 | `core/tests/frontend-metric-registration.test.mjs` | 2 | Base/T1-T3 精确启用七条；manifest → YAML → implementation 全链路执行 |
 
-14 条专用行为测试中，多数使用精确数值断言；clone 正例只断言 ratio/match 大于 0，并未固定具体比例。
+15 条专用行为测试中，多数使用精确数值断言；clone 正例只断言 ratio/match 大于 0，并未固定具体比例。
 另外 `computed-metric-naming.test.mjs` 会检查所有 ID 命名实现以 `M-001` 结尾、YAML implementation
 一致、任务 selector 唯一解析，以及 implementations 目录下不存在无法从 manifest 到达的孤儿实现。
+`frontend-render-decision-depth-unification.test.mjs` 另以 5 条跨层测试锁定 constraint/metric 每组件同值、
+同组件最多一条 finding、同文件多组件分别上报、结构嵌套/flat logical/else-if 不产生虚假深度，以及
+memo/forwardRef/class render 的组件边界识别。
 
 ---
 
@@ -174,19 +177,13 @@ Constraint YAML 的 `evidence_sources` 都准确指向 `frontend-static` 产出�
 YAML 的 `adapter: computed-metrics` 和 `implementation: FE-*-M-001` 也与实际文件一一对应。需要额外说明的
 不是“规则未接入”，而是自然语言或两套配置容易让人误以为口径比实际更一致：
 
-1. **`FE-STATE-C-001` 的 “deep child”**：YAML 写的是组件层级概念，实际实现没有建立 React component
-   tree，而是把 `src/components/**`、`src/layout/components/**` 作为固定代理目录；同时实现同时禁止
-   `useState` 和 `useReducer`，规则名/description 只明确写了 `useState`。
-2. **JSX depth 的 `Fragment` 配置不一致**：constraint 的 `frontend-static.config.json` 把 `Fragment`
-   列为透明 wrapper，并能根据 import binding 识别 alias；metric 的 `metrics.config.json` 没有 `Fragment`，
-   metric 只把 `<>...</>` 自动视为透明，普通 `<Fragment>` 会多计一层。
-3. **data-access 允许路径不一致**：constraint 放行 `src/api`、`src/services`、`src/hooks` 和嵌套 hooks；
+1. **data-access 允许路径不一致**：constraint 放行 `src/api`、`src/services`、`src/hooks` 和嵌套 hooks；
    metric 放行 `src/api`、`src/pages/*Queries.*`、`src/contexts/RouteAccessContext.*`。同一个调用可能通过
    constraint 却拉低 metric，或违反 constraint 却被 metric 计为 approved。
-4. **`FE-COMM-M-001` 的 prop-drilling 表述过强**：实现不追踪同一 prop 跨几层传递，只统计单个 JSX
+2. **`FE-COMM-M-001` 的 prop-drilling 表述过强**：实现不追踪同一 prop 跨几层传递，只统计单个 JSX
    opening element 的普通 attribute 数；`agent_facing_message` 中“cross-component data flow”的解释只能
    当作代理假设，不能当作已观测事实。
-5. **`FE-DUP-C-002` 的 code-block 范围**：YAML 写到 repeated code-block logic，实际候选是 7 种明确形状，
+3. **`FE-DUP-C-002` 的 code-block 范围**：YAML 写到 repeated code-block logic，实际候选是 7 种明确形状，
    一般函数/组件之外的任意语句块不会单独生成指纹；通用 Type-1/Type-2 片段重复由 `FE-DUP-M-001`
    补充，但两者不是同一判定引擎。
 
@@ -198,16 +195,16 @@ implementations 入口均未引用它；当前 pipeline 不会执行这段分析
 
 ## 5. 总体可信度结论
 
-- **接入完整性高**：13 条 constraint 和 7 条 metric 都在 manifest 中注册，并由 Base/T0-T3 的 frontend
+- **接入完整性高**：13 条 constraint 和 7 条 metric 都在 manifest 中注册，并由 Base/T1-T3 的 frontend
   scope 启用；测试同时验证了 selector、YAML、adapter 与实现文件之间的可达链路。
 - **Constraint 行为可信度较高**：13 条规则都有统一四象限 fixture，negative 使用完整 finding 快照，
-  nearMiss 和 ignored 能直接防止常见误报；专用测试 **61/61 通过**。不过“deep child”“resource”“page
+  nearMiss 和 ignored 能直接防止常见误报；专用测试 **61/61 通过**。不过 stateless boundary、resource、page
   mapping”等本质上仍是静态启发式，其可信边界应按第 2 节理解，不能推断为运行时语义证明。
 - **Metric 实现可运行且有直接测试证据**：7 条均有专用测试，注册测试还真实执行全部实现。公式、常见边界
-  和生产文件排除已有覆盖；但每条只有 2 个专用用例，尚未系统覆盖 alias/shadowing、JSX Route、复杂 wrapper、
-  自定义 HTTP client 等差异点。
-- **不要把同分类 metric 当作 constraint 的连续化版本**：7 条中没有一条完全复用 frontend constraint
-  finding 或同一判定函数。尤其 state、route、style、communication、duplication metric 都是独立代理信号；
+  和生产文件排除已有覆盖；其中 FE-COM 有 3 条专用测试和 5 条跨层一致性测试，其余 metric 各 2 条，尚未
+  系统覆盖各自的 alias/shadowing、自定义 HTTP client 等差异点。
+- **不要默认把同分类 metric 当作 constraint 的连续化版本**：`FE-COM-M-001` 是明确的连续化版本，复用
+  `FE-COM-C-002` 的每组件 render-decision depth；但 state、route、style、communication、duplication metric 仍是独立代理信号；
   data-access 虽然问题最接近，却存在明确的允许路径与调用识别差异。研究报告若同时引用 finding 数和 metric
   数值，应分别写明口径，避免把“不相关”或“方向不同”解释成实现矛盾。
 

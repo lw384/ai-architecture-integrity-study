@@ -22,15 +22,22 @@ experiment/
 │   ├── agent-images/
 │   │   ├── Dockerfile.claude
 │   │   └── Dockerfile.codex
-│   └── agent-runners/
-│       ├── config.py
-│       ├── comparison_resolver.py
-│       ├── docker_runner.py
-│       ├── evaluator.py
-│       ├── generate_report.py
-│       ├── prompt_builder.py
-│       ├── run_harness.py
-│       └── run_pipeline.py
+│   ├── agent-runners/
+│   │   ├── config.py
+│   │   ├── comparison_resolver.py
+│   │   ├── docker_runner.py
+│   │   ├── evaluator.py
+│   │   ├── generate_report.py
+│   │   ├── prompt_builder.py
+│   │   ├── run_harness.py
+│   │   ├── run_pipeline.py
+│   │   ├── run_tests.py
+│   │   └── test_runner.py
+│   └── tests/
+│       └── T1/
+│           ├── deal.e2e-spec.ts
+│           ├── deal.render.test.jsx
+│           └── test.config.json
 ├── venv/
 ├── workspace/
 └── package.json
@@ -45,9 +52,12 @@ experiment/
 | `instruments/agent-runners/comparison_resolver.py` | 解析 canonical E0，并按不可变 commit SHA 定位唯一的任务前评估。 |
 | `instruments/agent-runners/prompt_builder.py` | 读取任务模板、去掉 HTML 注释，并追加 memory 指令和 `[TASK_COMPLETED]` 完成协议。 |
 | `instruments/agent-runners/docker_runner.py` | 挂载 workspace 和认证目录、启动 agent 容器、解析 CLI 输出并写入执行记录。 |
-| `instruments/agent-runners/evaluator.py` | 组装并执行 `harness/core/evaluate.mjs`，写入 Harness manifest、执行记录和评估结果。 |
-| `instruments/agent-runners/run_pipeline.py` | 完整入口：准备或复用 workspace、运行 agent、提交并打 tag、调用 Harness、归档结果。 |
+| `instruments/agent-runners/evaluator.py` | 组装并执行 `harness/core/evaluate.mjs`，写入 Harness manifest、执行记录和评估结果。测的是**架构完整性**（约束/指标），不判断功能对不对。 |
+| `instruments/agent-runners/test_runner.py` | 按 task_id 定位 `instruments/tests/<task_id>/` 下的功能验收套件（若存在），overlay 进 workspace 的一份 throwaway 副本后运行，写入归一化的验收结果。测的是**功能正确性**，agent 全程看不到这套测试。 |
+| `instruments/tests/<task_id>/` | 每个任务的功能验收套件源码（e2e/组件测试 + `test.config.json`），不进 `baseline/`、也不常驻 workspace——只有 test_runner.py 会读它。 |
+| `instruments/agent-runners/run_pipeline.py` | 完整入口：准备或复用 workspace、运行 agent、提交并打 tag、调用 Harness 与功能验收、归档结果。 |
 | `instruments/agent-runners/run_harness.py` | Harness-only 入口；可评估已有 workspace 的当前快照、指定 tag，或通过 `--baseline` 评估 baseline。 |
+| `instruments/agent-runners/run_tests.py` | 验收测试专用入口，和 `run_harness.py` 是同一种关系（`test_runner.py` 放可复用逻辑，这个文件只是 CLI 包装）；对已有 workspace 单独重跑某个 task 的功能验收，不碰 agent、不碰 Harness、不动 Git tag。 |
 | `instruments/agent-runners/generate_report.py` | 可选工具：把 `harness_evaluation.json` 中的约束违规整理为 Markdown。 |
 | `venv/` | 可选的本地 Python 虚拟环境；runner 当前只使用 Python 标准库。 |
 | `workspace/session_<时间戳>/` | 每个实验 session 的长期工作副本和独立 Git 仓库。T1–T3 必须在同一个 session 中顺序累积。 |
@@ -78,8 +88,9 @@ Pipeline 的源 baseline 路径固定为 `baseline/`。Comparison 数据来自 E
 5. 生成最终 prompt；运行期间临时写入 workspace 根目录的 `.agent_instruction.md`，同时将完整 prompt 归档为 `reports/experiments/<session_id>/T1/prompt.md`。
 6. Docker 容器挂载该 workspace 和对应 agent 的认证目录，agent 直接修改 workspace。只有进程成功且最终输出包含 `[TASK_COMPLETED]`，本次 agent 执行才被视为成功。
 7. 把 agent 的全部改动提交为 `task: T1 completed`，并创建 `task-T1-done` tag。
-8. 使用 `harness/tasks/T1.eval.yaml` 和 `harness/rulepacks/` 评估该提交。
-9. 将执行、评估和任务元数据写入 `reports/experiments/<session_id>/T1/`。
+8. 使用 `harness/tasks/T1.eval.yaml` 和 `harness/rulepacks/` 评估该提交（架构完整性）。
+9. 若 `experiment/instruments/tests/T1/` 下存在验收套件，overlay 进 workspace 的一份 throwaway 副本并运行（功能正确性）；没有套件则记为 `skipped`，不算失败。
+10. 将执行、评估、验收结果和任务元数据写入 `reports/experiments/<session_id>/T1/`。
 
 ### 2.2 复用 session 执行 T2 和 T3
 
@@ -113,7 +124,9 @@ reports/experiments/<session_id>/
     ├── task_manifest.yaml
     ├── manifest.json
     ├── harness_execution.json
-    └── harness_evaluation.json
+    ├── harness_evaluation.json
+    ├── test_execution.json
+    └── test_result.json
 ```
 
 | 产物 | 内容 |
@@ -121,10 +134,12 @@ reports/experiments/<session_id>/
 | `session_manifest.yaml` | session 创建时间以及初始 agent、model、strategy、memory 条件。 |
 | `prompt.md` | 本任务实际发送给 agent 的完整 prompt。 |
 | `execution.json` | agent、模型、退出码、完成标记、耗时、token/费用字段、原始 agent 事件及 stderr。 |
-| `task_manifest.yaml` | 任务起点 ref/SHA、完成 commit/tag、comparison artifact 引用和 Harness 文件索引。 |
+| `task_manifest.yaml` | 任务起点 ref/SHA、完成 commit/tag、comparison artifact 引用、Harness 文件索引，以及 `test_status`/`test_result_file`/`test_execution_file`（功能验收）。 |
 | `manifest.json` | 提供给 Harness 的任务、revision、comparison 模式和已解析 comparison 输入。 |
 | `harness_execution.json` | Harness 命令、退出码、超时状态、stdout 和 stderr。 |
-| `harness_evaluation.json` | 统一的 `scopes[]` 结果、局部/累计 delta、artifact 标识以及 execution/comparison 状态。Constraint 结果由局部 introduced findings 派生。 |
+| `harness_evaluation.json` | 统一的 `scopes[]` 结果、局部/累计 delta、artifact 标识以及 execution/comparison 状态。Constraint 结果由局部 introduced findings 派生。测的是**架构完整性**。 |
+| `test_execution.json` | 功能验收套件每个 suite（backend/frontend）的安装与测试命令、退出码、stdout/stderr、耗时。任务没有定义验收套件时不生成此文件。 |
+| `test_result.json` | 归一化后的验收结果：`status`（`pass`/`fail`/`error`/`skipped`）+ 每个 suite 的 `total`/`passed`/`failed`/`failed_ids`。`error` 指验收基础设施本身没跑起来（如测试库连不上），`fail` 指验收测试正常跑完但功能有问题——这是有效的实验结果，不是流水线故障。测的是**功能正确性**，与 `harness_evaluation.json` 互不替代。 |
 
 如果 agent 或 Harness 中途失败，已有的 workspace 和任务目录会保留以便诊断。再次写入同一任务归档或覆盖同名 `task-Tn-done` tag 时，必须显式传入 `--force`。
 
@@ -281,7 +296,28 @@ python3 experiment/instruments/agent-runners/run_harness.py \
 
 Harness 默认从原 task manifest 读取 `start_ref`，解析为完整 SHA，再选择 `target.post_commit` 与该 SHA 一致的唯一 pre artifact；无 ref 时使用 `HEAD^`。只有自动推断错误时才传入 `--pre-ref <git-ref>`。显式覆盖 artifact 时，`--baseline-evaluation` 与 `--pre-evaluation` 必须成对使用。`--baseline-dir` 只改变 metric runner 使用的源 baseline。
 
-### 3.4 评估 baseline
+### 3.4 单独运行功能验收测试
+
+`run_tests.py` 和 `run_harness.py` 是同一种模式：不运行 agent，不需要 pre/post 比较，只对指定 workspace 单独重跑 `experiment/instruments/tests/<task>/` 下的验收套件。用法和 `--from-tag` 语义与 `run_harness.py` 完全一致：
+
+```bash
+python3 experiment/instruments/agent-runners/run_tests.py \
+  --run-id "$SESSION_ID" \
+  --task T3 \
+  --output-dir "reports/experiments/$SESSION_ID/T3/test_rerun"
+```
+
+```bash
+python3 experiment/instruments/agent-runners/run_tests.py \
+  --workspace-dir "$WORKSPACE" \
+  --task T1 \
+  --from-tag task-T1-done \
+  --output-dir "reports/experiments/$SESSION_ID/T1/test_rerun"
+```
+
+默认输出目录同样是 `reports/experiments/<session_id>/<task>/`；已有 `test_execution.json`/`test_result.json` 时需要 `--output-dir` 或 `--force`。任务在 `experiment/instruments/tests/` 下没有定义验收套件时，命令会正常退出并写入 `status: "skipped"`，不算错误。只有验收基础设施本身跑不起来（比如测试数据库连不上）才会以非零退出码失败——套件正常跑完但发现功能问题（`status: "fail"`）会照常打印结果，退出码为 0，因为这是有效的实验结果而不是命令执行故障。
+
+### 3.5 评估 baseline
 
 使用 `--baseline` 以 self-comparison 模式评估 `baseline/`。默认任务是 `Base`，规则来自 `harness/tasks/Base.eval.yaml`：
 

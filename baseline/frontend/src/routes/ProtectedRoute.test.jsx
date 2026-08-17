@@ -6,7 +6,7 @@ import { RouteAccessContext } from 'contexts/RouteAccessContext';
 
 import ProtectedRoute from './ProtectedRoute';
 
-function renderProtectedRoute({ allowedRouteIds, isLoading = false, initialPath = '/contacts' }) {
+function renderProtectedRoute({ allowedRouteIds, initialPath = '/contacts' }) {
   const isRouteAllowed = (routeId) => allowedRouteIds.includes(routeId);
 
   return render(
@@ -14,9 +14,7 @@ function renderProtectedRoute({ allowedRouteIds, isLoading = false, initialPath 
       value={{
         allowedRouteIds,
         filteredMenuGroups: [],
-        isLoading,
         isRouteAllowed,
-        source: 'test',
       }}
     >
       <MemoryRouter initialEntries={[initialPath]}>
@@ -47,12 +45,6 @@ describe('ProtectedRoute', () => {
     renderProtectedRoute({ allowedRouteIds: ['companies'] });
 
     expect(await screen.findByRole('heading', { name: 'Companies' })).toBeVisible();
-  });
-
-  it('does not render protected content while permissions are loading', () => {
-    const { container } = renderProtectedRoute({ allowedRouteIds: ['contacts'], isLoading: true });
-
-    expect(container).toBeEmptyDOMElement();
   });
 
   it('renders an access denied state when no routes are allowed', () => {

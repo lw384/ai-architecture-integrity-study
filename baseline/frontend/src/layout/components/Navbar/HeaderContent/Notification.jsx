@@ -101,8 +101,8 @@ export default function Notification() {
                   secondary={
                     read > 0 ? (
                       <Tooltip title="Mark as all read">
-                        <IconButton color="success" size="small" onClick={() => setRead(0)}>
-                          <CheckCircleOutlined style={{ fontSize: '1.15rem' }} />
+                        <IconButton color="success" size="small" sx={{ fontSize: '1.15rem' }} onClick={() => setRead(0)}>
+                          <CheckCircleOutlined />
                         </IconButton>
                       </Tooltip>
                     ) : null

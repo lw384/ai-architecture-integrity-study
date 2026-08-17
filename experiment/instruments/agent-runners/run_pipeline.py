@@ -10,6 +10,7 @@ from config import get_agent_config
 from docker_runner import run_agent_task
 from evaluator import run_harness_evaluation
 from prompt_builder import build_mega_prompt
+from test_runner import run_functional_tests
 
 INITIAL_MEMORY_TEMPLATE = Path("experiment/design/memory/initial_memory.md")
 
@@ -246,6 +247,7 @@ def write_task_manifest(
     baseline_evaluation_path,
     pre_evaluation_path,
     harness_run,
+    test_run,
 ):
     manifest_path = task_archive_dir / "task_manifest.yaml"
 
@@ -271,6 +273,13 @@ def write_task_manifest(
                 f"harness_status: {harness_run['harness_status']}",
                 "harness_execution_file: harness_execution.json",
                 f"harness_evaluation_file: {'harness_evaluation.json' if harness_run['harness_status'] == 'success' else 'none'}",
+                # test_status covers the independent functional acceptance suite
+                # (experiment/instruments/tests/<task_id>/), not the harness's
+                # architecture-integrity evaluation above. "skipped" means no
+                # acceptance suite is defined for this task yet, not a failure.
+                f"test_status: {test_run['test_status']}",
+                f"test_result_file: {test_run['test_result_file'] or 'none'}",
+                f"test_execution_file: {test_run['test_execution_file'] or 'none'}",
                 "",
             ]
         ),
@@ -428,6 +437,19 @@ def main():
         pre_evaluation_path=pre_evaluation_path,
     )
 
+    # Independent functional acceptance suite (does the feature actually work),
+    # separate from the harness's architecture-integrity evaluation above. A
+    # missing suite for this task_id is not an error: run_functional_tests
+    # returns test_status="skipped" and the pipeline continues.
+    test_run = run_functional_tests(
+        root_dir=root_dir,
+        workspace_dir=workspace_dir,
+        task_archive_dir=task_archive_dir,
+        task_id=args.task,
+        run_id=run_id,
+    )
+    print(f"🧪 Functional acceptance: {test_run['test_status']}")
+
     write_task_manifest(
         task_archive_dir=task_archive_dir,
         session_id=session_id,
@@ -441,7 +463,14 @@ def main():
         baseline_evaluation_path=baseline_evaluation_path,
         pre_evaluation_path=pre_evaluation_path,
         harness_run=harness_run,
+        test_run=test_run,
     )
+
+    if test_run["test_status"] == "error":
+        print(
+            "⚠️  验收测试基础设施未能正常运行（不是功能失败），"
+            f"请查看: {task_archive_dir / (test_run['test_execution_file'] or 'test_execution.json')}"
+        )
 
     if harness_run["harness_status"] != "success":
         raise RuntimeError(

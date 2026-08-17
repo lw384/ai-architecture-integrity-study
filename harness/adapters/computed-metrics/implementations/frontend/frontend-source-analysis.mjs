@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import parser from '@typescript-eslint/parser';
 import { isProductionSourcePath } from '../../../_shared/production-files.mjs';
+import { buildFrontendInventory } from '../../../frontend-static/inventory.mjs';
+import { analyzeRenderDecisionDepthInventory } from '../../../frontend-static/render-decision-depth.mjs';
 
 export function toPosixPath(value) {
     return value.split(path.sep).join('/');
@@ -97,77 +99,31 @@ function collectFrontendFiles(projectRoot, config = {}) {
     return files;
 }
 
-function isTransparentWrapper(node, transparentWrappers) {
-    if (node.type === 'JSXFragment') {
-        return true;
-    }
-
-    if (node.type === 'JSXElement' && node.openingElement?.name?.type === 'JSXIdentifier') {
-        return transparentWrappers.has(node.openingElement.name.name);
-    }
-
-    return false;
-}
-
-function jsxDepth(node, transparentWrappers) {
-    let depth = 0;
-    let current = node;
-
-    while (current) {
-        if ((current.type === 'JSXElement' || current.type === 'JSXFragment') && !isTransparentWrapper(current, transparentWrappers)) {
-            depth += 1;
-        }
-
-        current = current.parent ?? null;
-    }
-
-    return depth;
-}
-
-export function analyzeJsxDepth(projectRoot, config = {}) {
-    const transparentWrappers = new Set(config.transparent_wrappers ?? [
-        'Popper', 'Portal', 'Modal', 'Backdrop',
-        'ClickAwayListener', 'Fade', 'Grow', 'Zoom', 'Slide', 'Collapse', 'Transitions',
-    ]);
-    const details = [];
-
-    for (const filePath of collectFrontendFiles(projectRoot, config)) {
-        const relativeFile = toPosixPath(path.relative(projectRoot, filePath));
-
-        if (!/\.(jsx|tsx)$/.test(relativeFile)) {
-            continue;
-        }
-
-        const { ast } = parseFrontendFile(filePath);
-        let maxDepth = 0;
-
-        walkAst(ast, (node, parent) => {
-            if (!node || typeof node !== 'object') {
-                return;
-            }
-
-            node.parent = parent;
-
-            if (node.type === 'JSXElement') {
-                maxDepth = Math.max(maxDepth, jsxDepth(node, transparentWrappers));
-            }
-        });
-
-        details.push({
-            file: relativeFile,
-            maxDepth,
-        });
-    }
-
-    const total = details.length;
+export function analyzeRenderDecisionDepth(projectRoot, config = {}) {
+    const inventory = buildFrontendInventory(projectRoot, config);
+    const analyzed = analyzeRenderDecisionDepthInventory(inventory);
+    const maxAllowed = config.render_decision_max_depth ?? 3;
+    const depths = analyzed.map((item) => item.maxDecisionDepth).sort((left, right) => left - right);
+    const total = depths.length;
     const average = total === 0
         ? 0
-        : Number((details.reduce((sum, item) => sum + item.maxDepth, 0) / total).toFixed(2));
+        : Number((depths.reduce((sum, depth) => sum + depth, 0) / total).toFixed(2));
+    const percentileIndex = total === 0 ? null : Math.max(0, Math.ceil(total * 0.9) - 1);
 
     return {
         totalComponents: total,
         averageDepth: average,
-        details,
+        maxDepth: total === 0 ? 0 : depths.at(-1),
+        p90Depth: percentileIndex === null ? 0 : depths[percentileIndex],
+        componentsOverLimit: analyzed.filter((item) => item.maxDecisionDepth > maxAllowed).length,
+        maxAllowedDepth: maxAllowed,
+        details: analyzed.map((item) => ({
+            file: item.file,
+            component: item.component,
+            maxDecisionDepth: item.maxDecisionDepth,
+            decisionCount: item.decisionCount,
+            deepestLine: item.deepestDecisionNode?.loc?.start?.line ?? null,
+        })),
     };
 }
 

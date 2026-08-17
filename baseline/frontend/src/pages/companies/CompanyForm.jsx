@@ -9,6 +9,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { formatForDatetimeLocal } from 'utils/formatDate';
 import { useCreateCompany, useUpdateCompany } from './companyQueries';
 
 const emptyValues = {
@@ -20,12 +21,6 @@ const emptyValues = {
   status: '1',
   lastContactedAt: '',
 };
-
-const formatForDatetimeLocal = (isoString) => {
-  if (!isoString) return '';
-  return isoString.slice(0, 16);
-};
-
 
 function CompanyFormField({
   field,
@@ -153,7 +148,7 @@ export function CompanyFormDialog({
         {mode === 'create' ? 'Create company' : 'Edit company'}
       </DialogTitle>
 
-      <DialogContent className="!p-5">
+      <DialogContent sx={{ p: 2.5 }}>
         <Stack direction="column" spacing={2} component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
 
           <CompanyFormField

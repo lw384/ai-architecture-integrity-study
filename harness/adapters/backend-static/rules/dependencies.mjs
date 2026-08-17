@@ -15,9 +15,19 @@ export const FORBIDDEN_LAYER_PAIRS = new Set([
     'entity:repository',
 ]);
 
-export function analyzeDependencies(project) {
+export function analyzeDependencies(project, config = {}) {
     const findings = [];
     const forbiddenLayerPairs = FORBIDDEN_LAYER_PAIRS;
+    // BE-DEP-C-002 only: seed scaffolding legitimately needs the real TypeORM
+    // entity class (dataSource.getRepository(Entity) requires the runtime
+    // class, not just its type) and the enums declared alongside it. Moving
+    // seed under src/modules/ or re-exporting entities from a module's entry
+    // point would just trade this violation for BE-DOM-C-001/BE-DOM-C-002, so
+    // this is a deliberate, narrowly-scoped exemption rather than a rule gap —
+    // see docs/methodology and RULE_AUDIT.md for the rationale.
+    const infrastructureIsolationExemptPatterns = (
+        config.infrastructure_isolation_exempt_paths ?? []
+    ).map((pattern) => new RegExp(pattern));
 
     for (const file of project.files) {
         const sourceModule = moduleParts(file.relative);
@@ -48,7 +58,10 @@ export function analyzeDependencies(project) {
                 }
             }
 
-            if (/^src\/(?:common|core)\//.test(file.relative)) {
+            if (
+                /^src\/(?:common|core)\//.test(file.relative)
+                && !infrastructureIsolationExemptPatterns.some((pattern) => pattern.test(file.relative))
+            ) {
                 const businessTarget = targets.find((target) => /^src\/modules\//.test(target.relative));
 
                 if (businessTarget) {

@@ -3,5 +3,8 @@
     "app-exception",
     "common/exceptions"
   ],
-  "resource_aliases": {}
+  "resource_aliases": {},
+  "infrastructure_isolation_exempt_paths": [
+    "^src/core/seed/"
+  ]
 }

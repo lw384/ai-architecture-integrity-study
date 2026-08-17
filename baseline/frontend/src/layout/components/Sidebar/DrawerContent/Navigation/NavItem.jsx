@@ -38,14 +38,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID,
   };
 
   const Icon = item.icon;
-  const itemIcon = item.icon ? (
-    <Icon
-      style={{
-        fontSize: isSidebarExpanded ? '1rem' : '1.25rem',
-        ...(isParents && { fontSize: 20, stroke: '1.5' })
-      }}
-    />
-  ) : false;
+  const itemIcon = item.icon ? <Icon /> : false;
 
   const { pathname } = useLocation();
   const isSelected = !!matchPath({ path: item?.link ? item.link : item.url, end: false }, pathname);
@@ -85,6 +78,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID,
           <ListItemIcon
             sx={{
               minWidth: 28,
+              fontSize: isParents ? 20 : isSidebarExpanded ? '1rem' : '1.25rem',
               color: isSelected ? iconSelectedColor : textColor,
               ...(!isSidebarExpanded && {
                 borderRadius: 1.5,
@@ -145,6 +139,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID,
                 zIndex: 1202,
                 width: 20,
                 height: 20,
+                fontSize: '0.625rem',
                 mr: -1,
                 ml: 1,
                 color: 'secondary.dark',
@@ -152,7 +147,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID,
                 '&:hover': { borderColor: isSelected ? 'primary.main' : 'secondary.main' }
               }}
             >
-              <ActionIcon style={{ fontSize: '0.625rem' }} />
+              <ActionIcon />
             </IconButton>
           );
         })}

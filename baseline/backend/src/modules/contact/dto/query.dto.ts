@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  IsDate,
   Min,
   Max,
 } from 'class-validator';
@@ -55,6 +56,7 @@ export class ContactListQueryDto {
 
   @IsOptional()
   @Type(() => Date)
+  @IsDate()
   lastContactedAt?: Date;
 
   get offset(): number {

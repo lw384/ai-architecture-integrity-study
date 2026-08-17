@@ -30,7 +30,9 @@ export default function AnalyticEcommerce({ color = 'primary', title, count, per
             <Chip
               variant="combined"
               color={color}
-              icon={isLoss ? <FallOutlined style={iconSX} /> : <RiseOutlined style={iconSX} />}
+              icon={
+                isLoss ? <Box component={FallOutlined} sx={iconSX} /> : <Box component={RiseOutlined} sx={iconSX} />
+              }
               label={`${percentage}%`}
               sx={{ ml: 1.25, pl: 1 }}
               size="small"

@@ -8,16 +8,9 @@ import { Link, useParams } from 'react-router-dom';
 import MainCard from 'components/MainCard';
 import IconButton from 'components/IconButton';
 import { isTransportError } from 'api/request';
+import formatDate from 'utils/formatDate';
 import { useContact } from './contactQueries';
 import { useCompany } from '../companies/companyQueries';
-
-function formatDate(value) {
-  if (!value) {
-    return '—';
-  }
-
-  return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
-}
 
 function DetailRow({ label, value }) {
   return (

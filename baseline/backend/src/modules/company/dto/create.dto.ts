@@ -4,9 +4,11 @@ import {
   IsOptional,
   IsEnum,
   IsUrl,
+  IsDate,
   MaxLength,
   ValidateIf,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { CompanyStatus, Industry } from '../company.entity';
 
 export class CreateCompanyDto {
@@ -39,5 +41,7 @@ export class CreateCompanyDto {
   industry?: Industry;
 
   @IsOptional()
+  @Type(() => Date)
+  @IsDate()
   lastContactedAt?: Date;
 }

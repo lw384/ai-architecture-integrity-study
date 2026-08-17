@@ -3,9 +3,9 @@ import { createRoot } from 'react-dom/client';
 // scroll bar
 import 'simplebar-react/dist/simplebar.min.css';
 
-// apex-chart
-import 'assets/third-party/react-table.css';
-import './styles/globals.css';
+// global styles
+import './styles/global/vendor/react-table.css';
+import './styles/global/globals.css';
 
 import '@fontsource/public-sans/400.css';
 import '@fontsource/public-sans/500.css';

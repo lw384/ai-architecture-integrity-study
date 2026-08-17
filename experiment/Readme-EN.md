@@ -22,15 +22,22 @@ experiment/
 │   ├── agent-images/
 │   │   ├── Dockerfile.claude
 │   │   └── Dockerfile.codex
-│   └── agent-runners/
-│       ├── config.py
-│       ├── comparison_resolver.py
-│       ├── docker_runner.py
-│       ├── evaluator.py
-│       ├── generate_report.py
-│       ├── prompt_builder.py
-│       ├── run_harness.py
-│       └── run_pipeline.py
+│   ├── agent-runners/
+│   │   ├── config.py
+│   │   ├── comparison_resolver.py
+│   │   ├── docker_runner.py
+│   │   ├── evaluator.py
+│   │   ├── generate_report.py
+│   │   ├── prompt_builder.py
+│   │   ├── run_harness.py
+│   │   ├── run_pipeline.py
+│   │   ├── run_tests.py
+│   │   └── test_runner.py
+│   └── tests/
+│       └── T1/
+│           ├── deal.e2e-spec.ts
+│           ├── deal.render.test.jsx
+│           └── test.config.json
 ├── venv/
 ├── workspace/
 └── package.json
@@ -45,9 +52,12 @@ experiment/
 | `instruments/agent-runners/comparison_resolver.py` | Resolves canonical E0 and the unique pre-task evaluation by immutable commit SHA. |
 | `instruments/agent-runners/prompt_builder.py` | Reads the task template, removes HTML comments, and appends the memory instructions and `[TASK_COMPLETED]` completion protocol. |
 | `instruments/agent-runners/docker_runner.py` | Mounts the workspace and authentication directory, launches the agent container, parses the CLI output, and writes the execution record. |
-| `instruments/agent-runners/evaluator.py` | Builds and runs `harness/core/evaluate.mjs` and writes the Harness manifest, execution record, and evaluation result. |
-| `instruments/agent-runners/run_pipeline.py` | Full entry point: prepares or reuses a workspace, runs the agent, commits and tags the result, invokes the Harness, and archives the artifacts. |
+| `instruments/agent-runners/evaluator.py` | Builds and runs `harness/core/evaluate.mjs` and writes the Harness manifest, execution record, and evaluation result. Measures **architecture integrity** (constraints/metrics), not functional correctness. |
+| `instruments/agent-runners/test_runner.py` | Locates the functional acceptance suite for a task_id under `instruments/tests/<task_id>/` (if any), overlays it into a throwaway copy of the workspace, runs it there, and writes a normalized result. Measures **functional correctness**; the agent never sees this suite. |
+| `instruments/tests/<task_id>/` | Source for one task's functional acceptance suite (e2e/component specs + `test.config.json`). Never part of `baseline/` and never lives in the workspace — only `test_runner.py` reads it. |
+| `instruments/agent-runners/run_pipeline.py` | Full entry point: prepares or reuses a workspace, runs the agent, commits and tags the result, invokes the Harness and the functional acceptance suite, and archives the artifacts. |
 | `instruments/agent-runners/run_harness.py` | Harness-only entry point. It can evaluate the current snapshot of an existing workspace, a specific tag, or the baseline through `--baseline`. |
+| `instruments/agent-runners/run_tests.py` | Acceptance-only entry point, the same relationship to `test_runner.py` as `run_harness.py` has to `evaluator.py` (this file is just the CLI wrapper). Reruns one task's functional acceptance suite against an existing workspace without touching the agent, the Harness, or Git tags. |
 | `instruments/agent-runners/generate_report.py` | Optional utility that converts constraint violations from `harness_evaluation.json` into Markdown. |
 | `venv/` | Optional local Python virtual environment. The runners currently use only the Python standard library. |
 | `workspace/session_<timestamp>/` | Persistent working copy and isolated Git repository for one experiment session. T1–T3 must accumulate sequentially in the same session. |
@@ -78,8 +88,9 @@ When `--from-workspace` is omitted, the pipeline performs these steps:
 5. Builds the final prompt. During execution it is temporarily written to `.agent_instruction.md` at the workspace root and is also archived as `reports/experiments/<session_id>/T1/prompt.md`.
 6. Mounts the workspace and the selected agent's authentication directory into a Docker container. The agent modifies the workspace directly. An agent execution counts as successful only when the process succeeds and its final output contains `[TASK_COMPLETED]`.
 7. Commits all agent changes as `task: T1 completed` and creates the `task-T1-done` tag.
-8. Evaluates that commit with `harness/tasks/T1.eval.yaml` and `harness/rulepacks/`.
-9. Writes the execution, evaluation, and task metadata to `reports/experiments/<session_id>/T1/`.
+8. Evaluates that commit with `harness/tasks/T1.eval.yaml` and `harness/rulepacks/` (architecture integrity).
+9. If a suite exists under `experiment/instruments/tests/T1/`, overlays it into a throwaway copy of the workspace and runs it there (functional correctness); a missing suite is recorded as `skipped`, not a failure.
+10. Writes the execution, evaluation, acceptance result, and task metadata to `reports/experiments/<session_id>/T1/`.
 
 ### 2.2 Reuse the session for T2 and T3
 
@@ -113,7 +124,9 @@ reports/experiments/<session_id>/
     ├── task_manifest.yaml
     ├── manifest.json
     ├── harness_execution.json
-    └── harness_evaluation.json
+    ├── harness_evaluation.json
+    ├── test_execution.json
+    └── test_result.json
 ```
 
 | Artifact | Contents |
@@ -121,10 +134,12 @@ reports/experiments/<session_id>/
 | `session_manifest.yaml` | Session creation time and the initial agent, model, strategy, and memory conditions. |
 | `prompt.md` | Complete prompt sent to the agent for this task. |
 | `execution.json` | Agent, model, exit code, completion marker, duration, token/cost fields, raw agent events, and stderr. |
-| `task_manifest.yaml` | Task start ref/SHA, completed commit/tag, comparison artifact references, and the Harness artifact index. |
+| `task_manifest.yaml` | Task start ref/SHA, completed commit/tag, comparison artifact references, the Harness artifact index, and `test_status`/`test_result_file`/`test_execution_file` (functional acceptance). |
 | `manifest.json` | Task, revisions, comparison mode, and resolved comparison inputs supplied to the Harness. |
 | `harness_execution.json` | Harness command, exit code, timeout status, stdout, and stderr. |
-| `harness_evaluation.json` | Uniform `scopes[]` results, local/cumulative deltas, artifact identities, and execution/comparison statuses. The constraint result is derived from local introduced findings. |
+| `harness_evaluation.json` | Uniform `scopes[]` results, local/cumulative deltas, artifact identities, and execution/comparison statuses. The constraint result is derived from local introduced findings. Measures **architecture integrity**. |
+| `test_execution.json` | Per-suite (backend/frontend) install and test commands, exit codes, stdout/stderr, and duration for the functional acceptance suite. Absent when the task has no suite defined. |
+| `test_result.json` | Normalized acceptance result: `status` (`pass`/`fail`/`error`/`skipped`) plus each suite's `total`/`passed`/`failed`/`failed_ids`. `error` means the acceptance infrastructure itself didn't run (e.g. the test database was unreachable); `fail` means the suite ran to completion and found a genuine functional gap — a valid experimental outcome, not a pipeline malfunction. Measures **functional correctness**, independent of `harness_evaluation.json`. |
 
 If the agent or Harness fails partway through, the existing workspace and task directory remain available for diagnosis. Pass `--force` explicitly before writing to the same task archive again or replacing an existing `task-Tn-done` tag.
 
@@ -281,7 +296,28 @@ The default output directory is `reports/experiments/<session_id>/<task>/`. If i
 
 By default, the Harness reads `start_ref` from the original task manifest, resolves it to a full SHA, and selects the unique pre artifact whose `target.post_commit` matches that SHA. If the ref is unavailable, it uses `HEAD^`. Supply `--pre-ref <git-ref>` only when automatic inference is incorrect. Explicit artifact overrides must provide `--baseline-evaluation` and `--pre-evaluation` together. `--baseline-dir` changes the source baseline used by metric runners.
 
-### 3.4 Evaluate the baseline
+### 3.4 Run the functional acceptance suite independently
+
+`run_tests.py` follows the same pattern as `run_harness.py`: no agent run, no pre/post comparison, just a rerun of the suite under `experiment/instruments/tests/<task>/` against a given workspace. Usage and `--from-tag` semantics match `run_harness.py` exactly:
+
+```bash
+python3 experiment/instruments/agent-runners/run_tests.py \
+  --run-id "$SESSION_ID" \
+  --task T3 \
+  --output-dir "reports/experiments/$SESSION_ID/T3/test_rerun"
+```
+
+```bash
+python3 experiment/instruments/agent-runners/run_tests.py \
+  --workspace-dir "$WORKSPACE" \
+  --task T1 \
+  --from-tag task-T1-done \
+  --output-dir "reports/experiments/$SESSION_ID/T1/test_rerun"
+```
+
+The default output directory is also `reports/experiments/<session_id>/<task>/`; if `test_execution.json`/`test_result.json` already exist there, use `--output-dir` or `--force`. If the task has no acceptance suite defined under `experiment/instruments/tests/`, the command exits cleanly and writes `status: "skipped"` — that is not an error. Only the acceptance infrastructure itself failing to run (e.g. the test database is unreachable) produces a non-zero exit code. A suite that runs to completion and finds a genuine functional gap (`status: "fail"`) still prints its result and exits 0, because that is a valid experimental outcome, not a command failure.
+
+### 3.5 Evaluate the baseline
 
 Use `--baseline` to evaluate `baseline/` in self-comparison mode. The default task is `Base`, with rules from `harness/tasks/Base.eval.yaml`:
 

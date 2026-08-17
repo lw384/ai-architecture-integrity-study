@@ -1,0 +1,15 @@
+{
+  "status": "evaluated",
+  "task_id": "Base",
+  "baseline_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4",
+  "pre_commit": "b0c7381951e8ed2c3e7a666adee9ef32537772d4",
+  "rulepack_id": "task::Base",
+  "comparison": {
+    "mode": "self",
+    "baseline_evaluation": null,
+    "pre_evaluation": null
+  },
+  "events": [
+    "evaluation_completed"
+  ]
+}
