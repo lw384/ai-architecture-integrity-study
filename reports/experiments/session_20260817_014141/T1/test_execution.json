@@ -1,0 +1,11 @@
+{
+  "run_id": "session_20260817_014141_T1_014452",
+  "task_id": "T1",
+  "db": {
+    "status": "error",
+    "reason": "docker_compose_up_failed",
+    "stdout": "",
+    "stderr": " Network session_20260817_014141_crm_baseline_network Creating \n Network session_20260817_014141_crm_baseline_network Created \n Volume session_20260817_014141_crm_baseline_postgres_test_data Creating \n Volume session_20260817_014141_crm_baseline_postgres_test_data Created \n Container crm_baseline_db_test Creating \n service:postgres-test:1 Error response from daemon: Conflict. The container name \"/crm_baseline_db_test\" is already in use by container \"a8f73024dda97b9d042ead6fe0d8d22dd36c05f2870dedcb01bec71e96361869\". You have to remove (or rename) that container to be able to reuse that name. \nError response from daemon: Conflict. The container name \"/crm_baseline_db_test\" is already in use by container \"a8f73024dda97b9d042ead6fe0d8d22dd36c05f2870dedcb01bec71e96361869\". You have to remove (or rename) that container to be able to reuse that name.\n"
+  },
+  "suites": []
+}

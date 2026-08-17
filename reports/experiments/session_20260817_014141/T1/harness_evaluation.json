@@ -1,0 +1,2769 @@
+{
+  "schema_version": "0.3.0",
+  "evaluation_profile_hash": "sha256:a23fb707be4dd352f5c2863d6682f5edafffbc8eaadc3bbdcf625f2769184cc7",
+  "run_id": "session_20260817_014141_T1_harness_20260817_021247",
+  "trajectory_id": "session_20260817_014141",
+  "task_id": "T1",
+  "rulepack_id": "task::T1",
+  "target": {
+    "workspace_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_014141",
+    "pre_commit": "6c8872805048b276626fc85900fe7ad843ef0aa3",
+    "post_commit": "7420f6086b6af5fafb3cbda2c86665cdee4a49e1",
+    "baseline_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+  },
+  "comparison": {
+    "mode": "trajectory",
+    "baseline": {
+      "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
+      "sha256": "sha256:9df816bc6b2733bed304d1927566e204c01427c6400fde2904220c13a3ae51b6",
+      "run_id": "baseline_Base_20260817_013245",
+      "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+    },
+    "pre": {
+      "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
+      "sha256": "sha256:9df816bc6b2733bed304d1927566e204c01427c6400fde2904220c13a3ae51b6",
+      "run_id": "baseline_Base_20260817_013245",
+      "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+    },
+    "post": {
+      "path": null,
+      "sha256": null,
+      "run_id": "session_20260817_014141_T1_harness_20260817_021247",
+      "post_commit": "7420f6086b6af5fafb3cbda2c86665cdee4a49e1"
+    }
+  },
+  "env_snapshot": {
+    "node_version": "v23.10.0",
+    "pnpm_version": "unknown",
+    "harness_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab",
+    "os": "Darwin 25.4.0 (arm64)",
+    "tool_versions": {
+      "backend-static": "0.2.0",
+      "dep-cruiser": "0.1.0",
+      "eslint": "0.1.0",
+      "contract-diff": "0.1.0",
+      "computed-metrics": "0.1.0",
+      "test-coverage": "0.1.0",
+      "frontend-static": "0.4.0",
+      "cross-static": "0.1.0"
+    }
+  },
+  "layers": {
+    "constraints": [
+      {
+        "name": "backend:constraints",
+        "version": "0.3.0",
+        "status": "ok",
+        "findings": [
+          "Cross-module imports must use index.ts or the target module file.",
+          "Cross-module imports must use index.ts or the target module file.",
+          "Persistent change deals.name lacks a matching executable migration.",
+          "Persistent change deals.value lacks a matching executable migration.",
+          "Persistent change deals.expectedCloseDate lacks a matching executable migration.",
+          "Persistent change deals.createdAt lacks a matching executable migration.",
+          "Persistent change deals.updatedAt lacks a matching executable migration.",
+          "Persistent change deals.deletedAt lacks a matching executable migration."
+        ],
+        "raw_artifact_path": "scopes/backend/constraints.json"
+      },
+      {
+        "name": "frontend:constraints",
+        "version": "0.7.0",
+        "status": "ok",
+        "findings": [
+          "Context providers must stay at an approved application or route boundary.",
+          "Context providers must stay at an approved application or route boundary.",
+          "function-clone logic has more than one production implementation.",
+          "3 substantive duplicate implementation groups exist across the same files.",
+          "component-clone logic has more than one production implementation.",
+          "component-clone logic has more than one production implementation.",
+          "function-clone logic has more than one production implementation.",
+          "3 substantive duplicate implementation groups exist across the same files."
+        ],
+        "raw_artifact_path": "scopes/frontend/constraints.json"
+      },
+      {
+        "name": "cross-stack:constraints",
+        "version": "0.1.0",
+        "status": "ok",
+        "findings": [],
+        "raw_artifact_path": "scopes/cross-stack/constraints.json"
+      }
+    ],
+    "metrics": [
+      {
+        "name": "backend:BE-STRUCT-M-001-module-composition-violation-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Violating modules: 0/3 (0)"
+        ],
+        "raw_artifact_path": "artifacts/metrics/module-composition-violation-ratio.json"
+      },
+      {
+        "name": "backend:BE-DEP-M-001-dependency-violation-density",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "MVC violations: 0",
+          "Cyclic dependency count: 0",
+          "Total import edges: 97",
+          "Dependency violation density: 0"
+        ],
+        "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json"
+      },
+      {
+        "name": "backend:BE-DOM-M-001-cross-module-deep-import-count",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "count",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Cross-module deep import count: 0",
+          "Source rule: BE-DOM-C-001-no-cross-module-deep-import"
+        ],
+        "raw_artifact_path": "artifacts/metrics/cross-module-deep-import-count.json"
+      },
+      {
+        "name": "backend:BE-ERR-M-001-exception-unification-violation-density",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Weighted exception-rule violations: 0",
+          "Service file count: 3",
+          "Exception unification violation density: 0",
+          "Source rules: BE-ERR-C-001-no-http-exception-in-service, BE-ERR-C-002-throw-only-app-exception, BE-ERR-C-003-no-silent-catch",
+          "Baseline report unavailable; delta_vs_baseline set to null."
+        ],
+        "raw_artifact_path": "artifacts/metrics/exception-unification-violation-density.json"
+      },
+      {
+        "name": "backend:BE-CONTRACT-M-001-dto-validator-coverage",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 1,
+          "unit": "ratio",
+          "direction": "higher_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "DTO validator coverage: 37/37 (1)"
+        ],
+        "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
+      },
+      {
+        "name": "backend:BE-TEST-M-001-test-coverage",
+        "version": "0.1.0",
+        "status": "pass",
+        "score": {
+          "value": 25.85,
+          "unit": "percent",
+          "direction": "higher_is_better"
+        },
+        "delta_vs_baseline": -8.619999999999997,
+        "findings": [
+          "Backend line coverage: 25.85%",
+          "Delta vs baseline: -8.62 percentage points"
+        ],
+        "raw_artifact_path": "artifacts/metrics/test-coverage.json"
+      },
+      {
+        "name": "backend:BE-MOCK-M-001-mock-per-test-case",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Mocks per test case: 0/46 (0)"
+        ],
+        "raw_artifact_path": "artifacts/metrics/mock-per-test-case.json"
+      },
+      {
+        "name": "backend:BE-ROUTE-M-001-route-prefix-violation-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Route prefix/path violations: 0/15 (0)",
+          "Global prefix \"api\" detected."
+        ],
+        "raw_artifact_path": "artifacts/metrics/route-prefix-violation-ratio.json"
+      },
+      {
+        "name": "backend:BE-SIZE-M-001-cyclomatic-complexity-ratio",
+        "version": "2.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Methods over complexity limit (10): 0/37 (0)",
+          "Average cyclomatic complexity: 1.8108"
+        ],
+        "raw_artifact_path": "artifacts/metrics/cyclomatic-complexity-ratio.json"
+      },
+      {
+        "name": "backend:BE-DUP-M-001-clone-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0.266407,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0.128768,
+        "findings": [
+          "Duplicated lines: 548/2057 (0.266407)",
+          "Clone matches found: 20+ (sample capped)",
+          "Delta vs baseline: +0.128768"
+        ],
+        "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
+      },
+      {
+        "name": "frontend:FE-COM-M-001-render-decision-depth-average",
+        "version": "2.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0.5,
+          "unit": "levels",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": -0.010000000000000009,
+        "findings": [
+          "Average maximum render-decision depth: 0.5",
+          "Delta vs baseline: -0.01"
+        ],
+        "raw_artifact_path": "artifacts/metrics/render-decision-depth-average.json"
+      },
+      {
+        "name": "frontend:FE-STATE-M-001-context-provider-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0.058824,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": -0.021176,
+        "findings": [
+          "Context-provider ratio: 2/34 (0.058824)",
+          "Delta vs baseline: -0.021176"
+        ],
+        "raw_artifact_path": "artifacts/metrics/context-provider-ratio.json"
+      },
+      {
+        "name": "frontend:FE-ROUTE-M-001-route-param-complexity",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0.43,
+          "unit": "params",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0.02999999999999997,
+        "findings": [
+          "Average route parameter count: 0.43",
+          "Delta vs baseline: +0.03"
+        ],
+        "raw_artifact_path": "artifacts/metrics/route-param-complexity.json"
+      },
+      {
+        "name": "frontend:FE-STYLE-M-001-style-mixing-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0.048077,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0.0072610000000000036,
+        "findings": [
+          "Style mixing ratio: 5/104 (0.048077)",
+          "Delta vs baseline: +0.007261"
+        ],
+        "raw_artifact_path": "artifacts/metrics/style-mixing-ratio.json"
+      },
+      {
+        "name": "frontend:FE-DATA-M-001-data-access-wrapping-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 1,
+          "unit": "ratio",
+          "direction": "higher_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Approved data-access wrapping ratio: 1/1 (1)"
+        ],
+        "raw_artifact_path": "artifacts/metrics/data-access-wrapping-ratio.json"
+      },
+      {
+        "name": "frontend:FE-COMM-M-001-prop-drilling-average",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 5.86,
+          "unit": "props",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0.1900000000000004,
+        "findings": [
+          "Average prop-drilling candidate fanout: 5.86",
+          "Delta vs baseline: +0.19"
+        ],
+        "raw_artifact_path": "artifacts/metrics/prop-drilling-average.json"
+      },
+      {
+        "name": "frontend:FE-DUP-M-001-clone-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0.322564,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0.09152100000000002,
+        "findings": [
+          "Duplicated lines: 1877/5819 (0.322564)",
+          "Clone matches found: 20+ (sample capped)",
+          "Delta vs baseline: +0.091521"
+        ],
+        "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
+      },
+      {
+        "name": "cross-stack:CROSS-EP-M-001-endpoint-resolution-miss-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Unresolved frontend call sites: 0",
+          "Total frontend call sites: 15",
+          "Endpoint resolution miss ratio: 0",
+          "Baseline report unavailable; delta_vs_baseline set to null."
+        ],
+        "raw_artifact_path": "artifacts/metrics/endpoint-resolution-miss-ratio.json"
+      },
+      {
+        "name": "cross-stack:CROSS-TYPE-M-001-contract-field-drift-density",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": 0,
+        "findings": [
+          "Weighted contract-field mismatches: 0",
+          "Total contract positions (route-param + query + body): 43",
+          "Contract field drift density: 0",
+          "Baseline report unavailable; delta_vs_baseline set to null."
+        ],
+        "raw_artifact_path": "artifacts/metrics/contract-field-drift-density.json"
+      },
+      {
+        "name": "cross-stack:CROSS-PROP-M-001-propagation-incompleteness-ratio",
+        "version": "1.0.0",
+        "status": "pass",
+        "score": {
+          "value": 0,
+          "unit": "ratio",
+          "direction": "lower_is_better"
+        },
+        "delta_vs_baseline": null,
+        "findings": [
+          "Resources with an API-facing change: 1",
+          "Missing counterpart surfaces: 0",
+          "Total counterpart surfaces: 2",
+          "Propagation incompleteness ratio: 0",
+          "Baseline report unavailable; delta_vs_baseline set to null."
+        ],
+        "raw_artifact_path": "artifacts/metrics/propagation-incompleteness-ratio.json"
+      }
+    ],
+    "judgments": []
+  },
+  "scopes": [
+    {
+      "scope_id": "backend",
+      "scope_type": "subject",
+      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_014141/backend",
+      "rulepack_id": "ts-nestjs-backend",
+      "rulepack_version": "0.3.0",
+      "adapters": [
+        "backend-static",
+        "dep-cruiser",
+        "eslint",
+        "contract-diff",
+        "computed-metrics",
+        "test-coverage"
+      ],
+      "status": "completed",
+      "layers": {
+        "constraints": {
+          "layer": "constraints",
+          "status": "ok",
+          "rules_evaluated": 20,
+          "findings": [
+            {
+              "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/modules/deal/deal.service.ts",
+                "line": 5,
+                "column": 32
+              },
+              "message": "Cross-module imports must use index.ts or the target module file.",
+              "evidence": {
+                "source_tool": "backend-static",
+                "source_rule_id": "BE-DOM-C-001",
+                "payload": {
+                  "source_module": "deal",
+                  "target_module": "contact",
+                  "import_path": "../contact/contact.service",
+                  "resolved_target": "src/modules/contact/contact.service.ts",
+                  "message": "Cross-module imports must use index.ts or the target module file."
+                }
+              }
+            },
+            {
+              "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/modules/deal/deal.service.ts",
+                "line": 6,
+                "column": 31
+              },
+              "message": "Cross-module imports must use index.ts or the target module file.",
+              "evidence": {
+                "source_tool": "backend-static",
+                "source_rule_id": "BE-DOM-C-001",
+                "payload": {
+                  "source_module": "deal",
+                  "target_module": "company",
+                  "import_path": "../company/company.entity",
+                  "resolved_target": "src/modules/company/company.entity.ts",
+                  "message": "Cross-module imports must use index.ts or the target module file."
+                }
+              }
+            },
+            {
+              "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "backend/src/modules/deal/deal.entity.ts",
+                "line": 21,
+                "column": 1
+              },
+              "message": "Persistent change deals.name lacks a matching executable migration.",
+              "evidence": {
+                "source_tool": "contract-diff",
+                "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "payload": {
+                  "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "name",
+                  "change": "added",
+                  "migration_files": [
+                    "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                  ],
+                  "message": "Persistent change deals.name lacks a matching executable migration."
+                }
+              }
+            },
+            {
+              "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "backend/src/modules/deal/deal.entity.ts",
+                "line": 24,
+                "column": 1
+              },
+              "message": "Persistent change deals.value lacks a matching executable migration.",
+              "evidence": {
+                "source_tool": "contract-diff",
+                "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "payload": {
+                  "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "value",
+                  "change": "added",
+                  "migration_files": [
+                    "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                  ],
+                  "message": "Persistent change deals.value lacks a matching executable migration."
+                }
+              }
+            },
+            {
+              "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "backend/src/modules/deal/deal.entity.ts",
+                "line": 35,
+                "column": 1
+              },
+              "message": "Persistent change deals.expectedCloseDate lacks a matching executable migration.",
+              "evidence": {
+                "source_tool": "contract-diff",
+                "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "payload": {
+                  "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "expectedCloseDate",
+                  "change": "added",
+                  "migration_files": [
+                    "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                  ],
+                  "message": "Persistent change deals.expectedCloseDate lacks a matching executable migration."
+                }
+              }
+            },
+            {
+              "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "backend/src/modules/deal/deal.entity.ts",
+                "line": 42,
+                "column": 1
+              },
+              "message": "Persistent change deals.createdAt lacks a matching executable migration.",
+              "evidence": {
+                "source_tool": "contract-diff",
+                "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "payload": {
+                  "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "createdAt",
+                  "change": "added",
+                  "migration_files": [
+                    "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                  ],
+                  "message": "Persistent change deals.createdAt lacks a matching executable migration."
+                }
+              }
+            },
+            {
+              "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "backend/src/modules/deal/deal.entity.ts",
+                "line": 45,
+                "column": 1
+              },
+              "message": "Persistent change deals.updatedAt lacks a matching executable migration.",
+              "evidence": {
+                "source_tool": "contract-diff",
+                "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "payload": {
+                  "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "updatedAt",
+                  "change": "added",
+                  "migration_files": [
+                    "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                  ],
+                  "message": "Persistent change deals.updatedAt lacks a matching executable migration."
+                }
+              }
+            },
+            {
+              "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "backend/src/modules/deal/deal.entity.ts",
+                "line": 48,
+                "column": 1
+              },
+              "message": "Persistent change deals.deletedAt lacks a matching executable migration.",
+              "evidence": {
+                "source_tool": "contract-diff",
+                "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "payload": {
+                  "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "deletedAt",
+                  "change": "added",
+                  "migration_files": [
+                    "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                  ],
+                  "message": "Persistent change deals.deletedAt lacks a matching executable migration."
+                }
+              }
+            }
+          ],
+          "findings_by_rule": {
+            "BE-STRUCT-C-001-module-composition": [],
+            "BE-DEP-C-001-intra-module-layering": [],
+            "BE-DEP-C-002-infrastructure-isolation": [],
+            "BE-DEP-C-003-framework-layer-purity": [],
+            "BE-DEP-C-004-no-circular-dependencies": [],
+            "BE-DOM-C-001-no-cross-module-deep-import": [
+              {
+                "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/modules/deal/deal.service.ts",
+                  "line": 5,
+                  "column": 32
+                },
+                "message": "Cross-module imports must use index.ts or the target module file.",
+                "evidence": {
+                  "source_tool": "backend-static",
+                  "source_rule_id": "BE-DOM-C-001",
+                  "payload": {
+                    "source_module": "deal",
+                    "target_module": "contact",
+                    "import_path": "../contact/contact.service",
+                    "resolved_target": "src/modules/contact/contact.service.ts",
+                    "message": "Cross-module imports must use index.ts or the target module file."
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/modules/deal/deal.service.ts",
+                  "line": 6,
+                  "column": 31
+                },
+                "message": "Cross-module imports must use index.ts or the target module file.",
+                "evidence": {
+                  "source_tool": "backend-static",
+                  "source_rule_id": "BE-DOM-C-001",
+                  "payload": {
+                    "source_module": "deal",
+                    "target_module": "company",
+                    "import_path": "../company/company.entity",
+                    "resolved_target": "src/modules/company/company.entity.ts",
+                    "message": "Cross-module imports must use index.ts or the target module file."
+                  }
+                }
+              }
+            ],
+            "BE-DOM-C-002-no-repository-in-module-exports": [],
+            "BE-ERR-C-001-no-http-exception-in-service": [],
+            "BE-ERR-C-002-throw-only-app-exception": [],
+            "BE-ERR-C-003-no-silent-catch": [],
+            "BE-CONTRACT-C-001-entity-change-requires-migration": [
+              {
+                "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "backend/src/modules/deal/deal.entity.ts",
+                  "line": 21,
+                  "column": 1
+                },
+                "message": "Persistent change deals.name lacks a matching executable migration.",
+                "evidence": {
+                  "source_tool": "contract-diff",
+                  "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                  "payload": {
+                    "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                    "table": "deals",
+                    "property": "name",
+                    "change": "added",
+                    "migration_files": [
+                      "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                    ],
+                    "message": "Persistent change deals.name lacks a matching executable migration."
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "backend/src/modules/deal/deal.entity.ts",
+                  "line": 24,
+                  "column": 1
+                },
+                "message": "Persistent change deals.value lacks a matching executable migration.",
+                "evidence": {
+                  "source_tool": "contract-diff",
+                  "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                  "payload": {
+                    "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                    "table": "deals",
+                    "property": "value",
+                    "change": "added",
+                    "migration_files": [
+                      "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                    ],
+                    "message": "Persistent change deals.value lacks a matching executable migration."
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "backend/src/modules/deal/deal.entity.ts",
+                  "line": 35,
+                  "column": 1
+                },
+                "message": "Persistent change deals.expectedCloseDate lacks a matching executable migration.",
+                "evidence": {
+                  "source_tool": "contract-diff",
+                  "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                  "payload": {
+                    "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                    "table": "deals",
+                    "property": "expectedCloseDate",
+                    "change": "added",
+                    "migration_files": [
+                      "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                    ],
+                    "message": "Persistent change deals.expectedCloseDate lacks a matching executable migration."
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "backend/src/modules/deal/deal.entity.ts",
+                  "line": 42,
+                  "column": 1
+                },
+                "message": "Persistent change deals.createdAt lacks a matching executable migration.",
+                "evidence": {
+                  "source_tool": "contract-diff",
+                  "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                  "payload": {
+                    "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                    "table": "deals",
+                    "property": "createdAt",
+                    "change": "added",
+                    "migration_files": [
+                      "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                    ],
+                    "message": "Persistent change deals.createdAt lacks a matching executable migration."
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "backend/src/modules/deal/deal.entity.ts",
+                  "line": 45,
+                  "column": 1
+                },
+                "message": "Persistent change deals.updatedAt lacks a matching executable migration.",
+                "evidence": {
+                  "source_tool": "contract-diff",
+                  "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                  "payload": {
+                    "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                    "table": "deals",
+                    "property": "updatedAt",
+                    "change": "added",
+                    "migration_files": [
+                      "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                    ],
+                    "message": "Persistent change deals.updatedAt lacks a matching executable migration."
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "backend/src/modules/deal/deal.entity.ts",
+                  "line": 48,
+                  "column": 1
+                },
+                "message": "Persistent change deals.deletedAt lacks a matching executable migration.",
+                "evidence": {
+                  "source_tool": "contract-diff",
+                  "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+                  "payload": {
+                    "entity_file": "backend/src/modules/deal/deal.entity.ts",
+                    "table": "deals",
+                    "property": "deletedAt",
+                    "change": "added",
+                    "migration_files": [
+                      "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+                    ],
+                    "message": "Persistent change deals.deletedAt lacks a matching executable migration."
+                  }
+                }
+              }
+            ],
+            "BE-CONTRACT-C-002-request-dto-uses-class-validator": [],
+            "BE-CONTRACT-C-003-optional-request-properties-validate-values": [],
+            "BE-CONTRACT-C-004-validation-pipe-whitelisting": [],
+            "BE-TEST-C-001-no-direct-repository-construction": [],
+            "BE-ROUTE-C-001-api-prefix-and-kebab-case": [],
+            "BE-SIZE-C-001-max-method-parameters": [],
+            "BE-DUP-C-001-single-resource-owner": [],
+            "BE-DUP-C-002-single-policy-implementation": [],
+            "BE-DUP-C-003-no-equivalent-production-code": []
+          },
+          "background_findings": [],
+          "background_by_rule": {},
+          "adapter_meta": {
+            "backend-static": {
+              "status": "ok",
+              "duration_ms": 181,
+              "files_scanned": 50,
+              "parse_errors": []
+            },
+            "dep-cruiser": {
+              "status": "ok",
+              "duration_ms": 700,
+              "warnings": [],
+              "cwd": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_014141/backend",
+              "targets": [
+                "src"
+              ],
+              "tsconfig_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_014141/backend/tsconfig.json",
+              "tsconfig_source": "auto",
+              "ts_mode": "full",
+              "exit_code": 0
+            },
+            "contract-diff": {
+              "status": "ok",
+              "repo_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_014141",
+              "changed_entities": [
+                "backend/src/modules/deal/deal.entity.ts"
+              ],
+              "schema_changes": [
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "id",
+                  "storageName": "id",
+                  "change": "added",
+                  "line": 12
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "companyId",
+                  "storageName": "companyId",
+                  "change": "added",
+                  "line": 15
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "contactId",
+                  "storageName": "contactId",
+                  "change": "added",
+                  "line": 18
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "name",
+                  "storageName": "name",
+                  "change": "added",
+                  "line": 21
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "value",
+                  "storageName": "value",
+                  "change": "added",
+                  "line": 24
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "stage",
+                  "storageName": "stage",
+                  "change": "added",
+                  "line": 27
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "expectedCloseDate",
+                  "storageName": "expectedCloseDate",
+                  "change": "added",
+                  "line": 35
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "createdAt",
+                  "storageName": "createdAt",
+                  "change": "added",
+                  "line": 42
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "updatedAt",
+                  "storageName": "updatedAt",
+                  "change": "added",
+                  "line": 45
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "deletedAt",
+                  "storageName": "deletedAt",
+                  "change": "added",
+                  "line": 48
+                }
+              ],
+              "uncovered_schema_changes": [
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "name",
+                  "storageName": "name",
+                  "change": "added",
+                  "line": 21
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "value",
+                  "storageName": "value",
+                  "change": "added",
+                  "line": 24
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "expectedCloseDate",
+                  "storageName": "expectedCloseDate",
+                  "change": "added",
+                  "line": 35
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "createdAt",
+                  "storageName": "createdAt",
+                  "change": "added",
+                  "line": 42
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "updatedAt",
+                  "storageName": "updatedAt",
+                  "change": "added",
+                  "line": 45
+                },
+                {
+                  "entityFile": "backend/src/modules/deal/deal.entity.ts",
+                  "table": "deals",
+                  "property": "deletedAt",
+                  "storageName": "deletedAt",
+                  "change": "added",
+                  "line": 48
+                }
+              ],
+              "changed_migrations": [
+                "backend/src/core/database/migrations/20260817000100-AddDealsRelations.ts"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "name": "BE-STRUCT-M-001-module-composition-violation-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Violating modules: 0/3 (0)"
+            ],
+            "raw_artifact_path": "artifacts/metrics/module-composition-violation-ratio.json"
+          },
+          {
+            "name": "BE-DEP-M-001-dependency-violation-density",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "MVC violations: 0",
+              "Cyclic dependency count: 0",
+              "Total import edges: 97",
+              "Dependency violation density: 0"
+            ],
+            "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json"
+          },
+          {
+            "name": "BE-DOM-M-001-cross-module-deep-import-count",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "count",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Cross-module deep import count: 0",
+              "Source rule: BE-DOM-C-001-no-cross-module-deep-import"
+            ],
+            "raw_artifact_path": "artifacts/metrics/cross-module-deep-import-count.json"
+          },
+          {
+            "name": "BE-ERR-M-001-exception-unification-violation-density",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Weighted exception-rule violations: 0",
+              "Service file count: 3",
+              "Exception unification violation density: 0",
+              "Source rules: BE-ERR-C-001-no-http-exception-in-service, BE-ERR-C-002-throw-only-app-exception, BE-ERR-C-003-no-silent-catch",
+              "Baseline report unavailable; delta_vs_baseline set to null."
+            ],
+            "raw_artifact_path": "artifacts/metrics/exception-unification-violation-density.json"
+          },
+          {
+            "name": "BE-CONTRACT-M-001-dto-validator-coverage",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 1,
+              "unit": "ratio",
+              "direction": "higher_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "DTO validator coverage: 37/37 (1)"
+            ],
+            "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
+          },
+          {
+            "name": "BE-TEST-M-001-test-coverage",
+            "version": "0.1.0",
+            "status": "pass",
+            "score": {
+              "value": 25.85,
+              "unit": "percent",
+              "direction": "higher_is_better"
+            },
+            "delta_vs_baseline": -8.619999999999997,
+            "findings": [
+              "Backend line coverage: 25.85%",
+              "Delta vs baseline: -8.62 percentage points"
+            ],
+            "raw_artifact_path": "artifacts/metrics/test-coverage.json"
+          },
+          {
+            "name": "BE-MOCK-M-001-mock-per-test-case",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Mocks per test case: 0/46 (0)"
+            ],
+            "raw_artifact_path": "artifacts/metrics/mock-per-test-case.json"
+          },
+          {
+            "name": "BE-ROUTE-M-001-route-prefix-violation-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Route prefix/path violations: 0/15 (0)",
+              "Global prefix \"api\" detected."
+            ],
+            "raw_artifact_path": "artifacts/metrics/route-prefix-violation-ratio.json"
+          },
+          {
+            "name": "BE-SIZE-M-001-cyclomatic-complexity-ratio",
+            "version": "2.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Methods over complexity limit (10): 0/37 (0)",
+              "Average cyclomatic complexity: 1.8108"
+            ],
+            "raw_artifact_path": "artifacts/metrics/cyclomatic-complexity-ratio.json"
+          },
+          {
+            "name": "BE-DUP-M-001-clone-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0.266407,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0.128768,
+            "findings": [
+              "Duplicated lines: 548/2057 (0.266407)",
+              "Clone matches found: 20+ (sample capped)",
+              "Delta vs baseline: +0.128768"
+            ],
+            "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
+          }
+        ],
+        "judgments": []
+      }
+    },
+    {
+      "scope_id": "frontend",
+      "scope_type": "subject",
+      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_014141/frontend",
+      "rulepack_id": "js-react-frontend",
+      "rulepack_version": "0.7.0",
+      "adapters": [
+        "frontend-static",
+        "computed-metrics"
+      ],
+      "status": "completed",
+      "layers": {
+        "constraints": {
+          "layer": "constraints",
+          "status": "ok",
+          "rules_evaluated": 13,
+          "findings": [
+            {
+              "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/themes/index.jsx",
+                "line": 78,
+                "column": 5
+              },
+              "message": "Context providers must stay at an approved application or route boundary.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-STATE-C-002",
+                "payload": {
+                  "provider": "StyledEngineProvider",
+                  "allowed_locations": [
+                    "src/App.*",
+                    "src/index.*",
+                    "src/main.*",
+                    "src/routes/**/*Layout.*",
+                    "src/providers/**",
+                    "src/contexts/**"
+                  ],
+                  "message": "Context providers must stay at an approved application or route boundary."
+                }
+              }
+            },
+            {
+              "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/themes/index.jsx",
+                "line": 79,
+                "column": 7
+              },
+              "message": "Context providers must stay at an approved application or route boundary.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-STATE-C-002",
+                "payload": {
+                  "provider": "ThemeProvider",
+                  "allowed_locations": [
+                    "src/App.*",
+                    "src/index.*",
+                    "src/main.*",
+                    "src/routes/**/*Layout.*",
+                    "src/providers/**",
+                    "src/contexts/**"
+                  ],
+                  "message": "Context providers must stay at an approved application or route boundary."
+                }
+              }
+            },
+            {
+              "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/layout/components/Navbar/HeaderContent/Notification.jsx",
+                "line": 59,
+                "column": 23
+              },
+              "message": "function-clone logic has more than one production implementation.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-DUP-C-002",
+                "payload": {
+                  "reason": "function-clone",
+                  "fingerprint": "fdfdad21fe8b",
+                  "implementations": [
+                    "src/layout/components/Navbar/HeaderContent/MobileSection.jsx:30",
+                    "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
+                    "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
+                  ],
+                  "duplicate_group_count": 1,
+                  "duplicate_groups": [
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "fdfdad21fe8b",
+                      "implementations": [
+                        "src/layout/components/Navbar/HeaderContent/MobileSection.jsx:30",
+                        "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
+                        "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
+                      ]
+                    }
+                  ],
+                  "message": "function-clone logic has more than one production implementation."
+                }
+              }
+            },
+            {
+              "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/pages/contacts/contactQueries.js",
+                "line": 25,
+                "column": 8
+              },
+              "message": "3 substantive duplicate implementation groups exist across the same files.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-DUP-C-002",
+                "payload": {
+                  "reason": "function-clone",
+                  "fingerprint": "4824e53681a4",
+                  "implementations": [
+                    "src/pages/companies/companyQueries.js:24",
+                    "src/pages/contacts/contactQueries.js:25",
+                    "src/pages/deals/dealQueries.js:19"
+                  ],
+                  "duplicate_group_count": 3,
+                  "duplicate_groups": [
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "4824e53681a4",
+                      "implementations": [
+                        "src/pages/companies/companyQueries.js:24",
+                        "src/pages/contacts/contactQueries.js:25",
+                        "src/pages/deals/dealQueries.js:19"
+                      ]
+                    },
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "6b681c197531",
+                      "implementations": [
+                        "src/pages/companies/companyQueries.js:32",
+                        "src/pages/contacts/contactQueries.js:33",
+                        "src/pages/deals/dealQueries.js:27"
+                      ]
+                    },
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "dbe94b113a36",
+                      "implementations": [
+                        "src/pages/companies/companyQueries.js:36",
+                        "src/pages/contacts/contactQueries.js:61",
+                        "src/pages/deals/dealQueries.js:55"
+                      ]
+                    }
+                  ],
+                  "message": "3 substantive duplicate implementation groups exist across the same files."
+                }
+              }
+            },
+            {
+              "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/pages/contacts/ContactTable.jsx",
+                "line": 18,
+                "column": 1
+              },
+              "message": "component-clone logic has more than one production implementation.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-DUP-C-002",
+                "payload": {
+                  "reason": "component-clone",
+                  "fingerprint": "1ce590a380e8",
+                  "implementations": [
+                    "src/pages/companies/CompanyTable.jsx:73",
+                    "src/pages/contacts/ContactTable.jsx:18",
+                    "src/pages/deals/DealTable.jsx:33"
+                  ],
+                  "duplicate_group_count": 1,
+                  "duplicate_groups": [
+                    {
+                      "reason": "component-clone",
+                      "fingerprint": "1ce590a380e8",
+                      "implementations": [
+                        "src/pages/companies/CompanyTable.jsx:73",
+                        "src/pages/contacts/ContactTable.jsx:18",
+                        "src/pages/deals/DealTable.jsx:33"
+                      ]
+                    }
+                  ],
+                  "message": "component-clone logic has more than one production implementation."
+                }
+              }
+            },
+            {
+              "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/pages/deals/DealDetail.jsx",
+                "line": 21,
+                "column": 1
+              },
+              "message": "component-clone logic has more than one production implementation.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-DUP-C-002",
+                "payload": {
+                  "reason": "component-clone",
+                  "fingerprint": "441e947b8b45",
+                  "implementations": [
+                    "src/pages/companies/CompanyDetail.jsx:30",
+                    "src/pages/deals/DealDetail.jsx:21"
+                  ],
+                  "duplicate_group_count": 1,
+                  "duplicate_groups": [
+                    {
+                      "reason": "component-clone",
+                      "fingerprint": "441e947b8b45",
+                      "implementations": [
+                        "src/pages/companies/CompanyDetail.jsx:30",
+                        "src/pages/deals/DealDetail.jsx:21"
+                      ]
+                    }
+                  ],
+                  "message": "component-clone logic has more than one production implementation."
+                }
+              }
+            },
+            {
+              "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/pages/deals/dealQueries.js",
+                "line": 12,
+                "column": 8
+              },
+              "message": "function-clone logic has more than one production implementation.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-DUP-C-002",
+                "payload": {
+                  "reason": "function-clone",
+                  "fingerprint": "44ec3ea3f4d8",
+                  "implementations": [
+                    "src/pages/companies/companyQueries.js:17",
+                    "src/pages/deals/dealQueries.js:12"
+                  ],
+                  "duplicate_group_count": 1,
+                  "duplicate_groups": [
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "44ec3ea3f4d8",
+                      "implementations": [
+                        "src/pages/companies/companyQueries.js:17",
+                        "src/pages/deals/dealQueries.js:12"
+                      ]
+                    }
+                  ],
+                  "message": "function-clone logic has more than one production implementation."
+                }
+              }
+            },
+            {
+              "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+              "rule_version": "0.2.0",
+              "tier": null,
+              "location": {
+                "file": "src/pages/deals/dealQueries.js",
+                "line": 38,
+                "column": 8
+              },
+              "message": "3 substantive duplicate implementation groups exist across the same files.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-DUP-C-002",
+                "payload": {
+                  "reason": "function-clone",
+                  "fingerprint": "ac8d5bda9428",
+                  "implementations": [
+                    "src/pages/contacts/contactQueries.js:44",
+                    "src/pages/deals/dealQueries.js:38"
+                  ],
+                  "duplicate_group_count": 3,
+                  "duplicate_groups": [
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "ac8d5bda9428",
+                      "implementations": [
+                        "src/pages/contacts/contactQueries.js:44",
+                        "src/pages/deals/dealQueries.js:38"
+                      ]
+                    },
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "140936dc1828",
+                      "implementations": [
+                        "src/pages/contacts/contactQueries.js:49",
+                        "src/pages/deals/dealQueries.js:43"
+                      ]
+                    },
+                    {
+                      "reason": "function-clone",
+                      "fingerprint": "fa3f7e6fd542",
+                      "implementations": [
+                        "src/pages/contacts/contactQueries.js:56",
+                        "src/pages/deals/dealQueries.js:50"
+                      ]
+                    }
+                  ],
+                  "message": "3 substantive duplicate implementation groups exist across the same files."
+                }
+              }
+            }
+          ],
+          "findings_by_rule": {
+            "FE-COM-C-001-component-file-max-lines": [],
+            "FE-COM-C-002-render-decision-max-depth": [],
+            "FE-STATE-C-001-no-local-state-in-stateless-components": [],
+            "FE-STATE-C-002-context-provider-only-in-controlled-locations": [
+              {
+                "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/themes/index.jsx",
+                  "line": 78,
+                  "column": 5
+                },
+                "message": "Context providers must stay at an approved application or route boundary.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-STATE-C-002",
+                  "payload": {
+                    "provider": "StyledEngineProvider",
+                    "allowed_locations": [
+                      "src/App.*",
+                      "src/index.*",
+                      "src/main.*",
+                      "src/routes/**/*Layout.*",
+                      "src/providers/**",
+                      "src/contexts/**"
+                    ],
+                    "message": "Context providers must stay at an approved application or route boundary."
+                  }
+                }
+              },
+              {
+                "rule_id": "FE-STATE-C-002-context-provider-only-in-controlled-locations",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/themes/index.jsx",
+                  "line": 79,
+                  "column": 7
+                },
+                "message": "Context providers must stay at an approved application or route boundary.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-STATE-C-002",
+                  "payload": {
+                    "provider": "ThemeProvider",
+                    "allowed_locations": [
+                      "src/App.*",
+                      "src/index.*",
+                      "src/main.*",
+                      "src/routes/**/*Layout.*",
+                      "src/providers/**",
+                      "src/contexts/**"
+                    ],
+                    "message": "Context providers must stay at an approved application or route boundary."
+                  }
+                }
+              }
+            ],
+            "FE-ROUTE-C-001-route-definitions-centralized": [],
+            "FE-ROUTE-C-002-route-maps-to-page-component": [],
+            "FE-STYLE-C-001-no-raw-jsx-style": [],
+            "FE-STYLE-C-002-global-styles-only-in-approved-locations": [],
+            "FE-DATA-C-001-network-calls-only-in-approved-modules": [],
+            "FE-DATA-C-002-useeffect-requires-dependency-array": [],
+            "FE-COMM-C-001-no-global-event-bus": [],
+            "FE-DUP-C-001-single-resource-owner": [],
+            "FE-DUP-C-002-single-authoritative-implementation": [
+              {
+                "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/layout/components/Navbar/HeaderContent/Notification.jsx",
+                  "line": 59,
+                  "column": 23
+                },
+                "message": "function-clone logic has more than one production implementation.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-DUP-C-002",
+                  "payload": {
+                    "reason": "function-clone",
+                    "fingerprint": "fdfdad21fe8b",
+                    "implementations": [
+                      "src/layout/components/Navbar/HeaderContent/MobileSection.jsx:30",
+                      "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
+                      "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
+                    ],
+                    "duplicate_group_count": 1,
+                    "duplicate_groups": [
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "fdfdad21fe8b",
+                        "implementations": [
+                          "src/layout/components/Navbar/HeaderContent/MobileSection.jsx:30",
+                          "src/layout/components/Navbar/HeaderContent/Notification.jsx:59",
+                          "src/layout/components/Navbar/HeaderContent/Profile/index.jsx:59"
+                        ]
+                      }
+                    ],
+                    "message": "function-clone logic has more than one production implementation."
+                  }
+                }
+              },
+              {
+                "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/pages/contacts/contactQueries.js",
+                  "line": 25,
+                  "column": 8
+                },
+                "message": "3 substantive duplicate implementation groups exist across the same files.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-DUP-C-002",
+                  "payload": {
+                    "reason": "function-clone",
+                    "fingerprint": "4824e53681a4",
+                    "implementations": [
+                      "src/pages/companies/companyQueries.js:24",
+                      "src/pages/contacts/contactQueries.js:25",
+                      "src/pages/deals/dealQueries.js:19"
+                    ],
+                    "duplicate_group_count": 3,
+                    "duplicate_groups": [
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "4824e53681a4",
+                        "implementations": [
+                          "src/pages/companies/companyQueries.js:24",
+                          "src/pages/contacts/contactQueries.js:25",
+                          "src/pages/deals/dealQueries.js:19"
+                        ]
+                      },
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "6b681c197531",
+                        "implementations": [
+                          "src/pages/companies/companyQueries.js:32",
+                          "src/pages/contacts/contactQueries.js:33",
+                          "src/pages/deals/dealQueries.js:27"
+                        ]
+                      },
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "dbe94b113a36",
+                        "implementations": [
+                          "src/pages/companies/companyQueries.js:36",
+                          "src/pages/contacts/contactQueries.js:61",
+                          "src/pages/deals/dealQueries.js:55"
+                        ]
+                      }
+                    ],
+                    "message": "3 substantive duplicate implementation groups exist across the same files."
+                  }
+                }
+              },
+              {
+                "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/pages/contacts/ContactTable.jsx",
+                  "line": 18,
+                  "column": 1
+                },
+                "message": "component-clone logic has more than one production implementation.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-DUP-C-002",
+                  "payload": {
+                    "reason": "component-clone",
+                    "fingerprint": "1ce590a380e8",
+                    "implementations": [
+                      "src/pages/companies/CompanyTable.jsx:73",
+                      "src/pages/contacts/ContactTable.jsx:18",
+                      "src/pages/deals/DealTable.jsx:33"
+                    ],
+                    "duplicate_group_count": 1,
+                    "duplicate_groups": [
+                      {
+                        "reason": "component-clone",
+                        "fingerprint": "1ce590a380e8",
+                        "implementations": [
+                          "src/pages/companies/CompanyTable.jsx:73",
+                          "src/pages/contacts/ContactTable.jsx:18",
+                          "src/pages/deals/DealTable.jsx:33"
+                        ]
+                      }
+                    ],
+                    "message": "component-clone logic has more than one production implementation."
+                  }
+                }
+              },
+              {
+                "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/pages/deals/DealDetail.jsx",
+                  "line": 21,
+                  "column": 1
+                },
+                "message": "component-clone logic has more than one production implementation.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-DUP-C-002",
+                  "payload": {
+                    "reason": "component-clone",
+                    "fingerprint": "441e947b8b45",
+                    "implementations": [
+                      "src/pages/companies/CompanyDetail.jsx:30",
+                      "src/pages/deals/DealDetail.jsx:21"
+                    ],
+                    "duplicate_group_count": 1,
+                    "duplicate_groups": [
+                      {
+                        "reason": "component-clone",
+                        "fingerprint": "441e947b8b45",
+                        "implementations": [
+                          "src/pages/companies/CompanyDetail.jsx:30",
+                          "src/pages/deals/DealDetail.jsx:21"
+                        ]
+                      }
+                    ],
+                    "message": "component-clone logic has more than one production implementation."
+                  }
+                }
+              },
+              {
+                "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/pages/deals/dealQueries.js",
+                  "line": 12,
+                  "column": 8
+                },
+                "message": "function-clone logic has more than one production implementation.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-DUP-C-002",
+                  "payload": {
+                    "reason": "function-clone",
+                    "fingerprint": "44ec3ea3f4d8",
+                    "implementations": [
+                      "src/pages/companies/companyQueries.js:17",
+                      "src/pages/deals/dealQueries.js:12"
+                    ],
+                    "duplicate_group_count": 1,
+                    "duplicate_groups": [
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "44ec3ea3f4d8",
+                        "implementations": [
+                          "src/pages/companies/companyQueries.js:17",
+                          "src/pages/deals/dealQueries.js:12"
+                        ]
+                      }
+                    ],
+                    "message": "function-clone logic has more than one production implementation."
+                  }
+                }
+              },
+              {
+                "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+                "rule_version": "0.2.0",
+                "tier": null,
+                "location": {
+                  "file": "src/pages/deals/dealQueries.js",
+                  "line": 38,
+                  "column": 8
+                },
+                "message": "3 substantive duplicate implementation groups exist across the same files.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-DUP-C-002",
+                  "payload": {
+                    "reason": "function-clone",
+                    "fingerprint": "ac8d5bda9428",
+                    "implementations": [
+                      "src/pages/contacts/contactQueries.js:44",
+                      "src/pages/deals/dealQueries.js:38"
+                    ],
+                    "duplicate_group_count": 3,
+                    "duplicate_groups": [
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "ac8d5bda9428",
+                        "implementations": [
+                          "src/pages/contacts/contactQueries.js:44",
+                          "src/pages/deals/dealQueries.js:38"
+                        ]
+                      },
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "140936dc1828",
+                        "implementations": [
+                          "src/pages/contacts/contactQueries.js:49",
+                          "src/pages/deals/dealQueries.js:43"
+                        ]
+                      },
+                      {
+                        "reason": "function-clone",
+                        "fingerprint": "fa3f7e6fd542",
+                        "implementations": [
+                          "src/pages/contacts/contactQueries.js:56",
+                          "src/pages/deals/dealQueries.js:50"
+                        ]
+                      }
+                    ],
+                    "message": "3 substantive duplicate implementation groups exist across the same files."
+                  }
+                }
+              }
+            ]
+          },
+          "background_findings": [],
+          "background_by_rule": {},
+          "adapter_meta": {
+            "frontend-static": {
+              "status": "ok",
+              "duration_ms": 265,
+              "files_scanned": 104,
+              "parse_errors": []
+            }
+          }
+        },
+        "metrics": [
+          {
+            "name": "FE-COM-M-001-render-decision-depth-average",
+            "version": "2.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0.5,
+              "unit": "levels",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": -0.010000000000000009,
+            "findings": [
+              "Average maximum render-decision depth: 0.5",
+              "Delta vs baseline: -0.01"
+            ],
+            "raw_artifact_path": "artifacts/metrics/render-decision-depth-average.json"
+          },
+          {
+            "name": "FE-STATE-M-001-context-provider-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0.058824,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": -0.021176,
+            "findings": [
+              "Context-provider ratio: 2/34 (0.058824)",
+              "Delta vs baseline: -0.021176"
+            ],
+            "raw_artifact_path": "artifacts/metrics/context-provider-ratio.json"
+          },
+          {
+            "name": "FE-ROUTE-M-001-route-param-complexity",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0.43,
+              "unit": "params",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0.02999999999999997,
+            "findings": [
+              "Average route parameter count: 0.43",
+              "Delta vs baseline: +0.03"
+            ],
+            "raw_artifact_path": "artifacts/metrics/route-param-complexity.json"
+          },
+          {
+            "name": "FE-STYLE-M-001-style-mixing-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0.048077,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0.0072610000000000036,
+            "findings": [
+              "Style mixing ratio: 5/104 (0.048077)",
+              "Delta vs baseline: +0.007261"
+            ],
+            "raw_artifact_path": "artifacts/metrics/style-mixing-ratio.json"
+          },
+          {
+            "name": "FE-DATA-M-001-data-access-wrapping-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 1,
+              "unit": "ratio",
+              "direction": "higher_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Approved data-access wrapping ratio: 1/1 (1)"
+            ],
+            "raw_artifact_path": "artifacts/metrics/data-access-wrapping-ratio.json"
+          },
+          {
+            "name": "FE-COMM-M-001-prop-drilling-average",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 5.86,
+              "unit": "props",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0.1900000000000004,
+            "findings": [
+              "Average prop-drilling candidate fanout: 5.86",
+              "Delta vs baseline: +0.19"
+            ],
+            "raw_artifact_path": "artifacts/metrics/prop-drilling-average.json"
+          },
+          {
+            "name": "FE-DUP-M-001-clone-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0.322564,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0.09152100000000002,
+            "findings": [
+              "Duplicated lines: 1877/5819 (0.322564)",
+              "Clone matches found: 20+ (sample capped)",
+              "Delta vs baseline: +0.091521"
+            ],
+            "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
+          }
+        ],
+        "judgments": []
+      }
+    },
+    {
+      "scope_id": "cross-stack",
+      "scope_type": "cross-stack",
+      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_014141",
+      "rulepack_id": "cross",
+      "rulepack_version": "0.1.0",
+      "adapters": [
+        "cross-static",
+        "computed-metrics"
+      ],
+      "status": "completed",
+      "layers": {
+        "constraints": {
+          "layer": "constraints",
+          "status": "ok",
+          "rules_evaluated": 3,
+          "findings": [],
+          "findings_by_rule": {
+            "CROSS-EP-C-001-frontend-api-url-resolves-to-backend-route": [],
+            "CROSS-TYPE-C-001-request-query-body-contract-alignment": [],
+            "CROSS-PROP-C-001-api-facing-change-propagates-to-affected-surfaces": []
+          },
+          "background_findings": [],
+          "background_by_rule": {},
+          "adapter_meta": {
+            "cross-static": {
+              "status": "ok",
+              "tool_version": "0.1.0",
+              "config_path": "/Users/luowei/project/ai-architecture-integrity-study/harness/rulepacks/cross/tool-configs/cross-static.config.json",
+              "frontend_endpoint_count": 15,
+              "backend_endpoint_count": 15,
+              "backend_type_contract_count": 15,
+              "frontend_type_evidence_count": 22,
+              "dto_registry_size": 11,
+              "enum_registry_size": 4,
+              "frontend_query_hook_count": 6,
+              "frontend_mutation_hook_count": 9,
+              "route_param_position_count": 11,
+              "query_field_position_count": 25,
+              "body_field_position_count": 7,
+              "contract_position_count": 43,
+              "propagation_changed_files": 34,
+              "propagation_triggered_resources": 1,
+              "propagation_violation_count": 0,
+              "propagation_counterpart_surface_total": 2,
+              "propagation_counterpart_surface_missing": 0
+            }
+          }
+        },
+        "metrics": [
+          {
+            "name": "CROSS-EP-M-001-endpoint-resolution-miss-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Unresolved frontend call sites: 0",
+              "Total frontend call sites: 15",
+              "Endpoint resolution miss ratio: 0",
+              "Baseline report unavailable; delta_vs_baseline set to null."
+            ],
+            "raw_artifact_path": "artifacts/metrics/endpoint-resolution-miss-ratio.json"
+          },
+          {
+            "name": "CROSS-TYPE-M-001-contract-field-drift-density",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": 0,
+            "findings": [
+              "Weighted contract-field mismatches: 0",
+              "Total contract positions (route-param + query + body): 43",
+              "Contract field drift density: 0",
+              "Baseline report unavailable; delta_vs_baseline set to null."
+            ],
+            "raw_artifact_path": "artifacts/metrics/contract-field-drift-density.json"
+          },
+          {
+            "name": "CROSS-PROP-M-001-propagation-incompleteness-ratio",
+            "version": "1.0.0",
+            "status": "pass",
+            "score": {
+              "value": 0,
+              "unit": "ratio",
+              "direction": "lower_is_better"
+            },
+            "delta_vs_baseline": null,
+            "findings": [
+              "Resources with an API-facing change: 1",
+              "Missing counterpart surfaces: 0",
+              "Total counterpart surfaces: 2",
+              "Propagation incompleteness ratio: 0",
+              "Baseline report unavailable; delta_vs_baseline set to null."
+            ],
+            "raw_artifact_path": "artifacts/metrics/propagation-incompleteness-ratio.json"
+          }
+        ],
+        "judgments": []
+      }
+    }
+  ],
+  "task_summary": {
+    "scope_count": 3,
+    "scope_types": {
+      "subject": 2,
+      "cross-stack": 1
+    },
+    "execution": {
+      "fail_fast": false,
+      "max_duration_ms": 600000,
+      "parallel_scopes": false
+    }
+  },
+  "deltas": {
+    "run_local": {
+      "constraints": {
+        "before_count": 5,
+        "after_count": 16,
+        "introduced_count": 11,
+        "resolved_count": 0,
+        "unchanged_count": 5,
+        "net_change": 11,
+        "introduced": [
+          {
+            "scope": "backend",
+            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+            "source_rule_id": "BE-DOM-C-001",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 5,
+              "column": 32
+            },
+            "message": "Cross-module imports must use index.ts or the target module file."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+            "source_rule_id": "BE-DOM-C-001",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 6,
+              "column": 31
+            },
+            "message": "Cross-module imports must use index.ts or the target module file."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 21,
+              "column": 1
+            },
+            "message": "Persistent change deals.name lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 24,
+              "column": 1
+            },
+            "message": "Persistent change deals.value lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 35,
+              "column": 1
+            },
+            "message": "Persistent change deals.expectedCloseDate lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 42,
+              "column": 1
+            },
+            "message": "Persistent change deals.createdAt lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 45,
+              "column": 1
+            },
+            "message": "Persistent change deals.updatedAt lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 48,
+              "column": 1
+            },
+            "message": "Persistent change deals.deletedAt lacks a matching executable migration."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/deals/DealDetail.jsx",
+              "line": 21,
+              "column": 1
+            },
+            "message": "component-clone logic has more than one production implementation."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/deals/dealQueries.js",
+              "line": 12,
+              "column": 8
+            },
+            "message": "function-clone logic has more than one production implementation."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/deals/dealQueries.js",
+              "line": 38,
+              "column": 8
+            },
+            "message": "3 substantive duplicate implementation groups exist across the same files."
+          }
+        ],
+        "resolved": []
+      },
+      "metrics": [
+        {
+          "key": "backend:BE-STRUCT-M-001-module-composition-violation-ratio",
+          "name": "BE-STRUCT-M-001-module-composition-violation-ratio",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-DEP-M-001-dependency-violation-density",
+          "name": "BE-DEP-M-001-dependency-violation-density",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-DOM-M-001-cross-module-deep-import-count",
+          "name": "BE-DOM-M-001-cross-module-deep-import-count",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-ERR-M-001-exception-unification-violation-density",
+          "name": "BE-ERR-M-001-exception-unification-violation-density",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-CONTRACT-M-001-dto-validator-coverage",
+          "name": "BE-CONTRACT-M-001-dto-validator-coverage",
+          "scope": "backend",
+          "from": 1,
+          "to": 1,
+          "delta": 0,
+          "direction": "higher_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-TEST-M-001-test-coverage",
+          "name": "BE-TEST-M-001-test-coverage",
+          "scope": "backend",
+          "from": 34.47,
+          "to": 25.85,
+          "delta": -8.619999999999997,
+          "direction": "higher_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-MOCK-M-001-mock-per-test-case",
+          "name": "BE-MOCK-M-001-mock-per-test-case",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-ROUTE-M-001-route-prefix-violation-ratio",
+          "name": "BE-ROUTE-M-001-route-prefix-violation-ratio",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-SIZE-M-001-cyclomatic-complexity-ratio",
+          "name": "BE-SIZE-M-001-cyclomatic-complexity-ratio",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-DUP-M-001-clone-ratio",
+          "name": "BE-DUP-M-001-clone-ratio",
+          "scope": "backend",
+          "from": 0.137639,
+          "to": 0.266407,
+          "delta": 0.128768,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-COM-M-001-render-decision-depth-average",
+          "name": "FE-COM-M-001-render-decision-depth-average",
+          "scope": "frontend",
+          "from": 0.51,
+          "to": 0.5,
+          "delta": -0.010000000000000009,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-STATE-M-001-context-provider-ratio",
+          "name": "FE-STATE-M-001-context-provider-ratio",
+          "scope": "frontend",
+          "from": 0.08,
+          "to": 0.058824,
+          "delta": -0.021176,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-ROUTE-M-001-route-param-complexity",
+          "name": "FE-ROUTE-M-001-route-param-complexity",
+          "scope": "frontend",
+          "from": 0.4,
+          "to": 0.43,
+          "delta": 0.02999999999999997,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-STYLE-M-001-style-mixing-ratio",
+          "name": "FE-STYLE-M-001-style-mixing-ratio",
+          "scope": "frontend",
+          "from": 0.040816,
+          "to": 0.048077,
+          "delta": 0.0072610000000000036,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-DATA-M-001-data-access-wrapping-ratio",
+          "name": "FE-DATA-M-001-data-access-wrapping-ratio",
+          "scope": "frontend",
+          "from": 1,
+          "to": 1,
+          "delta": 0,
+          "direction": "higher_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-COMM-M-001-prop-drilling-average",
+          "name": "FE-COMM-M-001-prop-drilling-average",
+          "scope": "frontend",
+          "from": 5.67,
+          "to": 5.86,
+          "delta": 0.1900000000000004,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-DUP-M-001-clone-ratio",
+          "name": "FE-DUP-M-001-clone-ratio",
+          "scope": "frontend",
+          "from": 0.231043,
+          "to": 0.322564,
+          "delta": 0.09152100000000002,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "cross-stack:CROSS-EP-M-001-endpoint-resolution-miss-ratio",
+          "name": "CROSS-EP-M-001-endpoint-resolution-miss-ratio",
+          "scope": "cross-stack",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "cross-stack:CROSS-TYPE-M-001-contract-field-drift-density",
+          "name": "CROSS-TYPE-M-001-contract-field-drift-density",
+          "scope": "cross-stack",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "cross-stack:CROSS-PROP-M-001-propagation-incompleteness-ratio",
+          "name": "CROSS-PROP-M-001-propagation-incompleteness-ratio",
+          "scope": "cross-stack",
+          "from": null,
+          "to": 0,
+          "delta": null,
+          "direction": "lower_is_better",
+          "status": "unavailable"
+        }
+      ],
+      "judgments": []
+    },
+    "trajectory_cumulative": {
+      "constraints": {
+        "before_count": 5,
+        "after_count": 16,
+        "introduced_count": 11,
+        "resolved_count": 0,
+        "unchanged_count": 5,
+        "net_change": 11,
+        "introduced": [
+          {
+            "scope": "backend",
+            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+            "source_rule_id": "BE-DOM-C-001",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 5,
+              "column": 32
+            },
+            "message": "Cross-module imports must use index.ts or the target module file."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+            "source_rule_id": "BE-DOM-C-001",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 6,
+              "column": 31
+            },
+            "message": "Cross-module imports must use index.ts or the target module file."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 21,
+              "column": 1
+            },
+            "message": "Persistent change deals.name lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 24,
+              "column": 1
+            },
+            "message": "Persistent change deals.value lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 35,
+              "column": 1
+            },
+            "message": "Persistent change deals.expectedCloseDate lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 42,
+              "column": 1
+            },
+            "message": "Persistent change deals.createdAt lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 45,
+              "column": 1
+            },
+            "message": "Persistent change deals.updatedAt lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal.entity.ts",
+              "line": 48,
+              "column": 1
+            },
+            "message": "Persistent change deals.deletedAt lacks a matching executable migration."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/deals/DealDetail.jsx",
+              "line": 21,
+              "column": 1
+            },
+            "message": "component-clone logic has more than one production implementation."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/deals/dealQueries.js",
+              "line": 12,
+              "column": 8
+            },
+            "message": "function-clone logic has more than one production implementation."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/deals/dealQueries.js",
+              "line": 38,
+              "column": 8
+            },
+            "message": "3 substantive duplicate implementation groups exist across the same files."
+          }
+        ],
+        "resolved": []
+      },
+      "metrics": [
+        {
+          "key": "backend:BE-STRUCT-M-001-module-composition-violation-ratio",
+          "name": "BE-STRUCT-M-001-module-composition-violation-ratio",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-DEP-M-001-dependency-violation-density",
+          "name": "BE-DEP-M-001-dependency-violation-density",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-DOM-M-001-cross-module-deep-import-count",
+          "name": "BE-DOM-M-001-cross-module-deep-import-count",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-ERR-M-001-exception-unification-violation-density",
+          "name": "BE-ERR-M-001-exception-unification-violation-density",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-CONTRACT-M-001-dto-validator-coverage",
+          "name": "BE-CONTRACT-M-001-dto-validator-coverage",
+          "scope": "backend",
+          "from": 1,
+          "to": 1,
+          "delta": 0,
+          "direction": "higher_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-TEST-M-001-test-coverage",
+          "name": "BE-TEST-M-001-test-coverage",
+          "scope": "backend",
+          "from": 34.47,
+          "to": 25.85,
+          "delta": -8.619999999999997,
+          "direction": "higher_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-MOCK-M-001-mock-per-test-case",
+          "name": "BE-MOCK-M-001-mock-per-test-case",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-ROUTE-M-001-route-prefix-violation-ratio",
+          "name": "BE-ROUTE-M-001-route-prefix-violation-ratio",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-SIZE-M-001-cyclomatic-complexity-ratio",
+          "name": "BE-SIZE-M-001-cyclomatic-complexity-ratio",
+          "scope": "backend",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "backend:BE-DUP-M-001-clone-ratio",
+          "name": "BE-DUP-M-001-clone-ratio",
+          "scope": "backend",
+          "from": 0.137639,
+          "to": 0.266407,
+          "delta": 0.128768,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-COM-M-001-render-decision-depth-average",
+          "name": "FE-COM-M-001-render-decision-depth-average",
+          "scope": "frontend",
+          "from": 0.51,
+          "to": 0.5,
+          "delta": -0.010000000000000009,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-STATE-M-001-context-provider-ratio",
+          "name": "FE-STATE-M-001-context-provider-ratio",
+          "scope": "frontend",
+          "from": 0.08,
+          "to": 0.058824,
+          "delta": -0.021176,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-ROUTE-M-001-route-param-complexity",
+          "name": "FE-ROUTE-M-001-route-param-complexity",
+          "scope": "frontend",
+          "from": 0.4,
+          "to": 0.43,
+          "delta": 0.02999999999999997,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-STYLE-M-001-style-mixing-ratio",
+          "name": "FE-STYLE-M-001-style-mixing-ratio",
+          "scope": "frontend",
+          "from": 0.040816,
+          "to": 0.048077,
+          "delta": 0.0072610000000000036,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-DATA-M-001-data-access-wrapping-ratio",
+          "name": "FE-DATA-M-001-data-access-wrapping-ratio",
+          "scope": "frontend",
+          "from": 1,
+          "to": 1,
+          "delta": 0,
+          "direction": "higher_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-COMM-M-001-prop-drilling-average",
+          "name": "FE-COMM-M-001-prop-drilling-average",
+          "scope": "frontend",
+          "from": 5.67,
+          "to": 5.86,
+          "delta": 0.1900000000000004,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "frontend:FE-DUP-M-001-clone-ratio",
+          "name": "FE-DUP-M-001-clone-ratio",
+          "scope": "frontend",
+          "from": 0.231043,
+          "to": 0.322564,
+          "delta": 0.09152100000000002,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "cross-stack:CROSS-EP-M-001-endpoint-resolution-miss-ratio",
+          "name": "CROSS-EP-M-001-endpoint-resolution-miss-ratio",
+          "scope": "cross-stack",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "cross-stack:CROSS-TYPE-M-001-contract-field-drift-density",
+          "name": "CROSS-TYPE-M-001-contract-field-drift-density",
+          "scope": "cross-stack",
+          "from": 0,
+          "to": 0,
+          "delta": 0,
+          "direction": "lower_is_better",
+          "status": "available"
+        },
+        {
+          "key": "cross-stack:CROSS-PROP-M-001-propagation-incompleteness-ratio",
+          "name": "CROSS-PROP-M-001-propagation-incompleteness-ratio",
+          "scope": "cross-stack",
+          "from": null,
+          "to": 0,
+          "delta": null,
+          "direction": "lower_is_better",
+          "status": "unavailable"
+        }
+      ],
+      "judgments": []
+    }
+  },
+  "duration_ms": 8576,
+  "execution_status": "completed",
+  "comparison_status": "valid",
+  "errors": []
+}

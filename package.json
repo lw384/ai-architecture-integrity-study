@@ -19,6 +19,7 @@
     "lint": "pnpm -r --if-present --parallel lint",
     "lint:baseline": "pnpm --filter backend lint && pnpm --filter crm-baseline-frontend --if-present lint",
     "eval": "pnpm --filter harness eval",
+    "clean:workspace": "rm -rf experiment/workspace && mkdir -p experiment/workspace",
     "clean": "pnpm -r --if-present --parallel clean && rm -rf node_modules"
   }
 }

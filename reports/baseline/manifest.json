@@ -1,8 +1,8 @@
 {
   "status": "evaluated",
   "task_id": "Base",
-  "baseline_commit": "4d825862cd480ec5933900eb820832d406f412dc",
-  "pre_commit": "4d825862cd480ec5933900eb820832d406f412dc",
+  "baseline_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab",
+  "pre_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab",
   "rulepack_id": "task::Base",
   "comparison": {
     "mode": "self",
