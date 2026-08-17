@@ -81,16 +81,17 @@ Pipeline 的源 baseline 路径固定为 `baseline/`。Comparison 数据来自 E
 
 不传 `--from-workspace` 时，pipeline 会：
 
-1. 从 `baseline/` 复制代码到 `experiment/workspace/session_<时间戳>/`，复制时排除原仓库的 `.git`。
+1. 从 `baseline/` 复制代码到 `experiment/workspace/session_<时间戳>/`，复制时排除 `.git`、`node_modules`、`dist`、`coverage` 等依赖/生成目录。
 2. 在 workspace 内初始化独立 Git 仓库，提交初始快照并创建 `baseline` tag。
-3. 如果传入 `--write-memory-md`，读取 `experiment/design/memory/initial_memory.md`，在 workspace 根目录创建 `CLAUDE.md` 或 `AGENTS.md`，再次提交并创建 `baseline-with-memory` tag。
-4. 根据 `--task T1 --strategy <minimal|structured>` 读取 `experiment/design/tasks/T1_<strategy>.md`。
-5. 生成最终 prompt；运行期间临时写入 workspace 根目录的 `.agent_instruction.md`，同时将完整 prompt 归档为 `reports/experiments/<session_id>/T1/prompt.md`。
-6. Docker 容器挂载该 workspace 和对应 agent 的认证目录，agent 直接修改 workspace。只有进程成功且最终输出包含 `[TASK_COMPLETED]`，本次 agent 执行才被视为成功。
-7. 把 agent 的全部改动提交为 `task: T1 completed`，并创建 `task-T1-done` tag。
-8. 使用 `harness/tasks/T1.eval.yaml` 和 `harness/rulepacks/` 评估该提交（架构完整性）。
-9. 若 `experiment/instruments/tests/T1/` 下存在验收套件，overlay 进 workspace 的一份 throwaway 副本并运行（功能正确性）；没有套件则记为 `skipped`，不算失败。
-10. 将执行、评估、验收结果和任务元数据写入 `reports/experiments/<session_id>/T1/`。
+3. 单独启动纯 Node Linux 容器，依据 backend/frontend 的 lockfile 执行 `npm ci`；宿主机不安装项目依赖。
+4. 如果传入 `--write-memory-md`，读取 `experiment/design/memory/initial_memory.md`，在 workspace 根目录创建 `CLAUDE.md` 或 `AGENTS.md`，再次提交并创建 `baseline-with-memory` tag。
+5. 根据 `--task T1 --strategy <minimal|structured>` 读取 `experiment/design/tasks/T1_<strategy>.md`。
+6. 生成最终 prompt；运行期间临时写入 workspace 根目录的 `.agent_instruction.md`，同时将完整 prompt 归档为 `reports/experiments/<session_id>/T1/prompt.md`。
+7. Docker 容器挂载该 workspace 和对应 agent 的认证目录，agent 直接修改 workspace。只有进程成功且最终输出包含 `[TASK_COMPLETED]`，本次 agent 执行才被视为成功。
+8. 把 agent 的全部改动提交为 `task: T1 completed`，并创建 `task-T1-done` tag。
+9. 宿主机运行 Harness 编排与静态适配器；需加载项目依赖的 coverage 命令会在 Linux 容器内执行。
+10. 若 `experiment/instruments/tests/T1/` 下存在验收套件，overlay 进 workspace 的一份 throwaway 副本，并在纯 Node Linux 容器中安装依赖和运行；没有套件则记为 `skipped`。
+11. 将执行、评估、验收结果和任务元数据写入 `reports/experiments/<session_id>/T1/`。
 
 ### 2.2 复用 session 执行 T2 和 T3
 
@@ -152,6 +153,8 @@ reports/experiments/<session_id>/
 ```bash
 pnpm install
 ```
+
+Pipeline 默认使用 `node:20-bookworm-slim` 安装 workspace 依赖和运行功能验收。可用 `--runtime-image <image>` 显式覆盖；T1/T2/T3 应保持一致。
 
 确保 Git 已配置提交身份，因为 pipeline 会在每个 workspace 中自动提交：
 
@@ -299,6 +302,8 @@ Harness 默认从原 task manifest 读取 `start_ref`，解析为完整 SHA，�
 ### 3.4 单独运行功能验收测试
 
 `run_tests.py` 和 `run_harness.py` 是同一种模式：不运行 agent，不需要 pre/post 比较，只对指定 workspace 单独重跑 `experiment/instruments/tests/<task>/` 下的验收套件。用法和 `--from-tag` 语义与 `run_harness.py` 完全一致：
+
+验收的依赖安装和测试命令均在 `--runtime-image`（默认 `node:20-bookworm-slim`）中执行；宿主机只负责创建 throwaway 副本、启停测试数据库和归档结果。
 
 ```bash
 python3 experiment/instruments/agent-runners/run_tests.py \

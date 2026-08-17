@@ -5,7 +5,7 @@
 // <workspace>/frontend/src/test/acceptance/T1/deal.render.test.jsx (so the
 // `routes/route-registry` import below resolves through the same Vite/Vitest
 // alias config the rest of frontend/src already uses), then run with
-// `pnpm test -- src/test/acceptance` and discarded.
+// the configured npm/Vitest command and discarded.
 //
 // Known limitation, by design: this renders the Deals page component
 // directly with only QueryClientProvider + MemoryRouter around it — it does

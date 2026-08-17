@@ -19,9 +19,50 @@ function pickRuleConfig(config, rule) {
     return config.metrics?.[rule.rule_id] ?? {};
 }
 
-function runCommand(command, cwd, timeoutMs) {
+function shellQuote(value) {
+    return `'${String(value).replaceAll("'", `'"'"'`)}'`;
+}
+
+function buildContainerCommand(command, cwd, runtimeConfig, containerName) {
+    const installCommand = runtimeConfig.install_command ?? [];
+    const commands = [];
+    if (installCommand.length > 0) {
+        commands.push(installCommand.map(shellQuote).join(' '));
+    }
+    commands.push(command.map(shellQuote).join(' '));
+
+    return [
+        'docker',
+        'run',
+        '--rm',
+        '--name',
+        containerName,
+        '--user',
+        `${process.getuid?.() ?? 1000}:${process.getgid?.() ?? 1000}`,
+        '-e',
+        'HOME=/tmp/experiment-runtime-home',
+        '-e',
+        'npm_config_cache=/tmp/experiment-npm-cache',
+        '-v',
+        `${path.resolve(cwd)}:/workspace`,
+        '-w',
+        '/workspace',
+        runtimeConfig.image,
+        'bash',
+        '-lc',
+        commands.join(' && '),
+    ];
+}
+
+function runCommand(command, cwd, timeoutMs, runtimeConfig = null) {
     return new Promise((resolve) => {
-        const [bin, ...args] = command;
+        const containerName = runtimeConfig?.type === 'docker'
+            ? `harness-coverage-${process.pid}-${Date.now()}`
+            : null;
+        const effectiveCommand = runtimeConfig?.type === 'docker'
+            ? buildContainerCommand(command, cwd, runtimeConfig, containerName)
+            : command;
+        const [bin, ...args] = effectiveCommand;
         const child = spawn(bin, args, {
             cwd,
             stdio: ['ignore', 'pipe', 'pipe'],
@@ -32,6 +73,11 @@ function runCommand(command, cwd, timeoutMs) {
         const timer = setTimeout(() => {
             timedOut = true;
             child.kill();
+            if (containerName) {
+                spawn('docker', ['rm', '-f', containerName], {
+                    stdio: 'ignore',
+                });
+            }
         }, timeoutMs);
 
         child.stdout.on('data', (data) => (stdout += data.toString()));
@@ -80,7 +126,12 @@ async function executeCoverageRun(baseDir, config, workingDirectoryKey = 'workin
     }
 
     const cwd = resolveCoverageCwd(baseDir, config[workingDirectoryKey] ?? '.');
-    const result = await runCommand(command, cwd, config.timeout_ms ?? 600000);
+    const result = await runCommand(
+        command,
+        cwd,
+        config.timeout_ms ?? 600000,
+        config.runtime,
+    );
 
     if (result.timedOut) {
         throw new Error(`Coverage command timed out after ${config.timeout_ms ?? 600000}ms`);

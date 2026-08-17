@@ -41,6 +41,14 @@
       "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
     },
     "BE-TEST-M-001-test-coverage": {
+      "runtime": {
+        "type": "docker",
+        "image": "node:20-bookworm-slim",
+        "install_command": [
+          "npm",
+          "ci"
+        ]
+      },
       "command": [
         "npm",
         "run",

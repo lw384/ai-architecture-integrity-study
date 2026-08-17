@@ -1,9 +1,80 @@
 # experiment/instruments/agent-runners/pipeline/docker_runner.py
 import json
+import os
+import re
+import shlex
 import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+
+DEFAULT_RUNTIME_IMAGE = "node:20-bookworm-slim"
+
+
+def _container_name(run_id: str) -> str:
+    normalized = re.sub(r"[^a-zA-Z0-9_.-]+", "-", run_id).strip("-.")
+    return f"runtime-{normalized}"[:128]
+
+
+def run_workspace_container_command(
+    workspace_dir: Path,
+    run_id: str,
+    image: str,
+    command: str | list[str],
+    working_directory: str = "/workspace",
+    env: dict[str, str] | None = None,
+    timeout_seconds: int | None = None,
+    add_host_gateway: bool = False,
+) -> subprocess.CompletedProcess[str]:
+    """Run a non-Agent command in an ephemeral Linux workspace container."""
+    rendered_command = command if isinstance(command, str) else shlex.join(command)
+    container_name = _container_name(run_id)
+    docker_cmd = [
+        "docker",
+        "run",
+        "--rm",
+        "--name",
+        container_name,
+        "--user",
+        f"{os.getuid()}:{os.getgid()}",
+        "-e",
+        "HOME=/tmp/experiment-runtime-home",
+        "-e",
+        "npm_config_cache=/tmp/experiment-npm-cache",
+        "-v",
+        f"{workspace_dir.resolve()}:/workspace",
+        "-w",
+        working_directory,
+    ]
+
+    if add_host_gateway:
+        docker_cmd.extend(
+            ["--add-host", "host.docker.internal:host-gateway"]
+        )
+
+    for key, value in (env or {}).items():
+        docker_cmd.extend(["-e", f"{key}={value}"])
+
+    docker_cmd.extend([image, "bash", "-lc", rendered_command])
+    try:
+        return subprocess.run(
+            docker_cmd,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        subprocess.run(
+            ["docker", "rm", "-f", container_name],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        raise
 
 
 

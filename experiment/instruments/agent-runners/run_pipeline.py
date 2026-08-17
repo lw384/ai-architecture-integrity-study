@@ -1,5 +1,7 @@
 import argparse
 from datetime import datetime
+import hashlib
+import json
 import os
 from pathlib import Path
 import shutil
@@ -7,12 +9,45 @@ import subprocess
 
 from comparison_resolver import resolve_comparison_evaluations
 from config import get_agent_config
-from docker_runner import run_agent_task
+from docker_runner import (
+    DEFAULT_RUNTIME_IMAGE,
+    run_agent_task,
+    run_workspace_container_command,
+)
 from evaluator import run_harness_evaluation
 from prompt_builder import build_mega_prompt
 from test_runner import run_functional_tests
 
 INITIAL_MEMORY_TEMPLATE = Path("experiment/design/memory/initial_memory.md")
+
+WORKSPACE_COPY_IGNORE = shutil.ignore_patterns(
+    ".git",
+    "node_modules",
+    "dist",
+    "coverage",
+    "build",
+    ".next",
+    ".cache",
+    ".pnpm-store",
+)
+WORKSPACE_PROJECTS = ("backend", "frontend")
+GENERATED_DIRECTORY_NAMES = frozenset(
+    {
+        "node_modules",
+        "dist",
+        "coverage",
+        "build",
+        ".next",
+        ".cache",
+        ".pnpm-store",
+    }
+)
+NPM_CI_EXTRA_ARGS = {
+    # This lockfile was generated with legacy peer dependency resolution, so
+    # npm ci must use the same setting to reproduce it.
+    "frontend": ("--legacy-peer-deps",),
+}
+DEPENDENCY_MARKER_FILENAME = ".experiment-runtime.json"
 
 
 def git(workspace_dir: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -54,17 +89,166 @@ def load_initial_memory_content(root_dir: Path) -> str:
     return content + "\n"
 
 
+def copy_workspace_source(baseline_dir: Path, workspace_dir: Path) -> None:
+    """Copy source inputs without dependency trees or generated output."""
+    shutil.copytree(
+        baseline_dir,
+        workspace_dir,
+        ignore=WORKSPACE_COPY_IGNORE,
+    )
+
+
+def dependency_install_command(project_dir: Path, project_name: str) -> list[str]:
+    """Select a reproducible install command from the project's lockfile."""
+    if (project_dir / "package-lock.json").is_file():
+        return ["npm", "ci", *NPM_CI_EXTRA_ARGS.get(project_name, ())]
+
+    if (project_dir / "pnpm-lock.yaml").is_file():
+        return ["pnpm", "install", "--frozen-lockfile"]
+
+    raise FileNotFoundError(f"Dependency lockfile not found: {project_dir}")
+
+
+def dependency_lockfile(project_dir: Path) -> Path:
+    for filename in ("package-lock.json", "pnpm-lock.yaml"):
+        lockfile = project_dir / filename
+        if lockfile.is_file():
+            return lockfile
+    raise FileNotFoundError(f"Dependency lockfile not found: {project_dir}")
+
+
+def dependency_marker_data(project_dir: Path, image: str) -> dict[str, str]:
+    lockfile = dependency_lockfile(project_dir)
+    return {
+        "image": image,
+        "lockfile": lockfile.name,
+        "lockfile_sha256": hashlib.sha256(lockfile.read_bytes()).hexdigest(),
+        "platform": "linux",
+    }
+
+
+def dependencies_are_current(project_dir: Path, image: str) -> bool:
+    marker_path = project_dir / "node_modules" / DEPENDENCY_MARKER_FILENAME
+    if not marker_path.is_file():
+        return False
+
+    try:
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return False
+    return marker == dependency_marker_data(project_dir, image)
+
+
+def install_workspace_dependencies_in_container(
+    workspace_dir: Path,
+    run_id: str,
+    image: str,
+    project_names: tuple[str, ...] = WORKSPACE_PROJECTS,
+) -> None:
+    """Install project dependencies with npm/pnpm inside a Linux container."""
+    for project_name in project_names:
+        project_dir = workspace_dir / project_name
+
+        if not (project_dir / "package.json").is_file():
+            raise FileNotFoundError(f"Project package.json not found: {project_dir}")
+
+        command = dependency_install_command(project_dir, project_name)
+        print(
+            f"📦 Linux 容器安装 {project_name} 依赖: "
+            f"{' '.join(command)} ({image})"
+        )
+        result = run_workspace_container_command(
+            workspace_dir=workspace_dir,
+            run_id=f"{run_id}-deps-{project_name}",
+            image=image,
+            command=command,
+            working_directory=f"/workspace/{project_name}",
+            timeout_seconds=900,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"Container dependency installation failed for {project_name} "
+                f"with exit code {result.returncode}:\n"
+                f"{result.stderr.strip() or result.stdout.strip()}"
+            )
+
+        marker_path = project_dir / "node_modules" / DEPENDENCY_MARKER_FILENAME
+        marker_path.write_text(
+            json.dumps(
+                dependency_marker_data(project_dir, image),
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+
+def ensure_workspace_dependencies_in_container(
+    workspace_dir: Path,
+    run_id: str,
+    image: str,
+) -> None:
+    """Restore missing, stale, or non-Linux dependency trees in a container."""
+    projects_to_install = tuple(
+        project_name
+        for project_name in WORKSPACE_PROJECTS
+        if not dependencies_are_current(workspace_dir / project_name, image)
+    )
+    if not projects_to_install:
+        return
+
+    status_before = git(workspace_dir, "status", "--porcelain").stdout
+    install_workspace_dependencies_in_container(
+        workspace_dir=workspace_dir,
+        run_id=run_id,
+        image=image,
+        project_names=projects_to_install,
+    )
+
+    status_after = git(workspace_dir, "status", "--porcelain").stdout
+    if status_after != status_before:
+        raise RuntimeError(
+            "Dependency restoration modified tracked workspace files:\n"
+            f"{status_after.strip()}"
+        )
+
+
+def assert_clean_after_dependency_install(workspace_dir: Path) -> None:
+    """Ensure a frozen dependency install did not alter source inputs."""
+    status = git(workspace_dir, "status", "--porcelain").stdout.strip()
+    if status:
+        raise RuntimeError(
+            "Dependency installation modified tracked workspace files:\n"
+            f"{status}"
+        )
+
+
+def staged_generated_paths(workspace_dir: Path) -> list[str]:
+    """Return staged paths that belong to dependency or generated trees."""
+    staged_paths = git(
+        workspace_dir,
+        "diff",
+        "--cached",
+        "--name-only",
+        "--diff-filter=ACMRTUXBD",
+    ).stdout.splitlines()
+
+    return [
+        file_path
+        for file_path in staged_paths
+        if GENERATED_DIRECTORY_NAMES.intersection(file_path.split("/"))
+    ]
+
+
 def create_new_workspace(root_dir, baseline_dir, args, config):
     """Copy baseline and initialize an independent session repository."""
     session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     workspace_dir = root_dir / "experiment" / "workspace" / session_id
 
-    # The session owns its Git history; source repository metadata is excluded.
-    shutil.copytree(
-        baseline_dir,
-        workspace_dir,
-        ignore=shutil.ignore_patterns(".git"),
-    )
+    # The session owns its Git history; dependencies and generated output are
+    # rebuilt from committed inputs instead of copied from the baseline tree.
+    copy_workspace_source(baseline_dir, workspace_dir)
 
     git(workspace_dir, "init", "-q")
     git(workspace_dir, "add", "-A")
@@ -176,6 +360,17 @@ def commit_and_tag_task(workspace_dir: Path, task_id: str, force: bool):
     # Commit every agent change so the evaluated post state is immutable.
     git(workspace_dir, "add", "-A")
 
+    generated_paths = staged_generated_paths(workspace_dir)
+    if generated_paths:
+        rendered_paths = "\n".join(f"  - {path}" for path in generated_paths[:20])
+        remaining_count = len(generated_paths) - 20
+        if remaining_count > 0:
+            rendered_paths += f"\n  - ... and {remaining_count} more"
+        raise RuntimeError(
+            "Refusing to commit dependency or generated files:\n"
+            f"{rendered_paths}"
+        )
+
     staged_changes = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
         cwd=workspace_dir,
@@ -225,6 +420,7 @@ def initialize_session_manifest(
                 f"  agent: {args.agent}",
                 f"  model: {config['model']}",
                 f"  strategy: {args.strategy}",
+                f"  runtime_image: {args.runtime_image}",
                 f"  write_memory_md: {str(args.write_memory_md).lower()}",
                 f"  memory_filename: {config['memory_filename'] if args.write_memory_md else 'none'}",
                 "",
@@ -311,6 +507,14 @@ def main():
         action="store_true",
         help="仅在新建 workspace 时生效,不影响复用",
     )
+    parser.add_argument(
+        "--runtime-image",
+        default=DEFAULT_RUNTIME_IMAGE,
+        help=(
+            "依赖安装和功能验收测试使用的纯 Node Linux 镜像 "
+            f"(默认: {DEFAULT_RUNTIME_IMAGE})"
+        ),
+    )
     args = parser.parse_args()
 
     root_dir = Path(__file__).resolve().parent.parent.parent.parent
@@ -334,6 +538,14 @@ def main():
             root_dir, baseline_dir, args, config
         )
         print(f"🆕 新建 workspace: {workspace_dir}-{session_id}")
+
+    run_id = f"{session_id}_{args.task}_{datetime.now().strftime('%H%M%S')}"
+    ensure_workspace_dependencies_in_container(
+        workspace_dir=workspace_dir,
+        run_id=run_id,
+        image=args.runtime_image,
+    )
+    assert_clean_after_dependency_install(workspace_dir)
 
     start_tag = read_current_tag_or_head(workspace_dir)
     pre_commit = resolve_commit(workspace_dir, start_tag)
@@ -397,8 +609,6 @@ def main():
 
     (task_archive_dir / "prompt.md").write_text(final_prompt, encoding="utf-8")
 
-    run_id = f"{session_id}_{args.task}_{datetime.now().strftime('%H%M%S')}"
-
     agent_run = run_agent_task(
         workspace_dir=workspace_dir,
         task_artifact_dir=task_archive_dir,
@@ -447,6 +657,7 @@ def main():
         task_archive_dir=task_archive_dir,
         task_id=args.task,
         run_id=run_id,
+        image=args.runtime_image,
     )
     print(f"🧪 Functional acceptance: {test_run['test_status']}")
 

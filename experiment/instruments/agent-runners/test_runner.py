@@ -12,11 +12,12 @@
 # commit stays exactly what the agent produced.
 
 import json
-import os
 import shutil
 import subprocess
 import time
 from pathlib import Path
+
+from docker_runner import DEFAULT_RUNTIME_IMAGE, run_workspace_container_command
 
 
 def resolve_test_suite(root_dir: Path, task_id: str):
@@ -54,12 +55,40 @@ def make_throwaway_copy(workspace_dir: Path, run_id: str) -> Path:
     return tmp_dir
 
 
-def ensure_test_database(root_dir: Path, workspace_dir: Path, db_config: dict) -> dict:
-    """Start the docker-compose test database profile and wait for it to be healthy."""
+def resolve_test_compose_file(
+    root_dir: Path, workspace_dir: Path, db_config: dict
+) -> Path:
     compose_file = workspace_dir / db_config["compose_file"]
 
     if not compose_file.exists():
         compose_file = root_dir / "baseline" / db_config["compose_file"]
+    return compose_file
+
+
+def ensure_test_database(root_dir: Path, workspace_dir: Path, db_config: dict) -> dict:
+    """Start the docker-compose test database profile and wait for it to be healthy."""
+    compose_file = resolve_test_compose_file(root_dir, workspace_dir, db_config)
+    container_name = db_config.get("container_name", "crm_baseline_db_test")
+
+    existing_health = subprocess.run(
+        ["docker", "inspect", "--format={{.State.Health.Status}}", container_name],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if existing_health.returncode == 0:
+        if existing_health.stdout.strip() == "healthy":
+            return {
+                "status": "ok",
+                "container_name": container_name,
+                "started_by_runner": False,
+            }
+        return {
+            "status": "error",
+            "reason": "existing_test_database_not_healthy",
+            "container_name": container_name,
+            "health": existing_health.stdout.strip(),
+        }
 
     up_result = subprocess.run(
         [
@@ -81,7 +110,6 @@ def ensure_test_database(root_dir: Path, workspace_dir: Path, db_config: dict) -
             "stderr": up_result.stderr,
         }
 
-    container_name = db_config.get("container_name", "crm_baseline_db_test")
     deadline = time.monotonic() + db_config.get("health_check_timeout_seconds", 60)
 
     while time.monotonic() < deadline:
@@ -93,11 +121,46 @@ def ensure_test_database(root_dir: Path, workspace_dir: Path, db_config: dict) -
         )
 
         if health.returncode == 0 and health.stdout.strip() == "healthy":
-            return {"status": "ok"}
+            return {
+                "status": "ok",
+                "container_name": container_name,
+                "started_by_runner": True,
+            }
 
         time.sleep(2)
 
-    return {"status": "error", "reason": "db_not_healthy_before_timeout"}
+    return {
+        "status": "error",
+        "reason": "db_not_healthy_before_timeout",
+        "container_name": container_name,
+        "started_by_runner": True,
+    }
+
+
+def stop_test_database(root_dir: Path, workspace_dir: Path, db_config: dict) -> dict:
+    """Stop the dedicated acceptance database container after a test run."""
+    compose_file = resolve_test_compose_file(root_dir, workspace_dir, db_config)
+    result = subprocess.run(
+        [
+            "docker",
+            "compose",
+            "-f",
+            str(compose_file),
+            "--profile",
+            db_config["compose_profile"],
+            "stop",
+            db_config["compose_service"],
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return {
+        "status": "ok" if result.returncode == 0 else "error",
+        "exit_code": result.returncode,
+        "stdout": result.stdout,
+        "stderr": result.stderr,
+    }
 
 
 def overlay_suite_files(suite_dir: Path, tmp_dir: Path, suite: dict) -> Path:
@@ -112,24 +175,34 @@ def overlay_suite_files(suite_dir: Path, tmp_dir: Path, suite: dict) -> Path:
     return project_dir
 
 
-def run_command(command: str, cwd: Path, env_overrides: dict, timeout_seconds: int) -> dict:
-    env = {**os.environ, **env_overrides}
+def run_command_in_container(
+    command: str,
+    workspace_dir: Path,
+    workspace_subdir: str,
+    image: str,
+    env_overrides: dict[str, str],
+    timeout_seconds: int,
+    run_id: str,
+) -> dict:
+    """Run one acceptance command in an ephemeral Linux container."""
     started_at = time.monotonic()
 
     try:
-        result = subprocess.run(
-            command,
-            shell=True,
-            cwd=cwd,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-            check=False,
+        result = run_workspace_container_command(
+            workspace_dir=workspace_dir,
+            run_id=run_id,
+            image=image,
+            command=command,
+            working_directory=f"/workspace/{workspace_subdir}",
+            env=env_overrides,
+            timeout_seconds=timeout_seconds,
+            add_host_gateway=True,
         )
 
         return {
             "command": command,
+            "runtime": "docker",
+            "image": image,
             "exit_code": result.returncode,
             "stdout": result.stdout,
             "stderr": result.stderr,
@@ -139,6 +212,8 @@ def run_command(command: str, cwd: Path, env_overrides: dict, timeout_seconds: i
     except subprocess.TimeoutExpired as error:
         return {
             "command": command,
+            "runtime": "docker",
+            "image": image,
             "exit_code": None,
             "stdout": error.stdout or "",
             "stderr": error.stderr or "",
@@ -172,11 +247,27 @@ def parse_jest_style_report(report_path: Path):
     }
 
 
-def run_suite(suite_dir: Path, tmp_dir: Path, suite: dict) -> dict:
+def run_suite(
+    suite_dir: Path,
+    tmp_dir: Path,
+    suite: dict,
+    image: str,
+    run_id: str,
+    shared_env: dict[str, str],
+) -> dict:
     project_dir = overlay_suite_files(suite_dir, tmp_dir, suite)
     timeout_seconds = suite.get("timeout_seconds", 300)
+    suite_run_id = f"{run_id}-{suite['id']}"
 
-    install_result = run_command(suite["commands"]["install"], project_dir, {}, timeout_seconds)
+    install_result = run_command_in_container(
+        command=suite["commands"]["install"],
+        workspace_dir=tmp_dir,
+        workspace_subdir=suite["workspace_subdir"],
+        image=image,
+        env_overrides={},
+        timeout_seconds=timeout_seconds,
+        run_id=f"{suite_run_id}-install",
+    )
 
     if install_result["timed_out"] or install_result["exit_code"] != 0:
         return {
@@ -188,8 +279,14 @@ def run_suite(suite_dir: Path, tmp_dir: Path, suite: dict) -> dict:
             "summary": None,
         }
 
-    test_result = run_command(
-        suite["commands"]["test"], project_dir, suite.get("env", {}), timeout_seconds
+    test_result = run_command_in_container(
+        command=suite["commands"]["test"],
+        workspace_dir=tmp_dir,
+        workspace_subdir=suite["workspace_subdir"],
+        image=image,
+        env_overrides={**shared_env, **suite.get("env", {})},
+        timeout_seconds=timeout_seconds,
+        run_id=f"{suite_run_id}-test",
     )
 
     summary = None
@@ -244,6 +341,7 @@ def run_functional_tests(
     task_archive_dir: Path,
     task_id: str,
     run_id: str,
+    image: str = DEFAULT_RUNTIME_IMAGE,
 ) -> dict:
     """Run one task's acceptance suite (if any) and archive normalized results.
 
@@ -267,9 +365,10 @@ def run_functional_tests(
         }
 
     tmp_dir = make_throwaway_copy(workspace_dir, run_id)
+    db_status = None
+    suite_results = []
 
     try:
-        db_status = None
         if config.get("db"):
             db_status = ensure_test_database(root_dir, workspace_dir, config["db"])
 
@@ -285,13 +384,45 @@ def run_functional_tests(
                     "test_execution_file": "test_execution.json",
                 }
 
-        suite_results = [run_suite(suite_dir, tmp_dir, suite) for suite in config["suites"]]
+        shared_env = {}
+        if config.get("db"):
+            shared_env = {
+                "DB_HOST": config["db"].get(
+                    "container_host", "host.docker.internal"
+                ),
+                "DB_PORT": str(config["db"].get("host_port", 5435)),
+            }
+
+        suite_results = [
+            run_suite(
+                suite_dir=suite_dir,
+                tmp_dir=tmp_dir,
+                suite=suite,
+                image=image,
+                run_id=run_id,
+                shared_env=shared_env,
+            )
+            for suite in config["suites"]
+        ]
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
+        if (
+            db_status
+            and db_status.get("started_by_runner")
+        ):
+            db_status["shutdown"] = stop_test_database(
+                root_dir, workspace_dir, config["db"]
+            )
 
     write_json(
         test_execution_path,
-        {"run_id": run_id, "task_id": task_id, "db": db_status, "suites": suite_results},
+        {
+            "run_id": run_id,
+            "task_id": task_id,
+            "runtime": {"type": "docker", "image": image},
+            "db": db_status,
+            "suites": suite_results,
+        },
     )
 
     status = overall_status(suite_results)

@@ -1,41 +1,41 @@
 {
   "schema_version": "0.3.0",
-  "evaluation_profile_hash": "sha256:a23fb707be4dd352f5c2863d6682f5edafffbc8eaadc3bbdcf625f2769184cc7",
-  "run_id": "baseline_Base_20260817_013245",
+  "evaluation_profile_hash": "sha256:14b04a670435b70d738f7ba2d21cc3e81aadc2d570a9f4f71ca796604f525390",
+  "run_id": "baseline_Base_20260817_125231",
   "trajectory_id": "baseline",
   "task_id": "Base",
   "rulepack_id": "task::Base",
   "target": {
     "workspace_path": "/Users/luowei/project/ai-architecture-integrity-study/baseline",
-    "pre_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab",
-    "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab",
-    "baseline_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+    "pre_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec",
+    "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec",
+    "baseline_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
   },
   "comparison": {
     "mode": "self",
     "baseline": {
       "path": null,
       "sha256": null,
-      "run_id": "baseline_Base_20260817_013245",
-      "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+      "run_id": "baseline_Base_20260817_125231",
+      "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
     },
     "pre": {
       "path": null,
       "sha256": null,
-      "run_id": "baseline_Base_20260817_013245",
-      "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+      "run_id": "baseline_Base_20260817_125231",
+      "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
     },
     "post": {
       "path": null,
       "sha256": null,
-      "run_id": "baseline_Base_20260817_013245",
-      "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+      "run_id": "baseline_Base_20260817_125231",
+      "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
     }
   },
   "env_snapshot": {
-    "node_version": "v23.10.0",
+    "node_version": "v20.20.2",
     "pnpm_version": "9.0.0",
-    "harness_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab",
+    "harness_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec",
     "os": "Darwin 25.4.0 (arm64)",
     "tool_versions": {
       "backend-static": "0.2.0",
@@ -454,13 +454,13 @@
           "adapter_meta": {
             "backend-static": {
               "status": "ok",
-              "duration_ms": 187,
+              "duration_ms": 301,
               "files_scanned": 39,
               "parse_errors": []
             },
             "dep-cruiser": {
               "status": "ok",
-              "duration_ms": 778,
+              "duration_ms": 977,
               "warnings": [],
               "cwd": "/Users/luowei/project/ai-architecture-integrity-study/baseline/backend",
               "targets": [
@@ -1038,7 +1038,7 @@
           "adapter_meta": {
             "frontend-static": {
               "status": "ok",
-              "duration_ms": 246,
+              "duration_ms": 297,
               "files_scanned": 98,
               "parse_errors": []
             }
@@ -1711,7 +1711,7 @@
       "judgments": []
     }
   },
-  "duration_ms": 7964,
+  "duration_ms": 343095,
   "execution_status": "completed",
   "comparison_status": "valid",
   "errors": []

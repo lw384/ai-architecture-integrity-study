@@ -7,7 +7,7 @@
 // imports below assume that exact destination — two levels up from
 // test/acceptance/T1/ reaches the workspace's own test/setup/*, NOT
 // baseline's, since the agent's copy may have modified those helpers), runs
-// `pnpm test:e2e --testPathPattern=acceptance` against it, then discards the
+// the configured npm/Jest command against it, then discards the
 // whole acceptance/ directory. See experiment/design/tasks/T1_structured.md
 // ("## 4. Requirements", "## 5. API Contract") for the spec this file checks.
 //
@@ -397,7 +397,7 @@ describe('Deal seed scenarios (e2e)', () => {
   });
 
   it('creates at least 8 Deals across at least 4 distinct stages after the demo seed', async () => {
-    runSeedCommand('pnpm db:reset:seed:demo');
+    runSeedCommand('npm run db:reset:seed:demo');
 
     const list = await request(app.getHttpServer())
       .get('/api/deals?pageSize=50')
@@ -411,7 +411,7 @@ describe('Deal seed scenarios (e2e)', () => {
   });
 
   it('creates a Deal with contactId=null and a Deal with expectedCloseDate=null after the edge-case seed', async () => {
-    runSeedCommand('pnpm db:reset:seed:edge-case');
+    runSeedCommand('npm run db:reset:seed:edge-case');
 
     const list = await request(app.getHttpServer())
       .get('/api/deals?pageSize=50')

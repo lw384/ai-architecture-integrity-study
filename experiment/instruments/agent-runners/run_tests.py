@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from docker_runner import DEFAULT_RUNTIME_IMAGE
 from run_harness import checkout_tag, resolve_output_dir, resolve_workspace_dir
 from test_runner import run_functional_tests
 
@@ -74,6 +75,11 @@ def main() -> None:
         action="store_true",
         help="Replace existing acceptance outputs in the selected output directory",
     )
+    parser.add_argument(
+        "--runtime-image",
+        default=DEFAULT_RUNTIME_IMAGE,
+        help=f"Pure Node Linux image used for tests (default: {DEFAULT_RUNTIME_IMAGE})",
+    )
     args = parser.parse_args()
 
     if not args.run_id and not args.workspace_dir:
@@ -115,6 +121,7 @@ def main() -> None:
         task_archive_dir=output_dir,
         task_id=args.task,
         run_id=run_id,
+        image=args.runtime_image,
     )
 
     print(f"🧪 Functional acceptance: {test_run['test_status']}")

@@ -6,6 +6,8 @@
     "compose_file": "docker-compose.yml",
     "compose_service": "postgres-test",
     "compose_profile": "test",
+    "container_host": "host.docker.internal",
+    "host_port": 5435,
     "health_check_timeout_seconds": 60
   },
   "suites": [
@@ -15,8 +17,8 @@
       "workspace_subdir": "backend",
       "overlay_dir": "test/acceptance/T1",
       "commands": {
-        "install": "pnpm install",
-        "test": "pnpm exec jest --config test/jest-e2e.json --runInBand --testPathPattern=acceptance/T1 --json --outputFile=acceptance-report.json"
+        "install": "npm ci",
+        "test": "npx --no-install jest --config test/jest-e2e.json --runInBand test/acceptance/T1/deal.e2e-spec.ts --json --outputFile=acceptance-report.json"
       },
       "json_report_file": "acceptance-report.json",
       "env": { "NODE_ENV": "test" },
@@ -28,8 +30,8 @@
       "workspace_subdir": "frontend",
       "overlay_dir": "src/test/acceptance/T1",
       "commands": {
-        "install": "pnpm install",
-        "test": "pnpm exec vitest run src/test/acceptance/T1 --reporter=json --outputFile=acceptance-report.json"
+        "install": "npm ci --legacy-peer-deps",
+        "test": "npx --no-install vitest run src/test/acceptance/T1 --reporter=json --outputFile=acceptance-report.json"
       },
       "json_report_file": "acceptance-report.json",
       "env": {},
