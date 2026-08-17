@@ -1,0 +1,3 @@
+session_id,task_id,agent,strategy,reviewed_from_tag,reviewed_commit,review_status,n_findings,harness_findings_at_t3,harness_constraint_result_at_t3,blind_spot,under_reported
+session_20260817_014141,T5,codex,minimal,task-T3-done,370f45296fe881910fac11febabc86a75cf175f4,issues_found,5,26,failed,False,True
+session_20260817_031026,T5,codex,structured,task-T3-done,4a86da03caad75d37aa7214a987788cf84c7f168,issues_found,5,38,indeterminate,False,True

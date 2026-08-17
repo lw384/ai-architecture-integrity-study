@@ -1,0 +1,14 @@
+evaluation_id,session_id,task_id,agent,strategy,execution_status,comparison_status,backend_status,frontend_status,cross_status,scope_errors,metric_errors,metric_coverage,is_reliable
+session_20260817_031026/T3,session_20260817_031026,T3,codex,structured,partial,valid,error,completed,completed,1,1,0.95,False
+baseline/Base,baseline,Base,baseline,baseline,completed,valid,completed,completed,completed,0,0,0.95,True
+session_20260817_014141/T1,session_20260817_014141,T1,codex,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_014141/T2,session_20260817_014141,T2,codex,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_014141/T3,session_20260817_014141,T3,codex,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_031026/T1,session_20260817_031026,T1,codex,structured,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_031026/T2,session_20260817_031026,T2,codex,structured,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_130253/T1,session_20260817_130253,T1,claude,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_130253/T2,session_20260817_130253,T2,claude,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_130253/T3,session_20260817_130253,T3,claude,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_160757/T1,session_20260817_160757,T1,claude,structured,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_160757/T2,session_20260817_160757,T2,claude,structured,completed,valid,completed,completed,completed,0,0,1.0,True
+session_20260817_160757/T3,session_20260817_160757,T3,claude,structured,completed,valid,completed,completed,completed,0,0,1.0,True

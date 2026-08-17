@@ -1,0 +1,7 @@
+agent,task_id,minimal,structured
+claude,T1,11.0,9.0
+claude,T2,9.0,8.0
+claude,T3,2.0,4.0
+codex,T1,11.0,14.0
+codex,T2,20.0,38.0
+codex,T3,11.0,16.0

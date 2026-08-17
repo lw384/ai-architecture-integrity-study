@@ -1,0 +1,13 @@
+session_id,agent,strategy,task_id,task_order,trajectory_introduced_count
+session_20260817_130253,claude,minimal,T1,1,11
+session_20260817_130253,claude,minimal,T2,2,12
+session_20260817_130253,claude,minimal,T3,3,9
+session_20260817_160757,claude,structured,T1,1,9
+session_20260817_160757,claude,structured,T2,2,10
+session_20260817_160757,claude,structured,T3,3,9
+session_20260817_014141,codex,minimal,T1,1,11
+session_20260817_014141,codex,minimal,T2,2,25
+session_20260817_014141,codex,minimal,T3,3,22
+session_20260817_031026,codex,structured,T1,1,14
+session_20260817_031026,codex,structured,T2,2,41
+session_20260817_031026,codex,structured,T3,3,34

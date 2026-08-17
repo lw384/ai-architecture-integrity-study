@@ -1,0 +1,5 @@
+agent,strategy,n_points,final_trajectory_introduced_count,shape
+claude,minimal,3,9,plateau_or_decline
+claude,structured,3,9,plateau_or_decline
+codex,minimal,3,22,plateau_or_decline
+codex,structured,3,34,plateau_or_decline

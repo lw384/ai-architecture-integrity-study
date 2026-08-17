@@ -35,10 +35,11 @@ Stage 4  深层机制挖掘         → 上面三步看不出来的、需要跨�
 - **`manifest.json`**：`status`（`evaluated`/`partial`/...）和 `events` 数组（`agent_started`/`agent_completed`/`evaluation_completed`），可作为"agent 有没有跑完全程"的免费二元信号
 - **实验设计的自变量轴**：`agent`（Claude/Codex/…）× `task`（T0–T5）× `strategy`（minimal/structured）；把同一个 `agent×strategy` 沿 `task` 序列排开，就是第四个轴——迭代序号，供纵向分析用
 
-两个必须提前知道的数据陷阱，处理办法留到 Stage 0：
+三个必须提前知道的数据陷阱，处理办法留到 Stage 0：
 
 1. **baseline 自身不干净**——实测中 baseline 在没有任何 agent 触碰的情况下，就已经对 frontend JSX 深度规则产生 33 条违规。任何"总违规数"都会把这笔预存债务错误地记到 agent 头上。
 2. **metrics 层可能整条报错**——实测中 `dependency-graph-size` 这类指标出现过 `status: "error"`（找不到 dep-cruiser 报告），此时 `score` 是 `null`，绝不能当 0 处理。
+3. **架构完整性数据和任务完成情况来自完全不同的文件**——`harness_evaluation.json` 只回答"架构变得更好还是更差"，不知道 agent 有没有按协议正常收尾、生成的功能有没有通过独立验收测试。这两件事的信号在 `execution.json` / `test_execution.json` / `test_result.json` 里，必须单独核实，不能和架构退化的结论混在一起。
 
 ---
 
@@ -65,6 +66,21 @@ Stage 4  深层机制挖掘         → 上面三步看不出来的、需要跨�
 **推荐图表**：不需要图，一张对照表即可——「类目｜baseline 原始违规数｜agent 后原始违规数｜净新增（delta）」。
 
 **期望结论**：确认后续所有分析都建立在"净新增"而不是"总量"之上；顺带验证 delta 计算逻辑本身可信。
+
+### 2.3 任务完成度校验（Task Completion Gate）
+
+**目的**：`harness_evaluation.json` 只测架构完整性，完全不知道"agent 有没有跑完、生成的功能有没有通过验收测试"。这两件事都可能因为执行层面的原因失真——agent 没有按协议正常收尾（比如没有输出 `[TASK_COMPLETED]`），或者独立的功能验收套件本身跑挂了（`error`，不是 `fail`）。如果不单独核实，容易把执行层面的问题误读成架构完整性的结论。
+
+**做法**：对每个 `session × task`，联合读取三份与 `harness_evaluation.json` 平级的文件：
+- `execution.json`（agent 执行记录）：`metrics.status`（success/failed）、`completion_marker_found`、`agent_reported_error`、`num_turns`、`total_cost_usd`、`duration_seconds`
+- `test_result.json`（功能验收结果，标准化后）：`status`（pass/fail/error/skipped）
+- `test_execution.json`（功能验收原始记录）：仅在需要下钻某个 `error`/`fail` 的具体原因时使用（是哪个 suite、install 阶段还是 test 阶段失败）
+
+产出一张 `session × task` 粒度的核对表。**注意边界**：`test_status` 不作为架构完整性分析的过滤条件——按 §0 的范围声明，功能是否正确和架构是否完整是两个独立问题，功能验收 `fail`（真实的功能缺陷）不代表这次架构评估的数据不可用；但 `error`（验收基础设施本身没跑起来）和 agent 未按协议完成，需要在正文或附录里明确标注，避免读者误解为"这个条件下架构分数低是因为代码根本跑不起来"。
+
+**推荐图表**：不强制要求图，一张核对表即可（处理方式同 §2.2）。如果需要图，可以画一个按 `task_id` 分组的 `test_status` 堆叠条形图（展示验收套件覆盖率和通过率），或者把 `num_turns` / `total_cost_usd` / `duration_seconds` 做成箱型图——这类图更适合放进论文的实验设置/成本附录，不属于 Results 正文。
+
+**期望结论**：确认所有进入 Stage 1 及以后分析的 run，都来自协议上正常完成的 agent 执行；同时保留一份"这次架构评估对应的实现功能是否可用"的旁证信息，供讨论"架构完整性 vs 功能正确性"是否存在反直觉组合时引用——即便 §8 的四象限分析要等 `judgments` 层实现才能真正做，这里先把功能维度的原始信号积累起来。
 
 ---
 
@@ -178,6 +194,18 @@ Stage 4  深层机制挖掘         → 上面三步看不出来的、需要跨�
 **推荐图表**：相关系数热力图；如果做了 PCA，再加一张 biplot（前两个主成分的散点图，叠加各指标的载荷向量）。
 
 **期望结论**：确认哪些指标是真正独立的信号、哪些是同一现象的冗余测量。这既能简化 Results 的呈现（不用堆 9 张图），也能反过来验证 Stage 0（数据清洗）阶段没有遗漏——如果两个理论上无关的指标出现异常高相关，可能提示计算逻辑有共享 bug。
+
+### 6.4 Agent 自评校准度（Self-Assessment Calibration）
+
+**目的**：T5 让 agent 在看不到 Harness 客观结果的前提下，自己审查 T1–T3 结束后的 workspace 并指出架构一致性问题。这份自评本身不是架构完整性的度量，但可以回答一个不同的问题——**agent 对自己造成的架构问题有没有自知之明**。这需要联合读取 T5 的自评结果和同一个 commit（`reviewed_from_tag`，目前恒为 `task-T3-done`）上 Harness 的客观 finding，属于本节"跨字段联合分析"的范畴。
+
+**做法**：
+- **数量校准**：对比 agent 自报的 finding 数和 Harness 在同一个 commit 上的绝对 finding 数（§2.2 的 `absolute` 口径）。如果 agent 报告"没有问题"（`NO_ARCHITECTURE_CONSISTENCY_ISSUES_FOUND`）但 Harness 在那个 commit 上有真实违规，记为 **盲区（blind spot）**；如果 agent 报了问题但数量远少于 Harness 的客观计数，记为**低估（under-reported）**。
+- **位置校准**：agent 自报 finding 里提到的文件路径，和 Harness 在同一 commit 上真正标记违规的文件，按文件名做粗粒度匹配（自由文本和结构化规则 finding 没法做到精确匹配，这里只做启发式的"点没点对地方"检验，不追求语义级对齐）。
+
+**推荐图表**：不强制要求图，一张对照表即可（自报数 vs Harness 客观数 vs 位置匹配率）。样本积累到一定量后，可以画一个散点图——x 轴 Harness 客观 finding 数，y 轴 agent 自报 finding 数，理想校准应该落在 y=x 附近；点越靠近 x 轴（y 远小于 x），说明 agent 对自己的架构问题越没有自知之明。
+
+**期望结论**：这是一个关于"AI 能不能被信任做自我审查"的独立发现，不影响 §2–§6 其他小节对架构完整性本身的结论。如果盲区或低估比例高，说明不能把"让 agent 自己审查代码"当作 Harness 之外的替代机制——这本身也呼应了整个研究"为什么需要外部强制约束"的立项动机。
 
 ---
 
