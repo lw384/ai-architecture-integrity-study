@@ -293,6 +293,12 @@ def run_agent_task(
         "total_cost_usd": total_cost_usd,
         "usage": usage,
         "parse_error": parsed.get("parse_error"),
+        # Persisted for both result formats so any downstream reader (e.g.
+        # review_runner.py for insight-only tasks) can get the agent's final
+        # text without branching on agent_name/result_format. Previously this
+        # only survived inside agent_result for the "json" (claude) format;
+        # the "jsonl" (codex) format derived it but discarded it.
+        "agent_text": agent_text,
     }
 
     execution_record = {

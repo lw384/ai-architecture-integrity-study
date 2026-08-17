@@ -1,0 +1,24 @@
+{
+  "status": "pass",
+  "task_id": "T1",
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "pass",
+      "reason": null,
+      "total": 14,
+      "passed": 14,
+      "failed": 0,
+      "failed_ids": []
+    },
+    {
+      "suite_id": "frontend",
+      "status": "pass",
+      "reason": null,
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "failed_ids": []
+    }
+  ]
+}

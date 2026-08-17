@@ -1,0 +1,10 @@
+session_id: session_20260817_160757
+workspace_dir: /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757
+created_at: 2026-08-17T16:13:19.930994
+initial_config:
+  agent: claude
+  model: claude-sonnet-4-6
+  strategy: structured
+  runtime_image: node:20-bookworm-slim
+  write_memory_md: false
+  memory_filename: none

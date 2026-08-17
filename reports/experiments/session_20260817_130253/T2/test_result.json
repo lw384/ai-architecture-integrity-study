@@ -1,0 +1,5 @@
+{
+  "status": "skipped",
+  "task_id": "T2",
+  "reason": "no acceptance suite defined for this task"
+}

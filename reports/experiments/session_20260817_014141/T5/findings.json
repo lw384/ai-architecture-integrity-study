@@ -1,0 +1,6 @@
+{
+  "source_file": "review.md",
+  "status": "parse_incomplete",
+  "findings": [],
+  "parse_warning": "未在 Markdown 中找到符合 T5.md 字段格式的 finding，也没有找到 NO_ARCHITECTURE_CONSISTENCY_ISSUES_FOUND 标记"
+}

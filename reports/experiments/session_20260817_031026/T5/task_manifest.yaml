@@ -1,0 +1,11 @@
+session_id: session_20260817_031026
+task_id: T5
+run_id: session_20260817_031026_T5_review_170016
+task_type: review
+reviewed_from_tag: task-T3-done
+reviewed_commit: 4a86da03caad75d37aa7214a987788cf84c7f168
+prompt_file: prompt.md
+execution_file: execution.json
+review_file: review.md
+findings_file: findings.json
+workspace_unchanged: true

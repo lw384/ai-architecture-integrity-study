@@ -1,41 +1,41 @@
 {
   "schema_version": "0.3.0",
-  "evaluation_profile_hash": "sha256:a23fb707be4dd352f5c2863d6682f5edafffbc8eaadc3bbdcf625f2769184cc7",
-  "run_id": "session_20260817_103739_T1_104100",
-  "trajectory_id": "session_20260817_103739",
-  "task_id": "T1",
-  "rulepack_id": "task::T1",
+  "evaluation_profile_hash": "sha256:14b04a670435b70d738f7ba2d21cc3e81aadc2d570a9f4f71ca796604f525390",
+  "run_id": "session_20260817_160757_T3_173706",
+  "trajectory_id": "session_20260817_160757",
+  "task_id": "T3",
+  "rulepack_id": "task::T3",
   "target": {
-    "workspace_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739",
-    "pre_commit": "02c3d6c57502a4f15ffbfc7ca1fc7f4c6b8117d7",
-    "post_commit": "70c4f4f5e972f5ebd3eb876a291f1b4a32b0ba32",
-    "baseline_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+    "workspace_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757",
+    "pre_commit": "7200b988306d9195e546616972243d37e1165c03",
+    "post_commit": "a0bae781aa551cadcf76ee9b7cb670d28130dd44",
+    "baseline_commit": "26268ba24119c02ab5a677fc791441c3ea219ce2"
   },
   "comparison": {
     "mode": "trajectory",
     "baseline": {
       "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
-      "sha256": "sha256:9df816bc6b2733bed304d1927566e204c01427c6400fde2904220c13a3ae51b6",
-      "run_id": "baseline_Base_20260817_013245",
-      "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+      "sha256": "sha256:2c3432a82314d89cc51c617cd249d626958cdb3968b2cb867e2786547f423188",
+      "run_id": "baseline_Base_20260817_125231",
+      "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
     },
     "pre": {
-      "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
-      "sha256": "sha256:9df816bc6b2733bed304d1927566e204c01427c6400fde2904220c13a3ae51b6",
-      "run_id": "baseline_Base_20260817_013245",
-      "post_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab"
+      "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260817_160757/T2/harness_evaluation.json",
+      "sha256": "sha256:e7ad27d25c38ffba88d46a1157c10b4322e012294cf2f247ef99a4fc65cfe3b5",
+      "run_id": "session_20260817_160757_T2_165624",
+      "post_commit": "7200b988306d9195e546616972243d37e1165c03"
     },
     "post": {
       "path": null,
       "sha256": null,
-      "run_id": "session_20260817_103739_T1_104100",
-      "post_commit": "70c4f4f5e972f5ebd3eb876a291f1b4a32b0ba32"
+      "run_id": "session_20260817_160757_T3_173706",
+      "post_commit": "a0bae781aa551cadcf76ee9b7cb670d28130dd44"
     }
   },
   "env_snapshot": {
     "node_version": "v20.20.2",
     "pnpm_version": "9.0.0",
-    "harness_commit": "b36abf3e0c3031432448c96eec1f133e885a1aab",
+    "harness_commit": "26268ba24119c02ab5a677fc791441c3ea219ce2",
     "os": "Darwin 25.4.0 (arm64)",
     "tool_versions": {
       "backend-static": "0.2.0",
@@ -53,10 +53,13 @@
       {
         "name": "backend:constraints",
         "version": "0.3.0",
-        "status": "error",
+        "status": "ok",
         "findings": [
-          "Cross-module imports must use index.ts or the target module file.",
-          "Cross-module imports must use index.ts or the target module file."
+          "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test.",
+          "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test.",
+          "Equivalent production functions must reuse one shared implementation.",
+          "Equivalent production functions must reuse one shared implementation.",
+          "Equivalent production functions must reuse one shared implementation."
         ],
         "raw_artifact_path": "scopes/backend/constraints.json"
       },
@@ -67,11 +70,12 @@
         "findings": [
           "Context providers must stay at an approved application or route boundary.",
           "Context providers must stay at an approved application or route boundary.",
+          "contact has competing page owners.",
           "function-clone logic has more than one production implementation.",
           "3 substantive duplicate implementation groups exist across the same files.",
           "component-clone logic has more than one production implementation.",
           "function-clone logic has more than one production implementation.",
-          "3 substantive duplicate implementation groups exist across the same files."
+          "2 substantive duplicate implementation groups exist across the same files."
         ],
         "raw_artifact_path": "scopes/frontend/constraints.json"
       },
@@ -157,26 +161,32 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 1,
+          "value": 0.947368,
           "unit": "ratio",
           "direction": "higher_is_better"
         },
-        "delta_vs_baseline": 0,
+        "delta_vs_baseline": -0.05263200000000001,
         "findings": [
-          "DTO validator coverage: 36/36 (1)"
+          "DTO validator coverage: 54/57 (0.947368)",
+          "Delta vs baseline: -0.052632"
         ],
         "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
       },
       {
         "name": "backend:BE-TEST-M-001-test-coverage",
         "version": "0.1.0",
-        "status": "error",
-        "score": null,
-        "delta_vs_baseline": null,
+        "status": "pass",
+        "score": {
+          "value": 40.15,
+          "unit": "percent",
+          "direction": "higher_is_better"
+        },
+        "delta_vs_baseline": 5.68,
         "findings": [
-          "Runner crashed: Coverage command failed with code 1: ● Validation Error:\n\n  Module ts-jest in the transform option was not found.\n         <rootDir> is: /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739/backend/src\n\n  Configuration Documentation:\n  https://jestjs.io/docs/configuration"
+          "Backend line coverage: 40.15%",
+          "Delta vs baseline: +5.68 percentage points"
         ],
-        "raw_artifact_path": "artifacts/metrics/BE-TEST-M-001-test-coverage.json"
+        "raw_artifact_path": "artifacts/metrics/test-coverage.json"
       },
       {
         "name": "backend:BE-MOCK-M-001-mock-per-test-case",
@@ -189,7 +199,7 @@
         },
         "delta_vs_baseline": 0,
         "findings": [
-          "Mocks per test case: 0/58 (0)"
+          "Mocks per test case: 0/119 (0)"
         ],
         "raw_artifact_path": "artifacts/metrics/mock-per-test-case.json"
       },
@@ -220,8 +230,8 @@
         },
         "delta_vs_baseline": 0,
         "findings": [
-          "Methods over complexity limit (10): 0/38 (0)",
-          "Average cyclomatic complexity: 1.8684"
+          "Methods over complexity limit (10): 0/53 (0)",
+          "Average cyclomatic complexity: 2.0943"
         ],
         "raw_artifact_path": "artifacts/metrics/cyclomatic-complexity-ratio.json"
       },
@@ -230,15 +240,15 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 0.279221,
+          "value": 0.296813,
           "unit": "ratio",
           "direction": "lower_is_better"
         },
-        "delta_vs_baseline": 0.14158199999999999,
+        "delta_vs_baseline": 0.15917399999999998,
         "findings": [
-          "Duplicated lines: 559/2002 (0.279221)",
+          "Duplicated lines: 829/2793 (0.296813)",
           "Clone matches found: 20+ (sample capped)",
-          "Delta vs baseline: +0.141582"
+          "Delta vs baseline: +0.159174"
         ],
         "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
       },
@@ -247,14 +257,14 @@
         "version": "2.0.0",
         "status": "pass",
         "score": {
-          "value": 0.52,
+          "value": 0.56,
           "unit": "levels",
           "direction": "lower_is_better"
         },
-        "delta_vs_baseline": 0.010000000000000009,
+        "delta_vs_baseline": 0.050000000000000044,
         "findings": [
-          "Average maximum render-decision depth: 0.52",
-          "Delta vs baseline: +0.01"
+          "Average maximum render-decision depth: 0.56",
+          "Delta vs baseline: +0.05"
         ],
         "raw_artifact_path": "artifacts/metrics/render-decision-depth-average.json"
       },
@@ -263,14 +273,14 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 0.0625,
+          "value": 0.054054,
           "unit": "ratio",
           "direction": "lower_is_better"
         },
-        "delta_vs_baseline": -0.0175,
+        "delta_vs_baseline": -0.025946000000000004,
         "findings": [
-          "Context-provider ratio: 2/32 (0.0625)",
-          "Delta vs baseline: -0.0175"
+          "Context-provider ratio: 2/37 (0.054054)",
+          "Delta vs baseline: -0.025946"
         ],
         "raw_artifact_path": "artifacts/metrics/context-provider-ratio.json"
       },
@@ -295,14 +305,14 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 0.057692,
+          "value": 0.056604,
           "unit": "ratio",
           "direction": "lower_is_better"
         },
-        "delta_vs_baseline": 0.016876000000000002,
+        "delta_vs_baseline": 0.015788000000000003,
         "findings": [
-          "Style mixing ratio: 6/104 (0.057692)",
-          "Delta vs baseline: +0.016876"
+          "Style mixing ratio: 6/106 (0.056604)",
+          "Delta vs baseline: +0.015788"
         ],
         "raw_artifact_path": "artifacts/metrics/style-mixing-ratio.json"
       },
@@ -326,14 +336,14 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 5.8,
+          "value": 5.72,
           "unit": "props",
           "direction": "lower_is_better"
         },
-        "delta_vs_baseline": 0.1299999999999999,
+        "delta_vs_baseline": 0.04999999999999982,
         "findings": [
-          "Average prop-drilling candidate fanout: 5.8",
-          "Delta vs baseline: +0.13"
+          "Average prop-drilling candidate fanout: 5.72",
+          "Delta vs baseline: +0.05"
         ],
         "raw_artifact_path": "artifacts/metrics/prop-drilling-average.json"
       },
@@ -342,15 +352,15 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 0.331739,
+          "value": 0.283218,
           "unit": "ratio",
           "direction": "lower_is_better"
         },
-        "delta_vs_baseline": 0.10069600000000001,
+        "delta_vs_baseline": 0.05217500000000003,
         "findings": [
-          "Duplicated lines: 1942/5854 (0.331739)",
+          "Duplicated lines: 1718/6066 (0.283218)",
           "Clone matches found: 20+ (sample capped)",
-          "Delta vs baseline: +0.100696"
+          "Delta vs baseline: +0.052175"
         ],
         "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
       },
@@ -384,7 +394,7 @@
         "delta_vs_baseline": 0,
         "findings": [
           "Weighted contract-field mismatches: 0",
-          "Total contract positions (route-param + query + body): 44",
+          "Total contract positions (route-param + query + body): 38",
           "Contract field drift density: 0",
           "Baseline report unavailable; delta_vs_baseline set to null."
         ],
@@ -395,16 +405,16 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": null,
+          "value": 0,
           "unit": "ratio",
           "direction": "lower_is_better"
         },
         "delta_vs_baseline": null,
         "findings": [
-          "Resources with an API-facing change: 0",
+          "Resources with an API-facing change: 1",
           "Missing counterpart surfaces: 0",
-          "Total counterpart surfaces: 0",
-          "Propagation incompleteness ratio: null",
+          "Total counterpart surfaces: 2",
+          "Propagation incompleteness ratio: 0",
           "Baseline report unavailable; delta_vs_baseline set to null."
         ],
         "raw_artifact_path": "artifacts/metrics/propagation-incompleteness-ratio.json"
@@ -416,7 +426,7 @@
     {
       "scope_id": "backend",
       "scope_type": "subject",
-      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739/backend",
+      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757/backend",
       "rulepack_id": "ts-nestjs-backend",
       "rulepack_version": "0.3.0",
       "adapters": [
@@ -427,54 +437,115 @@
         "computed-metrics",
         "test-coverage"
       ],
-      "status": "error",
+      "status": "completed",
       "layers": {
         "constraints": {
           "layer": "constraints",
-          "status": "error",
+          "status": "ok",
           "rules_evaluated": 20,
           "findings": [
             {
-              "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+              "rule_id": "BE-DEP-C-004-no-circular-dependencies",
               "rule_version": "0.2.0",
               "tier": null,
               "location": {
-                "file": "src/modules/deal/deal.service.ts",
-                "line": 5,
+                "file": "src/modules/contact/contact-company-link.entity.ts",
+                "line": 2,
                 "column": 32
               },
-              "message": "Cross-module imports must use index.ts or the target module file.",
+              "message": "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test.",
               "evidence": {
-                "source_tool": "backend-static",
-                "source_rule_id": "BE-DOM-C-001",
+                "source_tool": "dep-cruiser",
+                "source_rule_id": "BE-DEP-C-004-no-circular",
                 "payload": {
-                  "source_module": "deal",
-                  "target_module": "company",
-                  "import_path": "../company/company.service",
-                  "resolved_target": "src/modules/company/company.service.ts",
-                  "message": "Cross-module imports must use index.ts or the target module file."
+                  "from_module": "src/modules/contact/contact-company-link.entity.ts",
+                  "to_module": "src/modules/contact/contact.entity.ts",
+                  "dependency_type": "local,import",
+                  "severity": "error"
                 }
               }
             },
             {
-              "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+              "rule_id": "BE-DEP-C-004-no-circular-dependencies",
               "rule_version": "0.2.0",
               "tier": null,
               "location": {
-                "file": "src/modules/deal/deal.service.ts",
-                "line": 6,
-                "column": 32
+                "file": "src/modules/deal/deal-contact-link.entity.ts",
+                "line": 2,
+                "column": 29
               },
-              "message": "Cross-module imports must use index.ts or the target module file.",
+              "message": "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test.",
+              "evidence": {
+                "source_tool": "dep-cruiser",
+                "source_rule_id": "BE-DEP-C-004-no-circular",
+                "payload": {
+                  "from_module": "src/modules/deal/deal-contact-link.entity.ts",
+                  "to_module": "src/modules/deal/deal.entity.ts",
+                  "dependency_type": "local,import",
+                  "severity": "error"
+                }
+              }
+            },
+            {
+              "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+              "rule_version": "0.1.0",
+              "tier": null,
+              "location": {
+                "file": "src/core/seed/scenarios/edge-case.seed.ts",
+                "line": 28,
+                "column": 20
+              },
+              "message": "Equivalent production functions must reuse one shared implementation.",
               "evidence": {
                 "source_tool": "backend-static",
-                "source_rule_id": "BE-DOM-C-001",
+                "source_rule_id": "BE-DUP-C-003",
                 "payload": {
-                  "source_module": "deal",
-                  "target_module": "contact",
-                  "import_path": "../contact/contact.service",
-                  "resolved_target": "src/modules/contact/contact.service.ts",
-                  "message": "Cross-module imports must use index.ts or the target module file."
+                  "implementation_kind": "function",
+                  "function_name": null,
+                  "message": "Equivalent production functions must reuse one shared implementation.",
+                  "first_file": "src/core/seed/scenarios/demo.seed.ts"
+                }
+              }
+            },
+            {
+              "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+              "rule_version": "0.1.0",
+              "tier": null,
+              "location": {
+                "file": "src/modules/deal/deal.service.ts",
+                "line": 222,
+                "column": 3
+              },
+              "message": "Equivalent production functions must reuse one shared implementation.",
+              "evidence": {
+                "source_tool": "backend-static",
+                "source_rule_id": "BE-DUP-C-003",
+                "payload": {
+                  "implementation_kind": "function",
+                  "function_name": "resolveCompany",
+                  "message": "Equivalent production functions must reuse one shared implementation.",
+                  "first_file": "src/modules/contact/contact.service.ts"
+                }
+              }
+            },
+            {
+              "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+              "rule_version": "0.1.0",
+              "tier": null,
+              "location": {
+                "file": "src/modules/deal/deal.service.ts",
+                "line": 222,
+                "column": 31
+              },
+              "message": "Equivalent production functions must reuse one shared implementation.",
+              "evidence": {
+                "source_tool": "backend-static",
+                "source_rule_id": "BE-DUP-C-003",
+                "payload": {
+                  "implementation_kind": "function",
+                  "function_name": null,
+                  "message": "Equivalent production functions must reuse one shared implementation.",
+                  "first_file": "src/modules/contact/contact.service.ts"
                 }
               }
             }
@@ -484,53 +555,51 @@
             "BE-DEP-C-001-intra-module-layering": [],
             "BE-DEP-C-002-infrastructure-isolation": [],
             "BE-DEP-C-003-framework-layer-purity": [],
-            "BE-DEP-C-004-no-circular-dependencies": [],
-            "BE-DOM-C-001-no-cross-module-deep-import": [
+            "BE-DEP-C-004-no-circular-dependencies": [
               {
-                "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+                "rule_id": "BE-DEP-C-004-no-circular-dependencies",
                 "rule_version": "0.2.0",
                 "tier": null,
                 "location": {
-                  "file": "src/modules/deal/deal.service.ts",
-                  "line": 5,
+                  "file": "src/modules/contact/contact-company-link.entity.ts",
+                  "line": 2,
                   "column": 32
                 },
-                "message": "Cross-module imports must use index.ts or the target module file.",
+                "message": "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test.",
                 "evidence": {
-                  "source_tool": "backend-static",
-                  "source_rule_id": "BE-DOM-C-001",
+                  "source_tool": "dep-cruiser",
+                  "source_rule_id": "BE-DEP-C-004-no-circular",
                   "payload": {
-                    "source_module": "deal",
-                    "target_module": "company",
-                    "import_path": "../company/company.service",
-                    "resolved_target": "src/modules/company/company.service.ts",
-                    "message": "Cross-module imports must use index.ts or the target module file."
+                    "from_module": "src/modules/contact/contact-company-link.entity.ts",
+                    "to_module": "src/modules/contact/contact.entity.ts",
+                    "dependency_type": "local,import",
+                    "severity": "error"
                   }
                 }
               },
               {
-                "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
+                "rule_id": "BE-DEP-C-004-no-circular-dependencies",
                 "rule_version": "0.2.0",
                 "tier": null,
                 "location": {
-                  "file": "src/modules/deal/deal.service.ts",
-                  "line": 6,
-                  "column": 32
+                  "file": "src/modules/deal/deal-contact-link.entity.ts",
+                  "line": 2,
+                  "column": 29
                 },
-                "message": "Cross-module imports must use index.ts or the target module file.",
+                "message": "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test.",
                 "evidence": {
-                  "source_tool": "backend-static",
-                  "source_rule_id": "BE-DOM-C-001",
+                  "source_tool": "dep-cruiser",
+                  "source_rule_id": "BE-DEP-C-004-no-circular",
                   "payload": {
-                    "source_module": "deal",
-                    "target_module": "contact",
-                    "import_path": "../contact/contact.service",
-                    "resolved_target": "src/modules/contact/contact.service.ts",
-                    "message": "Cross-module imports must use index.ts or the target module file."
+                    "from_module": "src/modules/deal/deal-contact-link.entity.ts",
+                    "to_module": "src/modules/deal/deal.entity.ts",
+                    "dependency_type": "local,import",
+                    "severity": "error"
                   }
                 }
               }
             ],
+            "BE-DOM-C-001-no-cross-module-deep-import": [],
             "BE-DOM-C-002-no-repository-in-module-exports": [],
             "BE-ERR-C-001-no-http-exception-in-service": [],
             "BE-ERR-C-002-throw-only-app-exception": [],
@@ -544,34 +613,103 @@
             "BE-SIZE-C-001-max-method-parameters": [],
             "BE-DUP-C-001-single-resource-owner": [],
             "BE-DUP-C-002-single-policy-implementation": [],
-            "BE-DUP-C-003-no-equivalent-production-code": []
+            "BE-DUP-C-003-no-equivalent-production-code": [
+              {
+                "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+                "rule_version": "0.1.0",
+                "tier": null,
+                "location": {
+                  "file": "src/core/seed/scenarios/edge-case.seed.ts",
+                  "line": 28,
+                  "column": 20
+                },
+                "message": "Equivalent production functions must reuse one shared implementation.",
+                "evidence": {
+                  "source_tool": "backend-static",
+                  "source_rule_id": "BE-DUP-C-003",
+                  "payload": {
+                    "implementation_kind": "function",
+                    "function_name": null,
+                    "message": "Equivalent production functions must reuse one shared implementation.",
+                    "first_file": "src/core/seed/scenarios/demo.seed.ts"
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+                "rule_version": "0.1.0",
+                "tier": null,
+                "location": {
+                  "file": "src/modules/deal/deal.service.ts",
+                  "line": 222,
+                  "column": 3
+                },
+                "message": "Equivalent production functions must reuse one shared implementation.",
+                "evidence": {
+                  "source_tool": "backend-static",
+                  "source_rule_id": "BE-DUP-C-003",
+                  "payload": {
+                    "implementation_kind": "function",
+                    "function_name": "resolveCompany",
+                    "message": "Equivalent production functions must reuse one shared implementation.",
+                    "first_file": "src/modules/contact/contact.service.ts"
+                  }
+                }
+              },
+              {
+                "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+                "rule_version": "0.1.0",
+                "tier": null,
+                "location": {
+                  "file": "src/modules/deal/deal.service.ts",
+                  "line": 222,
+                  "column": 31
+                },
+                "message": "Equivalent production functions must reuse one shared implementation.",
+                "evidence": {
+                  "source_tool": "backend-static",
+                  "source_rule_id": "BE-DUP-C-003",
+                  "payload": {
+                    "implementation_kind": "function",
+                    "function_name": null,
+                    "message": "Equivalent production functions must reuse one shared implementation.",
+                    "first_file": "src/modules/contact/contact.service.ts"
+                  }
+                }
+              }
+            ]
           },
           "background_findings": [],
           "background_by_rule": {},
           "adapter_meta": {
             "backend-static": {
               "status": "ok",
-              "duration_ms": 184,
-              "files_scanned": 49,
+              "duration_ms": 250,
+              "files_scanned": 56,
               "parse_errors": []
             },
             "dep-cruiser": {
               "status": "ok",
-              "duration_ms": 1863,
+              "duration_ms": 953,
               "warnings": [],
-              "cwd": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739/backend",
+              "cwd": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757/backend",
               "targets": [
                 "src"
               ],
-              "tsconfig_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739/backend/tsconfig.json",
+              "tsconfig_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757/backend/tsconfig.json",
               "tsconfig_source": "auto",
               "ts_mode": "full",
               "exit_code": 0
             },
             "contract-diff": {
-              "status": "error",
-              "repo_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739",
-              "error": ""
+              "status": "ok",
+              "repo_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757",
+              "changed_entities": [],
+              "schema_changes": [],
+              "uncovered_schema_changes": [],
+              "changed_migrations": [
+                "backend/src/core/database/migrations/20260817000300-NormalizeDealsStage.ts"
+              ]
             }
           }
         },
@@ -649,26 +787,32 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 1,
+              "value": 0.947368,
               "unit": "ratio",
               "direction": "higher_is_better"
             },
-            "delta_vs_baseline": 0,
+            "delta_vs_baseline": -0.05263200000000001,
             "findings": [
-              "DTO validator coverage: 36/36 (1)"
+              "DTO validator coverage: 54/57 (0.947368)",
+              "Delta vs baseline: -0.052632"
             ],
             "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
           },
           {
             "name": "BE-TEST-M-001-test-coverage",
             "version": "0.1.0",
-            "status": "error",
-            "score": null,
-            "delta_vs_baseline": null,
+            "status": "pass",
+            "score": {
+              "value": 40.15,
+              "unit": "percent",
+              "direction": "higher_is_better"
+            },
+            "delta_vs_baseline": 5.68,
             "findings": [
-              "Runner crashed: Coverage command failed with code 1: ● Validation Error:\n\n  Module ts-jest in the transform option was not found.\n         <rootDir> is: /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739/backend/src\n\n  Configuration Documentation:\n  https://jestjs.io/docs/configuration"
+              "Backend line coverage: 40.15%",
+              "Delta vs baseline: +5.68 percentage points"
             ],
-            "raw_artifact_path": "artifacts/metrics/BE-TEST-M-001-test-coverage.json"
+            "raw_artifact_path": "artifacts/metrics/test-coverage.json"
           },
           {
             "name": "BE-MOCK-M-001-mock-per-test-case",
@@ -681,7 +825,7 @@
             },
             "delta_vs_baseline": 0,
             "findings": [
-              "Mocks per test case: 0/58 (0)"
+              "Mocks per test case: 0/119 (0)"
             ],
             "raw_artifact_path": "artifacts/metrics/mock-per-test-case.json"
           },
@@ -712,8 +856,8 @@
             },
             "delta_vs_baseline": 0,
             "findings": [
-              "Methods over complexity limit (10): 0/38 (0)",
-              "Average cyclomatic complexity: 1.8684"
+              "Methods over complexity limit (10): 0/53 (0)",
+              "Average cyclomatic complexity: 2.0943"
             ],
             "raw_artifact_path": "artifacts/metrics/cyclomatic-complexity-ratio.json"
           },
@@ -722,15 +866,15 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 0.279221,
+              "value": 0.296813,
               "unit": "ratio",
               "direction": "lower_is_better"
             },
-            "delta_vs_baseline": 0.14158199999999999,
+            "delta_vs_baseline": 0.15917399999999998,
             "findings": [
-              "Duplicated lines: 559/2002 (0.279221)",
+              "Duplicated lines: 829/2793 (0.296813)",
               "Clone matches found: 20+ (sample capped)",
-              "Delta vs baseline: +0.141582"
+              "Delta vs baseline: +0.159174"
             ],
             "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
           }
@@ -741,7 +885,7 @@
     {
       "scope_id": "frontend",
       "scope_type": "subject",
-      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739/frontend",
+      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757/frontend",
       "rulepack_id": "js-react-frontend",
       "rulepack_version": "0.7.0",
       "adapters": [
@@ -810,6 +954,31 @@
               }
             },
             {
+              "rule_id": "FE-DUP-C-001-single-resource-owner",
+              "rule_version": "0.1.0",
+              "tier": null,
+              "location": {
+                "file": "src/pages/deals/ContactLinkRow.jsx",
+                "line": 10,
+                "column": 8
+              },
+              "message": "contact has competing page owners.",
+              "evidence": {
+                "source_tool": "frontend-static",
+                "source_rule_id": "FE-DUP-C-001",
+                "payload": {
+                  "reason": "duplicate-owner",
+                  "resource": "contact",
+                  "owner_type": "page",
+                  "owners": [
+                    "src/pages/contacts",
+                    "src/pages/deals"
+                  ],
+                  "message": "contact has competing page owners."
+                }
+              }
+            },
+            {
               "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
               "rule_version": "0.2.0",
               "tier": null,
@@ -865,7 +1034,7 @@
                   "implementations": [
                     "src/pages/companies/companyQueries.js:24",
                     "src/pages/contacts/contactQueries.js:25",
-                    "src/pages/deals/dealQueries.js:24"
+                    "src/pages/deals/dealQueries.js:19"
                   ],
                   "duplicate_group_count": 3,
                   "duplicate_groups": [
@@ -875,7 +1044,7 @@
                       "implementations": [
                         "src/pages/companies/companyQueries.js:24",
                         "src/pages/contacts/contactQueries.js:25",
-                        "src/pages/deals/dealQueries.js:24"
+                        "src/pages/deals/dealQueries.js:19"
                       ]
                     },
                     {
@@ -884,7 +1053,7 @@
                       "implementations": [
                         "src/pages/companies/companyQueries.js:32",
                         "src/pages/contacts/contactQueries.js:33",
-                        "src/pages/deals/dealQueries.js:32"
+                        "src/pages/deals/dealQueries.js:27"
                       ]
                     },
                     {
@@ -893,7 +1062,7 @@
                       "implementations": [
                         "src/pages/companies/companyQueries.js:36",
                         "src/pages/contacts/contactQueries.js:61",
-                        "src/pages/deals/dealQueries.js:57"
+                        "src/pages/deals/dealQueries.js:32"
                       ]
                     }
                   ],
@@ -907,7 +1076,7 @@
               "tier": null,
               "location": {
                 "file": "src/pages/contacts/ContactTable.jsx",
-                "line": 18,
+                "line": 48,
                 "column": 1
               },
               "message": "component-clone logic has more than one production implementation.",
@@ -919,8 +1088,7 @@
                   "fingerprint": "1ce590a380e8",
                   "implementations": [
                     "src/pages/companies/CompanyTable.jsx:73",
-                    "src/pages/contacts/ContactTable.jsx:18",
-                    "src/pages/deals/DealTable.jsx:57"
+                    "src/pages/contacts/ContactTable.jsx:48"
                   ],
                   "duplicate_group_count": 1,
                   "duplicate_groups": [
@@ -929,8 +1097,7 @@
                       "fingerprint": "1ce590a380e8",
                       "implementations": [
                         "src/pages/companies/CompanyTable.jsx:73",
-                        "src/pages/contacts/ContactTable.jsx:18",
-                        "src/pages/deals/DealTable.jsx:57"
+                        "src/pages/contacts/ContactTable.jsx:48"
                       ]
                     }
                   ],
@@ -944,7 +1111,7 @@
               "tier": null,
               "location": {
                 "file": "src/pages/deals/dealQueries.js",
-                "line": 17,
+                "line": 12,
                 "column": 8
               },
               "message": "function-clone logic has more than one production implementation.",
@@ -956,7 +1123,7 @@
                   "fingerprint": "44ec3ea3f4d8",
                   "implementations": [
                     "src/pages/companies/companyQueries.js:17",
-                    "src/pages/deals/dealQueries.js:17"
+                    "src/pages/deals/dealQueries.js:12"
                   ],
                   "duplicate_group_count": 1,
                   "duplicate_groups": [
@@ -965,7 +1132,7 @@
                       "fingerprint": "44ec3ea3f4d8",
                       "implementations": [
                         "src/pages/companies/companyQueries.js:17",
-                        "src/pages/deals/dealQueries.js:17"
+                        "src/pages/deals/dealQueries.js:12"
                       ]
                     }
                   ],
@@ -979,10 +1146,10 @@
               "tier": null,
               "location": {
                 "file": "src/pages/deals/dealQueries.js",
-                "line": 42,
+                "line": 38,
                 "column": 8
               },
-              "message": "3 substantive duplicate implementation groups exist across the same files.",
+              "message": "2 substantive duplicate implementation groups exist across the same files.",
               "evidence": {
                 "source_tool": "frontend-static",
                 "source_rule_id": "FE-DUP-C-002",
@@ -991,16 +1158,16 @@
                   "fingerprint": "ac8d5bda9428",
                   "implementations": [
                     "src/pages/contacts/contactQueries.js:44",
-                    "src/pages/deals/dealQueries.js:42"
+                    "src/pages/deals/dealQueries.js:38"
                   ],
-                  "duplicate_group_count": 3,
+                  "duplicate_group_count": 2,
                   "duplicate_groups": [
                     {
                       "reason": "function-clone",
                       "fingerprint": "ac8d5bda9428",
                       "implementations": [
                         "src/pages/contacts/contactQueries.js:44",
-                        "src/pages/deals/dealQueries.js:42"
+                        "src/pages/deals/dealQueries.js:38"
                       ]
                     },
                     {
@@ -1008,19 +1175,11 @@
                       "fingerprint": "140936dc1828",
                       "implementations": [
                         "src/pages/contacts/contactQueries.js:49",
-                        "src/pages/deals/dealQueries.js:46"
-                      ]
-                    },
-                    {
-                      "reason": "function-clone",
-                      "fingerprint": "fa3f7e6fd542",
-                      "implementations": [
-                        "src/pages/contacts/contactQueries.js:56",
-                        "src/pages/deals/dealQueries.js:53"
+                        "src/pages/deals/dealQueries.js:55"
                       ]
                     }
                   ],
-                  "message": "3 substantive duplicate implementation groups exist across the same files."
+                  "message": "2 substantive duplicate implementation groups exist across the same files."
                 }
               }
             }
@@ -1092,7 +1251,33 @@
             "FE-DATA-C-001-network-calls-only-in-approved-modules": [],
             "FE-DATA-C-002-useeffect-requires-dependency-array": [],
             "FE-COMM-C-001-no-global-event-bus": [],
-            "FE-DUP-C-001-single-resource-owner": [],
+            "FE-DUP-C-001-single-resource-owner": [
+              {
+                "rule_id": "FE-DUP-C-001-single-resource-owner",
+                "rule_version": "0.1.0",
+                "tier": null,
+                "location": {
+                  "file": "src/pages/deals/ContactLinkRow.jsx",
+                  "line": 10,
+                  "column": 8
+                },
+                "message": "contact has competing page owners.",
+                "evidence": {
+                  "source_tool": "frontend-static",
+                  "source_rule_id": "FE-DUP-C-001",
+                  "payload": {
+                    "reason": "duplicate-owner",
+                    "resource": "contact",
+                    "owner_type": "page",
+                    "owners": [
+                      "src/pages/contacts",
+                      "src/pages/deals"
+                    ],
+                    "message": "contact has competing page owners."
+                  }
+                }
+              }
+            ],
             "FE-DUP-C-002-single-authoritative-implementation": [
               {
                 "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
@@ -1150,7 +1335,7 @@
                     "implementations": [
                       "src/pages/companies/companyQueries.js:24",
                       "src/pages/contacts/contactQueries.js:25",
-                      "src/pages/deals/dealQueries.js:24"
+                      "src/pages/deals/dealQueries.js:19"
                     ],
                     "duplicate_group_count": 3,
                     "duplicate_groups": [
@@ -1160,7 +1345,7 @@
                         "implementations": [
                           "src/pages/companies/companyQueries.js:24",
                           "src/pages/contacts/contactQueries.js:25",
-                          "src/pages/deals/dealQueries.js:24"
+                          "src/pages/deals/dealQueries.js:19"
                         ]
                       },
                       {
@@ -1169,7 +1354,7 @@
                         "implementations": [
                           "src/pages/companies/companyQueries.js:32",
                           "src/pages/contacts/contactQueries.js:33",
-                          "src/pages/deals/dealQueries.js:32"
+                          "src/pages/deals/dealQueries.js:27"
                         ]
                       },
                       {
@@ -1178,7 +1363,7 @@
                         "implementations": [
                           "src/pages/companies/companyQueries.js:36",
                           "src/pages/contacts/contactQueries.js:61",
-                          "src/pages/deals/dealQueries.js:57"
+                          "src/pages/deals/dealQueries.js:32"
                         ]
                       }
                     ],
@@ -1192,7 +1377,7 @@
                 "tier": null,
                 "location": {
                   "file": "src/pages/contacts/ContactTable.jsx",
-                  "line": 18,
+                  "line": 48,
                   "column": 1
                 },
                 "message": "component-clone logic has more than one production implementation.",
@@ -1204,8 +1389,7 @@
                     "fingerprint": "1ce590a380e8",
                     "implementations": [
                       "src/pages/companies/CompanyTable.jsx:73",
-                      "src/pages/contacts/ContactTable.jsx:18",
-                      "src/pages/deals/DealTable.jsx:57"
+                      "src/pages/contacts/ContactTable.jsx:48"
                     ],
                     "duplicate_group_count": 1,
                     "duplicate_groups": [
@@ -1214,8 +1398,7 @@
                         "fingerprint": "1ce590a380e8",
                         "implementations": [
                           "src/pages/companies/CompanyTable.jsx:73",
-                          "src/pages/contacts/ContactTable.jsx:18",
-                          "src/pages/deals/DealTable.jsx:57"
+                          "src/pages/contacts/ContactTable.jsx:48"
                         ]
                       }
                     ],
@@ -1229,7 +1412,7 @@
                 "tier": null,
                 "location": {
                   "file": "src/pages/deals/dealQueries.js",
-                  "line": 17,
+                  "line": 12,
                   "column": 8
                 },
                 "message": "function-clone logic has more than one production implementation.",
@@ -1241,7 +1424,7 @@
                     "fingerprint": "44ec3ea3f4d8",
                     "implementations": [
                       "src/pages/companies/companyQueries.js:17",
-                      "src/pages/deals/dealQueries.js:17"
+                      "src/pages/deals/dealQueries.js:12"
                     ],
                     "duplicate_group_count": 1,
                     "duplicate_groups": [
@@ -1250,7 +1433,7 @@
                         "fingerprint": "44ec3ea3f4d8",
                         "implementations": [
                           "src/pages/companies/companyQueries.js:17",
-                          "src/pages/deals/dealQueries.js:17"
+                          "src/pages/deals/dealQueries.js:12"
                         ]
                       }
                     ],
@@ -1264,10 +1447,10 @@
                 "tier": null,
                 "location": {
                   "file": "src/pages/deals/dealQueries.js",
-                  "line": 42,
+                  "line": 38,
                   "column": 8
                 },
-                "message": "3 substantive duplicate implementation groups exist across the same files.",
+                "message": "2 substantive duplicate implementation groups exist across the same files.",
                 "evidence": {
                   "source_tool": "frontend-static",
                   "source_rule_id": "FE-DUP-C-002",
@@ -1276,16 +1459,16 @@
                     "fingerprint": "ac8d5bda9428",
                     "implementations": [
                       "src/pages/contacts/contactQueries.js:44",
-                      "src/pages/deals/dealQueries.js:42"
+                      "src/pages/deals/dealQueries.js:38"
                     ],
-                    "duplicate_group_count": 3,
+                    "duplicate_group_count": 2,
                     "duplicate_groups": [
                       {
                         "reason": "function-clone",
                         "fingerprint": "ac8d5bda9428",
                         "implementations": [
                           "src/pages/contacts/contactQueries.js:44",
-                          "src/pages/deals/dealQueries.js:42"
+                          "src/pages/deals/dealQueries.js:38"
                         ]
                       },
                       {
@@ -1293,19 +1476,11 @@
                         "fingerprint": "140936dc1828",
                         "implementations": [
                           "src/pages/contacts/contactQueries.js:49",
-                          "src/pages/deals/dealQueries.js:46"
-                        ]
-                      },
-                      {
-                        "reason": "function-clone",
-                        "fingerprint": "fa3f7e6fd542",
-                        "implementations": [
-                          "src/pages/contacts/contactQueries.js:56",
-                          "src/pages/deals/dealQueries.js:53"
+                          "src/pages/deals/dealQueries.js:55"
                         ]
                       }
                     ],
-                    "message": "3 substantive duplicate implementation groups exist across the same files."
+                    "message": "2 substantive duplicate implementation groups exist across the same files."
                   }
                 }
               }
@@ -1316,8 +1491,8 @@
           "adapter_meta": {
             "frontend-static": {
               "status": "ok",
-              "duration_ms": 615,
-              "files_scanned": 104,
+              "duration_ms": 339,
+              "files_scanned": 106,
               "parse_errors": []
             }
           }
@@ -1328,14 +1503,14 @@
             "version": "2.0.0",
             "status": "pass",
             "score": {
-              "value": 0.52,
+              "value": 0.56,
               "unit": "levels",
               "direction": "lower_is_better"
             },
-            "delta_vs_baseline": 0.010000000000000009,
+            "delta_vs_baseline": 0.050000000000000044,
             "findings": [
-              "Average maximum render-decision depth: 0.52",
-              "Delta vs baseline: +0.01"
+              "Average maximum render-decision depth: 0.56",
+              "Delta vs baseline: +0.05"
             ],
             "raw_artifact_path": "artifacts/metrics/render-decision-depth-average.json"
           },
@@ -1344,14 +1519,14 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 0.0625,
+              "value": 0.054054,
               "unit": "ratio",
               "direction": "lower_is_better"
             },
-            "delta_vs_baseline": -0.0175,
+            "delta_vs_baseline": -0.025946000000000004,
             "findings": [
-              "Context-provider ratio: 2/32 (0.0625)",
-              "Delta vs baseline: -0.0175"
+              "Context-provider ratio: 2/37 (0.054054)",
+              "Delta vs baseline: -0.025946"
             ],
             "raw_artifact_path": "artifacts/metrics/context-provider-ratio.json"
           },
@@ -1376,14 +1551,14 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 0.057692,
+              "value": 0.056604,
               "unit": "ratio",
               "direction": "lower_is_better"
             },
-            "delta_vs_baseline": 0.016876000000000002,
+            "delta_vs_baseline": 0.015788000000000003,
             "findings": [
-              "Style mixing ratio: 6/104 (0.057692)",
-              "Delta vs baseline: +0.016876"
+              "Style mixing ratio: 6/106 (0.056604)",
+              "Delta vs baseline: +0.015788"
             ],
             "raw_artifact_path": "artifacts/metrics/style-mixing-ratio.json"
           },
@@ -1407,14 +1582,14 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 5.8,
+              "value": 5.72,
               "unit": "props",
               "direction": "lower_is_better"
             },
-            "delta_vs_baseline": 0.1299999999999999,
+            "delta_vs_baseline": 0.04999999999999982,
             "findings": [
-              "Average prop-drilling candidate fanout: 5.8",
-              "Delta vs baseline: +0.13"
+              "Average prop-drilling candidate fanout: 5.72",
+              "Delta vs baseline: +0.05"
             ],
             "raw_artifact_path": "artifacts/metrics/prop-drilling-average.json"
           },
@@ -1423,15 +1598,15 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 0.331739,
+              "value": 0.283218,
               "unit": "ratio",
               "direction": "lower_is_better"
             },
-            "delta_vs_baseline": 0.10069600000000001,
+            "delta_vs_baseline": 0.05217500000000003,
             "findings": [
-              "Duplicated lines: 1942/5854 (0.331739)",
+              "Duplicated lines: 1718/6066 (0.283218)",
               "Clone matches found: 20+ (sample capped)",
-              "Delta vs baseline: +0.100696"
+              "Delta vs baseline: +0.052175"
             ],
             "raw_artifact_path": "artifacts/metrics/clone-ratio.json"
           }
@@ -1442,7 +1617,7 @@
     {
       "scope_id": "cross-stack",
       "scope_type": "cross-stack",
-      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739",
+      "scope_root": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757",
       "rulepack_id": "cross",
       "rulepack_version": "0.1.0",
       "adapters": [
@@ -1471,21 +1646,20 @@
               "frontend_endpoint_count": 15,
               "backend_endpoint_count": 15,
               "backend_type_contract_count": 15,
-              "frontend_type_evidence_count": 20,
-              "dto_registry_size": 11,
+              "frontend_type_evidence_count": 19,
+              "dto_registry_size": 16,
               "enum_registry_size": 4,
               "frontend_query_hook_count": 6,
               "frontend_mutation_hook_count": 9,
-              "route_param_position_count": 10,
+              "route_param_position_count": 9,
               "query_field_position_count": 21,
-              "body_field_position_count": 13,
-              "contract_position_count": 44,
-              "propagation_changed_files": 0,
-              "propagation_triggered_resources": 0,
+              "body_field_position_count": 8,
+              "contract_position_count": 38,
+              "propagation_changed_files": 19,
+              "propagation_triggered_resources": 1,
               "propagation_violation_count": 0,
-              "propagation_counterpart_surface_total": 0,
-              "propagation_counterpart_surface_missing": 0,
-              "propagation_error": ""
+              "propagation_counterpart_surface_total": 2,
+              "propagation_counterpart_surface_missing": 0
             }
           }
         },
@@ -1520,7 +1694,7 @@
             "delta_vs_baseline": 0,
             "findings": [
               "Weighted contract-field mismatches: 0",
-              "Total contract positions (route-param + query + body): 44",
+              "Total contract positions (route-param + query + body): 38",
               "Contract field drift density: 0",
               "Baseline report unavailable; delta_vs_baseline set to null."
             ],
@@ -1531,16 +1705,16 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": null,
+              "value": 0,
               "unit": "ratio",
               "direction": "lower_is_better"
             },
             "delta_vs_baseline": null,
             "findings": [
-              "Resources with an API-facing change: 0",
+              "Resources with an API-facing change: 1",
               "Missing counterpart surfaces: 0",
-              "Total counterpart surfaces: 0",
-              "Propagation incompleteness ratio: null",
+              "Total counterpart surfaces: 2",
+              "Propagation incompleteness ratio: 0",
               "Baseline report unavailable; delta_vs_baseline set to null."
             ],
             "raw_artifact_path": "artifacts/metrics/propagation-incompleteness-ratio.json"
@@ -1565,59 +1739,115 @@
   "deltas": {
     "run_local": {
       "constraints": {
-        "before_count": 5,
-        "after_count": 9,
+        "before_count": 14,
+        "after_count": 13,
         "introduced_count": 4,
-        "resolved_count": 0,
-        "unchanged_count": 5,
-        "net_change": 4,
+        "resolved_count": 5,
+        "unchanged_count": 9,
+        "net_change": -1,
         "introduced": [
           {
             "scope": "backend",
-            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
-            "source_rule_id": "BE-DOM-C-001",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
             "location": {
-              "file": "src/modules/deal/deal.service.ts",
-              "line": 5,
-              "column": 32
+              "file": "src/core/seed/scenarios/edge-case.seed.ts",
+              "line": 28,
+              "column": 20
             },
-            "message": "Cross-module imports must use index.ts or the target module file."
+            "message": "Equivalent production functions must reuse one shared implementation."
           },
           {
             "scope": "backend",
-            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
-            "source_rule_id": "BE-DOM-C-001",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
             "location": {
               "file": "src/modules/deal/deal.service.ts",
-              "line": 6,
-              "column": 32
+              "line": 222,
+              "column": 3
             },
-            "message": "Cross-module imports must use index.ts or the target module file."
+            "message": "Equivalent production functions must reuse one shared implementation."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 222,
+              "column": 31
+            },
+            "message": "Equivalent production functions must reuse one shared implementation."
           },
           {
             "scope": "frontend",
-            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-            "source_rule_id": "FE-DUP-C-002",
+            "rule_id": "FE-DUP-C-001-single-resource-owner",
+            "source_rule_id": "FE-DUP-C-001",
             "location": {
-              "file": "src/pages/deals/dealQueries.js",
-              "line": 17,
+              "file": "src/pages/deals/ContactLinkRow.jsx",
+              "line": 10,
               "column": 8
             },
-            "message": "function-clone logic has more than one production implementation."
-          },
-          {
-            "scope": "frontend",
-            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
-            "source_rule_id": "FE-DUP-C-002",
-            "location": {
-              "file": "src/pages/deals/dealQueries.js",
-              "line": 42,
-              "column": 8
-            },
-            "message": "3 substantive duplicate implementation groups exist across the same files."
+            "message": "contact has competing page owners."
           }
         ],
-        "resolved": []
+        "resolved": [
+          {
+            "scope": "backend",
+            "rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "source_rule_id": "BE-CONTRACT-C-001-entity-change-requires-migration",
+            "location": {
+              "file": "backend/src/modules/deal/deal-contact-link.entity.ts",
+              "line": 12,
+              "column": 1
+            },
+            "message": "Persistent change deal_contact_links.role lacks a matching executable migration."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
+            "location": {
+              "file": "src/core/seed/scenarios/edge-case.seed.ts",
+              "line": 27,
+              "column": 20
+            },
+            "message": "Equivalent production functions must reuse one shared implementation."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 112,
+              "column": 3
+            },
+            "message": "Equivalent production functions must reuse one shared implementation."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 112,
+              "column": 31
+            },
+            "message": "Equivalent production functions must reuse one shared implementation."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-COM-C-001-component-file-max-lines",
+            "source_rule_id": "FE-COM-C-001",
+            "location": {
+              "file": "src/pages/deals/DealForm.jsx",
+              "line": 33,
+              "column": 1
+            },
+            "message": "React component file has 321 non-blank, non-comment lines; maximum is 300."
+          }
+        ]
       },
       "metrics": [
         {
@@ -1664,9 +1894,9 @@
           "key": "backend:BE-CONTRACT-M-001-dto-validator-coverage",
           "name": "BE-CONTRACT-M-001-dto-validator-coverage",
           "scope": "backend",
-          "from": 1,
-          "to": 1,
-          "delta": 0,
+          "from": 0.946429,
+          "to": 0.947368,
+          "delta": 0.0009390000000000231,
           "direction": "higher_is_better",
           "status": "available"
         },
@@ -1674,11 +1904,11 @@
           "key": "backend:BE-TEST-M-001-test-coverage",
           "name": "BE-TEST-M-001-test-coverage",
           "scope": "backend",
-          "from": 34.47,
-          "to": null,
-          "delta": null,
-          "direction": null,
-          "status": "unavailable"
+          "from": 38.44,
+          "to": 40.15,
+          "delta": 1.7100000000000009,
+          "direction": "higher_is_better",
+          "status": "available"
         },
         {
           "key": "backend:BE-MOCK-M-001-mock-per-test-case",
@@ -1714,9 +1944,9 @@
           "key": "backend:BE-DUP-M-001-clone-ratio",
           "name": "BE-DUP-M-001-clone-ratio",
           "scope": "backend",
-          "from": 0.137639,
-          "to": 0.279221,
-          "delta": 0.14158199999999999,
+          "from": 0.307573,
+          "to": 0.296813,
+          "delta": -0.010759999999999992,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1724,9 +1954,9 @@
           "key": "frontend:FE-COM-M-001-render-decision-depth-average",
           "name": "FE-COM-M-001-render-decision-depth-average",
           "scope": "frontend",
-          "from": 0.51,
-          "to": 0.52,
-          "delta": 0.010000000000000009,
+          "from": 0.56,
+          "to": 0.56,
+          "delta": 0,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1734,9 +1964,9 @@
           "key": "frontend:FE-STATE-M-001-context-provider-ratio",
           "name": "FE-STATE-M-001-context-provider-ratio",
           "scope": "frontend",
-          "from": 0.08,
-          "to": 0.0625,
-          "delta": -0.0175,
+          "from": 0.057143,
+          "to": 0.054054,
+          "delta": -0.0030890000000000015,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1744,9 +1974,9 @@
           "key": "frontend:FE-ROUTE-M-001-route-param-complexity",
           "name": "FE-ROUTE-M-001-route-param-complexity",
           "scope": "frontend",
-          "from": 0.4,
+          "from": 0.43,
           "to": 0.43,
-          "delta": 0.02999999999999997,
+          "delta": 0,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1754,9 +1984,9 @@
           "key": "frontend:FE-STYLE-M-001-style-mixing-ratio",
           "name": "FE-STYLE-M-001-style-mixing-ratio",
           "scope": "frontend",
-          "from": 0.040816,
-          "to": 0.057692,
-          "delta": 0.016876000000000002,
+          "from": 0.057692,
+          "to": 0.056604,
+          "delta": -0.0010879999999999987,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1774,9 +2004,9 @@
           "key": "frontend:FE-COMM-M-001-prop-drilling-average",
           "name": "FE-COMM-M-001-prop-drilling-average",
           "scope": "frontend",
-          "from": 5.67,
-          "to": 5.8,
-          "delta": 0.1299999999999999,
+          "from": 5.73,
+          "to": 5.72,
+          "delta": -0.010000000000000675,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1784,9 +2014,9 @@
           "key": "frontend:FE-DUP-M-001-clone-ratio",
           "name": "FE-DUP-M-001-clone-ratio",
           "scope": "frontend",
-          "from": 0.231043,
-          "to": 0.331739,
-          "delta": 0.10069600000000001,
+          "from": 0.30152,
+          "to": 0.283218,
+          "delta": -0.018301999999999985,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1814,11 +2044,11 @@
           "key": "cross-stack:CROSS-PROP-M-001-propagation-incompleteness-ratio",
           "name": "CROSS-PROP-M-001-propagation-incompleteness-ratio",
           "scope": "cross-stack",
-          "from": null,
-          "to": null,
-          "delta": null,
+          "from": 0,
+          "to": 0,
+          "delta": 0,
           "direction": "lower_is_better",
-          "status": "unavailable"
+          "status": "available"
         }
       ],
       "judgments": []
@@ -1826,33 +2056,88 @@
     "trajectory_cumulative": {
       "constraints": {
         "before_count": 5,
-        "after_count": 9,
-        "introduced_count": 4,
-        "resolved_count": 0,
-        "unchanged_count": 5,
-        "net_change": 4,
+        "after_count": 13,
+        "introduced_count": 9,
+        "resolved_count": 1,
+        "unchanged_count": 4,
+        "net_change": 8,
         "introduced": [
           {
             "scope": "backend",
-            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
-            "source_rule_id": "BE-DOM-C-001",
+            "rule_id": "BE-DEP-C-004-no-circular-dependencies",
+            "source_rule_id": "BE-DEP-C-004-no-circular",
             "location": {
-              "file": "src/modules/deal/deal.service.ts",
-              "line": 5,
+              "file": "src/modules/contact/contact-company-link.entity.ts",
+              "line": 2,
               "column": 32
             },
-            "message": "Cross-module imports must use index.ts or the target module file."
+            "message": "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test."
           },
           {
             "scope": "backend",
-            "rule_id": "BE-DOM-C-001-no-cross-module-deep-import",
-            "source_rule_id": "BE-DOM-C-001",
+            "rule_id": "BE-DEP-C-004-no-circular-dependencies",
+            "source_rule_id": "BE-DEP-C-004-no-circular",
+            "location": {
+              "file": "src/modules/deal/deal-contact-link.entity.ts",
+              "line": 2,
+              "column": 29
+            },
+            "message": "Circular dependencies detected. Break the cycle by: 1. Extracting shared logic to a third module that both depend on 2. Moving one of the dependencies to a lower layer (dependency inversion) 3. Using interfaces/abstract types instead of concrete imports Cycles make the codebase harder to understand and test."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
+            "location": {
+              "file": "src/core/seed/scenarios/edge-case.seed.ts",
+              "line": 28,
+              "column": 20
+            },
+            "message": "Equivalent production functions must reuse one shared implementation."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
             "location": {
               "file": "src/modules/deal/deal.service.ts",
-              "line": 6,
-              "column": 32
+              "line": 222,
+              "column": 3
             },
-            "message": "Cross-module imports must use index.ts or the target module file."
+            "message": "Equivalent production functions must reuse one shared implementation."
+          },
+          {
+            "scope": "backend",
+            "rule_id": "BE-DUP-C-003-no-equivalent-production-code",
+            "source_rule_id": "BE-DUP-C-003",
+            "location": {
+              "file": "src/modules/deal/deal.service.ts",
+              "line": 222,
+              "column": 31
+            },
+            "message": "Equivalent production functions must reuse one shared implementation."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-001-single-resource-owner",
+            "source_rule_id": "FE-DUP-C-001",
+            "location": {
+              "file": "src/pages/deals/ContactLinkRow.jsx",
+              "line": 10,
+              "column": 8
+            },
+            "message": "contact has competing page owners."
+          },
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/contacts/ContactTable.jsx",
+              "line": 48,
+              "column": 1
+            },
+            "message": "component-clone logic has more than one production implementation."
           },
           {
             "scope": "frontend",
@@ -1860,7 +2145,7 @@
             "source_rule_id": "FE-DUP-C-002",
             "location": {
               "file": "src/pages/deals/dealQueries.js",
-              "line": 17,
+              "line": 12,
               "column": 8
             },
             "message": "function-clone logic has more than one production implementation."
@@ -1871,13 +2156,25 @@
             "source_rule_id": "FE-DUP-C-002",
             "location": {
               "file": "src/pages/deals/dealQueries.js",
-              "line": 42,
+              "line": 38,
               "column": 8
             },
-            "message": "3 substantive duplicate implementation groups exist across the same files."
+            "message": "2 substantive duplicate implementation groups exist across the same files."
           }
         ],
-        "resolved": []
+        "resolved": [
+          {
+            "scope": "frontend",
+            "rule_id": "FE-DUP-C-002-single-authoritative-implementation",
+            "source_rule_id": "FE-DUP-C-002",
+            "location": {
+              "file": "src/pages/contacts/ContactTable.jsx",
+              "line": 18,
+              "column": 1
+            },
+            "message": "component-clone logic has more than one production implementation."
+          }
+        ]
       },
       "metrics": [
         {
@@ -1925,8 +2222,8 @@
           "name": "BE-CONTRACT-M-001-dto-validator-coverage",
           "scope": "backend",
           "from": 1,
-          "to": 1,
-          "delta": 0,
+          "to": 0.947368,
+          "delta": -0.05263200000000001,
           "direction": "higher_is_better",
           "status": "available"
         },
@@ -1935,10 +2232,10 @@
           "name": "BE-TEST-M-001-test-coverage",
           "scope": "backend",
           "from": 34.47,
-          "to": null,
-          "delta": null,
-          "direction": null,
-          "status": "unavailable"
+          "to": 40.15,
+          "delta": 5.68,
+          "direction": "higher_is_better",
+          "status": "available"
         },
         {
           "key": "backend:BE-MOCK-M-001-mock-per-test-case",
@@ -1975,8 +2272,8 @@
           "name": "BE-DUP-M-001-clone-ratio",
           "scope": "backend",
           "from": 0.137639,
-          "to": 0.279221,
-          "delta": 0.14158199999999999,
+          "to": 0.296813,
+          "delta": 0.15917399999999998,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1985,8 +2282,8 @@
           "name": "FE-COM-M-001-render-decision-depth-average",
           "scope": "frontend",
           "from": 0.51,
-          "to": 0.52,
-          "delta": 0.010000000000000009,
+          "to": 0.56,
+          "delta": 0.050000000000000044,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -1995,8 +2292,8 @@
           "name": "FE-STATE-M-001-context-provider-ratio",
           "scope": "frontend",
           "from": 0.08,
-          "to": 0.0625,
-          "delta": -0.0175,
+          "to": 0.054054,
+          "delta": -0.025946000000000004,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -2015,8 +2312,8 @@
           "name": "FE-STYLE-M-001-style-mixing-ratio",
           "scope": "frontend",
           "from": 0.040816,
-          "to": 0.057692,
-          "delta": 0.016876000000000002,
+          "to": 0.056604,
+          "delta": 0.015788000000000003,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -2035,8 +2332,8 @@
           "name": "FE-COMM-M-001-prop-drilling-average",
           "scope": "frontend",
           "from": 5.67,
-          "to": 5.8,
-          "delta": 0.1299999999999999,
+          "to": 5.72,
+          "delta": 0.04999999999999982,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -2045,8 +2342,8 @@
           "name": "FE-DUP-M-001-clone-ratio",
           "scope": "frontend",
           "from": 0.231043,
-          "to": 0.331739,
-          "delta": 0.10069600000000001,
+          "to": 0.283218,
+          "delta": 0.05217500000000003,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -2075,7 +2372,7 @@
           "name": "CROSS-PROP-M-001-propagation-incompleteness-ratio",
           "scope": "cross-stack",
           "from": null,
-          "to": null,
+          "to": 0,
           "delta": null,
           "direction": "lower_is_better",
           "status": "unavailable"
@@ -2084,19 +2381,8 @@
       "judgments": []
     }
   },
-  "duration_ms": 7041,
-  "execution_status": "partial",
+  "duration_ms": 300627,
+  "execution_status": "completed",
   "comparison_status": "valid",
-  "errors": [
-    {
-      "layer": "constraints",
-      "name": "backend",
-      "message": "One or more constraint adapters failed."
-    },
-    {
-      "layer": "metrics",
-      "name": "backend:BE-TEST-M-001-test-coverage",
-      "message": "Runner crashed: Coverage command failed with code 1: ● Validation Error:\n\n  Module ts-jest in the transform option was not found.\n         <rootDir> is: /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_103739/backend/src\n\n  Configuration Documentation:\n  https://jestjs.io/docs/configuration"
-    }
-  ]
+  "errors": []
 }

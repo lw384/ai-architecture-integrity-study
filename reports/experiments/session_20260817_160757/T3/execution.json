@@ -1,0 +1,148 @@
+{
+  "metrics": {
+    "agent": "claude",
+    "model": "claude-sonnet-4-6",
+    "run_id": "session_20260817_160757_T3_173706",
+    "status": "success",
+    "exit_code": 0,
+    "completion_marker_found": true,
+    "agent_reported_error": false,
+    "started_at": "2026-08-17T16:40:00.171463+00:00",
+    "finished_at": "2026-08-17T17:03:09.177010+00:00",
+    "duration_seconds": 1389.02,
+    "session_id": "d6c16fb0-1c69-4dd9-b46d-1b27e4cfdbd0",
+    "thread_id": null,
+    "num_turns": 97,
+    "total_cost_usd": 4.812813049999999,
+    "usage": {
+      "input_tokens": 334,
+      "cache_creation_input_tokens": 167262,
+      "cache_read_input_tokens": 9103603,
+      "output_tokens": 76585,
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 167262
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 1,
+          "output_tokens": 10,
+          "cache_read_input_tokens": 37121,
+          "cache_creation_input_tokens": 212,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 212,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "parse_error": null,
+    "agent_text": "[TASK_COMPLETED]"
+  },
+  "agent_result": {
+    "type": "result",
+    "subtype": "success",
+    "is_error": false,
+    "api_error_status": null,
+    "duration_ms": 1381219,
+    "duration_api_ms": 1387184,
+    "ttft_ms": 3442,
+    "ttft_stream_ms": 2249,
+    "time_to_request_ms": 417,
+    "num_turns": 97,
+    "result": "[TASK_COMPLETED]",
+    "stop_reason": "end_turn",
+    "session_id": "d6c16fb0-1c69-4dd9-b46d-1b27e4cfdbd0",
+    "total_cost_usd": 4.812813049999999,
+    "usage": {
+      "input_tokens": 334,
+      "cache_creation_input_tokens": 167262,
+      "cache_read_input_tokens": 9103603,
+      "output_tokens": 76585,
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 167262
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 1,
+          "output_tokens": 10,
+          "cache_read_input_tokens": 37121,
+          "cache_creation_input_tokens": 212,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 212,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 6082,
+        "outputTokens": 8033,
+        "cacheReadInputTokens": 461193,
+        "cacheCreationInputTokens": 48246,
+        "webSearchRequests": 0,
+        "costUSD": 0.1526738,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000
+      },
+      "claude-sonnet-4-6": {
+        "inputTokens": 2092,
+        "outputTokens": 82984,
+        "cacheReadInputTokens": 9269690,
+        "cacheCreationInputTokens": 167519,
+        "webSearchRequests": 0,
+        "costUSD": 4.66013925,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000
+      }
+    },
+    "permission_denials": [
+      {
+        "tool_name": "Bash",
+        "tool_use_id": "toolu_01ANGRLa3DvvzaxnVJEQjLpP",
+        "tool_input": {
+          "command": "apt-get install -y postgresql-client postgresql 2>&1 | tail -5 || true",
+          "description": "Try to install PostgreSQL"
+        }
+      },
+      {
+        "tool_name": "Bash",
+        "tool_use_id": "toolu_01CsE3Pkiw9t8wA6Py9MRYko",
+        "tool_input": {
+          "command": "apt-cache show postgresql 2>/dev/null | head -5 || true; apt-get install -y --dry-run postgresql 2>&1 | head -10 || true",
+          "description": "Check if postgresql is installable"
+        }
+      },
+      {
+        "tool_name": "Bash",
+        "tool_use_id": "toolu_01Lyni5CRAtBKLqCzoyoRVdD",
+        "tool_input": {
+          "command": "sudo apt-get install -y postgresql 2>&1 | tail -10",
+          "description": "Try to install PostgreSQL"
+        }
+      }
+    ],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "uuid": "ac830cac-883d-4478-b258-191dcca7b41e"
+  },
+  "stderr": ""
+}

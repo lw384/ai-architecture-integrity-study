@@ -2,16 +2,36 @@
 import re
 from pathlib import Path
 
+def resolve_task_file(root_dir: Path, task_id: str, strategy: str | None) -> Path:
+    """Locate this task's prompt template.
+
+    Most tasks vary by strategy (e.g. T1_minimal.md vs T1_structured.md) and
+    always pass one. A few tasks (e.g. T5) observe an existing workspace
+    instead of modifying it, ship a single strategy-agnostic template, and
+    pass strategy=None — go straight to the generic file.
+    """
+    tasks_dir = root_dir / "experiment" / "design" / "tasks"
+
+    if strategy:
+        strategy_file = tasks_dir / f"{task_id}_{strategy}.md"
+        if strategy_file.exists():
+            return strategy_file
+
+    generic_file = tasks_dir / f"{task_id}.md"
+    if generic_file.exists():
+        return generic_file
+
+    tried = f"{task_id}_{strategy}.md 和 {task_id}.md" if strategy else f"{task_id}.md"
+    raise FileNotFoundError(f"找不到任务模板: {tasks_dir} 下的 {tried}")
+
+
 def build_mega_prompt(
     root_dir: Path,
     task_id: str,
-    strategy: str,
+    strategy: str | None = None,
     memory_filename: str | None = None,
 ) -> str:
-    task_file = root_dir / "experiment" / "design" / "tasks" / f"{task_id}_{strategy}.md"
-
-    if not task_file.exists():
-        raise FileNotFoundError(f"找不到任务模板: {task_file}")
+    task_file = resolve_task_file(root_dir, task_id, strategy)
 
     raw_content = task_file.read_text(encoding="utf-8")
     task_content = re.sub(r"<!--.*?-->", "", raw_content, flags=re.DOTALL).strip()
