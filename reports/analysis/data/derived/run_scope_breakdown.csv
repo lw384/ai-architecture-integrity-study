@@ -1,0 +1,13 @@
+session_id,agent,strategy,task_id,backend_findings_absolute,frontend_findings_absolute,cross_findings_absolute,total_findings_absolute
+session_20260817_130253,claude,minimal,T1,8,8,0,16
+session_20260817_130253,claude,minimal,T2,5,11,0,16
+session_20260817_130253,claude,minimal,T3,2,11,0,13
+session_20260817_160757,claude,structured,T1,7,7,0,14
+session_20260817_160757,claude,structured,T2,6,8,0,14
+session_20260817_160757,claude,structured,T3,5,8,0,13
+session_20260817_210911,codex,minimal,T1,8,9,0,17
+session_20260817_210911,codex,minimal,T2,29,10,0,39
+session_20260817_210911,codex,minimal,T3,27,11,0,38
+session_20260817_221755,codex,structured,T1,7,9,0,16
+session_20260817_221755,codex,structured,T2,21,9,0,30
+session_20260817_221755,codex,structured,T3,15,9,0,24

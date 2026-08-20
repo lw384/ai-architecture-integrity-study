@@ -1,0 +1,15 @@
+{
+  "status": "evaluated",
+  "task_id": "T1",
+  "baseline_commit": "c27070d654518294f0f99f1b9352bddca649e9db",
+  "pre_commit": "df96a9cce3b5587751ec7ea9db57fde5cde0021e",
+  "rulepack_id": "task::T1",
+  "comparison": {
+    "mode": "trajectory",
+    "baseline_evaluation": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
+    "pre_evaluation": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json"
+  },
+  "events": [
+    "evaluation_completed"
+  ]
+}

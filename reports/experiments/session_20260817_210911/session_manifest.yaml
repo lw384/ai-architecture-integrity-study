@@ -1,0 +1,10 @@
+session_id: session_20260817_210911
+workspace_dir: /Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_210911
+created_at: 2026-08-17T21:13:31.373365
+initial_config:
+  agent: codex
+  model: gpt-5.3-codex
+  strategy: minimal
+  runtime_image: node:20-bookworm-slim
+  write_memory_md: false
+  memory_filename: none

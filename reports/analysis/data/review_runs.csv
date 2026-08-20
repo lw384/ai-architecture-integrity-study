@@ -1,3 +1,5 @@
 session_id,task_id,agent,strategy,reviewed_from_tag,reviewed_commit,review_status,n_findings
-session_20260817_014141,T5,codex,minimal,task-T3-done,370f45296fe881910fac11febabc86a75cf175f4,issues_found,5
-session_20260817_031026,T5,codex,structured,task-T3-done,4a86da03caad75d37aa7214a987788cf84c7f168,issues_found,5
+session_20260817_130253,T5,claude,minimal,task-T3-done,e6018c8c5e71465b217fe3f7a2b9102a47a102b1,issues_found,9
+session_20260817_160757,T5,claude,structured,task-T3-done,a0bae781aa551cadcf76ee9b7cb670d28130dd44,issues_found,5
+session_20260817_210911,T5,codex,minimal,task-T3-done,05bff2733e42ad82bbefa98633cd77669abcc1e6,issues_found,6
+session_20260817_221755,T5,codex,structured,task-T3-done,42558ffa4b7c8d0b894ed73273eb2ef5c728fb47,issues_found,5

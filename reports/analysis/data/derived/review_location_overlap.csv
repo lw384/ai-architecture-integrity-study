@@ -1,3 +1,5 @@
 session_id,n_self_reported_findings,n_harness_files_at_t3,n_matched_to_harness_file,match_ratio
-session_20260817_014141,5,9,2,0.4
-session_20260817_031026,5,11,5,1.0
+session_20260817_130253,9,9,2,0.2222222222222222
+session_20260817_160757,5,10,1,0.2
+session_20260817_210911,6,11,5,0.8333333333333334
+session_20260817_221755,5,10,4,0.8

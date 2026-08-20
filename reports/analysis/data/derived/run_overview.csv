@@ -1,0 +1,13 @@
+session_id,agent,strategy,task_id,task_completed,harness_completed,constraints_introduced_this_task,constraints_resolved_this_task,cumulative_net_new_violations,current_absolute_violations
+session_20260817_130253,claude,minimal,T1,True,True,11,0,11,16
+session_20260817_130253,claude,minimal,T2,True,True,9,9,12,16
+session_20260817_130253,claude,minimal,T3,True,True,2,5,9,13
+session_20260817_160757,claude,structured,T1,True,True,9,0,9,14
+session_20260817_160757,claude,structured,T2,True,True,8,8,10,14
+session_20260817_160757,claude,structured,T3,True,True,4,5,9,13
+session_20260817_210911,codex,minimal,T1,True,True,12,0,12,17
+session_20260817_210911,codex,minimal,T2,True,True,31,9,35,39
+session_20260817_210911,codex,minimal,T3,True,True,15,16,34,38
+session_20260817_221755,codex,structured,T1,True,True,11,0,11,16
+session_20260817_221755,codex,structured,T2,True,True,23,9,26,30
+session_20260817_221755,codex,structured,T3,True,True,13,19,20,24

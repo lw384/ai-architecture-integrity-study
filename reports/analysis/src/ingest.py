@@ -42,6 +42,40 @@ TASK_DIGIT_PATTERN = re.compile(r"(\d+)")
 BASELINE_SESSION_ID = "baseline"
 BASELINE_TASK_ID = "Base"
 
+# Codex CLI's execution.json never sets metrics.total_cost_usd (unlike the
+# Claude Agent SDK, which prices each run itself) — usage.usage only gives
+# token counts. Estimate cost from those counts using the gpt-5.3-codex
+# pricing tier below (USD per 1M tokens; the model used throughout this
+# dataset — see execution.json metrics.model). Provided by the user
+# 2026-08-19 from the OpenAI pricing page:
+#   Category  Model          Input   Cached input   Output
+#   Codex     gpt-5.3-codex  $1.75   $0.175         $14.00
+# Caveat: reasoning_output_tokens is treated as already included in
+# output_tokens (not billed separately); no other API-side fees are
+# modeled. Claude rows use the SDK-reported total_cost_usd directly and
+# never take this path.
+CODEX_PRICE_PER_MILLION_USD = {
+    "input": 1.75,
+    "cached_input": 0.175,
+    "output": 14.00,
+}
+
+
+def estimate_codex_cost_usd(usage: dict[str, Any]) -> float | None:
+    """USD estimate for one Codex run from its raw token usage, or None if
+    usage is missing/incomplete."""
+    input_tokens = usage.get("input_tokens")
+    cached_tokens = usage.get("cached_input_tokens")
+    output_tokens = usage.get("output_tokens")
+    if input_tokens is None or cached_tokens is None or output_tokens is None:
+        return None
+    fresh_input_tokens = max(input_tokens - cached_tokens, 0)
+    return (
+        fresh_input_tokens * CODEX_PRICE_PER_MILLION_USD["input"]
+        + cached_tokens * CODEX_PRICE_PER_MILLION_USD["cached_input"]
+        + output_tokens * CODEX_PRICE_PER_MILLION_USD["output"]
+    ) / 1_000_000
+
 
 # ---------------------------------------------------------------------------
 # Small IO helpers
@@ -300,14 +334,55 @@ def build_task_completion_record(
     config: dict[str, Any],
 ) -> dict[str, Any]:
     metrics = execution.get("metrics") or {}
+    usage = metrics.get("usage") or {}
     suites = (test_result or {}).get("suites") or []
     failed_suite_ids = [s.get("suite_id") for s in suites if s.get("status") == "fail"]
+
+    # Token accounting differs by agent, so normalize into a common
+    # fresh/cached-input + output shape rather than dumping each SDK's raw
+    # field names side by side:
+    #   Claude usage: input_tokens (fresh), cache_creation_input_tokens
+    #                 (written to cache), cache_read_input_tokens (served
+    #                 from cache), output_tokens
+    #   Codex usage:  input_tokens (fresh + cached combined),
+    #                 cached_input_tokens (the cached subset of the above),
+    #                 cache_write_input_tokens, output_tokens,
+    #                 reasoning_output_tokens (subset of output_tokens)
+    agent = config.get("agent") or "unknown"
+    if agent == "codex":
+        cached_input_tokens = usage.get("cached_input_tokens")
+        total_input_tokens = usage.get("input_tokens")
+        fresh_input_tokens = (
+            max(total_input_tokens - cached_input_tokens, 0)
+            if total_input_tokens is not None and cached_input_tokens is not None
+            else None
+        )
+        cache_write_tokens = usage.get("cache_write_input_tokens")
+        output_tokens = usage.get("output_tokens")
+        reasoning_output_tokens = usage.get("reasoning_output_tokens")
+        total_cost_usd = metrics.get("total_cost_usd")  # always null for codex, kept for schema symmetry
+        estimated_cost_usd = estimate_codex_cost_usd(usage)
+        cost_usd = total_cost_usd if total_cost_usd is not None else estimated_cost_usd
+        cost_basis = (
+            "reported" if total_cost_usd is not None
+            else "estimated_gpt-5.3-codex_pricing" if estimated_cost_usd is not None
+            else "unknown"
+        )
+    else:
+        fresh_input_tokens = usage.get("input_tokens")
+        cached_input_tokens = usage.get("cache_read_input_tokens")
+        cache_write_tokens = usage.get("cache_creation_input_tokens")
+        output_tokens = usage.get("output_tokens")
+        reasoning_output_tokens = None  # not applicable to Claude
+        total_cost_usd = metrics.get("total_cost_usd")
+        cost_usd = total_cost_usd
+        cost_basis = "reported" if total_cost_usd is not None else "unknown"
 
     return {
         "session_id": session_id,
         "task_id": task_id,
         "task_order": task_order(task_id),
-        "agent": config.get("agent") or "unknown",
+        "agent": agent,
         "strategy": config.get("strategy") or "unknown",
         "model": config.get("model") or "unknown",
         "agent_status": metrics.get("status") or "unknown",
@@ -315,8 +390,15 @@ def build_task_completion_record(
         "agent_reported_error": metrics.get("agent_reported_error"),
         "exit_code": metrics.get("exit_code"),
         "num_turns": metrics.get("num_turns"),
-        "total_cost_usd": metrics.get("total_cost_usd"),
         "duration_seconds": metrics.get("duration_seconds"),
+        "tokens_input_fresh": fresh_input_tokens,
+        "tokens_input_cached": cached_input_tokens,
+        "tokens_cache_write": cache_write_tokens,
+        "tokens_output": output_tokens,
+        "tokens_reasoning_output": reasoning_output_tokens,
+        "total_cost_usd": total_cost_usd,
+        "cost_usd": cost_usd,
+        "cost_basis": cost_basis,
         "test_status": (test_result or {}).get("status") or ("no_data" if test_result is None else "unknown"),
         "test_reason": (test_result or {}).get("reason"),
         "test_suite_count": len(suites) if suites else ((test_execution or {}).get("suites") and len(test_execution["suites"])) or 0,
@@ -343,8 +425,23 @@ def build_task_completion_record(
 REVIEW_FINDING_FIELDS = ("severity", "location", "issue", "impact", "recommended_improvement")
 REVIEW_NO_ISSUES_MARKER = "NO_ARCHITECTURE_CONSISTENCY_ISSUES_FOUND"
 REVIEW_COMPLETION_MARKER = "[TASK_COMPLETED]"
-REVIEW_BULLET_PATTERN = re.compile(r"-\s*`(" + "|".join(REVIEW_FINDING_FIELDS) + r")`\s*:\s*(.*)")
+# Agents wrap the field name in whatever markdown emphasis they feel like —
+# seen so far: `severity` (backticks, codex) and **severity** (bold,
+# claude). Tolerate any run of backtick/asterisk/underscore around the name.
+REVIEW_BULLET_PATTERN = re.compile(
+    r"-\s*[`*_]*(" + "|".join(REVIEW_FINDING_FIELDS) + r")[`*_]*\s*:\s*(.*)"
+)
 REVIEW_LOCATION_PATH_PATTERN = re.compile(r"`([^`]+)`")
+# Some agents wrap the whole *value* in backticks too (e.g. `- **severity**:
+# \`high\``). Only unwrap when the entire value is one backtick span — a
+# multi-file `location` value has several separate backtick spans and must
+# be left alone for extract_referenced_files() to split.
+_FULL_WRAP_BACKTICK_PATTERN = re.compile(r"^`([^`]*)`$")
+
+
+def _unwrap_single_backtick_value(value: str) -> str:
+    match = _FULL_WRAP_BACKTICK_PATTERN.match(value)
+    return match.group(1) if match else value
 
 
 def _parse_review_bullets(text: str) -> list[dict[str, str]]:
@@ -353,7 +450,8 @@ def _parse_review_bullets(text: str) -> list[dict[str, str]]:
         match = REVIEW_BULLET_PATTERN.match(line.strip())
         if not match:
             continue
-        field, value = match.group(1), match.group(2).strip()
+        field = match.group(1)
+        value = _unwrap_single_backtick_value(match.group(2).strip())
         if field == "severity" or not blocks:
             blocks.append([])
         blocks[-1].append((field, value))
@@ -511,9 +609,30 @@ def collect(experiments_dir: Path, baseline_dir: Path) -> dict[str, list[dict[st
     }
 
 
-def write_csv(rows: list[dict[str, Any]], path: Path) -> None:
+# Explicit schemas for tables that can legitimately be empty this early in
+# data collection (e.g. no T5 review has produced a parseable finding yet).
+# Without this, pd.DataFrame([]).to_csv() writes a file with no header row
+# at all, and every downstream pd.read_csv() on it raises EmptyDataError —
+# "no data yet" should read as an empty table, not a crash.
+TABLE_COLUMNS: dict[str, list[str]] = {
+    "review_runs": [
+        "session_id", "task_id", "agent", "strategy",
+        "reviewed_from_tag", "reviewed_commit", "review_status", "n_findings",
+    ],
+    "review_findings": [
+        "session_id", "task_id", "agent", "strategy", "reviewed_commit",
+        "severity", "location", "issue", "impact", "recommended_improvement",
+        "referenced_files",
+    ],
+}
+
+
+def write_csv(rows: list[dict[str, Any]], path: Path, table_name: str | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(path, index=False)
+    frame = pd.DataFrame(rows)
+    if frame.empty and table_name in TABLE_COLUMNS:
+        frame = pd.DataFrame(columns=TABLE_COLUMNS[table_name])
+    frame.to_csv(path, index=False)
 
 
 def main() -> None:
@@ -532,12 +651,12 @@ def main() -> None:
 
     tables = collect(experiments_dir, baseline_dir)
 
-    write_csv(tables["runs"], output_dir / "runs.csv")
-    write_csv(tables["constraint_findings"], output_dir / "constraint_findings.csv")
-    write_csv(tables["metric_observations"], output_dir / "metric_observations.csv")
-    write_csv(tables["task_completion"], output_dir / "task_completion.csv")
-    write_csv(tables["review_runs"], output_dir / "review_runs.csv")
-    write_csv(tables["review_findings"], output_dir / "review_findings.csv")
+    write_csv(tables["runs"], output_dir / "runs.csv", "runs")
+    write_csv(tables["constraint_findings"], output_dir / "constraint_findings.csv", "constraint_findings")
+    write_csv(tables["metric_observations"], output_dir / "metric_observations.csv", "metric_observations")
+    write_csv(tables["task_completion"], output_dir / "task_completion.csv", "task_completion")
+    write_csv(tables["review_runs"], output_dir / "review_runs.csv", "review_runs")
+    write_csv(tables["review_findings"], output_dir / "review_findings.csv", "review_findings")
 
     print(f"runs.csv:                 {len(tables['runs'])} rows")
     print(f"constraint_findings.csv:  {len(tables['constraint_findings'])} rows")

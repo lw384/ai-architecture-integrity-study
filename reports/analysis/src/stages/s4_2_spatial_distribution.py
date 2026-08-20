@@ -4,10 +4,13 @@
 For each run, measures whether net-new violations concentrate in a handful
 of files (agent lost control of one local change) or spread across the
 whole changeset (agent's understanding of the overall design is off) using
-the Gini coefficient of findings-per-file.
+the Gini coefficient of findings-per-file. Also rolls that same per-run
+file breakdown up *across* runs, to answer the different, cross-evaluation
+question of which files are the repeat offenders.
 
 Reads only data/constraint_findings.csv. Writes:
     data/derived/file_concentration.csv (one row per run: n_files, n_findings, gini)
+    data/derived/file_blame_summary.csv (one row per file: totals across all runs)
 """
 
 from __future__ import annotations
@@ -22,8 +25,10 @@ from paths import DATA_DIR, DERIVED_DIR  # noqa: E402
 from stats_utils import gini_coefficient  # noqa: E402
 
 
-def compute_file_concentration(constraint_findings: pd.DataFrame) -> pd.DataFrame:
-    introduced = constraint_findings[
+def filter_introduced(constraint_findings: pd.DataFrame) -> pd.DataFrame:
+    """Net-new, run-local findings with a known file — the population both
+    tables in this stage are built from."""
+    return constraint_findings[
         (constraint_findings["delta_scope"] == "run_local")
         & (constraint_findings["change_type"] == "introduced")
         & (constraint_findings["session_id"] != "baseline")
@@ -31,6 +36,8 @@ def compute_file_concentration(constraint_findings: pd.DataFrame) -> pd.DataFram
         & (constraint_findings["file"] != "")
     ]
 
+
+def compute_file_concentration(introduced: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for evaluation_id, group in introduced.groupby("evaluation_id"):
         file_counts = group.groupby("file").size()
@@ -50,14 +57,45 @@ def compute_file_concentration(constraint_findings: pd.DataFrame) -> pd.DataFram
     return pd.DataFrame(rows).sort_values("gini_coefficient", ascending=False)
 
 
+def compute_file_blame_summary(introduced: pd.DataFrame, concentration: pd.DataFrame) -> pd.DataFrame:
+    """Same population as compute_file_concentration, rolled up by file
+    instead of by run — answers "which files should a targeted code review
+    focus on", as distinct from the per-rule question §6.1 answers.
+    """
+    per_file = introduced.groupby("file").agg(
+        n_findings_total=("file", "size"),
+        n_evaluations_present=("evaluation_id", "nunique"),
+    )
+    top_file_counts = concentration["top_file"].value_counts().rename("n_evaluations_as_top_file")
+
+    summary = per_file.join(top_file_counts, how="left")
+    summary["n_evaluations_as_top_file"] = summary["n_evaluations_as_top_file"].fillna(0).astype(int)
+
+    grand_total = summary["n_findings_total"].sum()
+    summary["share_of_total_pct"] = (
+        summary["n_findings_total"] / grand_total * 100 if grand_total else 0.0
+    )
+
+    return (
+        summary.reset_index()
+        .sort_values(["n_findings_total", "n_evaluations_as_top_file"], ascending=False)
+        [["file", "n_findings_total", "share_of_total_pct", "n_evaluations_present", "n_evaluations_as_top_file"]]
+    )
+
+
 def main() -> None:
     constraint_findings = pd.read_csv(DATA_DIR / "constraint_findings.csv")
-    concentration = compute_file_concentration(constraint_findings)
+    introduced = filter_introduced(constraint_findings)
+    concentration = compute_file_concentration(introduced)
+    blame_summary = compute_file_blame_summary(introduced, concentration)
 
     DERIVED_DIR.mkdir(parents=True, exist_ok=True)
     concentration.to_csv(DERIVED_DIR / "file_concentration.csv", index=False)
+    blame_summary.to_csv(DERIVED_DIR / "file_blame_summary.csv", index=False)
 
     print(concentration.to_string(index=False))
+    print()
+    print(blame_summary.round(2).to_string(index=False))
 
 
 if __name__ == "__main__":

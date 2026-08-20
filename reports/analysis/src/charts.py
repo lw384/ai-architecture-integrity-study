@@ -111,6 +111,62 @@ def grouped_bar(
     return _finish(ax, title, xlabel, ylabel)
 
 
+def grouped_bar_with_group_bands(
+    data: pd.DataFrame,
+    x: str,
+    y: str,
+    hue: str,
+    group_col: str,
+    order: list[str],
+    title: str,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    legend_title: str | None = None,
+    band_palette: str = "pastel",
+    ax: plt.Axes | None = None,
+    figsize: tuple[float, float] | None = None,
+) -> plt.Axes:
+    """Grouped bar chart for x categories that are themselves partitioned
+    into named groups (e.g. concerns partitioned into backend / frontend /
+    cross-stack) that the reader should see as contiguous blocks, not just
+    individually-colored bars. Shades a background band per contiguous run
+    of `group_col` along `order` and draws a divider line at each boundary.
+
+    `order` fixes both the x-axis position of every category (so a
+    category with an all-zero bar still gets a slot) and which contiguous
+    runs of `group_col` count as one band — the caller controls both by
+    controlling `order`.
+    """
+    ax = _axes(ax, figsize or (max(9, 0.55 * len(order) + 3), 5.5))
+    sns.barplot(data=data, x=x, y=y, hue=hue, order=order, ax=ax)
+
+    cat_to_group = data.drop_duplicates(subset=[x]).set_index(x)[group_col]
+    groups_in_order = [cat_to_group[c] for c in order]
+    unique_groups = list(dict.fromkeys(groups_in_order))
+    palette = sns.color_palette(band_palette, n_colors=max(len(unique_groups), 1))
+    band_color = dict(zip(unique_groups, palette))
+
+    start = 0
+    for i in range(1, len(groups_in_order) + 1):
+        at_end = i == len(groups_in_order)
+        if at_end or groups_in_order[i] != groups_in_order[start]:
+            ax.axvspan(
+                start - 0.5, i - 0.5,
+                color=band_color[groups_in_order[start]], alpha=0.15, zorder=0,
+            )
+            if start != 0:
+                ax.axvline(start - 0.5, color="grey", linewidth=1, linestyle="--", alpha=0.6)
+            start = i
+
+    if hue and ax.get_legend() is not None:
+        ax.legend(title=legend_title or hue, frameon=False)
+    ax.set_xlim(-0.5, len(order) - 0.5)
+    ax.tick_params(axis="x", rotation=45)
+    for label in ax.get_xticklabels():
+        label.set_horizontalalignment("right")
+    return _finish(ax, title, xlabel, ylabel)
+
+
 def line_trajectory(
     data: pd.DataFrame,
     x: str,
@@ -250,6 +306,34 @@ def lorenz_curve(
     ax.plot(cumulative_population, cumulative_value, marker=".", label=series_label)
     ax.fill_between(cumulative_population, cumulative_value, cumulative_population, alpha=0.1)
     ax.legend(frameon=False)
+    return _finish(ax, title, xlabel, ylabel)
+
+
+def scree_plot(
+    data: pd.DataFrame,
+    x: str,
+    y: str,
+    cumulative: str,
+    title: str,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    ax: plt.Axes | None = None,
+    figsize: tuple[float, float] | None = None,
+) -> plt.Axes:
+    """Bar of per-component explained variance plus a cumulative line —
+    answers "how many components would it take to explain most of the
+    variance", which a two-PC scatter alone can't show (it silently
+    discards every component past PC2)."""
+    ax = _axes(ax, figsize or (max(6, 0.6 * len(data) + 3), 5))
+    sns.barplot(data=data, x=x, y=y, ax=ax, color=sns.color_palette(SEQUENTIAL_CMAP, 3)[1])
+    ax.set_ylim(0, 1)
+
+    cumulative_ax = ax.twinx()
+    cumulative_ax.plot(range(len(data)), data[cumulative].values, marker="o", color="black", linewidth=2)
+    cumulative_ax.set_ylim(0, 1.02)
+    cumulative_ax.set_ylabel("Cumulative explained variance")
+    cumulative_ax.grid(False)
+
     return _finish(ax, title, xlabel, ylabel)
 
 

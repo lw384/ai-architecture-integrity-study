@@ -19,11 +19,13 @@ reports/analysis/
 │   └── derived/                  # one CSV/JSON per stage script (see below)
 ├── src/
 │   ├── ingest.py                 # the ONLY file that reads raw JSON/YAML
+│   ├── update_all.py             # orchestrator: ingest.py + every stage script, in order
 │   ├── paths.py                  # shared path constants
 │   ├── taxonomy.py               # rule_id / metric name -> category
 │   ├── stats_utils.py            # IQR fences, Gini, paired Wilcoxon, trend shape
 │   ├── charts.py                 # matplotlib/seaborn drawing primitives
 │   └── stages/
+│       ├── s0_0_run_overview.py        # §2.0 Run-level overview table
 │       ├── s0_1_reliability.py         # §2.1 Harness reliability
 │       ├── s0_2_baseline_debt.py       # §2.2 Pre-existing debt subtraction
 │       ├── s0_3_task_completion.py     # §2.3 Task completion gate
@@ -85,10 +87,37 @@ libraries (math / drawing) with no opinion about runs, tasks, or agents.
 
 ```bash
 cd reports/analysis
-pip install -r requirements.txt   # or: .venv-notebook/bin/pip install -r requirements.txt
+pip install -r requirements.txt   # or: ../../.venv-notebook/bin/pip install -r requirements.txt
+```
 
+### Update everything after `reports/experiments/` changes
+
+```bash
+python3 src/update_all.py             # ingest.py + all 13 stage scripts, in dependency order
+python3 src/update_all.py --notebook  # ...and also re-execute notebook/analysis.ipynb in place
+```
+
+`update_all.py` stops at the first script that fails, so you never end up
+with some `data/derived/*.csv` files refreshed and others stale. It's just
+an orchestrator — it doesn't contain any parsing/analysis logic of its own.
+
+Then open `notebook/analysis.ipynb` (kernel: **AI Architecture Study
+(.venv-notebook)** / `aais-notebook`) and run all cells to look at the
+updated charts — or pass `--notebook` above to have it re-executed and
+saved in place without opening Jupyter at all. Every chart title/axis/
+legend is English by design; none of the plotting code in `charts.py`
+hardcodes domain text — the notebook supplies it.
+
+### Running one thing at a time
+
+Every stage script is also independently runnable and prints a short
+summary to stdout, in case you only want to re-check one thing without
+regenerating everything:
+
+```bash
 python3 src/ingest.py
 
+python3 src/stages/s0_0_run_overview.py
 python3 src/stages/s0_1_reliability.py
 python3 src/stages/s0_2_baseline_debt.py
 python3 src/stages/s0_3_task_completion.py
@@ -102,16 +131,6 @@ python3 src/stages/s4_2_spatial_distribution.py
 python3 src/stages/s4_3_metric_correlation.py
 python3 src/stages/s4_4_review_calibration.py
 ```
-
-Then open `notebook/analysis.ipynb` (kernel: **AI Architecture Study
-(.venv-notebook)** / `aais-notebook`) and run all cells — or flip
-`REGENERATE = True` in its second code cell to run all of the above from
-inside the notebook. Every chart title/axis/legend is English by design;
-none of the plotting code in `charts.py` hardcodes domain text — the
-notebook supplies it.
-
-Each stage script is also independently runnable and prints a short summary
-to stdout, so you can sanity-check one stage without opening the notebook.
 
 ## Reading the current output
 
@@ -145,5 +164,5 @@ the bullet form. `ingest.py`'s parser accepts both, so `data/review_
 findings.csv` reflects what the review actually said. The upstream bug is
 worth fixing separately in `review_runner.py`; it's outside this package.
 
-Re-run `python3 src/ingest.py` and the stage scripts (or flip
-`REGENERATE = True`) whenever `reports/experiments/` gains new sessions.
+Run `python3 src/update_all.py --notebook` whenever `reports/experiments/`
+gains new sessions.

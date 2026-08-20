@@ -12,6 +12,12 @@ Reads only data/metric_observations.csv. Writes:
     data/derived/metric_correlation.csv
     data/derived/metric_pca_scores.csv     (only if enough complete rows)
     data/derived/metric_pca_loadings.csv   (only if enough complete rows)
+    data/derived/metric_pca_variance.csv   (only if enough complete rows; ALL
+                                             components, not just the PC1/PC2
+                                             kept in scores/loadings — this is
+                                             what answers "does variance
+                                             concentrate in a few components",
+                                             which PC1/PC2 alone can't show)
 """
 
 from __future__ import annotations
@@ -62,12 +68,17 @@ def compute_pca(metric_observations: pd.DataFrame, n_components: int = 2) -> dic
         index=complete.columns,
         columns=[f"PC{i + 1}" for i in range(n_components)],
     )
-    explained_variance_ratio = (s**2 / np.sum(s**2))[:n_components]
+    # Full spectrum (one entry per singular value), not just the PC1/PC2 kept
+    # above in scores/loadings — a scree plot needs every component to show
+    # whether variance concentrates or stays spread out; slicing here first
+    # would silently answer that question by construction.
+    explained_variance_ratio_full = (s**2 / np.sum(s**2))
 
     return {
         "scores": scores,
         "loadings": loadings,
-        "explained_variance_ratio": explained_variance_ratio.tolist(),
+        "explained_variance_ratio": explained_variance_ratio_full[:n_components].tolist(),
+        "explained_variance_ratio_full": explained_variance_ratio_full.tolist(),
         "n_rows_used": complete.shape[0],
         "n_metrics_used": complete.shape[1],
     }
@@ -92,10 +103,20 @@ def main() -> None:
 
     pca["scores"].to_csv(DERIVED_DIR / "metric_pca_scores.csv")
     pca["loadings"].to_csv(DERIVED_DIR / "metric_pca_loadings.csv")
+
+    full_ratio = pca["explained_variance_ratio_full"]
+    variance = pd.DataFrame({
+        "component": [f"PC{i + 1}" for i in range(len(full_ratio))],
+        "explained_variance_ratio": full_ratio,
+        "cumulative_variance_ratio": np.cumsum(full_ratio),
+    })
+    variance.to_csv(DERIVED_DIR / "metric_pca_variance.csv", index=False)
+
     print(
         f"PCA: {pca['n_rows_used']} runs x {pca['n_metrics_used']} metrics, "
         f"explained variance ratio {[round(v, 3) for v in pca['explained_variance_ratio']]}"
     )
+    print(f"Full spectrum ({len(full_ratio)} components) written to metric_pca_variance.csv")
 
 
 if __name__ == "__main__":

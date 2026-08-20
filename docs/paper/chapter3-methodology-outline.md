@@ -153,7 +153,7 @@ For each subsection: **title → question(s) it answers → the order/logic it s
 
 **Figure/Table:** *Table 3.2 (revised, 19 rows)* — Stack | Concern | Constraint | Metric | Grounding, exactly as drafted in `chapter3-table3.2-revision.md`.
 
-Additionally: *Figure 3.B (new)* — **Concerns × Layers × Status Map**: a compact grid (rows = 19 concerns grouped by stack, one column each for Constraint / Metric) with each cell colour- or symbol-coded by implementation status — *implemented*, *proxy (not a direct measurement)*, *proposed but not yet implemented*. This turns the large table into a single glance-able risk map (it should visibly flag: BE-TEST's metric = proxy; CROSS-PROP's metric = proxy; FE-DUP's metric = proposed-not-implemented) and is the most efficient way to carry the chapter's honesty about instrument maturity into a form a reader/examiner will actually register, rather than have to reconstruct by reading every row's prose.
+Additionally: *Figure 3.B (new)* — **Concerns × Layers × Status Map**: a compact grid (rows = 19 concerns grouped by stack, one column each for Constraint / Metric) with each cell colour- or symbol-coded by implementation status — *implemented*, *proxy (not a direct measurement)*, *proposed but not yet implemented*. This turns the large table into a single glance-able risk map (it should visibly flag: BE-TEST's metric = proxy; CROSS-PROP's metric = proxy — note FE-DUP's metric is now implemented as `FE-DUP-M-001.mjs`, so it is no longer a proposed-not-implemented case) and is the most efficient way to carry the chapter's honesty about instrument maturity into a form a reader/examiner will actually register, rather than have to reconstruct by reading every row's prose.
 
 ### 3.4.6 Known Proxy Metrics and Their Limitations
 *(new subsection)*
@@ -173,7 +173,7 @@ Additionally: *Figure 3.B (new)* — **Concerns × Layers × Status Map**: a com
 
 **Answers:** What are the manipulated independent variables, and what is held constant?
 
-**Logic:** No structural change identified against this study's prior work; keep as-is, but this is the one subsection in the chapter the author should independently re-verify against the actual current experiment configuration (agent identities, effort settings) before treating it as final, since it wasn't cross-checked against implementation artefacts the way §3.3/§3.4 were.
+**Logic:** No structural change identified against this study's prior work; keep as-is, but this subsection now *has* been cross-checked against the run artefacts (`session_*/session_manifest.yaml`) and must be corrected accordingly: the Codex agent ran **`gpt-5.3-codex`** (not "GPT-5.4"), the Claude agent ran **`claude-sonnet-4-6`** (Claude Sonnet 4.6, via the Claude Code CLI), and the real invocation control is **reasoning effort = high** for both (not temperature = 0) — subagents permitted, live web retrieval disabled, all account personalisation/custom agents disabled. Design is 4 conditions (2 agent × 2 strategy), one run each; note a second `codex/minimal` session (`session_20260817_210911`) has since been added toward replication, so Chapter 4 should report the actual completed count rather than the design-level "13".
 
 **Figure/Table:** None.
 

@@ -1,0 +1,81 @@
+{
+  "run_id": "session_20260817_210911_T1_210912",
+  "task_id": "T1",
+  "runtime": {
+    "type": "docker",
+    "image": "node:20-bookworm-slim"
+  },
+  "db": {
+    "status": "ok",
+    "container_name": "crm_baseline_db_test",
+    "started_by_runner": false
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "fail",
+      "reason": null,
+      "install": {
+        "command": "npm ci",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 748 packages, and audited 749 packages in 2m\n\n168 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 147.208
+      },
+      "test": {
+        "command": "npx --no-install jest --config test/jest-e2e.json --runInBand test/acceptance/T1/deal.e2e-spec.ts --json --outputFile=acceptance-report.json",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "(node:20) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nFAIL test/acceptance/T1/deal.e2e-spec.ts (28.531 s)\n  Deal API (e2e)\n    checkpoint 1: creation\n      ✕ creates a Deal with all fields supplied and returns it on fetch (111 ms)\n      ✓ defaults stage to \"lead\" when omitted (35 ms)\n      ✓ rejects a request missing name, value, or companyId (17 ms)\n    checkpoint 2: referential integrity on create\n      ✓ rejects an unknown companyId (7 ms)\n      ✓ rejects an unknown contactId (26 ms)\n    checkpoint 3: list query\n      ✓ supports pagination, stage/companyId filters, and out-of-range pages (67 ms)\n    checkpoint 4: detail and update\n      ✓ returns the linked company summary on detail fetch (23 ms)\n      ✓ returns 404 for an unknown deal id (3 ms)\n      ✕ accepts a partial update and rejects an empty body (22 ms)\n      ✕ rejects updating an immutable field such as companyId (18 ms)\n    checkpoint 5: value and null-field robustness\n      ✓ rejects a negative value (7 ms)\n      ✓ persists and returns contactId=null and expectedCloseDate=null without error (15 ms)\n  Deal seed scenarios (e2e)\n    ✓ creates at least 8 Deals across at least 4 distinct stages after the demo seed (16568 ms)\n    ✓ creates a Deal with contactId=null and a Deal with expectedCloseDate=null after the edge-case seed (6736 ms)\n\n  ● Deal API (e2e) › checkpoint 1: creation › creates a Deal with all fields supplied and returns it on fetch\n\n    expect(received).toMatchObject(expected)\n\n    - Expected  - 1\n    + Received  + 1\n\n      Object {\n        \"companyId\": \"8abd4049-44f6-4efa-8f3f-8dd176ce41aa\",\n        \"contactId\": \"31c02986-73dc-42cd-a64f-52b2398626bd\",\n    -   \"expectedCloseDate\": \"2026-09-30\",\n    +   \"expectedCloseDate\": \"2026-09-30T00:00:00.000Z\",\n        \"id\": \"7c3bbd70-a9e6-46ba-a335-a61275c7b4b5\",\n        \"name\": \"deal-e2e-create-full-3\",\n        \"stage\": \"qualified\",\n        \"value\": 1003,\n      }\n\n       95 |         .expect(200);\n       96 |\n    >  97 |       expect(detail.body).toMatchObject({\n          |                           ^\n       98 |         id: createResponse.body.id,\n       99 |         name: payload.name,\n      100 |         value: payload.value,\n\n      at Object.<anonymous> (acceptance/T1/deal.e2e-spec.ts:97:27)\n\n  ● Deal API (e2e) › checkpoint 4: detail and update › accepts a partial update and rejects an empty body\n\n    expected 200 \"OK\", got 201 \"Created\"\n\n      245 |         .post(`/api/deals/${dealId}`)\n      246 |         .send({ stage: 'won' })\n    > 247 |         .expect(200);\n          |          ^\n      248 |\n      249 |       expect(updated.body.stage).toBe('won');\n      250 |\n\n      at Object.<anonymous> (acceptance/T1/deal.e2e-spec.ts:247:10)\n      ----\n      at Test._assertStatus (../node_modules/supertest/lib/test.js:309:14)\n      at ../node_modules/supertest/lib/test.js:365:13\n      at Test._assertFunction (../node_modules/supertest/lib/test.js:342:13)\n      at Test.assert (../node_modules/supertest/lib/test.js:195:23)\n      at localAssert (../node_modules/supertest/lib/test.js:138:14)\n      at Server.<anonymous> (../node_modules/supertest/lib/test.js:152:11)\n\n  ● Deal API (e2e) › checkpoint 4: detail and update › rejects updating an immutable field such as companyId\n\n    expected 400 \"Bad Request\", got 404 \"Not Found\"\n\n      268 |         .post(`/api/deals/${dealId}`)\n      269 |         .send({ companyId: '7f4f54f7-cd3c-4ef2-b22d-8f1d68d9f1aa' })\n    > 270 |         .expect(400);\n          |          ^\n      271 |\n      272 |       expect(response.body).toMatchObject({\n      273 |         success: false,\n\n      at Object.<anonymous> (acceptance/T1/deal.e2e-spec.ts:270:10)\n      ----\n      at Test._assertStatus (../node_modules/supertest/lib/test.js:309:14)\n      at ../node_modules/supertest/lib/test.js:365:13\n      at Test._assertFunction (../node_modules/supertest/lib/test.js:342:13)\n      at Test.assert (../node_modules/supertest/lib/test.js:195:23)\n      at localAssert (../node_modules/supertest/lib/test.js:138:14)\n      at Server.<anonymous> (../node_modules/supertest/lib/test.js:152:11)\n\nTest Suites: 1 failed, 1 total\nTests:       3 failed, 11 passed, 14 total\nSnapshots:   0 total\nTime:        29.158 s\nRan all test suites matching test/acceptance/T1/deal.e2e-spec.ts.\nTest results written to: acceptance-report.json\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 34.014
+      },
+      "summary": {
+        "total": 14,
+        "passed": 11,
+        "failed": 3,
+        "failed_ids": [
+          "Deal API (e2e) checkpoint 1: creation creates a Deal with all fields supplied and returns it on fetch",
+          "Deal API (e2e) checkpoint 4: detail and update accepts a partial update and rejects an empty body",
+          "Deal API (e2e) checkpoint 4: detail and update rejects updating an immutable field such as companyId"
+        ]
+      }
+    },
+    {
+      "suite_id": "frontend",
+      "status": "pass",
+      "reason": null,
+      "install": {
+        "command": "npm ci --legacy-peer-deps",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 487 packages, and audited 488 packages in 2m\n\n159 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: '@testing-library/jest-dom@6.10.0',\nnpm warn EBADENGINE   required: { node: '>=22', npm: '>=6', yarn: '>=1' },\nnpm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }\nnpm warn EBADENGINE }\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 112.2
+      },
+      "test": {
+        "command": "npx --no-install vitest run src/test/acceptance/T1 --reporter=json --outputFile=acceptance-report.json",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "JSON report written to /workspace/frontend/acceptance-report.json\n",
+        "stderr": "npm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 12.94
+      },
+      "summary": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "failed_ids": []
+      }
+    }
+  ]
+}

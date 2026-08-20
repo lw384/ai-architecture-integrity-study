@@ -1,0 +1,13 @@
+evaluation_id,session_id,task_id,agent,strategy,clean,silent_decay,constraints_failed,indeterminate_metric_error,silent_decay_concerns,any_silent_decay
+session_20260817_130253/T1,session_20260817_130253,T1,claude,minimal,16,0,3,0,,False
+session_20260817_130253/T2,session_20260817_130253,T2,claude,minimal,14,1,4,0,BE-SIZE,True
+session_20260817_130253/T3,session_20260817_130253,T3,claude,minimal,17,0,2,0,,False
+session_20260817_160757/T1,session_20260817_160757,T1,claude,structured,16,0,3,0,,False
+session_20260817_160757/T2,session_20260817_160757,T2,claude,structured,14,0,5,0,,False
+session_20260817_160757/T3,session_20260817_160757,T3,claude,structured,17,0,2,0,,False
+session_20260817_210911/T1,session_20260817_210911,T1,codex,minimal,16,0,3,0,,False
+session_20260817_210911/T2,session_20260817_210911,T2,codex,minimal,13,0,6,0,,False
+session_20260817_210911/T3,session_20260817_210911,T3,codex,minimal,14,1,4,0,BE-SIZE,True
+session_20260817_221755/T1,session_20260817_221755,T1,codex,structured,16,0,3,0,,False
+session_20260817_221755/T2,session_20260817_221755,T2,codex,structured,15,0,4,0,,False
+session_20260817_221755/T3,session_20260817_221755,T3,codex,structured,16,0,3,0,,False

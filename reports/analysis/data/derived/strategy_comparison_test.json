@@ -10,14 +10,14 @@
     "n_pairs": 3,
     "statistic": 0.0,
     "p_value": 0.25,
-    "median_diff": 5.0,
+    "median_diff": -2.0,
     "note": null
   },
   "overall": {
     "n_pairs": 6,
-    "statistic": 3.5,
-    "p_value": 0.1875,
-    "median_diff": 2.5,
+    "statistic": 4.0,
+    "p_value": 0.21875,
+    "median_diff": -1.5,
     "note": null
   }
 }

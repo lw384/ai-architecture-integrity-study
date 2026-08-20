@@ -1,23 +1,41 @@
 #!/usr/bin/env python3
-"""analysis.md §6.1 — Silent decay.
+"""analysis.md §6.1 — Silent decay, evaluated per concern (not per run).
 
 Passing constraints (binary pass/fail) does not mean the architecture held
-steady — a continuous metric can already be degrading in the same run.
-Crosses each run's constraint_result against whether any of its metrics is
-a "significant" outlier on the bad side, using the exact IQR fences
-s1_2_metric_distribution.py already computed (reused via its derived CSV,
-not recomputed here, so the two stages can never silently disagree on what
-"significant" means).
+steady — a continuous metric can already be degrading in the same run. The
+question this stage answers is "is that true anywhere", and answering it
+requires asking at the same grain the binary/continuous pair is actually
+defined at: each of the 19 concerns (Appendix A / Table 3.2) has its own
+constraint rule(s) *and* its own representative metric covering the same
+concern (e.g. BE-SIZE-C-001's parameter-count constraint alongside
+BE-SIZE-M-001's cyclomatic-complexity metric). "Silent" only means anything
+scoped to one concern: did *this concern's* binary gate pass while *this
+concern's* metric already shows decay.
 
-"Bad side" uses delta_trajectory_cumulative's direction (== score.value's
-own direction, since delta_vs_baseline is baseline-relative — see
-ingest.py) but the outlier test itself is applied to the run's raw value
-against the IQR fence, per §3.2/§6.1's own wording ("用 3.2 的分布定的阈值").
+An earlier version of this stage asked the question at run grain instead
+(did *any* of the 36 constraint rules across all 19 concerns fail this
+run) before looking at any metric. That check is almost never true in a
+dataset where every run fails at least one constraint somewhere — in this
+dataset it is never true, so every run got swept into `constraints_failed`
+regardless of what its metrics showed, even the 4 runs (of 12) where a
+metric unrelated to the failing constraint was *also* a bad-side IQR
+outlier. Scoping both sides to the same concern removes that masking.
+
+"Bad side" uses the metric's own `direction` field (from
+metric_observations.csv) against the IQR fences s1_2_metric_distribution.py
+already computed (reused via its derived CSV, not recomputed here, so the
+two stages can never silently disagree on what "significant" means).
+
+BE-MOCK-M-001 is the metric Appendix A designates as representative for
+the BE-TEST concern; BE-TEST-M-001 (test coverage) is excluded from
+architectural analysis per §3.4.3 (reported separately in §4.8) and is
+never assigned to a concern here — see taxonomy.py.
 
 Run s1_2_metric_distribution.py first. Reads data/runs.csv,
-data/metric_observations.csv, and data/derived/metric_distribution_bounds.csv.
-Writes:
-    data/derived/silent_decay_classification.csv
+data/constraint_findings.csv, data/metric_observations.csv, and
+data/derived/metric_distribution_bounds.csv. Writes:
+    data/derived/silent_decay_by_concern.csv  (evaluation x concern, 12x19 rows)
+    data/derived/silent_decay_run_summary.csv (one row per evaluation)
 """
 
 from __future__ import annotations
@@ -29,8 +47,20 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from paths import DATA_DIR, DERIVED_DIR  # noqa: E402
+from taxonomy import (  # noqa: E402
+    ARCHITECTURAL_METRIC_EXCLUSIONS,
+    CONCERN_ORDER,
+    metric_concern,
+    subject_and_category,
+)
 
 CLASSIFICATION_ORDER = ["clean", "silent_decay", "constraints_failed", "indeterminate_metric_error"]
+BY_CONCERN_COLUMNS = [
+    "evaluation_id", "session_id", "task_id", "agent", "strategy",
+    "concern", "layer", "constraint_failed",
+    "metric_name", "metric_value", "metric_status", "direction", "metric_bad_outlier",
+    "classification",
+]
 
 
 def _is_bad_outlier(value: float, direction: str, low: float, high: float) -> bool:
@@ -41,69 +71,125 @@ def _is_bad_outlier(value: float, direction: str, low: float, high: float) -> bo
     return value > high  # default / lower_is_better
 
 
-def classify_runs(
+def _concern_constraint_failures(constraint_findings: pd.DataFrame) -> pd.DataFrame:
+    """(evaluation_id, concern) pairs where this task's own run_local diff
+    introduced at least one violation under that concern — same run_local
+    semantics ingest.py's whole-run `constraint_result` uses, just scoped
+    down to one concern instead of all 36 rules at once."""
+    introduced = constraint_findings.query(
+        "delta_scope == 'run_local' and change_type == 'introduced' and session_id != 'baseline'"
+    ).copy()
+    parsed = introduced["rule_id"].apply(subject_and_category)
+    introduced["concern"] = [f"{subj}-{cat}" for subj, cat in parsed]
+    failed = introduced[["evaluation_id", "concern"]].drop_duplicates()
+    failed["constraint_failed"] = True
+    return failed
+
+
+def _concern_metrics(metric_observations: pd.DataFrame, bounds: pd.DataFrame) -> pd.DataFrame:
+    """One row per (evaluation_id, concern) with that concern's representative
+    metric's value/status/bad-outlier flag. 1:1 by construction — every
+    concern in CONCERN_ORDER has exactly one non-excluded metric."""
+    architectural = metric_observations.loc[
+        ~metric_observations["metric_name"].isin(ARCHITECTURAL_METRIC_EXCLUSIONS)
+    ].copy()
+    architectural["concern"] = architectural["metric_name"].apply(metric_concern)
+
+    merged = architectural.merge(
+        bounds[["metric_name", "iqr_low", "iqr_high"]], on="metric_name", how="left"
+    )
+    merged["metric_bad_outlier"] = merged.apply(
+        lambda r: _is_bad_outlier(r["value"], r["direction"], r["iqr_low"], r["iqr_high"]), axis=1
+    )
+    return merged.rename(columns={"value": "metric_value", "status": "metric_status"})[
+        ["evaluation_id", "concern", "metric_name", "metric_value", "metric_status", "direction", "metric_bad_outlier"]
+    ]
+
+
+def classify_by_concern(
     runs: pd.DataFrame,
+    constraint_findings: pd.DataFrame,
     metric_observations: pd.DataFrame,
     bounds: pd.DataFrame,
 ) -> pd.DataFrame:
-    merged = metric_observations.merge(
-        bounds[["metric_name", "iqr_low", "iqr_high"]], on="metric_name", how="left"
-    )
-    merged["is_bad_outlier"] = merged.apply(
-        lambda r: _is_bad_outlier(r["value"], r["direction"], r["iqr_low"], r["iqr_high"]), axis=1
-    )
+    agent_runs = runs.loc[
+        runs["session_id"] != "baseline", ["evaluation_id", "session_id", "task_id", "agent", "strategy"]
+    ]
+    grid = agent_runs.merge(pd.DataFrame(CONCERN_ORDER, columns=["concern", "layer"]), how="cross")
 
-    per_run = merged.groupby("evaluation_id").agg(
-        has_metric_error=("status", lambda s: (s == "error").any()),
-        has_bad_outlier=("is_bad_outlier", "any"),
-        bad_outlier_metrics=("metric_name", lambda names: " | ".join(
-            n for n, o in zip(names, merged.loc[names.index, "is_bad_outlier"]) if o
-        )),
-    )
+    grid = grid.merge(_concern_constraint_failures(constraint_findings), on=["evaluation_id", "concern"], how="left")
+    grid["constraint_failed"] = grid["constraint_failed"].fillna(False)
 
-    result = runs.loc[runs["session_id"] != "baseline"].merge(per_run, on="evaluation_id", how="left")
-    result["has_metric_error"] = result["has_metric_error"].fillna(False)
-    result["has_bad_outlier"] = result["has_bad_outlier"].fillna(False)
+    grid = grid.merge(_concern_metrics(metric_observations, bounds), on=["evaluation_id", "concern"], how="left")
+    grid["metric_bad_outlier"] = grid["metric_bad_outlier"].fillna(False)
 
     def classify(row) -> str:
-        if row["has_metric_error"]:
+        if row["metric_status"] == "error":
             return "indeterminate_metric_error"
-        if row["constraint_result"] == "failed":
+        if row["constraint_failed"]:
             return "constraints_failed"
-        if row["has_bad_outlier"]:
+        if row["metric_bad_outlier"]:
             return "silent_decay"
         return "clean"
 
-    result["classification"] = result.apply(classify, axis=1)
-    return result[
-        [
-            "evaluation_id", "session_id", "task_id", "agent", "strategy",
-            "constraint_result", "has_metric_error", "has_bad_outlier",
-            "bad_outlier_metrics", "classification",
-        ]
-    ]
+    grid["classification"] = grid.apply(classify, axis=1)
+    return grid.sort_values(["agent", "strategy", "task_id", "concern"])[BY_CONCERN_COLUMNS]
+
+
+def compute_run_summary(by_concern: pd.DataFrame) -> pd.DataFrame:
+    """Roll the 19-concern-per-run grid back up to one row per evaluation,
+    so a run can still be scanned at a glance while keeping the underlying
+    per-concern detail available in silent_decay_by_concern.csv."""
+    counts = (
+        by_concern.groupby("evaluation_id")["classification"]
+        .value_counts().unstack(fill_value=0)
+        .reindex(columns=CLASSIFICATION_ORDER, fill_value=0)
+    )
+    silent_concerns = (
+        by_concern.loc[by_concern["classification"] == "silent_decay"]
+        .groupby("evaluation_id")["concern"]
+        .apply(lambda s: " | ".join(s))
+    )
+    meta = by_concern[["evaluation_id", "session_id", "task_id", "agent", "strategy"]].drop_duplicates()
+
+    summary = meta.merge(counts, on="evaluation_id", how="left").merge(
+        silent_concerns.rename("silent_decay_concerns"), on="evaluation_id", how="left"
+    )
+    summary["silent_decay_concerns"] = summary["silent_decay_concerns"].fillna("")
+    summary["any_silent_decay"] = summary["silent_decay"] > 0
+    return summary.sort_values(["agent", "strategy", "task_id"])
 
 
 def main() -> None:
     runs = pd.read_csv(DATA_DIR / "runs.csv")
+    constraint_findings = pd.read_csv(DATA_DIR / "constraint_findings.csv")
     metric_observations = pd.read_csv(DATA_DIR / "metric_observations.csv")
     bounds_path = DERIVED_DIR / "metric_distribution_bounds.csv"
     if not bounds_path.exists():
         raise FileNotFoundError(f"{bounds_path} not found — run s1_2_metric_distribution.py first.")
     bounds = pd.read_csv(bounds_path)
 
-    classification = classify_runs(runs, metric_observations, bounds)
+    by_concern = classify_by_concern(runs, constraint_findings, metric_observations, bounds)
+    run_summary = compute_run_summary(by_concern)
 
     DERIVED_DIR.mkdir(parents=True, exist_ok=True)
-    classification.to_csv(DERIVED_DIR / "silent_decay_classification.csv", index=False)
+    by_concern.to_csv(DERIVED_DIR / "silent_decay_by_concern.csv", index=False)
+    run_summary.to_csv(DERIVED_DIR / "silent_decay_run_summary.csv", index=False)
 
-    counts = classification["classification"].value_counts().reindex(CLASSIFICATION_ORDER, fill_value=0)
+    counts = by_concern["classification"].value_counts().reindex(CLASSIFICATION_ORDER, fill_value=0)
+    print(f"Across all {len(by_concern)} (evaluation, concern) cells:")
     print(counts.to_string())
     print()
-    silent = classification.loc[classification["classification"] == "silent_decay"]
+
+    silent = by_concern.loc[by_concern["classification"] == "silent_decay"]
     if not silent.empty:
-        print("Silent decay runs:")
-        print(silent[["evaluation_id", "bad_outlier_metrics"]].to_string(index=False))
+        print(f"{len(silent)} silent-decay cells (constraint passed, metric a bad-side outlier):")
+        print(silent[["evaluation_id", "concern", "metric_name", "metric_value"]].to_string(index=False))
+    else:
+        print("No silent-decay cells in this dataset.")
+
+    print(f"\n{int(run_summary['any_silent_decay'].sum())}/{len(run_summary)} evaluations have at least one "
+          "silent-decay concern.")
 
 
 if __name__ == "__main__":

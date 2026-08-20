@@ -1,15 +1,17 @@
-session_id,task_id,task_order,agent,strategy,model,agent_status,completion_marker_found,agent_reported_error,exit_code,num_turns,total_cost_usd,duration_seconds,test_status,test_reason,test_suite_count,test_failed_suite_ids
-session_20260817_014141,T1,1,codex,minimal,gpt-5.3-codex,success,True,False,0,,,1241.267,error,test_database_unavailable,0,
-session_20260817_014141,T2,2,codex,minimal,gpt-5.3-codex,success,True,False,0,,,1112.088,skipped,no acceptance suite defined for this task,0,
-session_20260817_014141,T3,3,codex,minimal,gpt-5.3-codex,success,True,False,0,,,984.428,skipped,no acceptance suite defined for this task,0,
-session_20260817_014141,T5,5,codex,minimal,gpt-5.3-codex,success,True,False,0,,,454.386,no_data,,0,
-session_20260817_031026,T1,1,codex,structured,gpt-5.3-codex,success,True,False,0,,,1317.33,error,test_database_unavailable,0,
-session_20260817_031026,T2,2,codex,structured,gpt-5.3-codex,success,True,False,0,,,665.973,skipped,no acceptance suite defined for this task,0,
-session_20260817_031026,T3,3,codex,structured,gpt-5.3-codex,success,True,False,0,,,1249.95,skipped,no acceptance suite defined for this task,0,
-session_20260817_031026,T5,5,codex,structured,gpt-5.3-codex,success,True,False,0,,,287.229,no_data,,0,
-session_20260817_130253,T1,1,claude,minimal,claude-sonnet-4-6,success,True,False,0,157.0,5.426751150000001,1209.585,fail,,2,backend
-session_20260817_130253,T2,2,claude,minimal,claude-sonnet-4-6,success,True,False,0,138.0,5.1564408,1531.043,skipped,no acceptance suite defined for this task,0,
-session_20260817_130253,T3,3,claude,minimal,claude-sonnet-4-6,success,True,False,0,142.0,5.833304749999999,1318.183,skipped,no acceptance suite defined for this task,0,
-session_20260817_160757,T1,1,claude,structured,claude-sonnet-4-6,success,True,False,0,171.0,6.529676250000004,1372.78,pass,,2,
-session_20260817_160757,T2,2,claude,structured,claude-sonnet-4-6,success,True,False,0,123.0,5.0932417999999995,1585.399,skipped,no acceptance suite defined for this task,0,
-session_20260817_160757,T3,3,claude,structured,claude-sonnet-4-6,success,True,False,0,97.0,4.812813049999999,1389.02,skipped,no acceptance suite defined for this task,0,
+session_id,task_id,task_order,agent,strategy,model,agent_status,completion_marker_found,agent_reported_error,exit_code,num_turns,duration_seconds,tokens_input_fresh,tokens_input_cached,tokens_cache_write,tokens_output,tokens_reasoning_output,total_cost_usd,cost_usd,cost_basis,test_status,test_reason,test_suite_count,test_failed_suite_ids
+session_20260817_130253,T1,1,claude,minimal,claude-sonnet-4-6,success,True,False,0,157.0,1209.585,127,13102411,130441,55106,,5.426751150000001,5.426751150000001,reported,fail,,2,backend
+session_20260817_130253,T2,2,claude,minimal,claude-sonnet-4-6,success,True,False,0,138.0,1531.043,2463,8840283,204470,93877,,5.1564408,5.1564408,reported,skipped,no acceptance suite defined for this task,0,
+session_20260817_130253,T3,3,claude,minimal,claude-sonnet-4-6,success,True,False,0,142.0,1318.183,143,14620847,123749,49471,,5.833304749999999,5.833304749999999,reported,skipped,no acceptance suite defined for this task,0,
+session_20260817_130253,T5,5,claude,minimal,claude-sonnet-4-6,success,True,False,0,37.0,261.695,3761,580683,63396,10639,,0.7456273499999999,0.7456273499999999,reported,no_data,,0,
+session_20260817_160757,T1,1,claude,structured,claude-sonnet-4-6,success,True,False,0,171.0,1372.78,134,14912922,169152,67422,,6.529676250000004,6.529676250000004,reported,pass,,2,
+session_20260817_160757,T2,2,claude,structured,claude-sonnet-4-6,success,True,False,0,123.0,1585.399,1438,9311361,178384,78835,,5.0932417999999995,5.0932417999999995,reported,skipped,no acceptance suite defined for this task,0,
+session_20260817_160757,T3,3,claude,structured,claude-sonnet-4-6,success,True,False,0,97.0,1389.02,334,9103603,167262,76585,,4.812813049999999,4.812813049999999,reported,skipped,no acceptance suite defined for this task,0,
+session_20260817_160757,T5,5,claude,structured,claude-sonnet-4-6,success,True,False,0,40.0,272.619,1060,724768,69370,13012,,0.8750683999999999,0.8750683999999999,reported,no_data,,0,
+session_20260817_210911,T1,1,codex,minimal,gpt-5.3-codex,success,True,False,0,,572.936,267626,8254720,0,45018,16195.0,,2.5431735,estimated_gpt-5.3-codex_pricing,fail,,2,backend
+session_20260817_210911,T2,2,codex,minimal,gpt-5.3-codex,success,True,False,0,,774.683,407311,13082624,0,79294,28670.0,,4.11236945,estimated_gpt-5.3-codex_pricing,skipped,no acceptance suite defined for this task,0,
+session_20260817_210911,T3,3,codex,minimal,gpt-5.3-codex,success,True,False,0,,682.46,260252,10852864,0,45817,23984.0,,2.9961302,estimated_gpt-5.3-codex_pricing,skipped,no acceptance suite defined for this task,0,
+session_20260817_210911,T5,5,codex,minimal,gpt-5.3-codex,success,True,False,0,,258.491,187527,5153792,0,18337,10448.0,,1.48680385,estimated_gpt-5.3-codex_pricing,no_data,,0,
+session_20260817_221755,T1,1,codex,structured,gpt-5.3-codex,success,True,False,0,,602.81,292558,8709376,0,49457,20588.0,,2.7285152999999998,estimated_gpt-5.3-codex_pricing,fail,,2,backend
+session_20260817_221755,T2,2,codex,structured,gpt-5.3-codex,success,True,False,0,,929.295,487738,16308992,0,87507,29650.0,,4.9327131,estimated_gpt-5.3-codex_pricing,skipped,no acceptance suite defined for this task,0,
+session_20260817_221755,T3,3,codex,structured,gpt-5.3-codex,success,True,False,0,,668.145,362915,11028992,0,52832,24670.0,,3.3048228499999994,estimated_gpt-5.3-codex_pricing,skipped,no acceptance suite defined for this task,0,
+session_20260817_221755,T5,5,codex,structured,gpt-5.3-codex,success,True,False,0,,230.224,308328,3955968,0,15940,10961.0,,1.4550284,estimated_gpt-5.3-codex_pricing,no_data,,0,

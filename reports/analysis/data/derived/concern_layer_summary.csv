@@ -1,0 +1,4 @@
+layer,n_concerns,n_concerns_with_findings,total_mean_per_eval,share_of_total_pct
+backend,9,6,11.666666666666666,70.70707070707071
+frontend,7,2,4.833333333333334,29.292929292929298
+cross-stack,3,0,0.0,0.0

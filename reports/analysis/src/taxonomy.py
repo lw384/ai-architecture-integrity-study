@@ -48,3 +48,55 @@ def category(identifier: str | None) -> str:
 
 def subject(identifier: str | None) -> str:
     return subject_and_category(identifier)[0]
+
+
+# Canonical (concern, layer) order — Appendix A's Index table, Backend ->
+# Frontend -> Cross-Stack, in the order each concern's index block lists
+# it. A "concern" is a rule_id/metric_name's <SUBJECT>-<CATEGORY> prefix
+# (e.g. "BE-DUP", "FE-DUP" — kept distinct, never merged across scopes).
+# Fixed here (not derived from the data) so a concern with zero findings
+# still gets a row/chart position instead of disappearing, and so every
+# stage that needs the full 19-concern taxonomy (s0_4, s4_1, ...) shares
+# one definition instead of maintaining its own copy.
+CONCERN_ORDER: list[tuple[str, str]] = [
+    ("BE-STRUCT", "backend"),
+    ("BE-DEP", "backend"),
+    ("BE-DOM", "backend"),
+    ("BE-ERR", "backend"),
+    ("BE-CONTRACT", "backend"),
+    ("BE-ROUTE", "backend"),
+    ("BE-SIZE", "backend"),
+    ("BE-DUP", "backend"),
+    ("BE-TEST", "backend"),
+    ("FE-COM", "frontend"),
+    ("FE-STATE", "frontend"),
+    ("FE-ROUTE", "frontend"),
+    ("FE-STYLE", "frontend"),
+    ("FE-DATA", "frontend"),
+    ("FE-COMM", "frontend"),
+    ("FE-DUP", "frontend"),
+    ("CROSS-EP", "cross-stack"),
+    ("CROSS-TYPE", "cross-stack"),
+    ("CROSS-PROP", "cross-stack"),
+]
+
+# Appendix A designates BE-MOCK-M-001 as the *representative* metric for
+# the BE-TEST concern (Table 3.2) — its own rule_id prefix parses to
+# subject/category ("BE", "MOCK"), which is not one of the 19 concerns
+# above, so it needs an explicit override rather than the regex split.
+# BE-TEST-M-001 (test coverage) is excluded from architectural analysis
+# per §3.4.3 and reported separately under functional/efficiency outcomes
+# (§4.8) — it never gets assigned to a concern here.
+METRIC_CONCERN_OVERRIDES: dict[str, str] = {"BE-MOCK-M-001-mock-per-test-case": "BE-TEST"}
+ARCHITECTURAL_METRIC_EXCLUSIONS: frozenset[str] = frozenset({"BE-TEST-M-001-test-coverage"})
+
+
+def metric_concern(metric_name: str) -> str:
+    """A metric's concern id (e.g. "BE-SIZE", "FE-DUP") — same id space as
+    CONCERN_ORDER — honoring the one documented override above. Callers
+    that want only the metrics counted in architectural analysis should
+    filter out ARCHITECTURAL_METRIC_EXCLUSIONS first."""
+    if metric_name in METRIC_CONCERN_OVERRIDES:
+        return METRIC_CONCERN_OVERRIDES[metric_name]
+    subj, cat = subject_and_category(metric_name)
+    return f"{subj}-{cat}"
