@@ -12,6 +12,8 @@ description: >
   render-decision depth. It uses the same per-component decision analysis as
   FE-COM-C-002 and excludes pure structural JSX nesting.
 
+formula: sum(component_max_render_decision_depth) / total_production_components
+
 agent_facing_message: >
   Average maximum render-decision depth is {value}. Lower values indicate
   simpler conditional rendering.

@@ -16,7 +16,7 @@ from docker_runner import (
 )
 from evaluator import run_harness_evaluation
 from prompt_builder import build_mega_prompt
-from test_runner import run_functional_tests
+from acceptance_runner import run_functional_tests
 
 INITIAL_MEMORY_TEMPLATE = Path("experiment/design/memory/initial_memory.md")
 

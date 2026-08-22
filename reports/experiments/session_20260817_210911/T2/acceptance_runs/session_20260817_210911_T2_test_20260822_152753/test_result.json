@@ -1,0 +1,385 @@
+{
+  "status": "fail",
+  "run_id": "session_20260817_210911_T2_test_20260822_152753",
+  "started_at": "2026-08-22T14:27:53.096689+00:00",
+  "completed_at": "2026-08-22T14:29:59.876238+00:00",
+  "task_id": "T2",
+  "adapter_version": "v2",
+  "adapter": {
+    "version": "v2",
+    "route_resolved": {
+      "backend": {
+        "contacts": "/api/contacts",
+        "deals": "/api/deals"
+      },
+      "frontend": {
+        "contacts": "contacts",
+        "contacts/:id": "contacts/:id",
+        "companies/:id": "companies/:id",
+        "deals": "deals",
+        "deals/:id": "deals/:id"
+      }
+    },
+    "method_resolved": {
+      "backend": {},
+      "frontend": {}
+    },
+    "field_mappings_used": [
+      "contacts->contactLinks"
+    ],
+    "unresolved": [
+      {
+        "suite_id": "backend",
+        "kind": "request_field",
+        "semantic_target": "Contact.companies[].id",
+        "attempted": [
+          "id:400",
+          "companyId:400"
+        ]
+      }
+    ],
+    "suites": [
+      {
+        "suite_id": "backend",
+        "version": "v2",
+        "route_resolved": {
+          "contacts": "/api/contacts",
+          "deals": "/api/deals"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [
+          "contacts->contactLinks"
+        ],
+        "discoveries": [
+          {
+            "kind": "route",
+            "semantic_target": "contacts",
+            "resolved": "/api/contacts",
+            "attempts": [
+              {
+                "path": "/api/contacts",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "route",
+            "semantic_target": "deals",
+            "resolved": "/api/deals",
+            "attempts": [
+              {
+                "path": "/api/deals",
+                "status": 200
+              }
+            ]
+          }
+        ],
+        "unresolved": [
+          {
+            "kind": "request_field",
+            "semantic_target": "Contact.companies[].id",
+            "attempted": [
+              "id:400",
+              "companyId:400"
+            ]
+          }
+        ],
+        "status": "unresolved"
+      },
+      {
+        "suite_id": "frontend",
+        "version": "v2",
+        "route_resolved": {
+          "contacts": "contacts",
+          "contacts/:id": "contacts/:id",
+          "companies/:id": "companies/:id",
+          "deals": "deals",
+          "deals/:id": "deals/:id"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts",
+            "resolved": "contacts"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts/:id",
+            "resolved": "contacts/:id"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "companies/:id",
+            "resolved": "companies/:id"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals/:id",
+            "resolved": "deals/:id"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts",
+            "resolved": "contacts"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "create_contact",
+            "candidates": [
+              "add contact",
+              "create contact",
+              "new contact"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "create_deal",
+            "candidates": [
+              "add deal",
+              "create deal",
+              "new deal"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts",
+            "resolved": "contacts"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      }
+    ]
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "fail",
+      "reason": null,
+      "total": 26,
+      "passed": 1,
+      "failed": 25,
+      "failed_ids": [
+        "T2 relationship API (e2e) checkpoint 1: Contact creation and representation creates a Contact linked to one Company and returns that primary link",
+        "T2 relationship API (e2e) checkpoint 1: Contact creation and representation creates a multi-Company Contact and orders the primary Company first",
+        "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects a Contact with no Company links",
+        "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects a Contact with no primary Company",
+        "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects a Contact with two primary Companies",
+        "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects an unknown Company and does not create the Contact",
+        "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement attaches a secondary Company, promotes it, and demotes the old primary",
+        "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement detaches a secondary Company without deleting the Contact",
+        "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement atomically removes the old primary when the same operation designates a replacement",
+        "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement rejects an update with no primary and leaves all links unchanged",
+        "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement rejects an update with two primary Companies and leaves all links unchanged",
+        "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement rejects an unknown Company atomically",
+        "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement returns 404 when the Contact being attached does not exist",
+        "T2 relationship API (e2e) checkpoint 3: Contact list and Company filtering finds a Contact by either its primary or secondary Company link",
+        "T2 relationship API (e2e) checkpoint 4: Deal creation and representation creates and reads a Deal with zero linked Contacts",
+        "T2 relationship API (e2e) checkpoint 4: Deal creation and representation round-trips multiple Contact links, optional roles, and a linked primary",
+        "T2 relationship API (e2e) checkpoint 4: Deal creation and representation rejects a primaryContactId outside the linked-Contact set",
+        "T2 relationship API (e2e) checkpoint 4: Deal creation and representation rejects Deal creation when any linked Contact is unknown",
+        "T2 relationship API (e2e) checkpoint 5: atomic Deal-Contact replacement replaces all Contact links, roles, and the primary in one update",
+        "T2 relationship API (e2e) checkpoint 5: atomic Deal-Contact replacement rejects any unknown Contact and leaves the whole Deal unchanged",
+        "T2 relationship API (e2e) checkpoint 5: atomic Deal-Contact replacement replaces a non-empty set with zero Contacts without changing the Company",
+        "T2 seed scenarios (e2e) demo seed includes a multi-Company Contact with exactly one primary",
+        "T2 seed scenarios (e2e) demo seed includes a Deal with three distinct non-empty Contact roles",
+        "T2 seed scenarios (e2e) edge-case seed includes a Deal with zero linked Contacts",
+        "T2 relationship migration (e2e) backfills legacy Contact and Deal relationships without loss or duplication"
+      ],
+      "failure_classifications": [
+        {
+          "id": "T2 relationship API (e2e) checkpoint 1: Contact creation and representation creates a Contact linked to one Company and returns that primary link",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 1: Contact creation and representation creates a multi-Company Contact and orders the primary Company first",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects a Contact with no Company links",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects a Contact with no primary Company",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects a Contact with two primary Companies",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 1: Contact creation and representation rejects an unknown Company and does not create the Contact",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement attaches a secondary Company, promotes it, and demotes the old primary",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement detaches a secondary Company without deleting the Contact",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement atomically removes the old primary when the same operation designates a replacement",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement rejects an update with no primary and leaves all links unchanged",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement rejects an update with two primary Companies and leaves all links unchanged",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement rejects an unknown Company atomically",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 2: atomic Contact-Company replacement returns 404 when the Contact being attached does not exist",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 3: Contact list and Company filtering finds a Contact by either its primary or secondary Company link",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 4: Deal creation and representation creates and reads a Deal with zero linked Contacts",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 4: Deal creation and representation round-trips multiple Contact links, optional roles, and a linked primary",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 4: Deal creation and representation rejects a primaryContactId outside the linked-Contact set",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 4: Deal creation and representation rejects Deal creation when any linked Contact is unknown",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 5: atomic Deal-Contact replacement replaces all Contact links, roles, and the primary in one update",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 5: atomic Deal-Contact replacement rejects any unknown Contact and leaves the whole Deal unchanged",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship API (e2e) checkpoint 5: atomic Deal-Contact replacement replaces a non-empty set with zero Contacts without changing the Company",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 seed scenarios (e2e) demo seed includes a multi-Company Contact with exactly one primary",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 seed scenarios (e2e) demo seed includes a Deal with three distinct non-empty Contact roles",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 seed scenarios (e2e) edge-case seed includes a Deal with zero linked Contacts",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 relationship migration (e2e) backfills legacy Contact and Deal relationships without loss or duplication",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        }
+      ],
+      "outcome": "adapter_unresolved",
+      "adapter_unresolved_count": 1,
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "fail",
+      "reason": null,
+      "total": 7,
+      "passed": 6,
+      "failed": 1,
+      "failed_ids": [
+        "T2 relationship frontend acceptance exposes Company, Contact role, and primary controls in the Deal form"
+      ],
+      "failure_classifications": [
+        {
+          "id": "T2 relationship frontend acceptance exposes Company, Contact role, and primary controls in the Deal form",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        }
+      ],
+      "outcome": "behaviour_or_test_fail",
+      "adapter_unresolved_count": 0,
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

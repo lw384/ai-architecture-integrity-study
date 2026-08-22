@@ -32,8 +32,9 @@ experiment/
 │   │   ├── run_harness.py
 │   │   ├── run_pipeline.py
 │   │   ├── run_tests.py
-│   │   └── test_runner.py
+│   │   └── acceptance_runner.py
 │   └── tests/
+│       ├── _adapter/v2/          # versioned contract adapter shared by every task
 │       └── T1/
 │           ├── deal.e2e-spec.ts
 │           ├── deal.render.test.jsx
@@ -53,11 +54,12 @@ experiment/
 | `instruments/agent-runners/prompt_builder.py` | Reads the task template, removes HTML comments, and appends the memory instructions and `[TASK_COMPLETED]` completion protocol. |
 | `instruments/agent-runners/docker_runner.py` | Mounts the workspace and authentication directory, launches the agent container, parses the CLI output, and writes the execution record. |
 | `instruments/agent-runners/evaluator.py` | Builds and runs `harness/core/evaluate.mjs` and writes the Harness manifest, execution record, and evaluation result. Measures **architecture integrity** (constraints/metrics), not functional correctness. |
-| `instruments/agent-runners/test_runner.py` | Locates the functional acceptance suite for a task_id under `instruments/tests/<task_id>/` (if any), overlays it into a throwaway copy of the workspace, runs it there, and writes a normalized result. Measures **functional correctness**; the agent never sees this suite. |
-| `instruments/tests/<task_id>/` | Source for one task's functional acceptance suite (e2e/component specs + `test.config.json`). Never part of `baseline/` and never lives in the workspace — only `test_runner.py` reads it. |
+| `instruments/agent-runners/acceptance_runner.py` | Locates the functional acceptance suite for a task_id under `instruments/tests/<task_id>/` (if any), overlays it into a throwaway copy of the workspace, runs it there, and writes a normalized result. Measures **functional correctness**; the agent never sees this suite. |
+| `instruments/tests/_adapter/<version>/` | Thin adapter shared by every task, session, and condition. `contract.json` lists the allowed route/field/UI-action equivalents; backend/frontend modules discover, normalize, and emit an audit trace. Condition- or session-specific mappings are prohibited. |
+| `instruments/tests/<task_id>/` | One semantic acceptance suite per task (e2e/component specs + `test.config.json`). The config selects an adapter version; it does not contain a session-specific contract. |
 | `instruments/agent-runners/run_pipeline.py` | Full entry point: prepares or reuses a workspace, runs the agent, commits and tags the result, invokes the Harness and the functional acceptance suite, and archives the artifacts. |
 | `instruments/agent-runners/run_harness.py` | Harness-only entry point. It can evaluate the current snapshot of an existing workspace, a specific tag, or the baseline through `--baseline`. |
-| `instruments/agent-runners/run_tests.py` | Acceptance-only entry point, the same relationship to `test_runner.py` as `run_harness.py` has to `evaluator.py` (this file is just the CLI wrapper). Reruns one task's functional acceptance suite against an existing workspace without touching the agent, the Harness, or Git tags. |
+| `instruments/agent-runners/run_tests.py` | Acceptance-only entry point, the same relationship to `acceptance_runner.py` as `run_harness.py` has to `evaluator.py` (this file is just the CLI wrapper). Reruns one task's functional acceptance suite against an existing workspace without touching the agent, the Harness, or Git tags. |
 | `instruments/agent-runners/generate_report.py` | Optional utility that converts constraint violations from `harness_evaluation.json` into Markdown. |
 | `venv/` | Optional local Python virtual environment. The runners currently use only the Python standard library. |
 | `workspace/session_<timestamp>/` | Persistent working copy and isolated Git repository for one experiment session. T1–T3 must accumulate sequentially in the same session. |
@@ -126,7 +128,10 @@ reports/experiments/<session_id>/
     ├── harness_execution.json
     ├── harness_evaluation.json
     ├── test_execution.json
-    └── test_result.json
+    ├── test_result.json
+    └── acceptance_runs/<test_run_id>/   # acceptance-only reruns preserve the original
+        ├── test_execution.json
+        └── test_result.json
 ```
 
 | Artifact | Contents |
@@ -138,8 +143,8 @@ reports/experiments/<session_id>/
 | `manifest.json` | Task, revisions, comparison mode, and resolved comparison inputs supplied to the Harness. |
 | `harness_execution.json` | Harness command, exit code, timeout status, stdout, and stderr. |
 | `harness_evaluation.json` | Uniform `scopes[]` results, local/cumulative deltas, artifact identities, and execution/comparison statuses. The constraint result is derived from local introduced findings. Measures **architecture integrity**. |
-| `test_execution.json` | Per-suite (backend/frontend) install and test commands, exit codes, stdout/stderr, and duration for the functional acceptance suite. Absent when the task has no suite defined. |
-| `test_result.json` | Normalized acceptance result: `status` (`pass`/`fail`/`error`/`skipped`) plus each suite's `total`/`passed`/`failed`/`failed_ids`. `error` means the acceptance infrastructure itself didn't run (e.g. the test database was unreachable); `fail` means the suite ran to completion and found a genuine functional gap — a valid experimental outcome, not a pipeline malfunction. Measures **functional correctness**, independent of `harness_evaluation.json`. |
+| `test_execution.json` | Per-suite commands, exit codes, stdout/stderr, duration, and the adapter's complete discovery trace. Absent when the task has no suite. |
+| `test_result.json` | Normalized result with `run_id`, `adapter_version`, `adapter.route_resolved`, `field_mappings_used`, `unresolved`, suite `outcome`, and conservative failure triage. An unresolved adapter target is never skipped silently; it remains a `fail`. Automatic triage is diagnostic only and never converts a failure into a pass. |
 
 If the agent or Harness fails partway through, the existing workspace and task directory remain available for diagnosis. Pass `--force` explicitly before writing to the same task archive again or replacing an existing `task-Tn-done` tag.
 
@@ -303,19 +308,17 @@ By default, the Harness reads `start_ref` from the original task manifest, resol
 ```bash
 python3 experiment/instruments/agent-runners/run_tests.py \
   --run-id "$SESSION_ID" \
-  --task T3 \
-  --output-dir "reports/experiments/$SESSION_ID/T3/test_rerun"
+  --task T3
 ```
 
 ```bash
 python3 experiment/instruments/agent-runners/run_tests.py \
   --workspace-dir "$WORKSPACE" \
   --task T1 \
-  --from-tag task-T1-done \
-  --output-dir "reports/experiments/$SESSION_ID/T1/test_rerun"
+  --from-tag task-T1-done
 ```
 
-The default output directory is also `reports/experiments/<session_id>/<task>/`; if `test_execution.json`/`test_result.json` already exist there, use `--output-dir` or `--force`. If the task has no acceptance suite defined under `experiment/instruments/tests/`, the command exits cleanly and writes `status: "skipped"` — that is not an error. Only the acceptance infrastructure itself failing to run (e.g. the test database is unreachable) produces a non-zero exit code. A suite that runs to completion and finds a genuine functional gap (`status: "fail"`) still prints its result and exits 0, because that is a valid experimental outcome, not a command failure.
+The first result is written in the task directory. If an original result already exists, an acceptance-only rerun is written automatically under `acceptance_runs/<run_id>/` rather than overwriting it. Analysis selects the newest run within the highest adapter version and records the selected run id, version, and source path in `task_completion.csv`; it falls back to the unversioned original only when no versioned run exists. A custom `--output-dir` is useful for diagnostics but is outside automatic selection. Use `--force` only when intentionally replacing the selected output directory. Missing suites produce `skipped`; only infrastructure `error` exits non-zero, while functional `fail` remains a valid observation.
 
 ### 3.5 Evaluate the baseline
 

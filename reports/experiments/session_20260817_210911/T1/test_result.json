@@ -7,13 +7,12 @@
       "status": "fail",
       "reason": null,
       "total": 14,
-      "passed": 11,
-      "failed": 3,
+      "passed": 13,
+      "failed": 1,
       "failed_ids": [
-        "Deal API (e2e) checkpoint 1: creation creates a Deal with all fields supplied and returns it on fetch",
-        "Deal API (e2e) checkpoint 4: detail and update accepts a partial update and rejects an empty body",
-        "Deal API (e2e) checkpoint 4: detail and update rejects updating an immutable field such as companyId"
-      ]
+        "Deal API (e2e) checkpoint 4: detail and update accepts a partial update and rejects an empty body"
+      ],
+      "coverage_dir": "coverage/backend"
     },
     {
       "suite_id": "frontend",
@@ -22,7 +21,8 @@
       "total": 2,
       "passed": 2,
       "failed": 0,
-      "failed_ids": []
+      "failed_ids": [],
+      "coverage_dir": "coverage/frontend"
     }
   ]
 }

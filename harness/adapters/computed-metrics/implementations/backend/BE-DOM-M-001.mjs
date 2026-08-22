@@ -62,12 +62,13 @@ function evaluateReport(report, config = {}) {
     };
 }
 
-export async function run({ targetDir, baselineDir, config }) {
+export async function run({ targetDir, baselineDir, constraintsLayer, config }) {
     const { targetReport, baselineReport } = resolveMetricReports({
         targetDir,
         baselineDir,
         config,
         baselineOptional: true,
+        targetReportOverride: constraintsLayer?.adapterRawOutputs?.['dep-cruiser'],
     });
     const target = evaluateReport(targetReport, config ?? {});
     const baseline = baselineReport ? evaluateReport(baselineReport, config ?? {}) : null;

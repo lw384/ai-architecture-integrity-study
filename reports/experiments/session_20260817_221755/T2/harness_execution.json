@@ -1,6 +1,6 @@
 {
   "harness_status": "success",
-  "run_id": "session_20260817_221755_T2_224458",
+  "run_id": "session_20260817_221755_T2_harness_20260822_150456",
   "exit_code": 0,
   "timed_out": false,
   "command": [
@@ -21,7 +21,7 @@
     "--post-commit",
     "5b602907d19e60b9e1de44d86476374126156113",
     "--run-id",
-    "session_20260817_221755_T2_224458",
+    "session_20260817_221755_T2_harness_20260822_150456",
     "--trajectory-id",
     "session_20260817_221755",
     "--output",

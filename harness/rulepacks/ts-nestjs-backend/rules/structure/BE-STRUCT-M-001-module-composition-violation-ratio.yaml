@@ -17,7 +17,7 @@ description: >
   module requires only a service. This metric does not check whether the
   discovered files are actually registered in @Module metadata.
 
-  Formula: violating_modules / total_modules
+formula: violating_modules / total_modules
 
 agent_facing_message: >
   Module composition violation ratio is {value}. Reduce modules missing the

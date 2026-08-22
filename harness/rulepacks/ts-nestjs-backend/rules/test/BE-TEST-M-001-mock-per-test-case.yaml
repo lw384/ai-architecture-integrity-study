@@ -1,15 +1,17 @@
-rule_id: BE-MOCK-M-001-mock-per-test-case
+rule_id: BE-TEST-M-001-mock-per-test-case
 version: 0.1.0
 layer: metrics
 category: testability
 visibility: agent-visible
 severity: warn
 adapter: computed-metrics
-implementation: BE-MOCK-M-001
+implementation: BE-TEST-M-001
 
 description: >
   Measures average mock usage intensity in backend tests.
   Value = total mock constructs / total test cases.
+
+formula: total_mock_constructs / total_test_cases
 
 agent_facing_message: >
   Backend mock density is {value}. Excessive mock usage can indicate tests coupled to implementation details.

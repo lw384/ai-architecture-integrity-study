@@ -1,7 +1,7 @@
 {
   "schema_version": "0.3.0",
-  "evaluation_profile_hash": "sha256:14b04a670435b70d738f7ba2d21cc3e81aadc2d570a9f4f71ca796604f525390",
-  "run_id": "session_20260817_221755_T1_221756",
+  "evaluation_profile_hash": "sha256:784332f40fb3e2726c7f09f31b527917f120a9af421f465d0921f6cd581762ce",
+  "run_id": "session_20260817_221755_T1_harness_20260822_150431",
   "trajectory_id": "session_20260817_221755",
   "task_id": "T1",
   "rulepack_id": "task::T1",
@@ -9,33 +9,33 @@
     "workspace_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_221755",
     "pre_commit": "7ff58a6f7f3e1fec72d833ca08ee2e485f035518",
     "post_commit": "d793bb14da97a17dfca59f7c407e67184907f45a",
-    "baseline_commit": "c27070d654518294f0f99f1b9352bddca649e9db"
+    "baseline_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe"
   },
   "comparison": {
     "mode": "trajectory",
     "baseline": {
       "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
-      "sha256": "sha256:2c3432a82314d89cc51c617cd249d626958cdb3968b2cb867e2786547f423188",
-      "run_id": "baseline_Base_20260817_125231",
-      "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
+      "sha256": "sha256:3a2496b2a2079e586976376886d80285382bbe9c42952268959377b1d8297d57",
+      "run_id": "baseline_Base_20260822_150002",
+      "post_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe"
     },
     "pre": {
       "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
-      "sha256": "sha256:2c3432a82314d89cc51c617cd249d626958cdb3968b2cb867e2786547f423188",
-      "run_id": "baseline_Base_20260817_125231",
-      "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
+      "sha256": "sha256:3a2496b2a2079e586976376886d80285382bbe9c42952268959377b1d8297d57",
+      "run_id": "baseline_Base_20260822_150002",
+      "post_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe"
     },
     "post": {
       "path": null,
       "sha256": null,
-      "run_id": "session_20260817_221755_T1_221756",
+      "run_id": "session_20260817_221755_T1_harness_20260822_150431",
       "post_commit": "d793bb14da97a17dfca59f7c407e67184907f45a"
     }
   },
   "env_snapshot": {
     "node_version": "v20.20.2",
     "pnpm_version": "9.0.0",
-    "harness_commit": "c27070d654518294f0f99f1b9352bddca649e9db",
+    "harness_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe",
     "os": "Darwin 25.4.0 (arm64)",
     "tool_versions": {
       "backend-static": "0.2.0",
@@ -119,7 +119,7 @@
         "findings": [
           "MVC violations: 0",
           "Cyclic dependency count: 0",
-          "Total import edges: 97",
+          "Total import edges: 176",
           "Dependency violation density: 0"
         ],
         "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json"
@@ -175,23 +175,7 @@
         "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
       },
       {
-        "name": "backend:BE-TEST-M-001-test-coverage",
-        "version": "0.1.0",
-        "status": "pass",
-        "score": {
-          "value": 38.41,
-          "unit": "percent",
-          "direction": "higher_is_better"
-        },
-        "delta_vs_baseline": 3.9399999999999977,
-        "findings": [
-          "Backend line coverage: 38.41%",
-          "Delta vs baseline: +3.94 percentage points"
-        ],
-        "raw_artifact_path": "artifacts/metrics/test-coverage.json"
-      },
-      {
-        "name": "backend:BE-MOCK-M-001-mock-per-test-case",
+        "name": "backend:BE-TEST-M-001-mock-per-test-case",
         "version": "1.0.0",
         "status": "pass",
         "score": {
@@ -789,13 +773,13 @@
           "adapter_meta": {
             "backend-static": {
               "status": "ok",
-              "duration_ms": 195,
+              "duration_ms": 266,
               "files_scanned": 51,
               "parse_errors": []
             },
             "dep-cruiser": {
               "status": "ok",
-              "duration_ms": 1052,
+              "duration_ms": 1524,
               "warnings": [],
               "cwd": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_221755/backend",
               "targets": [
@@ -955,7 +939,7 @@
             "findings": [
               "MVC violations: 0",
               "Cyclic dependency count: 0",
-              "Total import edges: 97",
+              "Total import edges: 176",
               "Dependency violation density: 0"
             ],
             "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json"
@@ -1011,23 +995,7 @@
             "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
           },
           {
-            "name": "BE-TEST-M-001-test-coverage",
-            "version": "0.1.0",
-            "status": "pass",
-            "score": {
-              "value": 38.41,
-              "unit": "percent",
-              "direction": "higher_is_better"
-            },
-            "delta_vs_baseline": 3.9399999999999977,
-            "findings": [
-              "Backend line coverage: 38.41%",
-              "Delta vs baseline: +3.94 percentage points"
-            ],
-            "raw_artifact_path": "artifacts/metrics/test-coverage.json"
-          },
-          {
-            "name": "BE-MOCK-M-001-mock-per-test-case",
+            "name": "BE-TEST-M-001-mock-per-test-case",
             "version": "1.0.0",
             "status": "pass",
             "score": {
@@ -1792,7 +1760,7 @@
           "adapter_meta": {
             "frontend-static": {
               "status": "ok",
-              "duration_ms": 332,
+              "duration_ms": 558,
               "files_scanned": 104,
               "parse_errors": []
             }
@@ -2222,18 +2190,8 @@
           "status": "available"
         },
         {
-          "key": "backend:BE-TEST-M-001-test-coverage",
-          "name": "BE-TEST-M-001-test-coverage",
-          "scope": "backend",
-          "from": 34.47,
-          "to": 38.41,
-          "delta": 3.9399999999999977,
-          "direction": "higher_is_better",
-          "status": "available"
-        },
-        {
-          "key": "backend:BE-MOCK-M-001-mock-per-test-case",
-          "name": "BE-MOCK-M-001-mock-per-test-case",
+          "key": "backend:BE-TEST-M-001-mock-per-test-case",
+          "name": "BE-TEST-M-001-mock-per-test-case",
           "scope": "backend",
           "from": 0,
           "to": 0,
@@ -2559,18 +2517,8 @@
           "status": "available"
         },
         {
-          "key": "backend:BE-TEST-M-001-test-coverage",
-          "name": "BE-TEST-M-001-test-coverage",
-          "scope": "backend",
-          "from": 34.47,
-          "to": 38.41,
-          "delta": 3.9399999999999977,
-          "direction": "higher_is_better",
-          "status": "available"
-        },
-        {
-          "key": "backend:BE-MOCK-M-001-mock-per-test-case",
-          "name": "BE-MOCK-M-001-mock-per-test-case",
+          "key": "backend:BE-TEST-M-001-mock-per-test-case",
+          "name": "BE-TEST-M-001-mock-per-test-case",
           "scope": "backend",
           "from": 0,
           "to": 0,
@@ -2712,7 +2660,7 @@
       "judgments": []
     }
   },
-  "duration_ms": 400652,
+  "duration_ms": 7477,
   "execution_status": "completed",
   "comparison_status": "valid",
   "errors": []

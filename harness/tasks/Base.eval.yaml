@@ -40,7 +40,6 @@ evaluation_scopes:
         - BE-ERR-M-001
         - BE-CONTRACT-M-001
         - BE-TEST-M-001
-        - BE-MOCK-M-001
         - BE-ROUTE-M-001
         - BE-SIZE-M-001
         - BE-DUP-M-001

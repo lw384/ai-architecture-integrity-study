@@ -14,9 +14,9 @@ Produces six tables:
   data/task_completion.csv     one row per agent execution attempt
                                 (T1-T3 acceptance-gate data; see
                                 docs/methodology/analysis.md §2.3)
-  data/review_runs.csv         one row per T5 self-review (agent x strategy),
+  data/review_runs.csv         one row per T4 self-review (agent x strategy),
                                 even when it reported zero findings
-  data/review_findings.csv     one row per T5 self-reported finding
+  data/review_findings.csv     one row per T4 self-reported finding
                                 (docs/methodology/analysis.md §6.4)
 
 Run:
@@ -96,6 +96,44 @@ def read_json(path: Path) -> dict[str, Any] | None:
         return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return None
+
+
+def adapter_version_key(version: str | None) -> tuple[int, ...]:
+    """Numeric ordering for v2/v2.1; legacy unversioned results sort first."""
+    numbers = re.findall(r"\d+", version or "")
+    return tuple(int(number) for number in numbers) if numbers else (-1,)
+
+
+def select_acceptance_artifacts(
+    task_dir: Path,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None, str | None]:
+    """Select the newest run from the highest adapter version, preserving raw runs.
+
+    The pipeline-time result remains at <task>/test_result.json. Acceptance-only
+    reruns live under <task>/acceptance_runs/<run_id>/, so no historical file is
+    overwritten. Unversioned legacy results are used only when no versioned run
+    exists for that task.
+    """
+    result_paths = [task_dir / "test_result.json"]
+    runs_dir = task_dir / "acceptance_runs"
+    if runs_dir.exists():
+        result_paths.extend(sorted(runs_dir.glob("*/test_result.json")))
+
+    candidates = []
+    for result_path in result_paths:
+        result = read_json(result_path)
+        if result is None:
+            continue
+        version = result.get("adapter_version") or (result.get("adapter") or {}).get("version")
+        timestamp = result.get("completed_at") or result.get("run_id") or result_path.parent.name
+        candidates.append((adapter_version_key(version), str(timestamp), str(result_path), result_path, result))
+
+    if not candidates:
+        return None, None, None
+
+    _, _, _, selected_path, selected_result = max(candidates)
+    execution = read_json(selected_path.parent / "test_execution.json")
+    return selected_result, execution, str(selected_path.relative_to(task_dir))
 
 
 def read_session_config(session_dir: Path) -> dict[str, Any]:
@@ -332,11 +370,15 @@ def build_task_completion_record(
     session_id: str,
     task_id: str,
     config: dict[str, Any],
+    test_result_source: str | None = None,
 ) -> dict[str, Any]:
     metrics = execution.get("metrics") or {}
     usage = metrics.get("usage") or {}
     suites = (test_result or {}).get("suites") or []
     failed_suite_ids = [s.get("suite_id") for s in suites if s.get("status") == "fail"]
+    adapter = (test_result or {}).get("adapter") or {}
+    unresolved = adapter.get("unresolved") or []
+    suite_outcomes = [s.get("outcome") for s in suites if s.get("outcome")]
 
     # Token accounting differs by agent, so normalize into a common
     # fresh/cached-input + output shape rather than dumping each SDK's raw
@@ -403,16 +445,21 @@ def build_task_completion_record(
         "test_reason": (test_result or {}).get("reason"),
         "test_suite_count": len(suites) if suites else ((test_execution or {}).get("suites") and len(test_execution["suites"])) or 0,
         "test_failed_suite_ids": " | ".join(str(s) for s in failed_suite_ids),
+        "test_run_id": (test_result or {}).get("run_id"),
+        "adapter_version": (test_result or {}).get("adapter_version") or adapter.get("version"),
+        "adapter_outcomes": " | ".join(str(outcome) for outcome in suite_outcomes),
+        "adapter_unresolved_count": len(unresolved),
+        "test_result_source": test_result_source,
     }
 
 
 # ---------------------------------------------------------------------------
-# T5/review.md + T5/task_manifest.yaml -> review_runs / review_findings
+# T4/review.md + T4/task_manifest.yaml -> review_runs / review_findings
 # ---------------------------------------------------------------------------
 #
-# T5 findings.json (written by experiment/instruments/agent-runners/
+# T4 findings.json (written by experiment/instruments/agent-runners/
 # review_runner.py) is itself a *derived* artifact of review.md, and its
-# parser only recognizes the bullet-list format T5.md asks for. One real
+# parser only recognizes the bullet-list format T4.md asks for. One real
 # run in this dataset had the agent answer with a Markdown table instead,
 # which silently produced status="parse_incomplete" with zero findings even
 # though the review clearly contains five. Rather than trust that derived
@@ -510,7 +557,7 @@ def build_review_records(
     agent, strategy = config.get("agent") or "unknown", config.get("strategy") or "unknown"
     run_record = {
         "session_id": session_id,
-        "task_id": "T5",
+        "task_id": "T4",
         "agent": agent,
         "strategy": strategy,
         "reviewed_from_tag": review_manifest.get("reviewed_from_tag"),
@@ -525,7 +572,7 @@ def build_review_records(
         finding_rows.append(
             {
                 "session_id": session_id,
-                "task_id": "T5",
+                "task_id": "T4",
                 "agent": agent,
                 "strategy": strategy,
                 "reviewed_commit": review_manifest.get("reviewed_commit"),
@@ -586,15 +633,20 @@ def collect(experiments_dir: Path, baseline_dir: Path) -> dict[str, list[dict[st
 
         execution = read_json(task_dir / "execution.json")
         if execution is not None:
-            test_result = read_json(task_dir / "test_result.json")
-            test_execution = read_json(task_dir / "test_execution.json")
+            test_result, test_execution, test_result_source = select_acceptance_artifacts(task_dir)
             completion_rows.append(
                 build_task_completion_record(
-                    execution, test_result, test_execution, session_id, task_id, config
+                    execution,
+                    test_result,
+                    test_execution,
+                    session_id,
+                    task_id,
+                    config,
+                    test_result_source,
                 )
             )
 
-        if task_id == "T5" and (task_dir / "review.md").exists() and (task_dir / "task_manifest.yaml").exists():
+        if task_id == "T4" and (task_dir / "review.md").exists() and (task_dir / "task_manifest.yaml").exists():
             review_run, findings = build_review_records(task_dir, session_id, config)
             review_run_rows.append(review_run)
             review_finding_rows.extend(findings)
@@ -610,7 +662,7 @@ def collect(experiments_dir: Path, baseline_dir: Path) -> dict[str, list[dict[st
 
 
 # Explicit schemas for tables that can legitimately be empty this early in
-# data collection (e.g. no T5 review has produced a parseable finding yet).
+# data collection (e.g. no T4 review has produced a parseable finding yet).
 # Without this, pd.DataFrame([]).to_csv() writes a file with no header row
 # at all, and every downstream pd.read_csv() on it raises EmptyDataError —
 # "no data yet" should read as an empty table, not a crash.

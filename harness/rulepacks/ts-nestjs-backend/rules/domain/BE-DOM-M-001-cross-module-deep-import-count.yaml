@@ -24,5 +24,6 @@ research_tags:
   erosion_dimension: deep-import-bypass
 
 methodological_note: >
-  This metric counts dep-cruiser dependency edges tagged with
-  BE-DOM-C-001-no-cross-module-deep-import and compares against baseline.
+  This metric counts dependency edges tagged by the live dep-cruiser constraint
+  run with BE-DOM-C-001-no-cross-module-deep-import and compares against baseline.
+  If no live report is available, it falls back to the configured report_path.

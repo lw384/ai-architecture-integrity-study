@@ -55,6 +55,7 @@ test('constraint findings are binary and omit legacy severity metadata', async (
         configPath: path.join(rulepackDir, 'ignored.json'),
         run: async () => ({
           execution_meta: { status: 'ok' },
+          raw_output: { modules: [{ source: 'src/example.js', dependencies: [] }] },
           normalized_events: [
             {
               source_tool: 'synthetic',
@@ -80,4 +81,9 @@ test('constraint findings are binary and omit legacy severity metadata', async (
   assert.equal(result.findings.length, 1);
   assert.equal(result.findings[0].message, 'Violation at example.');
   assert.equal(Object.hasOwn(result.findings[0], 'severity'), false);
+  assert.deepEqual(result.adapterRawOutputs.synthetic, {
+    modules: [{ source: 'src/example.js', dependencies: [] }],
+  });
+  assert.equal(Object.keys(result).includes('adapterRawOutputs'), false);
+  assert.equal(JSON.stringify(result).includes('adapterRawOutputs'), false);
 });

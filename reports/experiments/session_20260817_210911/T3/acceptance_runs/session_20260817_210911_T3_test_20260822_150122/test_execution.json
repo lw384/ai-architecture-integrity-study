@@ -1,0 +1,896 @@
+{
+  "run_id": "session_20260817_210911_T3_test_20260822_150122",
+  "started_at": "2026-08-22T14:01:22.826034+00:00",
+  "completed_at": "2026-08-22T14:03:55.810827+00:00",
+  "task_id": "T3",
+  "adapter_version": "v2",
+  "runtime": {
+    "type": "docker",
+    "image": "node:20-bookworm-slim"
+  },
+  "db": {
+    "status": "ok",
+    "container_name": "crm_baseline_db_test",
+    "started_by_runner": false
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "fail",
+      "reason": null,
+      "install": {
+        "command": "npm ci",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 748 packages, and audited 749 packages in 58s\n\n168 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 59.075
+      },
+      "test": {
+        "command": "npx --no-install jest --config test/jest-e2e.json --rootDir=. --runInBand test/acceptance/T3 --json --outputFile=acceptance-report.json --coverage --coverageDirectory=coverage --collectCoverageFrom='src/**/*.{ts,js}' --collectCoverageFrom='!src/**/*.spec.ts' --collectCoverageFrom='!src/**/*.test.ts' --collectCoverageFrom='!src/main.ts'",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 1,
+        "stdout": "-------------------------------------------------------------|---------|----------|---------|---------|---------------------------------------------------------------------------------------\nFile                                                         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                     \n-------------------------------------------------------------|---------|----------|---------|---------|---------------------------------------------------------------------------------------\nAll files                                                    |   47.59 |    35.64 |   30.21 |   46.79 |                                                                                       \n src                                                         |     100 |       50 |     100 |     100 |                                                                                       \n  app.module.ts                                              |     100 |       50 |     100 |     100 | 9-10                                                                                  \n src/common/errors                                           |     100 |       60 |     100 |     100 |                                                                                       \n  app-exception.ts                                           |     100 |      100 |     100 |     100 |                                                                                       \n  error-codes.ts                                             |     100 |      100 |     100 |     100 |                                                                                       \n  validation-exception.factory.ts                            |     100 |       60 |     100 |     100 | 13-34                                                                                 \n src/common/filter                                           |      90 |       50 |   66.66 |   88.88 |                                                                                       \n  http-exception.filter.ts                                   |      90 |       50 |   66.66 |   88.88 | 61-68                                                                                 \n src/common/pipes                                            |   83.33 |      100 |      50 |   83.33 |                                                                                       \n  uuid-v4.pipe.ts                                            |   83.33 |      100 |      50 |   83.33 | 9                                                                                     \n src/common/utils                                            |   92.85 |       50 |     100 |   92.85 |                                                                                       \n  pagination.util.ts                                         |   92.85 |       50 |     100 |   92.85 | 52                                                                                    \n src/core/database                                           |   81.25 |    42.85 |       0 |   81.25 |                                                                                       \n  base.repository.ts                                         |      50 |        0 |       0 |      50 | 25-36                                                                                 \n  data-source.ts                                             |     100 |       50 |     100 |     100 | 6-19                                                                                  \n src/core/database/migrations                                |   55.78 |    36.84 |    62.5 |   55.78 |                                                                                       \n  20260722000100-AddContactsCompanyFk.ts                     |   41.66 |    33.33 |      50 |   41.66 | 8,15-48                                                                               \n  20260817000100-AddDealsForeignKeys.ts                      |   47.36 |       40 |      50 |   47.36 | 8,37-55,70-91                                                                         \n  20260817000200-UpgradeContactCompanyAndDealContactLinks.ts |      56 |    31.25 |      50 |      56 | 155,182,209-217,242,249-357                                                           \n  20260817000300-CanonicalizeDealStages.ts                   |   78.57 |       50 |     100 |   78.57 | 8,12,68                                                                               \n src/core/seed                                               |       0 |        0 |       0 |       0 |                                                                                       \n  seed.ts                                                    |       0 |        0 |       0 |       0 | 1-65                                                                                  \n  seed.utils.ts                                              |       0 |        0 |       0 |       0 | 1-102                                                                                 \n src/core/seed/factories                                     |       0 |        0 |       0 |       0 |                                                                                       \n  company.factory.ts                                         |       0 |        0 |       0 |       0 | 1-68                                                                                  \n  contact.factory.ts                                         |       0 |        0 |       0 |       0 | 1-50                                                                                  \n  deal.factory.ts                                            |       0 |        0 |       0 |       0 | 1-39                                                                                  \n src/core/seed/scenarios                                     |       0 |        0 |       0 |       0 |                                                                                       \n  demo.seed.ts                                               |       0 |        0 |       0 |       0 | 1-226                                                                                 \n  edge-case.seed.ts                                          |       0 |        0 |       0 |       0 | 1-199                                                                                 \n src/modules/company                                         |      73 |    63.33 |      50 |   69.66 |                                                                                       \n  company.controller.ts                                      |   78.94 |       75 |   33.33 |   76.47 | 40,49,61,67                                                                           \n  company.entity.ts                                          |     100 |       80 |     100 |     100 | 77-91                                                                                 \n  company.module.ts                                          |     100 |      100 |     100 |     100 |                                                                                       \n  company.repository.ts                                      |   42.85 |       30 |   33.33 |   36.84 | 19-57                                                                                 \n  company.service.ts                                         |   54.16 |       40 |      50 |      50 | 26,36,58-99                                                                           \n src/modules/company/dto                                     |   89.36 |       75 |      25 |   93.02 |                                                                                       \n  create.dto.ts                                              |    92.3 |       75 |      50 |    92.3 | 44                                                                                    \n  index.ts                                                   |     100 |      100 |     100 |     100 |                                                                                       \n  query.dto.ts                                               |   69.23 |       75 |       0 |   81.81 | 7,13                                                                                  \n  response.dto.ts                                            |     100 |       75 |     100 |     100 | 19-31                                                                                 \n  update.dto.ts                                              |     100 |      100 |     100 |     100 |                                                                                       \n src/modules/contact                                         |    30.8 |    30.57 |    6.12 |   27.98 |                                                                                       \n  contact-company-link.entity.ts                             |     100 |       75 |     100 |     100 | 24-27                                                                                 \n  contact.controller.ts                                      |   66.66 |    72.41 |   11.11 |   63.63 | 28,33,38,46,54,62,71,77                                                               \n  contact.entity.ts                                          |     100 |       75 |     100 |     100 | 43-54                                                                                 \n  contact.module.ts                                          |     100 |      100 |     100 |     100 |                                                                                       \n  contact.repository.ts                                      |    37.5 |    16.66 |   33.33 |   31.81 | 14-53                                                                                 \n  contact.service.ts                                         |    9.03 |       10 |     2.7 |    8.21 | 44-496                                                                                \n src/modules/contact/dto                                     |   83.82 |    55.55 |   22.22 |   89.06 |                                                                                       \n  create.dto.ts                                              |   85.71 |       75 |       0 |   85.71 | 27,47                                                                                 \n  index.ts                                                   |     100 |      100 |     100 |     100 |                                                                                       \n  link.dto.ts                                                |     100 |      100 |     100 |     100 |                                                                                       \n  query.dto.ts                                               |   65.38 |       50 |   28.57 |   77.27 | 37,44,58,63-68                                                                        \n  response.dto.ts                                            |     100 |      100 |     100 |     100 |                                                                                       \n  update.dto.ts                                              |     100 |      100 |     100 |     100 |                                                                                       \n src/modules/deal                                            |   53.43 |    37.93 |      44 |   52.04 |                                                                                       \n  deal-contact-link.entity.ts                                |     100 |       75 |     100 |     100 | 24-27                                                                                 \n  deal-stage.ts                                              |     100 |      100 |     100 |     100 |                                                                                       \n  deal.controller.ts                                         |      85 |       75 |   57.14 |   83.33 | 27,45,59                                                                              \n  deal.entity.ts                                             |     100 |       75 |     100 |     100 | 44-55                                                                                 \n  deal.module.ts                                             |     100 |      100 |     100 |     100 |                                                                                       \n  deal.repository.ts                                         |   88.23 |     62.5 |     100 |   86.66 | 26,32                                                                                 \n  deal.service.ts                                            |   35.71 |    22.95 |   35.89 |   35.63 | 46-96,137-272,282,296-303,310,317-344,357,363,373,380-384,407,413,437-565,592,625,649 \n src/modules/deal/dto                                        |    92.1 |      100 |      40 |   91.66 |                                                                                       \n  create.dto.ts                                              |   81.25 |      100 |       0 |   81.25 | 30,46,54                                                                              \n  index.ts                                                   |     100 |      100 |     100 |     100 |                                                                                       \n  query.dto.ts                                               |     100 |      100 |     100 |     100 |                                                                                       \n  stage-transition.dto.ts                                    |     100 |      100 |     100 |     100 |                                                                                       \n  update.dto.ts                                              |     100 |      100 |     100 |     100 |                                                                                       \n-------------------------------------------------------------|---------|----------|---------|---------|---------------------------------------------------------------------------------------\n",
+        "stderr": "(node:20) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nFAIL test/acceptance/T3/deal-stage.e2e-spec.ts (20.4 s)\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › defaults an omitted stage to \"lead\"\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › accepts lead as an initial stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › accepts qualified as an initial stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects active as an initial stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects negotiation as an initial stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects closed_won as an initial stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects closed_lost as an initial stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects an unrecognised initial stage as UNKNOWN_STAGE\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows lead -> lead through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows lead -> qualified through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows lead -> closed_lost through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows qualified -> qualified through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows qualified -> active through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows qualified -> closed_lost through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows active -> active through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows active -> negotiation through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows active -> closed_lost through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows negotiation -> negotiation through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows negotiation -> closed_won through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows negotiation -> closed_lost through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows closed_won -> closed_won through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows closed_lost -> closed_lost through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows closed_lost -> lead through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects lead -> active and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects lead -> negotiation and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects lead -> closed_won and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects qualified -> lead and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects qualified -> negotiation and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects qualified -> closed_won and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects active -> lead and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects active -> qualified and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects active -> closed_won and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects negotiation -> lead and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects negotiation -> qualified and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects negotiation -> active and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> lead and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> qualified and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> active and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> negotiation and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> closed_lost and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> qualified and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> active and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> negotiation and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> closed_won and preserves the stored stage\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › rejects qualified -> active when the Deal has zero linked Contacts\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows qualified -> active with T2 Contact links and preserves relationship data\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › rejects active -> negotiation without an expected close date\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows active -> negotiation when the date is already stored\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows active -> negotiation when the generic update supplies the date atomically\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows closing a no-Contact, no-date lead as lost\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › treats a same-stage request as a no-op without rechecking entry preconditions\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › produces the same successful result through generic and dedicated endpoints\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns the same invalid-transition error through both endpoints\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns the same precondition error through both endpoints\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › updates a terminal Deal without revalidating stage when stage is omitted\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › rejects an unknown stage through the generic endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › rejects an unknown stage through the dedicated endpoint\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns 404 for a stage update on an unknown Deal\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns only canonical stages from Deal list and detail responses\n\n    T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n\n      649 |     }\n      650 |     if (!contactCompanyKey || !contactId) {\n    > 651 |       throw new Error(\n          |             ^\n      652 |         `T3 acceptance could not discover a valid Contact link contract (${contactAttempts.join(\", \")})`,\n      653 |       );\n      654 |     }\n\n      at discoverRelationshipContract (test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)\n\n(node:20) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.\nPASS test/acceptance/T3/deal-stage.migration.e2e-spec.ts\n\nTest Suites: 1 failed, 1 passed, 2 total\nTests:       59 failed, 3 passed, 62 total\nSnapshots:   0 total\nTime:        23.154 s\nRan all test suites matching test/acceptance/T3.\nTest results written to: acceptance-report.json\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 25.738
+      },
+      "summary": {
+        "total": 62,
+        "passed": 3,
+        "failed": 59,
+        "failed_ids": [
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage defaults an omitted stage to \"lead\"",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts lead as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts qualified as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects active as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects negotiation as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_won as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_lost as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects an unrecognised initial stage as UNKNOWN_STAGE",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> lead through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> qualified through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> qualified through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> active through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> active through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> negotiation through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> negotiation through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_won through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_won -> closed_won through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> lead through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> closed_lost and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects qualified -> active when the Deal has zero linked Contacts",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows qualified -> active with T2 Contact links and preserves relationship data",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects active -> negotiation without an expected close date",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the date is already stored",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the generic update supplies the date atomically",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows closing a no-Contact, no-date lead as lost",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions treats a same-stage request as a no-op without rechecking entry preconditions",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors produces the same successful result through generic and dedicated endpoints",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same invalid-transition error through both endpoints",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same precondition error through both endpoints",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors updates a terminal Deal without revalidating stage when stage is omitted",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the generic endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns 404 for a stage update on an unknown Deal",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns only canonical stages from Deal list and detail responses"
+        ],
+        "failed_details": [
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage defaults an omitted stage to \"lead\"",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts lead as an initial stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts qualified as an initial stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects active as an initial stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects negotiation as an initial stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_won as an initial stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_lost as an initial stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects an unrecognised initial stage as UNKNOWN_STAGE",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> lead through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> qualified through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> qualified through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> active through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> active through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> negotiation through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> negotiation through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_won through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_won -> closed_won through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> lead through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> active and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> lead and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> lead and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> lead and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> active and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> lead and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> active and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> closed_lost and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> active and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects qualified -> active when the Deal has zero linked Contacts",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows qualified -> active with T2 Contact links and preserves relationship data",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects active -> negotiation without an expected close date",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the date is already stored",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the generic update supplies the date atomically",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows closing a no-Contact, no-date lead as lost",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions treats a same-stage request as a no-op without rechecking entry preconditions",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors produces the same successful result through generic and dedicated endpoints",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same invalid-transition error through both endpoints",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same precondition error through both endpoints",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors updates a terminal Deal without revalidating stage when stage is omitted",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the generic endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the dedicated endpoint",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns 404 for a stage update on an unknown Deal",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns only canonical stages from Deal list and detail responses",
+            "failure_messages": [
+              "Error: T3 acceptance could not discover a valid Contact link contract (id:400, companyId:400)\n    at discoverRelationshipContract (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:651:13)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:104:28)"
+            ]
+          }
+        ]
+      },
+      "failure_classifications": [
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage defaults an omitted stage to \"lead\"",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts lead as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts qualified as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects active as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects negotiation as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_won as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_lost as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects an unrecognised initial stage as UNKNOWN_STAGE",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> lead through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> qualified through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> qualified through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> active through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> active through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> negotiation through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> negotiation through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_won through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_won -> closed_won through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> lead through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> closed_lost and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects qualified -> active when the Deal has zero linked Contacts",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows qualified -> active with T2 Contact links and preserves relationship data",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects active -> negotiation without an expected close date",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the date is already stored",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the generic update supplies the date atomically",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows closing a no-Contact, no-date lead as lost",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions treats a same-stage request as a no-op without rechecking entry preconditions",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors produces the same successful result through generic and dedicated endpoints",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same invalid-transition error through both endpoints",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same precondition error through both endpoints",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors updates a terminal Deal without revalidating stage when stage is omitted",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the generic endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns 404 for a stage update on an unknown Deal",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns only canonical stages from Deal list and detail responses",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        }
+      ],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {
+          "deals": "/api/deals"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [
+          "contacts->contactLinks"
+        ],
+        "discoveries": [
+          {
+            "kind": "route",
+            "semantic_target": "deals",
+            "resolved": "/api/deals",
+            "attempts": [
+              {
+                "path": "/api/deals",
+                "status": 200
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "fail",
+      "reason": null,
+      "install": {
+        "command": "npm ci --legacy-peer-deps",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 487 packages, and audited 488 packages in 53s\n\n159 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: '@testing-library/jest-dom@6.10.0',\nnpm warn EBADENGINE   required: { node: '>=22', npm: '>=6', yarn: '>=1' },\nnpm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }\nnpm warn EBADENGINE }\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 54.899
+      },
+      "test": {
+        "command": "npx --no-install vitest run src/test/acceptance/T3 --reporter=json --outputFile=acceptance-report.json --coverage --coverage.reportOnFailure",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 1,
+        "stdout": "JSON report written to /workspace/frontend/acceptance-report.json\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-------------------|---------|----------|---------|---------|-------------------\nFile               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-------------------|---------|----------|---------|---------|-------------------\nAll files          |      25 |      100 |       0 |      25 |                   \n route-registry.js |      25 |      100 |       0 |      25 | 21-84             \n-------------------|---------|----------|---------|---------|-------------------\n",
+        "stderr": "npm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 6.954
+      },
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "failed_ids": [],
+        "failed_details": []
+      },
+      "failure_classifications": [],
+      "adapter": {
+        "version": "v2",
+        "status": "report_missing",
+        "route_resolved": {},
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [],
+        "unresolved": [
+          {
+            "kind": "adapter_report",
+            "semantic_target": "suite",
+            "attempted": "acceptance-adapter-report.json"
+          }
+        ]
+      },
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

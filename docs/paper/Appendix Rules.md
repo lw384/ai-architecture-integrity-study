@@ -42,8 +42,8 @@ A compact index (Rule ID | Concern | Layer | Adapter) precedes the full entries 
 | BE-DUP-C-003 | BE-DUP | constraint | backend-static |
 | BE-DUP-M-001 | BE-DUP | metric | computed-metrics |
 | BE-TEST-C-001 | BE-TEST | constraint | backend-static |
-| BE-MOCK-M-001 | BE-TEST | metric — representative (Table 3.2) | computed-metrics |
-| BE-TEST-M-001 | BE-TEST | metric — excluded from architectural analysis (§3.4.3; reported in §4.8) | test-coverage |
+| BE-TEST-M-001 | BE-TEST | metric — representative (Table 3.2) | computed-metrics |
+| BE-COVERAGE-M-001 | BE-COVERAGE | metric — excluded from architectural analysis (§3.4.3; reported in §4.8) | test-coverage |
 
 ### Frontend (13 constraints + 7 metrics)
 
@@ -183,6 +183,7 @@ Production controller, service, and repository methods must not exceed three dir
 
 **BE-SIZE-M-001 — Cyclomatic Complexity Ratio** *(metric · computed-metrics)*
 Measures the share of production controller/service/repository methods whose McCabe (1976) cyclomatic complexity exceeds the configured limit. V(G) = 1 + count(if/while/for/case/&&/||/ternary) within the method body, not descending into nested closures. Replaces the former parameter-count-based SIZE metric: parameter width is a weak proxy for "does this method do too much"; cyclomatic complexity measures the control flow directly. Value = methods with complexity above `max_complexity` (default 10) / all production methods.
+**Formula:** `count(methods where cyclomatic_complexity > max_complexity) / total_production_methods`
 
 ### BE-DUP — Resource/Policy Duplication
 
@@ -204,13 +205,13 @@ Measures the share of production backend source lines covered by detected code c
 **BE-TEST-C-001 — No Direct Repository Construction** *(constraint · backend-static)*
 Service classes must not instantiate `Repository` or `*Repository` classes directly. Repositories should be supplied through dependency injection.
 
-**BE-MOCK-M-001 — Mock per Test Case** *(metric · computed-metrics — representative metric for BE-TEST in Table 3.2)*
+**BE-TEST-M-001 — Mock per Test Case** *(metric · computed-metrics — representative metric for BE-TEST in Table 3.2)*
 Measures average mock usage intensity in backend tests. Value = total mock constructs / total test cases.
 **Formula:** `total_mock_constructs / total_test_cases`
 
-**BE-TEST-M-001 — Test Coverage** *(metric · test-coverage — computed by the harness but excluded from architectural analysis, §3.4.3; reported in §4.8)*
+**BE-COVERAGE-M-001 — Test Coverage** *(metric · test-coverage — computed by the harness but excluded from architectural analysis, §3.4.3; reported in §4.8)*
 Measures backend line coverage using the project's `coverage-summary.json` report. Value = `lines.pct`.
-**Formula:** `coverage_summary.lines.pct`
+**Formula:** `coverage_summary.total.lines.pct`
 
 ---
 
@@ -226,6 +227,7 @@ A React component must not contain more than three nested render decisions. Rend
 
 **FE-COM-M-001 — Render Decision Depth Average** *(metric · computed-metrics)*
 Measures the average of each production React component's maximum nested render-decision depth. It uses the same per-component decision analysis as FE-COM-C-002 and excludes pure structural JSX nesting.
+**Formula:** `sum(component_max_render_decision_depth) / total_production_components`
 
 ### FE-STATE — State Location
 
@@ -237,6 +239,7 @@ Context providers must be declared only in controlled locations such as app shel
 
 **FE-STATE-M-001 — Context Provider Ratio** *(metric · computed-metrics)*
 Measures the share of context provider usages relative to all detected local state hooks and provider usages.
+**Formula:** `context_provider_usages / (local_state_hook_usages + context_provider_usages)`
 
 ### FE-ROUTE — Routing Structure
 
@@ -248,6 +251,7 @@ Every route entry must map to a page component. Route loaders or route elements 
 
 **FE-ROUTE-M-001 — Route Param Complexity** *(metric · computed-metrics)*
 Measures average dynamic-parameter count across statically declared frontend routes.
+**Formula:** `total_dynamic_route_parameters / total_statically_declared_routes`
 
 ### FE-STYLE — Style Isolation
 
@@ -259,6 +263,7 @@ Non-module global stylesheets live only under `src/styles/global/`.
 
 **FE-STYLE-M-001 — Style Mixing Ratio** *(metric · computed-metrics)*
 Measures the share of frontend files that mix multiple styling mechanisms such as `sx`, `className`, `style`, or `styled`.
+**Formula:** `files_with_multiple_styling_mechanisms / total_frontend_production_files`
 
 ### FE-DATA — Data Fetching and Effects
 
@@ -270,6 +275,7 @@ Every `useEffect` declares all referenced reactive values in its dependency arra
 
 **FE-DATA-M-001 — Data Access Wrapping Ratio** *(metric · computed-metrics)*
 Measures the share of detected network calls that stay inside approved frontend data-access modules.
+**Formula:** `network_calls_in_approved_data_access_modules / total_detected_network_calls`
 
 ### FE-COMM — Inter-Component Communication
 
@@ -278,6 +284,7 @@ Frontend modules should not introduce a global event bus pattern.
 
 **FE-COMM-M-001 — Prop Drilling Average** *(metric · computed-metrics)*
 Measures the average prop fanout of JSX elements that exceed the configured prop-drilling threshold.
+**Formula:** `total_prop_fanout_of_candidates / total_prop_drilling_candidates`
 
 ### FE-DUP — Component/Logic Reusability
 
@@ -289,6 +296,7 @@ Substantive frontend logic has one authoritative implementation. Repeated API, f
 
 **FE-DUP-M-001 — Clone Ratio** *(metric · computed-metrics)*
 Measures the share of token-bearing frontend production lines covered by Type-1 or token-normalized Type-2 code clones.
+**Formula:** `duplicated_lines_covered / total_token_bearing_production_lines`
 
 ---
 
@@ -325,6 +333,4 @@ Continuous view of CROSS-PROP-C-001: for resources with an API-facing change in 
 
 ## Provenance
 
-Extracted mechanically from `harness/rulepacks/{ts-nestjs-backend,js-react-frontend,cross}/rules/**/*.yaml` via each file's `rule_id`, `description`, `formula` (metrics only), and `adapter` / `evidence_sources[].adapter` fields, using the project's `.venv-notebook` (the only project virtualenv with PyYAML installed). Sum check: 20 + 13 + 3 = 36 constraints; 10 + 7 + 3 = 20 metrics; 56 rules total — matching the harness manifests (`harness/rulepacks/*/manifest.yaml`) and Chapter 4 §4.1's reported "36 constraint rules" and "19 of 20" baseline metric coverage.
-
-Some metric entries above (`FE-COM-M-001`, `FE-STATE-M-001`, `FE-ROUTE-M-001`, `FE-STYLE-M-001`, `FE-DATA-M-001`, `FE-COMM-M-001`, `FE-DUP-M-001`, `BE-CONTRACT-M-001`, `BE-ROUTE-M-001`, `BE-STRUCT-M-001`, `BE-MOCK-M-001`, `BE-TEST-M-001`) have no separate `formula:` field in their YAML source — their computation is stated only in prose within `description`, as transcribed above. This should not be read as these metrics being less precisely defined than the ones with an explicit `formula:` line; it reflects an inconsistency in which metrics' authors chose to add the optional field, not a difference in implementation rigor. If full formulaic parity across all twenty metrics is wanted for the thesis, the missing formulas can be reverse-derived from each metric's `.mjs` implementation in `harness/adapters/computed-metrics/implementations/{backend,frontend,cross}/` — flagged here as a possible follow-up, not done in this pass.
+Extracted mechanically from `harness/rulepacks/{ts-nestjs-backend,js-react-frontend,cross}/rules/**/*.yaml` via each file's `rule_id`, `description`, `formula` (metrics only), and `adapter` / `evidence_sources[].adapter` fields, using the project's `.venv-notebook` (the only project virtualenv with PyYAML installed). Sum check: 20 + 13 + 3 = 36 constraints; 10 + 7 + 3 = 20 metrics; 56 rules total — matching the harness manifests (`harness/rulepacks/*/manifest.yaml`) and Chapter 4 §4.1's reported "36 constraint rules" and "19 of 20" baseline metric coverage. Every metric now declares a standalone `formula:` field derived from its executable implementation, and every metric entry above presents that formula in the same format.

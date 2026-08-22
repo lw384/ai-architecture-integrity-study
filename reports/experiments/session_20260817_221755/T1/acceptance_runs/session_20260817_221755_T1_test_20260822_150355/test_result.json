@@ -1,0 +1,131 @@
+{
+  "status": "fail",
+  "run_id": "session_20260817_221755_T1_test_20260822_150355",
+  "started_at": "2026-08-22T14:03:55.981363+00:00",
+  "completed_at": "2026-08-22T14:06:25.822480+00:00",
+  "task_id": "T1",
+  "adapter_version": "v2",
+  "adapter": {
+    "version": "v2",
+    "route_resolved": {
+      "backend": {
+        "deals": "/api/deals"
+      },
+      "frontend": {}
+    },
+    "method_resolved": {
+      "backend": {
+        "update Deal": "POST"
+      },
+      "frontend": {}
+    },
+    "field_mappings_used": [],
+    "unresolved": [
+      {
+        "suite_id": "frontend",
+        "kind": "adapter_report",
+        "semantic_target": "suite",
+        "attempted": "acceptance-adapter-report.json"
+      }
+    ],
+    "suites": [
+      {
+        "suite_id": "backend",
+        "version": "v2",
+        "route_resolved": {
+          "deals": "/api/deals"
+        },
+        "method_resolved": {
+          "update Deal": "POST"
+        },
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "route",
+            "semantic_target": "deals",
+            "resolved": "/api/deals",
+            "attempts": [
+              {
+                "path": "/api/deals",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "http_method",
+            "semantic_target": "update Deal",
+            "resolved": "POST",
+            "attempted": [
+              {
+                "method": "POST",
+                "status": 200
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      {
+        "suite_id": "frontend",
+        "version": "v2",
+        "status": "report_missing",
+        "route_resolved": {},
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [],
+        "unresolved": [
+          {
+            "kind": "adapter_report",
+            "semantic_target": "suite",
+            "attempted": "acceptance-adapter-report.json"
+          }
+        ]
+      }
+    ]
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "fail",
+      "reason": null,
+      "total": 14,
+      "passed": 12,
+      "failed": 2,
+      "failed_ids": [
+        "Deal API (e2e) checkpoint 4: detail and update accepts a partial update and rejects an empty body",
+        "Deal API (e2e) checkpoint 4: detail and update rejects updating with a field outside the Deal schema"
+      ],
+      "failure_classifications": [
+        {
+          "id": "Deal API (e2e) checkpoint 4: detail and update accepts a partial update and rejects an empty body",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "Deal API (e2e) checkpoint 4: detail and update rejects updating with a field outside the Deal schema",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        }
+      ],
+      "outcome": "behaviour_or_test_fail",
+      "adapter_unresolved_count": 0,
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "fail",
+      "reason": null,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failed_ids": [],
+      "failure_classifications": [],
+      "outcome": "adapter_unresolved",
+      "adapter_unresolved_count": 1,
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

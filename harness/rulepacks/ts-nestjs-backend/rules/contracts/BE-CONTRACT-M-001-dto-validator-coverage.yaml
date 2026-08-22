@@ -11,6 +11,8 @@ description: >
   Measures request DTO validation coverage.
   Coverage = validated request DTO fields / total request DTO fields.
 
+formula: validated_request_dto_fields / total_request_dto_fields
+
 agent_facing_message: >
   DTO validator coverage is {value}. Increase the share of request DTO fields
   protected by class-validator decorators.

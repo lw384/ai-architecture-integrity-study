@@ -1,11 +1,15 @@
 // Functional acceptance suite (frontend half) for T1 ("Add Deal tracking to
 // the CRM"). Not part of baseline/, never visible to the agent. Overlaid by
-// experiment/instruments/agent-runners/test_runner.py into a throwaway copy
+// experiment/instruments/agent-runners/acceptance_runner.py into a throwaway copy
 // of the produced workspace at exactly
 // <workspace>/frontend/src/test/acceptance/T1/deal.render.test.jsx (so the
 // `routes/route-registry` import below resolves through the same Vite/Vitest
 // alias config the rest of frontend/src already uses), then run with
 // the configured npm/Vitest command and discarded.
+//
+// Strategy scope: Minimal and Structured share the same T1 §4 UI requirements,
+// so both run these exact assertions. The shared adapter resolves only the
+// route-registry spelling; fixtures contain the common Deal semantics.
 //
 // Known limitation, by design: this renders the Deals page component
 // directly with only QueryClientProvider + MemoryRouter around it — it does
@@ -23,6 +27,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { routeDefinitions } from 'routes/route-registry';
+import { findRouteDefinition } from './acceptance-adapter';
 
 const MOCK_DEALS_RESPONSE = {
   items: [
@@ -56,9 +61,7 @@ const MOCK_DEALS_RESPONSE = {
 };
 
 function findDealsRouteEntry() {
-  return routeDefinitions.find(
-    (definition) => definition.path === 'deals' || /deals?$/i.test(String(definition.title ?? '')),
-  );
+  return findRouteDefinition(routeDefinitions, 'deals');
 }
 
 function stubDealsFetch(responseBody) {

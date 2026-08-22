@@ -1,0 +1,37 @@
+{
+  "version": "v2",
+  "policy": "Only transport naming, route spelling, response envelopes, and UI query wording may be adapted. Behavioural requirements and state-transition rules are never adapted.",
+  "route_candidates": {
+    "deals": ["/api/deals", "/api/deal", "/deals", "/deal"],
+    "contacts": ["/api/contacts", "/api/contact", "/contacts", "/contact"],
+    "companies": ["/api/companies", "/api/company", "/companies", "/company"]
+  },
+  "entity_id_fields": {
+    "deal": ["id", "dealId", "deal_id"],
+    "contact": ["id", "contactId", "contact_id"],
+    "company": ["id", "companyId", "company_id"]
+  },
+  "entity_envelopes": {
+    "deal": ["deal", "data", "result"],
+    "contact": ["contact", "data", "result"],
+    "company": ["company", "data", "result"]
+  },
+  "field_aliases": {
+    "stage": ["stage", "dealStage", "deal_stage"],
+    "companyId": ["companyId", "company_id"],
+    "contactId": ["contactId", "contact_id"],
+    "primaryContactId": ["primaryContactId", "primary_contact_id"],
+    "expectedCloseDate": ["expectedCloseDate", "expected_close_date", "closeDate"],
+    "contactLinks": ["contactLinks", "contact_links", "dealContacts"],
+    "companies": ["companies", "companyLinks", "company_links"],
+    "items": ["items", "results", "records"],
+    "pageSize": ["pageSize", "page_size", "limit"],
+    "total": ["total", "totalCount", "total_count"]
+  },
+  "ui_action_names": {
+    "create_deal": ["add deal", "create deal", "new deal"],
+    "create_contact": ["add contact", "create contact", "new contact"],
+    "save": ["save", "create", "update", "submit"],
+    "edit": ["edit", "update"]
+  }
+}

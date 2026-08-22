@@ -15,6 +15,8 @@ description: >
   method do too much"; cyclomatic complexity measures the control flow directly.
   Value = methods with complexity above max_complexity (default 10) / all production methods.
 
+formula: count(methods where cyclomatic_complexity > max_complexity) / total_production_methods
+
 agent_facing_message: >
   Cyclomatic complexity violation ratio is {value}. Break down high-branching methods in
   production code — extract sub-conditions into named helpers or early returns.

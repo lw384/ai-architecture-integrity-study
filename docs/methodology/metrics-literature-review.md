@@ -154,13 +154,13 @@ Each entry follows this order: **参考文献 → 作用 → 计算方式**.
 
 ---
 
-### TEST — `mock-per-test-case` (`BE-MOCK-M-001`)
+### TEST — `mock-per-test-case` (`BE-TEST-M-001`)
 
 **参考文献**：Fowler, M. (2004). *Inversion of control containers and the dependency injection pattern*. https://martinfowler.com/articles/injection.html —— 依赖注入/控制反转的经典阐述，是 `BE-TEST-C-001`（禁止在测试里直接 `new Repository()`）这条约束的理论依据：测试应该通过 DI 注入替身，而不是绕开容器直接构造真实依赖。
 
 **作用**：`BE-TEST-C-001` 本身是二元判定（有没有直接构造 repository），`mock-per-test-case` 是目前仓库里能找到的最接近的连续代理信号——如果 agent 绕开 DI 直接实例化依赖，测试用例通常会连带表现出 mock 使用密度偏低。**这是全表里覆盖最弱的一环**：它测的是"平均每个测试用例用了多少次 mock"，不是"是否直接构造了 repository"本身，两者只是相关，不是等价，需要在论文里如实标注为代理指标而非直接指标。
 
-**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-MOCK-M-001.mjs` → `analyzeMockUsage`）：
+**计算方式**（`harness/adapters/computed-metrics/implementations/backend/BE-TEST-M-001.mjs` → `analyzeMockUsage`）：
 1. 遍历 `test_roots`（默认 `src`、`test`）下的 `*.spec.ts`/`*.test.ts` 文件
 2. 统计 `it(...)`/`test(...)` 调用次数为"测试用例数"
 3. 统计 mock 相关信号，有两种独立的计数方式：① `jest.mock()`/`jest.spyOn()` 调用，以及任意方法调用只要方法名是 `useValue`/`useFactory`/`useClass`（覆盖 `moduleRef.overrideProvider(X).useValue(Y)` 这类 NestJS 测试模块常见的链式调用）；② 对象字面量里直接出现的 `useValue`/`useFactory`/`useClass` 属性（覆盖 `{ provide: X, useValue: Y }` 这类 provider 声明写法）——两种都计为"mock 使用次数"

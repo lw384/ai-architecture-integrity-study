@@ -3,7 +3,7 @@
 #
 # CLI entry point for non-mutating "insight" tasks (e.g. T5), mirroring
 # run_harness.py's / run_tests.py's relationship to evaluator.py /
-# test_runner.py: this is the thin CLI wrapper, review_runner.py holds the
+# acceptance_runner.py: this is the thin CLI wrapper, review_runner.py holds the
 # reusable run_review_task() logic. Runs the agent read-only against an
 # existing pipeline workspace and archives the result under the same
 # reports/experiments/<session>/<task>/ directory T1-T3 use — without

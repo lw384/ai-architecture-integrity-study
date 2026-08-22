@@ -1,21 +1,22 @@
 // Functional acceptance suite for T1 ("Add Deal tracking to the CRM").
 //
 // This file is NOT part of baseline/ and is never visible to the agent while
-// it works — experiment/instruments/agent-runners/test_runner.py overlays it
+// it works — experiment/instruments/agent-runners/acceptance_runner.py overlays it
 // into a throwaway copy of the produced workspace, at exactly
 // <workspace>/backend/test/acceptance/T1/deal.e2e-spec.ts (the relative
 // imports below assume that exact destination — two levels up from
 // test/acceptance/T1/ reaches the workspace's own test/setup/*, NOT
 // baseline's, since the agent's copy may have modified those helpers), runs
 // the configured npm/Jest command against it, then discards the
-// whole acceptance/ directory. See experiment/design/tasks/T1_structured.md
-// ("## 4. Requirements", "## 5. API Contract") for the spec this file checks.
+// whole acceptance/ directory. The acceptance standard is the shared
+// "## 4. Requirements" in experiment/design/tasks/T1_{minimal,structured}.md.
 //
 // It reuses the same e2e harness baseline/backend/test/{company,contact}.e2e
-// -spec.ts already use (createTestApp / resetDatabaseSchema), so it only
-// works against the Structured task variant, which pins down the exact
-// routes and field names below. The Minimal variant leaves API shape up to
-// the agent and is intentionally not covered by this file.
+// -spec.ts already use (createTestApp / resetDatabaseSchema). Both prompt
+// strategies run this same set of behavioural assertions. Where the Minimal
+// prompt deliberately leaves response wrapping open but the Structured prompt
+// fixes it, a narrowly scoped helper below normalizes only that wrapper and
+// documents which branch corresponds to which prompt strategy.
 //
 // Error-code note: the task doc's "Shared Error Contract" section says
 // unknown-parent/unknown-id responses carry code `NOT_FOUND`, but the
@@ -38,6 +39,13 @@ import {
   resetDatabaseSchema,
   truncateBusinessTables,
 } from '../../setup/test-database';
+import {
+  discoverCollectionRoute,
+  expectSuccessfulMutation,
+  extractEntityId,
+  normalizeResponse,
+  requestWithDiscoveredMethod,
+} from './acceptance-adapter';
 
 jest.setTimeout(30000);
 
@@ -50,6 +58,8 @@ type DealPayload = {
   expectedCloseDate?: string | null;
 };
 
+let dealBasePath: string;
+
 describe('Deal API (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
@@ -59,6 +69,8 @@ describe('Deal API (e2e)', () => {
     await resetDatabaseSchema();
     app = await createTestApp();
     dataSource = app.get(DataSource);
+    await truncateBusinessTables(dataSource);
+    dealBasePath = await discoverCollectionRoute(app.getHttpServer(), 'deals');
     await truncateBusinessTables(dataSource);
   });
 
@@ -84,25 +96,32 @@ describe('Deal API (e2e)', () => {
       });
 
       const createResponse = await request(app.getHttpServer())
-        .post('/api/deals')
+        .post(dealBasePath)
         .send(payload)
         .expect(201);
 
-      expect(createResponse.body.id).toEqual(expect.any(String));
+      const dealId = extractEntityId(createResponse.body, 'deal');
 
       const detail = await request(app.getHttpServer())
-        .get(`/api/deals/${createResponse.body.id}`)
+        .get(`${dealBasePath}/${dealId}`)
         .expect(200);
+      const detailBody = normalizeResponse(detail.body);
 
-      expect(detail.body).toMatchObject({
-        id: createResponse.body.id,
+      expect(detailBody).toMatchObject({
+        id: dealId,
         name: payload.name,
         value: payload.value,
         stage: 'qualified',
         companyId,
         contactId,
-        expectedCloseDate: '2026-09-30',
       });
+
+      // Shared requirement adapter — both strategies must preserve the same
+      // calendar date, while Minimal may expose a database timestamp and
+      // Structured may expose the ISO date literal shown in its API Contract.
+      expect(Date.parse(detailBody.expectedCloseDate)).toBe(
+        Date.parse(payload.expectedCloseDate as string),
+      );
     });
 
     it('defaults stage to "lead" when omitted', async () => {
@@ -111,15 +130,16 @@ describe('Deal API (e2e)', () => {
       delete payload.stage;
 
       const createResponse = await request(app.getHttpServer())
-        .post('/api/deals')
+        .post(dealBasePath)
         .send(payload)
         .expect(201);
 
+      const dealId = extractEntityId(createResponse.body, 'deal');
       const detail = await request(app.getHttpServer())
-        .get(`/api/deals/${createResponse.body.id}`)
+        .get(`${dealBasePath}/${dealId}`)
         .expect(200);
 
-      expect(detail.body.stage).toBe('lead');
+      expect(normalizeResponse(detail.body).stage).toBe('lead');
     });
 
     it('rejects a request missing name, value, or companyId', async () => {
@@ -136,7 +156,7 @@ describe('Deal API (e2e)', () => {
         delete payload[omittedField];
 
         const response = await request(app.getHttpServer())
-          .post('/api/deals')
+          .post(dealBasePath)
           .send(payload)
           .expect(400);
 
@@ -153,7 +173,7 @@ describe('Deal API (e2e)', () => {
   describe('checkpoint 2: referential integrity on create', () => {
     it('rejects an unknown companyId', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/deals')
+        .post(dealBasePath)
         .send(
           buildDealPayload('missing-company', {
             companyId: '7f4f54f7-cd3c-4ef2-b22d-8f1d68d9f1aa',
@@ -168,7 +188,7 @@ describe('Deal API (e2e)', () => {
       const companyId = await createCompany('missing-contact');
 
       const response = await request(app.getHttpServer())
-        .post('/api/deals')
+        .post(dealBasePath)
         .send(
           buildDealPayload('missing-contact', {
             companyId,
@@ -194,24 +214,25 @@ describe('Deal API (e2e)', () => {
       await createDeal('list-b-1', { companyId: companyB, stage: 'qualified' });
 
       const filtered = await request(app.getHttpServer())
-        .get(`/api/deals?stage=qualified&companyId=${companyA}&page=1&pageSize=10`)
+        .get(`${dealBasePath}?stage=qualified&companyId=${companyA}&page=1&pageSize=10`)
         .expect(200);
+      const filteredBody = normalizeResponse(filtered.body);
 
-      expect(filtered.body.total).toBe(2);
-      expect(filtered.body.page).toBe(1);
-      expect(filtered.body.pageSize).toBe(10);
+      expect(filteredBody.total).toBe(2);
+      expect(filteredBody.page).toBe(1);
+      expect(filteredBody.pageSize).toBe(10);
       expect(
-        filtered.body.items.every(
+        filteredBody.items.every(
           (item: { companyId: string; stage: string }) =>
             item.companyId === companyA && item.stage === 'qualified',
         ),
       ).toBe(true);
 
       const beyondLastPage = await request(app.getHttpServer())
-        .get(`/api/deals?stage=qualified&companyId=${companyA}&page=99&pageSize=10`)
+        .get(`${dealBasePath}?stage=qualified&companyId=${companyA}&page=99&pageSize=10`)
         .expect(200);
 
-      expect(beyondLastPage.body.items).toEqual([]);
+      expect(normalizeResponse(beyondLastPage.body).items).toEqual([]);
     });
   });
 
@@ -223,15 +244,15 @@ describe('Deal API (e2e)', () => {
       const dealId = await createDeal('detail-company', { companyId });
 
       const detail = await request(app.getHttpServer())
-        .get(`/api/deals/${dealId}`)
+        .get(`${dealBasePath}/${dealId}`)
         .expect(200);
 
-      expect(detail.body.company).toMatchObject({ id: companyId });
+      expect(normalizeResponse(detail.body).company).toMatchObject({ id: companyId });
     });
 
     it('returns 404 for an unknown deal id', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/deals/7f4f54f7-cd3c-4ef2-b22d-8f1d68d9f1aa')
+        .get(`${dealBasePath}/7f4f54f7-cd3c-4ef2-b22d-8f1d68d9f1aa`)
         .expect(404);
 
       expect(response.body).toMatchObject({ success: false, statusCode: 404 });
@@ -241,17 +262,26 @@ describe('Deal API (e2e)', () => {
       const companyId = await createCompany('update-partial');
       const dealId = await createDeal('update-partial', { companyId, stage: 'lead' });
 
-      const updated = await request(app.getHttpServer())
-        .post(`/api/deals/${dealId}`)
-        .send({ stage: 'won' })
+      const updated = await requestWithDiscoveredMethod(
+        app.getHttpServer(),
+        'update Deal',
+        `${dealBasePath}/${dealId}`,
+        { stage: 'won' },
+      );
+
+      expectSuccessfulMutation(updated);
+      const updatedDetail = await request(app.getHttpServer())
+        .get(`${dealBasePath}/${dealId}`)
         .expect(200);
+      expect(normalizeResponse(updatedDetail.body).stage).toBe('won');
 
-      expect(updated.body.stage).toBe('won');
-
-      const emptyBodyResponse = await request(app.getHttpServer())
-        .post(`/api/deals/${dealId}`)
-        .send({})
-        .expect(400);
+      const emptyBodyResponse = await requestWithDiscoveredMethod(
+        app.getHttpServer(),
+        'update Deal',
+        `${dealBasePath}/${dealId}`,
+        {},
+      );
+      expect(emptyBodyResponse.status).toBe(400);
 
       expect(emptyBodyResponse.body).toMatchObject({
         success: false,
@@ -260,14 +290,20 @@ describe('Deal API (e2e)', () => {
       });
     });
 
-    it('rejects updating an immutable field such as companyId', async () => {
+    it('rejects updating with a field outside the Deal schema', async () => {
       const companyId = await createCompany('update-immutable');
       const dealId = await createDeal('update-immutable', { companyId });
 
-      const response = await request(app.getHttpServer())
-        .post(`/api/deals/${dealId}`)
-        .send({ companyId: '7f4f54f7-cd3c-4ef2-b22d-8f1d68d9f1aa' })
-        .expect(400);
+      // Shared Req 18 covers fields outside the Deal schema. `companyId`
+      // immutability is specified only by the Structured §5 API Contract, so
+      // it is deliberately not used as the cross-strategy acceptance probe.
+      const response = await requestWithDiscoveredMethod(
+        app.getHttpServer(),
+        'update Deal',
+        `${dealBasePath}/${dealId}`,
+        { unexpectedField: 'not-part-of-deal-schema' },
+      );
+      expect(response.status).toBe(400);
 
       expect(response.body).toMatchObject({
         success: false,
@@ -285,7 +321,7 @@ describe('Deal API (e2e)', () => {
       const payload = buildDealPayload('negative-value', { companyId, value: -1 });
 
       const response = await request(app.getHttpServer())
-        .post('/api/deals')
+        .post(dealBasePath)
         .send(payload)
         .expect(400);
 
@@ -305,16 +341,18 @@ describe('Deal API (e2e)', () => {
       });
 
       const createResponse = await request(app.getHttpServer())
-        .post('/api/deals')
+        .post(dealBasePath)
         .send(payload)
         .expect(201);
 
+      const dealId = extractEntityId(createResponse.body, 'deal');
       const detail = await request(app.getHttpServer())
-        .get(`/api/deals/${createResponse.body.id}`)
+        .get(`${dealBasePath}/${dealId}`)
         .expect(200);
+      const detailBody = normalizeResponse(detail.body);
 
-      expect(detail.body.contactId).toBeNull();
-      expect(detail.body.expectedCloseDate).toBeNull();
+      expect(detailBody.contactId).toBeNull();
+      expect(detailBody.expectedCloseDate).toBeNull();
     });
   });
 
@@ -354,11 +392,11 @@ describe('Deal API (e2e)', () => {
     overrides: Partial<DealPayload> & { companyId: string },
   ): Promise<string> {
     const response = await request(app.getHttpServer())
-      .post('/api/deals')
+      .post(dealBasePath)
       .send(buildDealPayload(scope, overrides))
       .expect(201);
 
-    return response.body.id;
+    return extractEntityId(response.body, 'deal');
   }
 
   function buildDealPayload(
@@ -386,6 +424,7 @@ describe('Deal seed scenarios (e2e)', () => {
   beforeAll(async () => {
     await resetDatabaseSchema();
     app = await createTestApp();
+    dealBasePath = await discoverCollectionRoute(app.getHttpServer(), 'deals');
   });
 
   afterAll(async () => {
@@ -400,12 +439,13 @@ describe('Deal seed scenarios (e2e)', () => {
     runSeedCommand('npm run db:reset:seed:demo');
 
     const list = await request(app.getHttpServer())
-      .get('/api/deals?pageSize=50')
+      .get(`${dealBasePath}?pageSize=50`)
       .expect(200);
+    const listBody = normalizeResponse(list.body);
 
-    expect(list.body.total).toBeGreaterThanOrEqual(8);
+    expect(listBody.total).toBeGreaterThanOrEqual(8);
     const distinctStages = new Set(
-      (list.body.items as Array<{ stage: string }>).map((item) => item.stage),
+      (listBody.items as Array<{ stage: string }>).map((item) => item.stage),
     );
     expect(distinctStages.size).toBeGreaterThanOrEqual(4);
   });
@@ -414,10 +454,10 @@ describe('Deal seed scenarios (e2e)', () => {
     runSeedCommand('npm run db:reset:seed:edge-case');
 
     const list = await request(app.getHttpServer())
-      .get('/api/deals?pageSize=50')
+      .get(`${dealBasePath}?pageSize=50`)
       .expect(200);
 
-    const items = list.body.items as Array<{
+    const items = normalizeResponse(list.body).items as Array<{
       contactId: string | null;
       expectedCloseDate: string | null;
     }>;

@@ -1,0 +1,1046 @@
+{
+  "run_id": "session_20260817_160757_T3_test_20260822_152410",
+  "started_at": "2026-08-22T14:24:10.226985+00:00",
+  "completed_at": "2026-08-22T14:25:51.925431+00:00",
+  "task_id": "T3",
+  "adapter_version": "v2",
+  "runtime": {
+    "type": "docker",
+    "image": "node:20-bookworm-slim"
+  },
+  "db": {
+    "status": "ok",
+    "container_name": "crm_baseline_db_test",
+    "started_by_runner": false
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "fail",
+      "reason": null,
+      "install": {
+        "command": "npm ci",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 748 packages, and audited 749 packages in 36s\n\n168 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 36.909
+      },
+      "test": {
+        "command": "npx --no-install jest --config test/jest-e2e.json --rootDir=. --runInBand test/acceptance/T3 --json --outputFile=acceptance-report.json --coverage --coverageDirectory=coverage --collectCoverageFrom='src/**/*.{ts,js}' --collectCoverageFrom='!src/**/*.spec.ts' --collectCoverageFrom='!src/**/*.test.ts' --collectCoverageFrom='!src/main.ts'",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 1,
+        "stdout": "-----------------------------------------|---------|----------|---------|---------|----------------------\nFile                                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s    \n-----------------------------------------|---------|----------|---------|---------|----------------------\nAll files                                |    37.9 |    29.76 |   13.25 |   35.68 |                      \n src                                     |    92.3 |       50 |       0 |    90.9 |                      \n  app.module.ts                          |    92.3 |       50 |       0 |    90.9 | 25                   \n src/common/errors                       |      45 |        0 |       0 |      45 |                      \n  app-exception.ts                       |      50 |      100 |       0 |      50 | 19-21                \n  error-codes.ts                         |     100 |      100 |     100 |     100 |                      \n  validation-exception.factory.ts        |   30.76 |        0 |       0 |   30.76 | 11-39                \n src/common/filter                       |      30 |        0 |       0 |   22.22 |                      \n  http-exception.filter.ts               |      30 |        0 |       0 |   22.22 | 21,27-68             \n src/common/pipes                        |   83.33 |      100 |      50 |   83.33 |                      \n  uuid-v4.pipe.ts                        |   83.33 |      100 |      50 |   83.33 | 9                    \n src/common/utils                        |   35.71 |        0 |       0 |   35.71 |                      \n  pagination.util.ts                     |   35.71 |        0 |       0 |   35.71 | 13-19,33-55          \n src/core/database                       |   81.25 |    42.85 |       0 |   81.25 |                      \n  base.repository.ts                     |      50 |        0 |       0 |      50 | 25-36                \n  data-source.ts                         |     100 |       50 |     100 |     100 | 6-19                 \n src/core/database/migrations            |   15.51 |      100 |    12.5 |   15.51 |                      \n  20260722000100-AddContactsCompanyFk.ts |      50 |      100 |      50 |      50 | 15-26                \n  20260817000100-CreateDealsTable.ts     |   16.66 |      100 |       0 |   16.66 | 7-55                 \n  20260817000200-ManyToManyLinks.ts      |    5.55 |      100 |       0 |    5.55 | 8-251                \n  20260817000300-NormalizeDealsStage.ts  |      50 |      100 |       0 |      50 | 7-28                 \n src/core/seed                           |       0 |        0 |       0 |       0 |                      \n  seed.ts                                |       0 |        0 |       0 |       0 | 1-65                 \n  seed.utils.ts                          |       0 |        0 |       0 |       0 | 1-76                 \n src/core/seed/factories                 |       0 |        0 |       0 |       0 |                      \n  company.factory.ts                     |       0 |        0 |       0 |       0 | 1-68                 \n  contact.factory.ts                     |       0 |        0 |       0 |       0 | 1-48                 \n  deal.factory.ts                        |       0 |        0 |       0 |       0 | 12-20                \n src/core/seed/scenarios                 |       0 |        0 |       0 |       0 |                      \n  demo.seed.ts                           |       0 |        0 |       0 |       0 | 1-285                \n  edge-case.seed.ts                      |       0 |        0 |       0 |       0 | 1-219                \n src/modules/company                     |   63.63 |    63.79 |   16.66 |   59.09 |                      \n  company.controller.ts                  |   63.15 |       75 |       0 |   58.82 | 18,26-28,40,49,61,67 \n  company.entity.ts                      |     100 |       80 |     100 |     100 | 77-91                \n  company.module.ts                      |     100 |      100 |     100 |     100 |                      \n  company.repository.ts                  |   38.09 |       30 |       0 |   31.57 | 15-57                \n  company.service.ts                     |   30.43 |     37.5 |       0 |    23.8 | 12-93                \n src/modules/company/dto                 |   87.23 |       75 |       0 |   90.69 |                      \n  create.dto.ts                          |   84.61 |       75 |       0 |   84.61 | 29,44                \n  index.ts                               |     100 |      100 |     100 |     100 |                      \n  query.dto.ts                           |   69.23 |       75 |       0 |   81.81 | 7,13                 \n  response.dto.ts                        |     100 |       75 |     100 |     100 | 19-31                \n  update.dto.ts                          |     100 |      100 |     100 |     100 |                      \n src/modules/contact                     |   38.54 |    37.25 |   13.88 |   34.61 |                      \n  contact-company-link.entity.ts         |     100 |       50 |     100 |     100 | 20                   \n  contact.controller.ts                  |   66.66 |       75 |       0 |    62.5 | 18,26,35,45,58,64    \n  contact.entity.ts                      |     100 |       75 |     100 |     100 | 45-59                \n  contact.module.ts                      |     100 |      100 |     100 |     100 |                      \n  contact.repository.ts                  |   11.11 |     7.89 |       0 |    9.23 | 20-183               \n  contact.service.ts                     |   16.66 |       25 |       0 |   13.95 | 11-118               \n src/modules/contact/dto                 |   81.81 |    59.09 |   27.77 |   85.07 |                      \n  create.dto.ts                          |   85.71 |       75 |       0 |   85.71 | 27,47                \n  index.ts                               |     100 |      100 |      50 |     100 |                      \n  query.dto.ts                           |   65.38 |       50 |   28.57 |   77.27 | 37,44,58,63-68       \n  response.dto.ts                        |   93.33 |      100 |       0 |   93.33 | 31                   \n  update.dto.ts                          |   83.33 |       75 |       0 |   83.33 | 19,42                \n src/modules/deal                        |   32.79 |       25 |    8.88 |   29.35 |                      \n  deal-contact-link.entity.ts            |     100 |       50 |     100 |     100 | 20                   \n  deal-stage.constants.ts                |   64.28 |        0 |       0 |      60 | 24,27,30-31          \n  deal.controller.ts                     |   66.66 |       75 |       0 |    62.5 | 17,22,27,35,44,53    \n  deal.entity.ts                         |   69.23 |     40.9 |      50 |      75 | 36-41                \n  deal.module.ts                         |     100 |      100 |     100 |     100 |                      \n  deal.repository.ts                     |   13.63 |     8.82 |       0 |   11.66 | 20-155               \n  deal.service.ts                        |      10 |    11.53 |       0 |    8.51 | 25-298               \n src/modules/deal/dto                    |   81.48 |      100 |   35.71 |    82.6 |                      \n  create.dto.ts                          |   81.25 |      100 |       0 |   81.25 | 21,48,52             \n  index.ts                               |     100 |      100 |   83.33 |     100 |                      \n  query.dto.ts                           |   66.66 |      100 |       0 |      80 | 12,18                \n  transition-stage.dto.ts                |     100 |      100 |     100 |     100 |                      \n  update.dto.ts                          |   76.92 |      100 |       0 |   76.92 | 37,41,46             \n-----------------------------------------|---------|----------|---------|---------|----------------------\n",
+        "stderr": "FAIL test/acceptance/T3/deal-stage.e2e-spec.ts\n  ● Console\n\n    console.log\n      Migration \"AddContactsCompanyFk20260722000100\" failed, error: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at Function.log (src/platform/PlatformTools.ts:274:17)\n\n    console.log\n      Migration \"AddContactsCompanyFk20260722000100\" failed, error: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at Function.log (src/platform/PlatformTools.ts:274:17)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › defaults an omitted stage to \"lead\"\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › accepts lead as an initial stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › accepts qualified as an initial stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects active as an initial stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects negotiation as an initial stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects closed_won as an initial stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects closed_lost as an initial stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 1: controlled vocabulary and initial stage › rejects an unrecognised initial stage as UNKNOWN_STAGE\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows lead -> lead through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows lead -> qualified through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows lead -> closed_lost through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows qualified -> qualified through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows qualified -> active through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows qualified -> closed_lost through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows active -> active through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows active -> negotiation through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows active -> closed_lost through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows negotiation -> negotiation through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows negotiation -> closed_won through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows negotiation -> closed_lost through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows closed_won -> closed_won through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows closed_lost -> closed_lost through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › allows closed_lost -> lead through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects lead -> active and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects lead -> negotiation and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects lead -> closed_won and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects qualified -> lead and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects qualified -> negotiation and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects qualified -> closed_won and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects active -> lead and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects active -> qualified and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects active -> closed_won and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects negotiation -> lead and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects negotiation -> qualified and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects negotiation -> active and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> lead and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> qualified and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> active and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> negotiation and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_won -> closed_lost and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> qualified and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> active and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> negotiation and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 2: transition matrix › rejects closed_lost -> closed_won and preserves the stored stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › rejects qualified -> active when the Deal has zero linked Contacts\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows qualified -> active with T2 Contact links and preserves relationship data\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › rejects active -> negotiation without an expected close date\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows active -> negotiation when the date is already stored\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows active -> negotiation when the generic update supplies the date atomically\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › allows closing a no-Contact, no-date lead as lost\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 3: transition preconditions › treats a same-stage request as a no-op without rechecking entry preconditions\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › produces the same successful result through generic and dedicated endpoints\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns the same invalid-transition error through both endpoints\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns the same precondition error through both endpoints\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › updates a terminal Deal without revalidating stage when stage is omitted\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › rejects an unknown stage through the generic endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › rejects an unknown stage through the dedicated endpoint\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns 404 for a stage update on an unknown Deal\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 Deal pipeline API (e2e) › checkpoint 4: generic-update parity and errors › returns only canonical stages from Deal list and detail responses\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)\n\n  ● T3 seed scenarios (e2e) › demo seed includes at least one Deal in every canonical stage\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:797:5)\n\n  ● T3 seed scenarios (e2e) › edge-case seed includes a zero-Contact Deal whose active transition fails its precondition\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.e2e-spec.ts:797:5)\n\nFAIL test/acceptance/T3/deal-stage.migration.e2e-spec.ts\n  ● Console\n\n    console.log\n      Migration \"AddContactsCompanyFk20260722000100\" failed, error: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at Function.log (src/platform/PlatformTools.ts:274:17)\n\n  ● T3 Deal stage migration (e2e) › canonicalises every required legacy stage mapping and is safe to rerun\n\n    QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n\n      at PostgresQueryRunner.query (src/driver/postgres/PostgresQueryRunner.ts:325:19)\n      at AddContactsCompanyFk20260722000100.up (src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n      at MigrationExecutor.executePendingMigrations (src/migration/MigrationExecutor.ts:346:17)\n      at DataSource.runMigrations (src/data-source/DataSource.ts:404:13)\n      at resetDatabaseSchema (test/setup/test-database.ts:25:3)\n      at Object.<anonymous> (test/acceptance/T3/deal-stage.migration.e2e-spec.ts:105:18)\n\nTest Suites: 2 failed, 2 total\nTests:       62 failed, 62 total\nSnapshots:   0 total\nTime:        5.591 s\nRan all test suites matching test/acceptance/T3.\nTest results written to: acceptance-report.json\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 7.944
+      },
+      "summary": {
+        "total": 62,
+        "passed": 0,
+        "failed": 62,
+        "failed_suites": 0,
+        "failed_ids": [
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage defaults an omitted stage to \"lead\"",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts lead as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts qualified as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects active as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects negotiation as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_won as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_lost as an initial stage",
+          "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects an unrecognised initial stage as UNKNOWN_STAGE",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> lead through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> qualified through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> qualified through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> active through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> active through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> negotiation through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> negotiation through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_won through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_won -> closed_won through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> closed_lost through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> lead through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> lead and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> closed_lost and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> qualified and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> active and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> negotiation and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> closed_won and preserves the stored stage",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects qualified -> active when the Deal has zero linked Contacts",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows qualified -> active with T2 Contact links and preserves relationship data",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects active -> negotiation without an expected close date",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the date is already stored",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the generic update supplies the date atomically",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows closing a no-Contact, no-date lead as lost",
+          "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions treats a same-stage request as a no-op without rechecking entry preconditions",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors produces the same successful result through generic and dedicated endpoints",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same invalid-transition error through both endpoints",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same precondition error through both endpoints",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors updates a terminal Deal without revalidating stage when stage is omitted",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the generic endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the dedicated endpoint",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns 404 for a stage update on an unknown Deal",
+          "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns only canonical stages from Deal list and detail responses",
+          "T3 seed scenarios (e2e) demo seed includes at least one Deal in every canonical stage",
+          "T3 seed scenarios (e2e) edge-case seed includes a zero-Contact Deal whose active transition fails its precondition",
+          "T3 Deal stage migration (e2e) canonicalises every required legacy stage mapping and is safe to rerun"
+        ],
+        "failed_details": [
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage defaults an omitted stage to \"lead\"",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts lead as an initial stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts qualified as an initial stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects active as an initial stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects negotiation as an initial stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_won as an initial stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_lost as an initial stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects an unrecognised initial stage as UNKNOWN_STAGE",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> lead through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> qualified through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> qualified through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> active through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> active through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> negotiation through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> negotiation through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_won through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_won -> closed_won through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> closed_lost through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> lead through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> active and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> lead and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> lead and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> lead and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> active and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> lead and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> active and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> closed_lost and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> qualified and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> active and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> negotiation and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> closed_won and preserves the stored stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects qualified -> active when the Deal has zero linked Contacts",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows qualified -> active with T2 Contact links and preserves relationship data",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects active -> negotiation without an expected close date",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the date is already stored",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the generic update supplies the date atomically",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows closing a no-Contact, no-date lead as lost",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions treats a same-stage request as a no-op without rechecking entry preconditions",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors produces the same successful result through generic and dedicated endpoints",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same invalid-transition error through both endpoints",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same precondition error through both endpoints",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors updates a terminal Deal without revalidating stage when stage is omitted",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the generic endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the dedicated endpoint",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns 404 for a stage update on an unknown Deal",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns only canonical stages from Deal list and detail responses",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:100:5)"
+            ]
+          },
+          {
+            "id": "T3 seed scenarios (e2e) demo seed includes at least one Deal in every canonical stage",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:797:5)"
+            ]
+          },
+          {
+            "id": "T3 seed scenarios (e2e) edge-case seed includes a zero-Contact Deal whose active transition fails its precondition",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.e2e-spec.ts:797:5)"
+            ]
+          },
+          {
+            "id": "T3 Deal stage migration (e2e) canonicalises every required legacy stage mapping and is safe to rerun",
+            "failure_messages": [
+              "QueryFailedError: column \"companyId\" referenced in foreign key constraint does not exist\n    at PostgresQueryRunner.query (/workspace/backend/src/driver/postgres/PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at AddContactsCompanyFk20260722000100.up (/workspace/backend/src/core/database/migrations/20260722000100-AddContactsCompanyFk.ts:7:5)\n    at MigrationExecutor.executePendingMigrations (/workspace/backend/src/migration/MigrationExecutor.ts:346:17)\n    at DataSource.runMigrations (/workspace/backend/src/data-source/DataSource.ts:404:13)\n    at resetDatabaseSchema (/workspace/backend/test/setup/test-database.ts:25:3)\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T3/deal-stage.migration.e2e-spec.ts:105:18)"
+            ]
+          }
+        ]
+      },
+      "failure_classifications": [
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage defaults an omitted stage to \"lead\"",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts lead as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage accepts qualified as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects active as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects negotiation as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_won as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects closed_lost as an initial stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 1: controlled vocabulary and initial stage rejects an unrecognised initial stage as UNKNOWN_STAGE",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> lead through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> qualified through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows lead -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> qualified through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> active through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows qualified -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> active through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> negotiation through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows active -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> negotiation through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_won through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows negotiation -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_won -> closed_won through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> closed_lost through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix allows closed_lost -> lead through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects lead -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects qualified -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects active -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects negotiation -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> lead and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_won -> closed_lost and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> qualified and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> active and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> negotiation and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 2: transition matrix rejects closed_lost -> closed_won and preserves the stored stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects qualified -> active when the Deal has zero linked Contacts",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows qualified -> active with T2 Contact links and preserves relationship data",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions rejects active -> negotiation without an expected close date",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the date is already stored",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows active -> negotiation when the generic update supplies the date atomically",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions allows closing a no-Contact, no-date lead as lost",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 3: transition preconditions treats a same-stage request as a no-op without rechecking entry preconditions",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors produces the same successful result through generic and dedicated endpoints",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same invalid-transition error through both endpoints",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns the same precondition error through both endpoints",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors updates a terminal Deal without revalidating stage when stage is omitted",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the generic endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors rejects an unknown stage through the dedicated endpoint",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns 404 for a stage update on an unknown Deal",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal pipeline API (e2e) checkpoint 4: generic-update parity and errors returns only canonical stages from Deal list and detail responses",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 seed scenarios (e2e) demo seed includes at least one Deal in every canonical stage",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 seed scenarios (e2e) edge-case seed includes a zero-Contact Deal whose active transition fails its precondition",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T3 Deal stage migration (e2e) canonicalises every required legacy stage mapping and is safe to rerun",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        }
+      ],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {},
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "fail",
+      "reason": null,
+      "install": {
+        "command": "npm ci --legacy-peer-deps",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 487 packages, and audited 488 packages in 36s\n\n159 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: '@testing-library/jest-dom@6.10.0',\nnpm warn EBADENGINE   required: { node: '>=22', npm: '>=6', yarn: '>=1' },\nnpm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }\nnpm warn EBADENGINE }\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 37.137
+      },
+      "test": {
+        "command": "npx --no-install vitest run src/test/acceptance/T3 --reporter=json --outputFile=acceptance-report.json --coverage --coverage.reportOnFailure",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 1,
+        "stdout": "JSON report written to /workspace/frontend/acceptance-report.json\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-------------------|---------|----------|---------|---------|-------------------\nFile               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-------------------|---------|----------|---------|---------|-------------------\nAll files          |   56.65 |    70.88 |      40 |   57.51 |                   \n api               |   68.42 |    71.42 |      45 |   68.42 |                   \n  companyApi.js    |   33.33 |      100 |      20 |   33.33 | 5-17              \n  contactApi.js    |   33.33 |       50 |      20 |   33.33 | 9-20              \n  dealApi.js       |      50 |      100 |      40 |      50 | 5-7,17            \n  request.js       |      95 |    73.68 |     100 |      95 | 53                \n ...ble/EmptyState |     100 |       50 |     100 |     100 |                   \n  EmptyState.jsx   |     100 |       50 |     100 |     100 | 8                 \n ...ble/Pagination |      50 |       75 |      40 |      50 |                   \n  Pagination.jsx   |      50 |       75 |      40 |      50 | 38,49-55          \n ...ts/Table/Shell |     100 |    95.23 |     100 |     100 |                   \n  Shell.jsx        |     100 |    95.23 |     100 |     100 | 45                \n .../Table/Toolbar |      50 |       50 |      50 |      50 |                   \n  Toolbar.jsx      |      50 |       50 |      50 |      50 | 33                \n  ...r.module.scss |       0 |        0 |       0 |       0 |                   \n constants         |    62.5 |        0 |       0 |   71.42 |                   \n  dealStages.js    |    62.5 |        0 |       0 |   71.42 | 33-34             \n pages/companies   |   22.72 |      100 |   23.52 |   22.72 |                   \n  ...anyQueries.js |   22.72 |      100 |   23.52 |   22.72 | 13-14,25-66       \n pages/contacts    |   26.08 |      100 |   23.52 |   26.08 |                   \n  ...actQueries.js |   26.08 |      100 |   23.52 |   26.08 | 13-14,26-62       \n pages/deals       |    62.5 |    69.71 |   46.06 |   64.55 |                   \n  ...ctLinkRow.jsx |      50 |    41.66 |   44.44 |   44.44 | 30-31,55-73       \n  DealForm.jsx     |   70.29 |    71.31 |   54.05 |   72.83 | ...79,187,228-229 \n  DealTable.jsx    |      80 |    66.66 |      80 |      80 | 20                \n  dealQueries.js   |   43.47 |      100 |   41.17 |   43.47 | ...22,31-33,44-57 \n  index.jsx        |   55.55 |    74.07 |   28.57 |    62.5 | ...90,144,154-164 \n routes            |    37.5 |      100 |   16.66 |    37.5 |                   \n  ...e-registry.js |    37.5 |      100 |   16.66 |    37.5 | 21-59,84          \n-------------------|---------|----------|---------|---------|-------------------\n",
+        "stderr": "npm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 14.048
+      },
+      "summary": {
+        "total": 7,
+        "passed": 6,
+        "failed": 1,
+        "failed_suites": 0,
+        "failed_ids": [
+          "T3 Deal stage frontend acceptance shows a transition API error inline and leaves the stage unchanged"
+        ],
+        "failed_details": [
+          {
+            "id": "T3 Deal stage frontend acceptance shows a transition API error inline and leaves the stage unchanged",
+            "failure_messages": [
+              "Error: Unable to find an element with the text: Transition blocked by acceptance test. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.\n\nIgnored nodes: comments, script, style\n\u001b[36m<div\u001b[39m\n  \u001b[33maria-labelledby\u001b[39m=\u001b[32m\"_r_5d_\"\u001b[39m\n  \u001b[33maria-modal\u001b[39m=\u001b[32m\"true\"\u001b[39m\n  \u001b[33mclass\u001b[39m=\u001b[32m\"MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation24 MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiDialog-paperFullWidth css-16htz67-MuiPaper-root-MuiDialog-paper\"\u001b[39m\n  \u001b[33mdata-mui-focusable\u001b[39m=\u001b[32m\"\"\u001b[39m\n  \u001b[33mrole\u001b[39m=\u001b[32m\"dialog\"\u001b[39m\n  \u001b[33mstyle\u001b[39m=\u001b[32m\"--Paper-shadow: 0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12);\"\u001b[39m\n  \u001b[33mtabindex\u001b[39m=\u001b[32m\"-1\"\u001b[39m\n\u001b[36m>\u001b[39m\n  \u001b[36m<h2\u001b[39m\n    \u001b[33mclass\u001b[39m=\u001b[32m\"MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-rvoa5x-MuiTypography-root-MuiDialogTitle-root\"\u001b[39m\n    \u001b[33mid\u001b[39m=\u001b[32m\"_r_5d_\"\u001b[39m\n  \u001b[36m>\u001b[39m\n    \u001b[0mEdit deal\u001b[0m\n  \u001b[36m</h2>\u001b[39m\n  \u001b[36m<div\u001b[39m\n    \u001b[33mclass\u001b[39m=\u001b[32m\"MuiDialogContent-root css-1yo3ols-MuiDialogContent-root\"\u001b[39m\n  \u001b[36m>\u001b[39m\n    \u001b[36m<form\u001b[39m\n      \u001b[33mclass\u001b[39m=\u001b[32m\"MuiStack-root css-1sazv7p-MuiStack-root\"\u001b[39m\n    \u001b[36m>\u001b[39m\n      \u001b[36m<div\u001b[39m\n        \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormControl-root MuiTextField-root css-1xp5r68-MuiFormControl-root-MuiTextField-root\"\u001b[39m\n      \u001b[36m>\u001b[39m\n        \u001b[36m<label\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-113d811-MuiFormLabel-root-MuiInputLabel-root\"\u001b[39m\n          \u001b[33mdata-shrink\u001b[39m=\u001b[32m\"true\"\u001b[39m\n          \u001b[33mfor\u001b[39m=\u001b[32m\"_r_5j_\"\u001b[39m\n          \u001b[33mid\u001b[39m=\u001b[32m\"_r_5j_-label\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[0mName\u001b[0m\n          \u001b[36m<span\u001b[39m\n            \u001b[33maria-hidden\u001b[39m=\u001b[32m\"true\"\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormLabel-asterisk MuiInputLabel-asterisk css-1ljffdk-MuiFormLabel-asterisk\"\u001b[39m\n          \u001b[36m>\u001b[39m\n            \u001b[0m \u001b[0m\n            \u001b[0m*\u001b[0m\n          \u001b[36m</span>\u001b[39m\n        \u001b[36m</label>\u001b[39m\n        \u001b[36m<div\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-quhxjy-MuiInputBase-root-MuiOutlinedInput-root\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[36m<input\u001b[39m\n            \u001b[33maria-invalid\u001b[39m=\u001b[32m\"false\"\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"MuiInputBase-input MuiOutlinedInput-input css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input\"\u001b[39m\n            \u001b[33mid\u001b[39m=\u001b[32m\"_r_5j_\"\u001b[39m\n            \u001b[33mrequired\u001b[39m=\u001b[32m\"\"\u001b[39m\n            \u001b[33mtype\u001b[39m=\u001b[32m\"text\"\u001b[39m\n            \u001b[33mvalue\u001b[39m=\u001b[32m\"Acceptance lead Deal\"\u001b[39m\n          \u001b[36m/>\u001b[39m\n          \u001b[36m<fieldset\u001b[39m\n            \u001b[33maria-hidden\u001b[39m=\u001b[32m\"true\"\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline\"\u001b[39m\n          \u001b[36m>\u001b[39m\n            \u001b[36m<legend\u001b[39m\n              \u001b[33mclass\u001b[39m=\u001b[32m\"css-ex8a5f-MuiNotchedOutlined-root\"\u001b[39m\n            \u001b[36m>\u001b[39m\n              \u001b[36m<span>\u001b[39m\n                \u001b[0mName\u001b[0m\n                \u001b[0m \u001b[0m\n                \u001b[0m*\u001b[0m\n              \u001b[36m</span>\u001b[39m\n            \u001b[36m</legend>\u001b[39m\n          \u001b[36m</fieldset>\u001b[39m\n        \u001b[36m</div>\u001b[39m\n      \u001b[36m</div>\u001b[39m\n      \u001b[36m<div\u001b[39m\n        \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormControl-root MuiTextField-root css-1xp5r68-MuiFormControl-root-MuiTextField-root\"\u001b[39m\n      \u001b[36m>\u001b[39m\n        \u001b[36m<label\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-113d811-MuiFormLabel-root-MuiInputLabel-root\"\u001b[39m\n          \u001b[33mdata-shrink\u001b[39m=\u001b[32m\"true\"\u001b[39m\n          \u001b[33mfor\u001b[39m=\u001b[32m\"_r_5k_\"\u001b[39m\n          \u001b[33mid\u001b[39m=\u001b[32m\"_r_5k_-label\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[0mValue (USD)\u001b[0m\n          \u001b[36m<span\u001b[39m\n            \u001b[33maria-hidden\u001b[39m=\u001b[32m\"true\"\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormLabel-asterisk MuiInputLabel-asterisk css-1ljffdk-MuiFormLabel-asterisk\"\u001b[39m\n          \u001b[36m>\u001b[39m\n            \u001b[0m \u001b[0m\n            \u001b[0m*\u001b[0m\n          \u001b[36m</span>\u001b[39m\n        \u001b[36m</label>\u001b[39m\n        \u001b[36m<div\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-quhxjy-MuiInputBase-root-MuiOutlinedInput-root\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[36m<input\u001b[39m\n            \u001b[33maria-invalid\u001b[39m=\u001b[32m\"false\"\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"MuiInputBase-input MuiOutlinedInput-input css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input\"\u001b[39m\n            \u001b[33mid\u001b[39m=\u001b[32m\"_r_5k_\"\u001b[39m\n            \u001b[33mmin\u001b[39m=\u001b[32m\"0\"\u001b[39m\n            \u001b[33mrequired\u001b[39m=\u001b[32m\"\"\u001b[39m\n            \u001b[33mstep\u001b[39m=\u001b[32m\"any\"\u001b[39m\n            \u001b[33mtype\u001b[39m=\u001b[32m\"number\"\u001b[39m\n            \u001b[33mvalue\u001b[39m=\u001b[32m\"10001\"\u001b[39m\n          \u001b[36m/>\u001b[39m\n          \u001b[36m<fieldset\u001b[39m\n            \u001b[33maria-hidden\u001b[39m=\u001b[32m\"true\"\u001b[39m\n            \u001b[33mclass\u001b[39m=\u001b[32m\"MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline\"\u001b[39m\n          \u001b[36m>\u001b[39m\n            \u001b[36m<legend\u001b[39m\n              \u001b[33mclass\u001b[39m=\u001b[32m\"css-ex8a5f-MuiNotchedOutlined-root\"\u001b[39m\n            \u001b[36m>\u001b[39m\n              \u001b[36m<span>\u001b[39m\n                \u001b[0mValue (USD)\u001b[0m\n                \u001b[0m \u001b[0m\n                \u001b[0m*\u001b[0m\n              \u001b[36m</span>\u001b[39m\n            \u001b[36m</legend>\u001b[39m\n          \u001b[36m</fieldset>\u001b[39m\n        \u001b[36m</div>\u001b[39m\n      \u001b[36m</div>\u001b[39m\n      \u001b[36m<div\u001b[39m\n        \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormControl-root MuiTextField-root css-1xp5r68-MuiFormControl-root-MuiTextField-root\"\u001b[39m\n      \u001b[36m>\u001b[39m\n        \u001b[36m<label\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-113d811-MuiFormLabel-root-MuiInputLabel-root\"\u001b[39m\n          \u001b[33mdata-shrink\u001b[39m=\u001b[32m\"true\"\u001b[39m\n          \u001b[33mfor\u001b[39m=\u001b[32m\"_r_5l_\"\u001b[39m\n          \u001b[33mid\u001b[39m=\u001b[32m\"_r_5l_-label\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[0mStage\u001b[0m\n        \u001b[36m</label>\u001b[39m\n        \u001b[36m<div\u001b[39m\n          \u001b[33mclass\u001b[39m=\u001b[32m\"MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiSelect-root css-quhxjy-MuiInputBase-root-MuiOutlinedInput-root\"\u001b[39m\n        \u001b[36m>\u001b[39m\n          \u001b[36m<div\u001b[39m\n            \u001b[33maria-expanded\u001b[39m=\u001b[32m\"false\"\u001b[39m\n            \u001b[3...\n    at waitForWrapper (/workspace/frontend/node_modules/@testing-library/dom/dist/wait-for.js:163:27)\n    at /workspace/frontend/src/test/acceptance/T3/deal-stage.render.test.jsx:237:11\n    at file:///workspace/frontend/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+            ]
+          }
+        ]
+      },
+      "failure_classifications": [
+        {
+          "id": "T3 Deal stage frontend acceptance shows a transition API error inline and leaves the stage unchanged",
+          "classification": "selector_variance",
+          "automatic": true,
+          "review_required": true
+        }
+      ],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {
+          "deals": "deals"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "create_deal",
+            "candidates": [
+              "add deal",
+              "create deal",
+              "new deal"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "edit",
+            "candidates": [
+              "edit",
+              "update"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "edit",
+            "candidates": [
+              "edit",
+              "update"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "edit",
+            "candidates": [
+              "edit",
+              "update"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "edit",
+            "candidates": [
+              "edit",
+              "update"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "edit",
+            "candidates": [
+              "edit",
+              "update"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "edit",
+            "candidates": [
+              "edit",
+              "update"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "edit",
+            "candidates": [
+              "edit",
+              "update"
+            ]
+          }
+        ],
+        "unresolved": [
+          {
+            "kind": "failure_triage",
+            "semantic_target": "T3 Deal stage frontend acceptance shows a transition API error inline and leaves the stage unchanged",
+            "attempted": "selector_variance",
+            "source": "automatic_failure_classification"
+          }
+        ],
+        "status": "unresolved"
+      },
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

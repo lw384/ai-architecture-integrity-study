@@ -2,20 +2,21 @@
 # experiment/instruments/agent-runners/run_tests.py
 #
 # Acceptance-only entry point, mirroring run_harness.py's relationship to
-# evaluator.py: this is the CLI wrapper, test_runner.py holds the reusable
+# evaluator.py: this is the CLI wrapper, acceptance_runner.py holds the reusable
 # run_functional_tests() logic. Re-runs the functional acceptance suite
 # against an existing pipeline workspace without touching the agent, the
 # Harness, or Git tags/commits.
 import argparse
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
 
 from docker_runner import DEFAULT_RUNTIME_IMAGE
 from run_harness import checkout_tag, resolve_output_dir, resolve_workspace_dir
-from test_runner import run_functional_tests
+from acceptance_runner import run_functional_tests
 
-TEST_OUTPUT_FILES = ("test_execution.json", "test_result.json")
+TEST_OUTPUT_FILES = ("test_execution.json", "test_result.json", "coverage")
 
 
 def find_existing_outputs(output_dir: Path) -> list[Path]:
@@ -40,7 +41,10 @@ def prepare_output_dir(output_dir: Path, force: bool) -> None:
     # Avoid leaving a stale result behind if a forced rerun fails.
     if force:
         for path in find_existing_outputs(output_dir):
-            path.unlink()
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
 
 
 def main() -> None:
@@ -66,8 +70,9 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         help=(
-            "Acceptance artifact directory; defaults to "
-            "reports/experiments/<session>/<task>"
+            "Acceptance artifact directory; defaults to the task directory "
+            "for a first run, or its acceptance_runs/<run_id> child when an "
+            "original result already exists"
         ),
     )
     parser.add_argument(
@@ -88,12 +93,22 @@ def main() -> None:
     root_dir = Path(__file__).resolve().parent.parent.parent.parent
     workspace_dir = resolve_workspace_dir(root_dir, args.run_id, args.workspace_dir)
     session_id = workspace_dir.name
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_id = f"{session_id}_{args.task}_test_{timestamp}"
 
-    output_dir = resolve_output_dir(
+    task_output_dir = resolve_output_dir(
         root_dir,
         Path("reports") / "experiments" / session_id / args.task,
-        args.output_dir,
+        None,
     )
+    if args.output_dir:
+        output_dir = resolve_output_dir(root_dir, task_output_dir, args.output_dir)
+    elif find_existing_outputs(task_output_dir) and not args.force:
+        # Preserve the original pipeline-time result. Acceptance-only reruns
+        # are immutable siblings selected later by adapter version/run time.
+        output_dir = task_output_dir / "acceptance_runs" / run_id
+    else:
+        output_dir = task_output_dir
 
     # Check this before changing the workspace checkout, same reasoning as
     # run_harness.py: a rejected output target must not leave the user's
@@ -105,9 +120,6 @@ def main() -> None:
         checked_out_tag_commit = checkout_tag(workspace_dir, args.from_tag)
 
     prepare_output_dir(output_dir, force=args.force)
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_id = f"{session_id}_{args.task}_test_{timestamp}"
 
     print(f"🎯 Workspace: {workspace_dir}")
     print(f"🧭 Task: {args.task}")

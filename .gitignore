@@ -22,6 +22,8 @@ build/
 .next/
 .cache/
 coverage/
+!/harness/rulepacks/ts-nestjs-backend/rules/coverage/
+!/harness/rulepacks/ts-nestjs-backend/rules/coverage/*.yaml
 .turbo/
 
 # --- Environment ---
@@ -45,3 +47,6 @@ experiment/workspace/
 *.tmp
 *.bak
 .claude/
+
+# --- Local paper drafts and reference material ---
+/docs/paper/

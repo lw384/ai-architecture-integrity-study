@@ -1,7 +1,7 @@
 {
   "status": "evaluated",
   "task_id": "T1",
-  "baseline_commit": "c27070d654518294f0f99f1b9352bddca649e9db",
+  "baseline_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe",
   "pre_commit": "7ff58a6f7f3e1fec72d833ca08ee2e485f035518",
   "rulepack_id": "task::T1",
   "comparison": {

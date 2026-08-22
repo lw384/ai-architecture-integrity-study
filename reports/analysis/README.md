@@ -52,6 +52,8 @@ reports/experiments/session_*/T*/harness_evaluation.json  ─┐
 reports/experiments/session_*/T*/execution.json            ─┤
 reports/experiments/session_*/T*/test_result.json          ─┤   src/ingest.py
 reports/experiments/session_*/T*/test_execution.json       ─┤   (CLI, pandas)
+reports/experiments/session_*/T*/acceptance_runs/*/*.json  ─┤   highest adapter version,
+                                                           │   then newest run
 reports/experiments/session_*/session_manifest.yaml        ─┤
 reports/baseline/harness_evaluation.json                   ─┘
                         │

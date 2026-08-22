@@ -32,10 +32,10 @@ methodological_note: >
   FORBIDDEN_LAYER_PAIRS constant directly, so it cannot drift from what
   BE-DEP-C-001-intra-module-layering itself enforces. The cyclic-dependency
   half is computed independently via Tarjan's strongly-connected-components
-  algorithm over the dependency-cruiser report
-  (adapters/computed-metrics/implementations/backend/report-io.mjs reads
-  report_path, default reports/depcruise-raw.json) rather than by reading
-  BE-DEP-C-004-no-circular-dependencies's own findings. There is no
+  algorithm over the live dependency-cruiser report retained by the constraint
+  layer. If no live report is available, report-io.mjs falls back to report_path
+  (default reports/depcruise-raw.json). It does not derive the count from
+  BE-DEP-C-004-no-circular-dependencies's normalized findings. There is no
   evidence_sources block on this rule: core/layers/metrics_runner.mjs never
   reads that field for metric rules — dispatch is driven entirely by the
   adapter/implementation fields above.

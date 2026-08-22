@@ -1,0 +1,189 @@
+{
+  "run_id": "session_20260817_221755_T2_test_20260822_150625",
+  "started_at": "2026-08-22T14:06:26.019568+00:00",
+  "completed_at": "2026-08-22T14:08:53.904672+00:00",
+  "task_id": "T2",
+  "adapter_version": "v2",
+  "runtime": {
+    "type": "docker",
+    "image": "node:20-bookworm-slim"
+  },
+  "db": {
+    "status": "ok",
+    "container_name": "crm_baseline_db_test",
+    "started_by_runner": false
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "fail",
+      "reason": null,
+      "install": {
+        "command": "npm ci",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 748 packages, and audited 749 packages in 52s\n\n168 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 53.591
+      },
+      "test": {
+        "command": "npx --no-install jest --config test/jest-e2e.json --rootDir=. --runInBand test/acceptance/T2 --json --outputFile=acceptance-report.json --coverage --coverageDirectory=coverage --collectCoverageFrom='src/**/*.{ts,js}' --collectCoverageFrom='!src/**/*.spec.ts' --collectCoverageFrom='!src/**/*.test.ts' --collectCoverageFrom='!src/main.ts'",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 1,
+        "stdout": "-------------------------------------------------------------|---------|----------|---------|---------|-------------------------------------\nFile                                                         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                   \n-------------------------------------------------------------|---------|----------|---------|---------|-------------------------------------\nAll files                                                    |   66.96 |    52.79 |   66.66 |   65.97 |                                     \n src                                                         |     100 |       50 |     100 |     100 |                                     \n  app.module.ts                                              |     100 |       50 |     100 |     100 | 9-10                                \n src/common/errors                                           |     100 |       50 |     100 |     100 |                                     \n  app-exception.ts                                           |     100 |      100 |     100 |     100 |                                     \n  error-codes.ts                                             |     100 |      100 |     100 |     100 |                                     \n  validation-exception.factory.ts                            |     100 |       50 |     100 |     100 | 13-35                               \n src/common/filter                                           |      90 |       50 |   66.66 |   88.88 |                                     \n  http-exception.filter.ts                                   |      90 |       50 |   66.66 |   88.88 | 61-68                               \n src/common/pipes                                            |   83.33 |      100 |      50 |   83.33 |                                     \n  uuid-v4.pipe.ts                                            |   83.33 |      100 |      50 |   83.33 | 9                                   \n src/common/utils                                            |   35.71 |        0 |       0 |   35.71 |                                     \n  pagination.util.ts                                         |   35.71 |        0 |       0 |   35.71 | 13-19,33-55                         \n src/core/database                                           |   81.25 |    42.85 |       0 |   81.25 |                                     \n  base.repository.ts                                         |      50 |        0 |       0 |      50 | 25-36                               \n  data-source.ts                                             |     100 |       50 |     100 |     100 | 6-19                                \n src/core/database/migrations                                |      84 |    58.82 |   71.42 |      84 |                                     \n  20260722000100-AddContactsCompanyFk.ts                     |   45.45 |       25 |      50 |   45.45 | 16-45                               \n  20260817000100-AddDealsRelations.ts                        |   58.33 |       40 |      50 |   58.33 | 36-54,83-105                        \n  20260817000200-UpgradeContactCompanyAndDealContactLinks.ts |     100 |       75 |     100 |     100 | 204-374                             \n src/core/seed                                               |       0 |        0 |       0 |       0 |                                     \n  seed.ts                                                    |       0 |        0 |       0 |       0 | 1-65                                \n  seed.utils.ts                                              |       0 |        0 |       0 |       0 | 1-138                               \n src/core/seed/factories                                     |       0 |        0 |       0 |       0 |                                     \n  company.factory.ts                                         |       0 |        0 |       0 |       0 | 1-68                                \n  contact.factory.ts                                         |       0 |        0 |       0 |       0 | 1-61                                \n  deal.factory.ts                                            |       0 |        0 |       0 |       0 | 16-45                               \n src/core/seed/scenarios                                     |       0 |        0 |       0 |       0 |                                     \n  demo.seed.ts                                               |       0 |        0 |       0 |       0 | 1-240                               \n  edge-case.seed.ts                                          |       0 |        0 |       0 |       0 | 1-300                               \n src/modules/company                                         |   74.74 |    67.24 |      50 |   71.59 |                                     \n  company.controller.ts                                      |   78.94 |       75 |   33.33 |   76.47 | 40,49,61,67                         \n  company.entity.ts                                          |     100 |       80 |     100 |     100 | 77-91                               \n  company.module.ts                                          |     100 |      100 |     100 |     100 |                                     \n  company.repository.ts                                      |   42.85 |       30 |   33.33 |   36.84 | 19-57                               \n  company.service.ts                                         |   60.86 |     62.5 |      50 |   57.14 | 26,58-97                            \n src/modules/company/dto                                     |   89.36 |       75 |      25 |   93.02 |                                     \n  create.dto.ts                                              |    92.3 |       75 |      50 |    92.3 | 44                                  \n  index.ts                                                   |     100 |      100 |     100 |     100 |                                     \n  query.dto.ts                                               |   69.23 |       75 |       0 |   81.81 | 7,13                                \n  response.dto.ts                                            |     100 |       75 |     100 |     100 | 19-31                               \n  update.dto.ts                                              |     100 |      100 |     100 |     100 |                                     \n src/modules/contact                                         |   92.07 |    71.53 |   93.18 |   91.16 |                                     \n  contact-company-link.entity.ts                             |     100 |       75 |     100 |     100 | 21-24                               \n  contact-company-link.repository.ts                         |   94.44 |       75 |     100 |   93.75 | 20                                  \n  contact.controller.ts                                      |   89.47 |       75 |   71.42 |   88.23 | 55,61                               \n  contact.entity.ts                                          |     100 |       75 |     100 |     100 | 43-46                               \n  contact.module.ts                                          |     100 |      100 |     100 |     100 |                                     \n  contact.repository.ts                                      |   96.29 |    66.66 |     100 |      96 | 51                                  \n  contact.service.ts                                         |   88.23 |    68.75 |   96.55 |   87.23 | 133-141,163,187,199,213,227,233,251 \n src/modules/contact/dto                                     |   79.01 |       70 |   82.35 |   77.92 |                                     \n  create.dto.ts                                              |   92.85 |       75 |      50 |   92.85 | 47                                  \n  index.ts                                                   |     100 |      100 |     100 |     100 |                                     \n  param.dto.ts                                               |     100 |      100 |     100 |     100 |                                     \n  query.dto.ts                                               |   96.15 |    71.42 |   85.71 |   95.45 | 58                                  \n  response.dto.ts                                            |       0 |      100 |     100 |       0 | 1-37                                \n  update.dto.ts                                              |      95 |       50 |    87.5 |      95 | 53                                  \n src/modules/deal                                            |    88.2 |    68.84 |    92.1 |   87.15 |                                     \n  deal-contact-link.entity.ts                                |     100 |       75 |     100 |     100 | 21-24                               \n  deal-contact-link.repository.ts                            |   52.38 |     37.5 |      60 |   44.44 | 18-41                               \n  deal.controller.ts                                         |     100 |       75 |     100 |     100 | 21-40                               \n  deal.entity.ts                                             |     100 |       75 |     100 |     100 | 49-52                               \n  deal.module.ts                                             |     100 |      100 |     100 |     100 |                                     \n  deal.repository.ts                                         |   96.55 |       80 |     100 |   96.15 | 22                                  \n  deal.service.ts                                            |   87.36 |    65.71 |   95.65 |   87.09 | 84,187,215-226,253-257,270          \n src/modules/deal/dto                                        |   98.36 |    91.66 |      95 |    98.3 |                                     \n  create.dto.ts                                              |     100 |      100 |     100 |     100 |                                     \n  index.ts                                                   |     100 |      100 |     100 |     100 |                                     \n  param.dto.ts                                               |     100 |      100 |     100 |     100 |                                     \n  query.dto.ts                                               |     100 |      100 |     100 |     100 |                                     \n  update.dto.ts                                              |   95.23 |    83.33 |   88.88 |   95.23 | 33                                  \n-------------------------------------------------------------|---------|----------|---------|---------|-------------------------------------\n",
+        "stderr": "(node:20) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n\u001b[31m[Nest] 20  - \u001b[39m08/22/2026, 2:07:29 PM \u001b[31m  ERROR\u001b[39m \u001b[38;5;3m[ExceptionsHandler] \u001b[39mQueryFailedError: missing FROM-clause entry for table \"contactcompanylink\"\n    at PostgresQueryRunner.query \u001b[90m(/workspace/backend/\u001b[39msrc/driver/postgres/PostgresQueryRunner.ts:325:19\u001b[90m)\u001b[39m\n\u001b[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)\u001b[39m\n    at SelectQueryBuilder.loadRawResults \u001b[90m(/workspace/backend/\u001b[39msrc/query-builder/SelectQueryBuilder.ts:3818:25\u001b[90m)\u001b[39m\n    at SelectQueryBuilder.executeEntitiesAndRawResults \u001b[90m(/workspace/backend/\u001b[39msrc/query-builder/SelectQueryBuilder.ts:3564:26\u001b[90m)\u001b[39m\n    at SelectQueryBuilder.getManyAndCount \u001b[90m(/workspace/backend/\u001b[39msrc/query-builder/SelectQueryBuilder.ts:1820:36\u001b[90m)\u001b[39m\n    at ContactService.getContactsList \u001b[90m(/workspace/backend/\u001b[39msrc/modules/contact/contact.service.ts:63:28\u001b[90m)\u001b[39m\n    at \u001b[90m/workspace/backend/\u001b[39mnode_modules/\u001b[4m@nestjs/core\u001b[24m/router/router-execution-context.js:55:62\n    at \u001b[90m/workspace/backend/\u001b[39mnode_modules/\u001b[4m@nestjs/core\u001b[24m/router/router-proxy.js:9:17 {\n  query: \u001b[32m'SELECT \"contact\".\"id\" AS \"contact_id\", \"contact\".\"name\" AS \"contact_name\", \"contact\".\"email\" AS \"contact_email\", \"contact\".\"phone\" AS \"contact_phone\", \"contact\".\"role\" AS \"contact_role\", \"contact\".\"createdAt\" AS \"contact_createdAt\", \"contact\".\"updatedAt\" AS \"contact_updatedAt\", \"contact\".\"lastContactedAt\" AS \"contact_lastContactedAt\" FROM \"contacts\" \"contact\" WHERE ( EXISTS (SELECT 1 FROM \"contact_company_links\" \"contactCompanyLink\" WHERE contactCompanyLink.\"contactId\" = \"contact\".\"id\" AND contactCompanyLink.\"companyId\" = $1) ) AND ( \"contact\".\"deletedAt\" IS NULL ) ORDER BY \"contact\".\"createdAt\" DESC LIMIT 100 OFFSET 0'\u001b[39m,\n  parameters: [\n    \u001b[32m'2e6685ee-a0ff-4a14-8771-04b7d320f507'\u001b[39m\n  ],\n  driverError: error: missing FROM-clause entry for table \"contactcompanylink\"\n      at \u001b[90m/workspace/backend/\u001b[39mnode_modules/\u001b[4mpg\u001b[24m/lib/client.js:694:17\n  \u001b[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)\u001b[39m\n      at PostgresQueryRunner.query \u001b[90m(/workspace/backend/\u001b[39msrc/driver/postgres/PostgresQueryRunner.ts:254:25\u001b[90m)\u001b[39m\n      at SelectQueryBuilder.loadRawResults \u001b[90m(/workspace/backend/\u001b[39msrc/query-builder/SelectQueryBuilder.ts:3818:25\u001b[90m)\u001b[39m\n      at SelectQueryBuilder.executeEntitiesAndRawResults \u001b[90m(/workspace/backend/\u001b[39msrc/query-builder/SelectQueryBuilder.ts:3564:26\u001b[90m)\u001b[39m\n      at SelectQueryBuilder.getManyAndCount \u001b[90m(/workspace/backend/\u001b[39msrc/query-builder/SelectQueryBuilder.ts:1820:36\u001b[90m)\u001b[39m\n      at ContactService.getContactsList \u001b[90m(/workspace/backend/\u001b[39msrc/modules/contact/contact.service.ts:63:28\u001b[90m)\u001b[39m\n      at \u001b[90m/workspace/backend/\u001b[39mnode_modules/\u001b[4m@nestjs/core\u001b[24m/router/router-execution-context.js:55:62\n      at \u001b[90m/workspace/backend/\u001b[39mnode_modules/\u001b[4m@nestjs/core\u001b[24m/router/router-proxy.js:9:17 {\n    length: \u001b[33m130\u001b[39m,\n    severity: \u001b[32m'ERROR'\u001b[39m,\n    code: \u001b[32m'42P01'\u001b[39m,\n    detail: \u001b[90mundefined\u001b[39m,\n    hint: \u001b[90mundefined\u001b[39m,\n    position: \u001b[32m'444'\u001b[39m,\n    internalPosition: \u001b[90mundefined\u001b[39m,\n    internalQuery: \u001b[90mundefined\u001b[39m,\n    where: \u001b[90mundefined\u001b[39m,\n    schema: \u001b[90mundefined\u001b[39m,\n    table: \u001b[90mundefined\u001b[39m,\n    column: \u001b[90mundefined\u001b[39m,\n    dataType: \u001b[90mundefined\u001b[39m,\n    constraint: \u001b[90mundefined\u001b[39m,\n    file: \u001b[32m'parse_relation.c'\u001b[39m,\n    line: \u001b[32m'3617'\u001b[39m,\n    routine: \u001b[32m'errorMissingRTE'\u001b[39m\n  },\n  length: \u001b[33m130\u001b[39m,\n  severity: \u001b[32m'ERROR'\u001b[39m,\n  code: \u001b[32m'42P01'\u001b[39m,\n  detail: \u001b[90mundefined\u001b[39m,\n  hint: \u001b[90mundefined\u001b[39m,\n  position: \u001b[32m'444'\u001b[39m,\n  internalPosition: \u001b[90mundefined\u001b[39m,\n  internalQuery: \u001b[90mundefined\u001b[39m,\n  where: \u001b[90mundefined\u001b[39m,\n  schema: \u001b[90mundefined\u001b[39m,\n  table: \u001b[90mundefined\u001b[39m,\n  column: \u001b[90mundefined\u001b[39m,\n  dataType: \u001b[90mundefined\u001b[39m,\n  constraint: \u001b[90mundefined\u001b[39m,\n  file: \u001b[32m'parse_relation.c'\u001b[39m,\n  line: \u001b[32m'3617'\u001b[39m,\n  routine: \u001b[32m'errorMissingRTE'\u001b[39m\n}\nFAIL test/acceptance/T2/relationships.e2e-spec.ts (23.544 s)\n  ● T2 relationship API (e2e) › checkpoint 3: Contact list and Company filtering › finds a Contact by either its primary or secondary Company link\n\n    expected 200 \"OK\", got 500 \"Internal Server Error\"\n\n      381 |         const list = await request(app.getHttpServer())\n      382 |           .get(`${contactBasePath}?companyId=${companyId}&page=1&pageSize=100`)\n    > 383 |           .expect(200);\n          |            ^\n      384 |         const found = list.body.items.find(\n      385 |           (item: { id: string }) => item.id === contact.id,\n      386 |         );\n\n      at Object.<anonymous> (test/acceptance/T2/relationships.e2e-spec.ts:383:12)\n      ----\n      at Test._assertStatus (node_modules/supertest/lib/test.js:309:14)\n      at node_modules/supertest/lib/test.js:365:13\n      at Test._assertFunction (node_modules/supertest/lib/test.js:342:13)\n      at Test.assert (node_modules/supertest/lib/test.js:195:23)\n      at localAssert (node_modules/supertest/lib/test.js:138:14)\n      at Server.<anonymous> (node_modules/supertest/lib/test.js:152:11)\n\n  ● T2 seed scenarios (e2e) › demo seed includes a Deal with three distinct non-empty Contact roles\n\n    read ECONNRESET\n\n\n(node:20) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.\nPASS test/acceptance/T2/relationships.migration.e2e-spec.ts\n\nTest Suites: 1 failed, 1 passed, 2 total\nTests:       2 failed, 24 passed, 26 total\nSnapshots:   0 total\nTime:        27.062 s\nRan all test suites matching test/acceptance/T2.\nTest results written to: acceptance-report.json\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 30.229
+      },
+      "summary": {
+        "total": 26,
+        "passed": 24,
+        "failed": 2,
+        "failed_ids": [
+          "T2 relationship API (e2e) checkpoint 3: Contact list and Company filtering finds a Contact by either its primary or secondary Company link",
+          "T2 seed scenarios (e2e) demo seed includes a Deal with three distinct non-empty Contact roles"
+        ],
+        "failed_details": [
+          {
+            "id": "T2 relationship API (e2e) checkpoint 3: Contact list and Company filtering finds a Contact by either its primary or secondary Company link",
+            "failure_messages": [
+              "Error: expected 200 \"OK\", got 500 \"Internal Server Error\"\n    at Object.<anonymous> (/workspace/backend/test/acceptance/T2/relationships.e2e-spec.ts:383:12)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n----\n    at Test._assertStatus (/workspace/backend/node_modules/supertest/lib/test.js:309:14)\n    at /workspace/backend/node_modules/supertest/lib/test.js:365:13\n    at Test._assertFunction (/workspace/backend/node_modules/supertest/lib/test.js:342:13)\n    at Test.assert (/workspace/backend/node_modules/supertest/lib/test.js:195:23)\n    at localAssert (/workspace/backend/node_modules/supertest/lib/test.js:138:14)\n    at Server.<anonymous> (/workspace/backend/node_modules/supertest/lib/test.js:152:11)\n    at Object.onceWrapper (node:events:638:28)\n    at Server.emit (node:events:524:28)\n    at emitCloseNT (node:net:2344:8)\n    at processTicksAndRejections (node:internal/process/task_queues:81:21)"
+            ]
+          },
+          {
+            "id": "T2 seed scenarios (e2e) demo seed includes a Deal with three distinct non-empty Contact roles",
+            "failure_messages": [
+              "Error: read ECONNRESET\n    at TCP.onStreamRead (node:internal/stream_base_commons:218:20)\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)"
+            ]
+          }
+        ]
+      },
+      "failure_classifications": [
+        {
+          "id": "T2 relationship API (e2e) checkpoint 3: Contact list and Company filtering finds a Contact by either its primary or secondary Company link",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        },
+        {
+          "id": "T2 seed scenarios (e2e) demo seed includes a Deal with three distinct non-empty Contact roles",
+          "classification": "behaviour_or_unclassified",
+          "automatic": true,
+          "review_required": true
+        }
+      ],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {
+          "contacts": "/api/contacts",
+          "deals": "/api/deals"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "route",
+            "semantic_target": "contacts",
+            "resolved": "/api/contacts",
+            "attempts": [
+              {
+                "path": "/api/contacts",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "route",
+            "semantic_target": "deals",
+            "resolved": "/api/deals",
+            "attempts": [
+              {
+                "path": "/api/deals",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "request_field",
+            "semantic_target": "Contact.companies[].id",
+            "resolved": "id",
+            "attempted": [
+              "id:201"
+            ]
+          },
+          {
+            "kind": "http_method",
+            "semantic_target": "replace Contact Company links",
+            "resolved": "patch",
+            "attempted": [
+              "patch:200"
+            ]
+          },
+          {
+            "kind": "request_field",
+            "semantic_target": "Deal.contactLinks",
+            "resolved": "contactLinks",
+            "attempted": [
+              "contactLinks:201"
+            ]
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "fail",
+      "reason": null,
+      "install": {
+        "command": "npm ci --legacy-peer-deps",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 487 packages, and audited 488 packages in 49s\n\n159 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: '@testing-library/jest-dom@6.10.0',\nnpm warn EBADENGINE   required: { node: '>=22', npm: '>=6', yarn: '>=1' },\nnpm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }\nnpm warn EBADENGINE }\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 49.662
+      },
+      "test": {
+        "command": "npx --no-install vitest run src/test/acceptance/T2 --reporter=json --outputFile=acceptance-report.json --coverage --coverage.reportOnFailure",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 1,
+        "stdout": "JSON report written to /workspace/frontend/acceptance-report.json\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-------------------|---------|----------|---------|---------|-------------------\nFile               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-------------------|---------|----------|---------|---------|-------------------\nAll files          |    7.07 |        0 |       0 |    7.69 |                   \n src               |     100 |      100 |     100 |     100 |                   \n  config.js        |     100 |      100 |     100 |     100 |                   \n src/contexts      |    6.66 |        0 |       0 |    9.09 |                   \n  ...gsContext.jsx |    6.66 |        0 |       0 |    9.09 | 10-77             \n src/hooks         |       0 |        0 |       0 |       0 |                   \n  ...utSettings.js |       0 |        0 |       0 |       0 | 6-12              \n  ...calStorage.js |       0 |        0 |       0 |       0 | 7-50              \n src/routes        |      25 |      100 |       0 |      25 |                   \n  ...e-registry.js |      25 |      100 |       0 |      25 | 21-84             \n src/utils         |       0 |        0 |       0 |       0 |                   \n  colorUtils.js    |       0 |        0 |       0 |       0 | 14-67             \n  getColors.js     |       0 |        0 |       0 |       0 | 4-16              \n  getShadow.js     |       0 |        0 |       0 |       0 | 4-28              \n-------------------|---------|----------|---------|---------|-------------------\n",
+        "stderr": "npm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 7.723
+      },
+      "summary": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "failed_ids": [],
+        "failed_details": []
+      },
+      "failure_classifications": [],
+      "adapter": {
+        "version": "v2",
+        "status": "report_missing",
+        "route_resolved": {},
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [],
+        "unresolved": [
+          {
+            "kind": "adapter_report",
+            "semantic_target": "suite",
+            "attempted": "acceptance-adapter-report.json"
+          }
+        ]
+      },
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

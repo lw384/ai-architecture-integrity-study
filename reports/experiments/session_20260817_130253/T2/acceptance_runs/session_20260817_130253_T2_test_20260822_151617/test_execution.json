@@ -1,0 +1,233 @@
+{
+  "run_id": "session_20260817_130253_T2_test_20260822_151617",
+  "started_at": "2026-08-22T14:16:17.945058+00:00",
+  "completed_at": "2026-08-22T14:18:17.876700+00:00",
+  "task_id": "T2",
+  "adapter_version": "v2",
+  "runtime": {
+    "type": "docker",
+    "image": "node:20-bookworm-slim"
+  },
+  "db": {
+    "status": "ok",
+    "container_name": "crm_baseline_db_test",
+    "started_by_runner": false
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "pass",
+      "reason": null,
+      "install": {
+        "command": "npm ci",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 748 packages, and audited 749 packages in 38s\n\n168 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 38.92
+      },
+      "test": {
+        "command": "npx --no-install jest --config test/jest-e2e.json --rootDir=. --runInBand test/acceptance/T2 --json --outputFile=acceptance-report.json --coverage --coverageDirectory=coverage --collectCoverageFrom='src/**/*.{ts,js}' --collectCoverageFrom='!src/**/*.spec.ts' --collectCoverageFrom='!src/**/*.test.ts' --collectCoverageFrom='!src/main.ts'",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "---------------------------------------------|---------|----------|---------|---------|--------------------------------------------\nFile                                         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                          \n---------------------------------------------|---------|----------|---------|---------|--------------------------------------------\nAll files                                    |   65.17 |    56.19 |   67.14 |   64.02 |                                            \n src                                         |     100 |       50 |     100 |     100 |                                            \n  app.module.ts                              |     100 |       50 |     100 |     100 | 9-10                                       \n src/common/errors                           |     100 |       90 |     100 |     100 |                                            \n  app-exception.ts                           |     100 |      100 |     100 |     100 |                                            \n  error-codes.ts                             |     100 |      100 |     100 |     100 |                                            \n  validation-exception.factory.ts            |     100 |       90 |     100 |     100 | 13                                         \n src/common/filter                           |     100 |    66.66 |     100 |     100 |                                            \n  http-exception.filter.ts                   |     100 |    66.66 |     100 |     100 | 36-42,68                                   \n src/common/pipes                            |   83.33 |      100 |      50 |   83.33 |                                            \n  uuid-v4.pipe.ts                            |   83.33 |      100 |      50 |   83.33 | 9                                          \n src/common/utils                            |   92.85 |       60 |     100 |   92.85 |                                            \n  pagination.util.ts                         |   92.85 |       60 |     100 |   92.85 | 52                                         \n src/core/database                           |   81.25 |    42.85 |       0 |   81.25 |                                            \n  base.repository.ts                         |      50 |        0 |       0 |      50 | 25-36                                      \n  data-source.ts                             |     100 |       50 |     100 |     100 | 6-19                                       \n src/core/database/migrations                |   82.85 |      100 |   66.66 |   82.85 |                                            \n  20260722000100-AddContactsCompanyFk.ts     |      60 |      100 |      50 |      60 | 32-33                                      \n  20260817000100-AddDealsTableConstraints.ts |   55.55 |      100 |      50 |   55.55 | 56-61                                      \n  20260817000200-ManyToMany.ts               |     100 |      100 |     100 |     100 |                                            \n src/core/seed                               |       0 |        0 |       0 |       0 |                                            \n  seed.ts                                    |       0 |        0 |       0 |       0 | 1-65                                       \n  seed.utils.ts                              |       0 |        0 |       0 |       0 | 1-128                                      \n src/core/seed/factories                     |       0 |        0 |       0 |       0 |                                            \n  company.factory.ts                         |       0 |        0 |       0 |       0 | 1-68                                       \n  contact.factory.ts                         |       0 |        0 |       0 |       0 | 1-48                                       \n  deal.factory.ts                            |       0 |        0 |       0 |       0 | 12-35                                      \n src/core/seed/scenarios                     |       0 |        0 |       0 |       0 |                                            \n  demo.seed.ts                               |       0 |        0 |       0 |       0 | 1-238                                      \n  edge-case.seed.ts                          |       0 |        0 |       0 |       0 | 1-187                                      \n src/modules/company                         |   74.74 |    67.24 |      50 |   71.59 |                                            \n  company.controller.ts                      |   78.94 |       75 |   33.33 |   76.47 | 40,49,61,67                                \n  company.entity.ts                          |     100 |       80 |     100 |     100 | 77-91                                      \n  company.module.ts                          |     100 |      100 |     100 |     100 |                                            \n  company.repository.ts                      |   42.85 |       30 |   33.33 |   36.84 | 19-57                                      \n  company.service.ts                         |   60.86 |     62.5 |      50 |   57.14 | 26,58-92                                   \n src/modules/company/dto                     |   89.36 |       75 |      25 |   93.02 |                                            \n  create.dto.ts                              |    92.3 |       75 |      50 |    92.3 | 44                                         \n  index.ts                                   |     100 |      100 |     100 |     100 |                                            \n  query.dto.ts                               |   69.23 |       75 |       0 |   81.81 | 7,13                                       \n  response.dto.ts                            |     100 |       75 |     100 |     100 | 19-31                                      \n  update.dto.ts                              |     100 |      100 |     100 |     100 |                                            \n src/modules/contact                         |   92.44 |    72.11 |   93.33 |   91.39 |                                            \n  contact-company.entity.ts                  |     100 |       75 |     100 |     100 | 25                                         \n  contact.controller.ts                      |   94.44 |       75 |   83.33 |   93.75 | 64                                         \n  contact.entity.ts                          |     100 |       75 |     100 |     100 | 43-57                                      \n  contact.module.ts                          |     100 |      100 |     100 |     100 |                                            \n  contact.repository.ts                      |   95.83 |    66.66 |     100 |   95.45 | 44                                         \n  contact.service.ts                         |   88.65 |    71.73 |   95.23 |    87.2 | 35,114,147-148,155-164,180,231,257         \n src/modules/contact/dto                     |   78.57 |    72.22 |   77.77 |   76.92 |                                            \n  create.dto.ts                              |   92.85 |       75 |      50 |   92.85 | 47                                         \n  index.ts                                   |     100 |      100 |     100 |     100 |                                            \n  query.dto.ts                               |   96.15 |    71.42 |   85.71 |   95.45 | 58                                         \n  response.dto.ts                            |       0 |      100 |     100 |       0 | 1-26                                       \n  update.dto.ts                              |     100 |      100 |     100 |     100 |                                            \n src/modules/deal                            |   88.75 |    66.98 |      96 |   87.67 |                                            \n  deal-contact.entity.ts                     |     100 |       75 |     100 |     100 | 25                                         \n  deal.controller.ts                         |     100 |       75 |     100 |     100 | 17-57                                      \n  deal.entity.ts                             |     100 |       75 |     100 |     100 | 56-67                                      \n  deal.module.ts                             |     100 |      100 |     100 |     100 |                                            \n  deal.repository.ts                         |   94.11 |       75 |     100 |   93.33 | 26                                         \n  deal.service.ts                            |   80.89 |    62.12 |   93.75 |      80 | 83,108,119,139,157-166,192,207-215,232,263 \n src/modules/deal/dto                        |     100 |      100 |      90 |     100 |                                            \n  create.dto.ts                              |     100 |      100 |     100 |     100 |                                            \n  index.ts                                   |     100 |      100 |      75 |     100 |                                            \n  query.dto.ts                               |     100 |      100 |     100 |     100 |                                            \n  update.dto.ts                              |     100 |      100 |     100 |     100 |                                            \n---------------------------------------------|---------|----------|---------|---------|--------------------------------------------\n",
+        "stderr": "PASS test/acceptance/T2/relationships.e2e-spec.ts (20.182 s)\nPASS test/acceptance/T2/relationships.migration.e2e-spec.ts\n\nTest Suites: 2 passed, 2 total\nTests:       26 passed, 26 total\nSnapshots:   0 total\nTime:        22.611 s\nRan all test suites matching test/acceptance/T2.\nTest results written to: acceptance-report.json\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 24.568
+      },
+      "summary": {
+        "total": 26,
+        "passed": 26,
+        "failed": 0,
+        "failed_suites": 0,
+        "failed_ids": [],
+        "failed_details": []
+      },
+      "failure_classifications": [],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {
+          "contacts": "/api/contacts",
+          "deals": "/api/deals"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [
+          "companies[].companyId->companies[].id",
+          "dealId->id",
+          "contacts->contactLinks"
+        ],
+        "discoveries": [
+          {
+            "kind": "route",
+            "semantic_target": "contacts",
+            "resolved": "/api/contacts",
+            "attempts": [
+              {
+                "path": "/api/contacts",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "route",
+            "semantic_target": "deals",
+            "resolved": "/api/deals",
+            "attempts": [
+              {
+                "path": "/api/deals",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "request_field",
+            "semantic_target": "Contact.companies[].id",
+            "resolved": "companyId",
+            "attempted": [
+              "id:400",
+              "companyId:201"
+            ]
+          },
+          {
+            "kind": "http_method",
+            "semantic_target": "replace Contact Company links",
+            "resolved": "post",
+            "attempted": [
+              "patch:404",
+              "post:201"
+            ]
+          },
+          {
+            "kind": "request_field",
+            "semantic_target": "Deal.contactLinks",
+            "resolved": "contacts",
+            "attempted": [
+              "contactLinks:400",
+              "contacts:201"
+            ]
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "pass",
+      "reason": null,
+      "install": {
+        "command": "npm ci --legacy-peer-deps",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 487 packages, and audited 488 packages in 36s\n\n159 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: '@testing-library/jest-dom@6.10.0',\nnpm warn EBADENGINE   required: { node: '>=22', npm: '>=6', yarn: '>=1' },\nnpm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }\nnpm warn EBADENGINE }\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 37.068
+      },
+      "test": {
+        "command": "npx --no-install vitest run src/test/acceptance/T2 --reporter=json --outputFile=acceptance-report.json --coverage --coverage.reportOnFailure",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "JSON report written to /workspace/frontend/acceptance-report.json\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-------------------|---------|----------|---------|---------|-------------------\nFile               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-------------------|---------|----------|---------|---------|-------------------\nAll files          |   66.72 |    70.45 |   53.87 |   69.68 |                   \n src               |     100 |      100 |     100 |     100 |                   \n  config.js        |     100 |      100 |     100 |     100 |                   \n src/api           |   59.45 |    52.38 |   47.36 |   59.45 |                   \n  companyApi.js    |      50 |      100 |      40 |      50 | 7-17              \n  contactApi.js    |      50 |      100 |      40 |      50 | 9,15-20           \n  dealApi.js       |      60 |      100 |      50 |      60 | 7-12              \n  request.js       |      65 |    47.36 |      60 |      65 | 9-21,53,60-61     \n ...nts/IconButton |      75 |    57.14 |     100 |   73.68 |                   \n  index.jsx        |      75 |    57.14 |     100 |   73.68 | 34-72             \n ...nents/MainCard |     100 |    68.42 |     100 |     100 |                   \n  index.jsx        |     100 |    68.42 |     100 |     100 | 35-48,66          \n ...ble/EmptyState |     100 |       50 |     100 |     100 |                   \n  EmptyState.jsx   |     100 |       50 |     100 |     100 | 8                 \n ...ble/Pagination |      50 |       75 |      40 |      50 |                   \n  Pagination.jsx   |      50 |       75 |      40 |      50 | 38,49-55          \n ...ts/Table/Shell |     100 |    95.23 |     100 |     100 |                   \n  Shell.jsx        |     100 |    95.23 |     100 |     100 | 45                \n .../Table/Toolbar |      50 |    66.66 |      50 |      50 |                   \n  Toolbar.jsx      |      50 |    66.66 |      50 |      50 | 33                \n  ...r.module.scss |       0 |        0 |       0 |       0 |                   \n src/contexts      |   63.33 |       50 |   23.07 |   86.36 |                   \n  ...gsContext.jsx |   63.33 |       50 |   23.07 |   86.36 | 14,26,34          \n src/hooks         |   57.69 |       50 |   57.14 |      60 |                   \n  ...utSettings.js |      75 |       50 |     100 |      75 | 9                 \n  ...calStorage.js |   54.54 |       50 |      50 |   57.14 | ...26,32-37,46-47 \n ...ages/companies |    60.6 |    67.74 |   57.14 |    60.6 |                   \n  ...anyDetail.jsx |     100 |    66.66 |     100 |     100 | 46-52,102-104,114 \n  ...anyQueries.js |    40.9 |      100 |   47.05 |    40.9 | 33-66             \n ...pages/contacts |   61.07 |    69.67 |   51.85 |   63.63 |                   \n  ...actDetail.jsx |     100 |       70 |     100 |     100 | 19,42-44,55       \n  ContactForm.jsx  |   71.42 |    76.34 |   59.37 |   75.47 | ...41,183,235-247 \n  ContactTable.jsx |      75 |    58.33 |      75 |      80 | 39,45             \n  ...actQueries.js |   69.56 |      100 |    64.7 |   69.56 | 37-39,48-51,60-62 \n  index.jsx        |    37.5 |    48.14 |   14.28 |   41.17 | ...23,127,191-225 \n src/pages/deals   |   66.27 |    69.93 |   50.58 |   69.07 |                   \n  DealDetail.jsx   |      60 |    67.56 |   42.85 |      60 | 52,139-146        \n  DealForm.jsx     |   72.52 |    71.27 |   58.82 |      75 | ...66,252,299-319 \n  DealTable.jsx    |   85.71 |       60 |   83.33 |   85.71 | 44                \n  dealQueries.js   |   72.22 |      100 |   71.42 |   72.22 | 30-32,40-43       \n  index.jsx        |   48.78 |    71.42 |   20.83 |   55.55 | ...37-139,149-177 \n src/routes        |    87.5 |      100 |   83.33 |    87.5 |                   \n  ...e-registry.js |    87.5 |      100 |   83.33 |    87.5 | 46                \n src/utils         |    90.9 |    86.36 |      90 |    92.3 |                   \n  colorUtils.js    |      84 |       75 |   83.33 |      84 | 23-25,30,67       \n  formatDate.js    |      90 |    83.33 |     100 |     100 | 5                 \n  getColors.js     |     100 |      100 |     100 |     100 |                   \n  getShadow.js     |     100 |      100 |     100 |     100 |                   \n-------------------|---------|----------|---------|---------|-------------------\n",
+        "stderr": "npm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 13.276
+      },
+      "summary": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0,
+        "failed_suites": 0,
+        "failed_ids": [],
+        "failed_details": []
+      },
+      "failure_classifications": [],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {
+          "contacts": "contacts",
+          "contacts/:id": "contacts/:id",
+          "companies/:id": "companies/:id",
+          "deals": "deals",
+          "deals/:id": "deals/:id"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts",
+            "resolved": "contacts"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts/:id",
+            "resolved": "contacts/:id"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "companies/:id",
+            "resolved": "companies/:id"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals/:id",
+            "resolved": "deals/:id"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts",
+            "resolved": "contacts"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "create_contact",
+            "candidates": [
+              "add contact",
+              "create contact",
+              "new contact"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "ui_action",
+            "semantic_target": "create_deal",
+            "candidates": [
+              "add deal",
+              "create deal",
+              "new deal"
+            ]
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "contacts",
+            "resolved": "contacts"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

@@ -6,7 +6,7 @@ import test from 'node:test';
 
 import { runAdapter } from '../../adapters/test-coverage/adapter.mjs';
 
-const RULE_ID = 'BE-TEST-M-001-test-coverage';
+const RULE_ID = 'BE-COVERAGE-M-001-test-coverage';
 
 // This adapter really spawns a child process (the target project's own coverage command).
 // To keep the test fast and deterministic (no real Jest/test suite involved), the "command"
@@ -29,7 +29,7 @@ function summaryWriterCommand(pct) {
 }
 
 async function withTempDir(fn) {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'be-test-m-001-'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'be-coverage-m-001-'));
     try {
         return await fn(dir);
     } finally {

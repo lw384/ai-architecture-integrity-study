@@ -176,8 +176,8 @@ Placement: Appendix (referenced from §3.4.4, "Rule Nomenclature and Implementat
 | BE-DUP-C-003 | BE-DUP | constraint | Equivalent production functions must be reused/extracted, not duplicated (normalised AST fingerprint; short/policy-shaped functions excluded) | backend-static |
 | BE-DUP-M-001 | BE-DUP | metric | `duplicated_lines_covered / total_token_bearing_production_lines` — token-normalised sliding-window Type-1/Type-2 clone detection (Roy et al., 2009) | computed-metrics |
 | BE-TEST-C-001 | BE-TEST | constraint | Services must obtain repositories through dependency injection; must not call `new Repository(...)` | backend-static |
-| BE-MOCK-M-001 | BE-TEST | metric — **representative (Table 3.2)** | `total mock constructs / total test cases` | computed-metrics |
-| BE-TEST-M-001 | BE-TEST | metric — **excluded from architectural analysis** (functional-quality signal, not architectural; §3.4.3, reported in §4.8) | Backend line coverage; `value = coverage-summary.json`'s `lines.pct` | test-coverage |
+| BE-TEST-M-001 | BE-TEST | metric — **representative (Table 3.2)** | `total mock constructs / total test cases` | computed-metrics |
+| BE-COVERAGE-M-001 | BE-COVERAGE | metric — **excluded from architectural analysis** (functional-quality signal, not architectural; §3.4.3, reported in §4.8) | Backend line coverage; `value = coverage-summary.json`'s `lines.pct` | test-coverage |
 
 ### Frontend (13 constraints + 7 metrics)
 
@@ -221,7 +221,7 @@ Placement: Appendix (referenced from §3.4.4, "Rule Nomenclature and Implementat
 - **dep-cruiser** — `dependency-cruiser`-generated import graph (used only for BE-DEP-C-004's cycle detection; all other dependency-direction constraints run through backend-static).
 - **contract-diff** — diff-based check between entity/relation declarations and migration files (BE-CONTRACT-C-001 only).
 - **computed-metrics** — the project's own metric-computation layer (`harness/adapters/computed-metrics/implementations/{backend,frontend,cross}/`), one `.mjs` per metric, keyed by the `implementation` field.
-- **test-coverage** — wraps the project's Jest `coverage-summary.json`; the only metric on this adapter is `BE-TEST-M-001`, which is why it is the one excluded from architectural analysis (§3.4.3).
+- **test-coverage** — wraps the project's Jest `coverage-summary.json`; the only metric on this adapter is `BE-COVERAGE-M-001`, which is why it is the one excluded from architectural analysis (§3.4.3).
 
 Note the discrepancy this table makes visible and resolves: `BE-DEP-M-001`'s formula in this table (`(layering_violations + cyclic_dependency_count) / total_import_edges`) is sourced directly from the YAML and is the authoritative version; if any earlier draft text stated a different formula for this metric, this table supersedes it.
 

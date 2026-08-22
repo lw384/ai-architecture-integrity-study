@@ -11,6 +11,8 @@ description: >
   Measures average dynamic-parameter count across statically declared
   frontend routes.
 
+formula: total_dynamic_route_parameters / total_statically_declared_routes
+
 agent_facing_message: >
   Average route parameter complexity is {value}. Lower values indicate simpler
   route signatures.

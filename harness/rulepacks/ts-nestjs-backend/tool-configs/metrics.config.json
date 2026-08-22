@@ -40,7 +40,7 @@
       ],
       "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
     },
-    "BE-TEST-M-001-test-coverage": {
+    "BE-COVERAGE-M-001-test-coverage": {
       "runtime": {
         "type": "docker",
         "image": "node:20-bookworm-slim",
@@ -62,7 +62,7 @@
       "coverage_summary_path": "coverage/coverage-summary.json",
       "raw_artifact_path": "artifacts/metrics/test-coverage.json"
     },
-    "BE-MOCK-M-001-mock-per-test-case": {
+    "BE-TEST-M-001-mock-per-test-case": {
       "test_roots": [
         "backend/src",
         "backend/test",

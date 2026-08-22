@@ -1,0 +1,121 @@
+{
+  "status": "pass",
+  "run_id": "session_20260817_130253_T1_test_20260822_151305",
+  "started_at": "2026-08-22T14:13:05.665152+00:00",
+  "completed_at": "2026-08-22T14:16:02.652172+00:00",
+  "task_id": "T1",
+  "adapter_version": "v2",
+  "adapter": {
+    "version": "v2",
+    "route_resolved": {
+      "backend": {
+        "deals": "/api/deals"
+      },
+      "frontend": {
+        "deals": "deals"
+      }
+    },
+    "method_resolved": {
+      "backend": {
+        "update Deal": "POST"
+      },
+      "frontend": {}
+    },
+    "field_mappings_used": [
+      "dealId->id"
+    ],
+    "unresolved": [],
+    "suites": [
+      {
+        "suite_id": "backend",
+        "version": "v2",
+        "route_resolved": {
+          "deals": "/api/deals"
+        },
+        "method_resolved": {
+          "update Deal": "POST"
+        },
+        "field_mappings_used": [
+          "dealId->id"
+        ],
+        "discoveries": [
+          {
+            "kind": "route",
+            "semantic_target": "deals",
+            "resolved": "/api/deals",
+            "attempts": [
+              {
+                "path": "/api/deals",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "http_method",
+            "semantic_target": "update Deal",
+            "resolved": "POST",
+            "attempted": [
+              {
+                "method": "POST",
+                "status": 200
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      {
+        "suite_id": "frontend",
+        "version": "v2",
+        "route_resolved": {
+          "deals": "deals"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      }
+    ]
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "pass",
+      "reason": null,
+      "total": 14,
+      "passed": 14,
+      "failed": 0,
+      "failed_ids": [],
+      "failure_classifications": [],
+      "outcome": "adapted_pass",
+      "adapter_unresolved_count": 0,
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "pass",
+      "reason": null,
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "failed_ids": [],
+      "failure_classifications": [],
+      "outcome": "adapted_pass",
+      "adapter_unresolved_count": 0,
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

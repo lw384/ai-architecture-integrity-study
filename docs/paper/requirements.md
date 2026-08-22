@@ -30,10 +30,52 @@ Source: `marking_criteria_-_standard_grid_101_24-25.pdf`. 8 weighted criteria = 
 
 ---
 
+## Word Count Policy 字数政策
+
+**This project is 60 CAT → target ~15,000 words.** 10% lenience band: **13,500–16,500 words** is safe; outside that band, sanctions apply on the over-length side (no formal sanction for under-length, but it signals insufficient depth).
+**本项目为 60 CAT → 目标 ~15,000 字。** 10% 容差范围:**13,500–16,500 字**安全;超出范围后,超字数一侧有明确扣分,字数不足一侧没有正式扣分条款,但意味着深度不够。
+
+> **✅ Project-specific note (corrected):** `thesis-chapter-outline.md` states its total as "13,300 words," but this is an arithmetic error in the source file — the eight listed section counts (1,300+2,800+3,600+2,600+2,000+1,600+900+700) actually sum to **15,500**, which already sits inside the lenience band. No major reallocation needed; per-chapter budgets are noted under each chapter below. (Recommend fixing the arithmetic in `thesis-chapter-outline.md` itself too.)
+> **✅ 项目专属提醒(已更正):** `thesis-chapter-outline.md` 自称总字数"13,300 字",但这是源文件自身的算术错误——八段字数(1,300+2,800+3,600+2,600+2,000+1,600+900+700)实际相加是 **15,500**,已经落在容差区间内,不需要大幅调整。各章具体字数预算见下文对应章节。(建议同时把 `thesis-chapter-outline.md` 里的算式也改正。)
+
+### Included in word count 计入字数
+- Main text: Introduction → Conclusion 正文全部章节
+- Quotations 引语
+- **Tables and figures (including text inside them)** 表格、图示(含其中文字)
+- Footnotes, endnotes 脚注、尾注
+- In-text citations 文中引用
+- Main project title, all headings/titles 主标题及各级标题
+- **Abstract / summary** 摘要
+
+### Excluded from word count 不计入字数
+- Table of Contents, List of Figures, List of Tables 目录、图表清单
+- Declaration page 声明页
+- Acknowledgements page 致谢页
+- Reference List / Bibliography 参考文献列表
+- **All material in an Appendix/Annex** 附录/附件中的全部材料
+
+### Hard rule 硬性规则
+**"Text within an image is not permitted."** 图片里不允许嵌入文字——架构图/流程图里需要的文字标签必须用可编辑的原生 Word 元素(文本框、SmartArt、表格)呈现,不能是"画在图片里烧录进去"的文字(即便这类文字理论上不计入字数,也不允许这样做)。所有实质内容都要以真实文字存在,不能靠图片规避字数统计。
+
+### Sanctions for exceeding word count 超字数处罚(阶梯式)
+| Excess 超出幅度 | Sanction 处罚 |
+|---|---|
+| ≤10% | None (lenience) 无(容差范围内) |
+| 10%–30% | −10 percentage points from total mark, capped at pass mark 总分扣10个百分点,但不低于及格线 |
+| >30% | Mark capped at pass mark 总分直接封顶到及格线 |
+
+*Source: course word-count policy (as provided by user, 2026-08-21).*
+*来源:课程字数政策原文(用户于2026-08-21提供)。*
+
+---
+
 ## Introduction 引言
 
 **Marking criterion:** "Formulate a research question and derived objectives suitable for the degree and consistent with the time and resource available to conduct the research."
 *拟定与学位水平相符、与可用时间/资源一致的研究问题及衍生目标。*
+
+**Word budget 字数预算:** 1,300 words (`thesis-chapter-outline.md` §1); could take +100 for expanded RQ-consolidation argumentation in §2.
+**字数预算:** 1,300 字(对应 `thesis-chapter-outline.md` §1);§2 因RQ整合需要更多论证空间,可考虑+100字。
 
 ### 1. Background 研究背景
 - [ ] Overview of research area, credible sources 研究领域概述+可信来源
@@ -69,6 +111,9 @@ Source: `marking_criteria_-_standard_grid_101_24-25.pdf`. 8 weighted criteria = 
 
 跨章节关联:本章是 Methodology/Results 标准"以前人研究为据"的证据来源,须与后续章节呼应。结构:倒金字塔——领域→问题→缺口。
 
+**Word budget 字数预算:** 2,800 words (`Related Work` in outline) — one of the two 20%-weighted criteria; protect this allocation rather than trimming it to free up room elsewhere.
+**字数预算:** 2,800 字(对应大纲 `Related Work`)——占两个20%权重最高标准之一,应优先保护这个预算,不要为了给别的章节腾字数而压缩它。
+
 ### 1. Introduction 引言
 - [ ] What/why/how of the chapter 讲什么/为什么/怎么组织
 - [ ] Aligned to objective(s) 对齐目标
@@ -96,6 +141,9 @@ Source: `marking_criteria_-_standard_grid_101_24-25.pdf`. 8 weighted criteria = 
 *选择并论证研究方法,契合具体研究问题,妥善考虑风险并给出缓解措施。*
 
 每个方法层级小节都遵循:**描述 → 论证 → 评估**(含局限及应对)。
+
+**Word budget 字数预算:** 6,200 words total = 3,600 (`System and Methodology`) + 2,600 (`Data Collection and Analysis Plan`, maps to §5 below) — the other 20%-weighted criterion; the largest chapter in the dissertation, appropriately so.
+**字数预算:** 合计 6,200 字 = 3,600(`System and Methodology`)+ 2,600(`Data Collection and Analysis Plan`,对应下文§5)——另一个20%权重最高标准,是全文最大的一章,分配合理。
 
 ### 1. Introduction 引言
 - [ ] Restate RQ/objectives, overview design, chapter structure 重述RQ/目标,概述设计,本章结构
@@ -145,6 +193,9 @@ Source: `marking_criteria_-_standard_grid_101_24-25.pdf`. 8 weighted criteria = 
 **Marking criteria:** "Devise and perform an investigation, informed by...previous workers...efficiently utilising available resources and dealing with problems appropriately." / "Present findings...with clarity, appropriately evaluating the confidence that should be placed in any findings."
 *调查以前人研究为据,高效利用资源,妥善处理问题 / 清晰呈现发现,恰当评估可信度。*
 
+**Word budget 字数预算:** 2,000 words (`Findings` in outline) — flagged as a data-dependent placeholder; revisit once trajectory runs are finalized, may need to grow.
+**字数预算:** 2,000 字(对应大纲 `Findings`)——标记为数据未定的占位预算,待轨迹运行数据定稿后需重新核实,不排除要增加。
+
 ### 1. Introduction 引言
 - [ ] What/why/how, aligned to objective(s) 讲什么/为什么/怎么组织,对齐目标
 
@@ -184,6 +235,9 @@ Source: `marking_criteria_-_standard_grid_101_24-25.pdf`. 8 weighted criteria = 
 **Marking criteria:** "Demonstration of benefit of work undertaken." + Recommendations per findings-clarity criterion.
 *证明工作价值;建议须清楚考虑资源需求。*
 
+**Word budget 字数预算:** 2,500 words total = 1,600 (`Discussion`) + 900 (`Limitations`, a separate chapter in the outline, maps to §3 below).
+**字数预算:** 合计 2,500 字 = 1,600(`Discussion`)+ 900(`Limitations`,大纲中是独立章节,对应下文§3)。
+
 ### 1. Recommendations for practice 实践建议
 - [ ] Restate problem 重申问题
 - [ ] Recommendations based on results analysis 基于结果分析的建议
@@ -219,6 +273,9 @@ Source: `marking_criteria_-_standard_grid_101_24-25.pdf`. 8 weighted criteria = 
 **核心目的:** 逐条证明每个 research objective 达成,回答 RQ。
 
 **Marking criterion:** "Achievement of project objectives." — 本章唯一评分标准,直接核对 Introduction 里的目标。
+
+**Word budget 字数预算:** 700 words (`Conclusion and Future Work` in outline) — comfortably under the <1,500 hard cap (10% of the 15,000-word total).
+**字数预算:** 700 字(对应大纲 `Conclusion and Future Work`)——远低于硬性上限1,500字(全文15,000字的10%),安全。
 
 ### Structure 结构(每个目标一段)
 - [ ] Objective restated 重述目标

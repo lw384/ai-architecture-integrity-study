@@ -3,7 +3,7 @@
 #
 # Runs a non-mutating "insight" task (e.g. T5: architecture-consistency
 # self-review) against an existing workspace snapshot and archives the
-# agent's textual output — mirroring evaluator.py / test_runner.py's role:
+# agent's textual output — mirroring evaluator.py / acceptance_runner.py's role:
 # this module holds the reusable logic, run_review.py is the thin CLI
 # wrapper.
 #

@@ -1,7 +1,7 @@
 {
   "schema_version": "0.3.0",
-  "evaluation_profile_hash": "sha256:14b04a670435b70d738f7ba2d21cc3e81aadc2d570a9f4f71ca796604f525390",
-  "run_id": "session_20260817_160757_T2_165624",
+  "evaluation_profile_hash": "sha256:784332f40fb3e2726c7f09f31b527917f120a9af421f465d0921f6cd581762ce",
+  "run_id": "session_20260817_160757_T2_harness_20260822_150156",
   "trajectory_id": "session_20260817_160757",
   "task_id": "T2",
   "rulepack_id": "task::T2",
@@ -9,33 +9,33 @@
     "workspace_path": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757",
     "pre_commit": "39d384b104cdac2fd4e959691636f18e8cba5d4f",
     "post_commit": "7200b988306d9195e546616972243d37e1165c03",
-    "baseline_commit": "26268ba24119c02ab5a677fc791441c3ea219ce2"
+    "baseline_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe"
   },
   "comparison": {
     "mode": "trajectory",
     "baseline": {
       "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/baseline/harness_evaluation.json",
-      "sha256": "sha256:2c3432a82314d89cc51c617cd249d626958cdb3968b2cb867e2786547f423188",
-      "run_id": "baseline_Base_20260817_125231",
-      "post_commit": "f79deec504ef7b91456370882e5bc70bbb54ccec"
+      "sha256": "sha256:3a2496b2a2079e586976376886d80285382bbe9c42952268959377b1d8297d57",
+      "run_id": "baseline_Base_20260822_150002",
+      "post_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe"
     },
     "pre": {
       "path": "/Users/luowei/project/ai-architecture-integrity-study/reports/experiments/session_20260817_160757/T1/harness_evaluation.json",
-      "sha256": "sha256:1136313e19b1625fbf373fa6b526fef905478a2aa0da88610dec57792ff5b554",
-      "run_id": "session_20260817_160757_T1_160758",
+      "sha256": "sha256:2cdc3b9ef0ea9f4f0c288a1e722d1dee7994bf0a9c108eef7b0da5ff514b3854",
+      "run_id": "session_20260817_160757_T1_harness_20260822_150138",
       "post_commit": "39d384b104cdac2fd4e959691636f18e8cba5d4f"
     },
     "post": {
       "path": null,
       "sha256": null,
-      "run_id": "session_20260817_160757_T2_165624",
+      "run_id": "session_20260817_160757_T2_harness_20260822_150156",
       "post_commit": "7200b988306d9195e546616972243d37e1165c03"
     }
   },
   "env_snapshot": {
     "node_version": "v20.20.2",
     "pnpm_version": "9.0.0",
-    "harness_commit": "26268ba24119c02ab5a677fc791441c3ea219ce2",
+    "harness_commit": "ca3e16f6667031aeaa1ca6314efaeb63a44b3ebe",
     "os": "Darwin 25.4.0 (arm64)",
     "tool_versions": {
       "backend-static": "0.2.0",
@@ -109,16 +109,17 @@
         "version": "1.0.0",
         "status": "pass",
         "score": {
-          "value": 0,
+          "value": 0.020833,
           "unit": "ratio",
           "direction": "lower_is_better"
         },
-        "delta_vs_baseline": 0,
+        "delta_vs_baseline": 0.020833,
         "findings": [
           "MVC violations: 0",
-          "Cyclic dependency count: 0",
-          "Total import edges: 97",
-          "Dependency violation density: 0"
+          "Cyclic dependency count: 4",
+          "Total import edges: 192",
+          "Dependency violation density: 0.020833",
+          "Delta vs baseline: +0.020833"
         ],
         "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json"
       },
@@ -174,23 +175,7 @@
         "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
       },
       {
-        "name": "backend:BE-TEST-M-001-test-coverage",
-        "version": "0.1.0",
-        "status": "pass",
-        "score": {
-          "value": 38.44,
-          "unit": "percent",
-          "direction": "higher_is_better"
-        },
-        "delta_vs_baseline": 3.969999999999999,
-        "findings": [
-          "Backend line coverage: 38.44%",
-          "Delta vs baseline: +3.97 percentage points"
-        ],
-        "raw_artifact_path": "artifacts/metrics/test-coverage.json"
-      },
-      {
-        "name": "backend:BE-MOCK-M-001-mock-per-test-case",
+        "name": "backend:BE-TEST-M-001-mock-per-test-case",
         "version": "1.0.0",
         "status": "pass",
         "score": {
@@ -736,13 +721,13 @@
           "adapter_meta": {
             "backend-static": {
               "status": "ok",
-              "duration_ms": 249,
+              "duration_ms": 312,
               "files_scanned": 53,
               "parse_errors": []
             },
             "dep-cruiser": {
               "status": "ok",
-              "duration_ms": 1023,
+              "duration_ms": 1941,
               "warnings": [],
               "cwd": "/Users/luowei/project/ai-architecture-integrity-study/experiment/workspace/session_20260817_160757/backend",
               "targets": [
@@ -905,16 +890,17 @@
             "version": "1.0.0",
             "status": "pass",
             "score": {
-              "value": 0,
+              "value": 0.020833,
               "unit": "ratio",
               "direction": "lower_is_better"
             },
-            "delta_vs_baseline": 0,
+            "delta_vs_baseline": 0.020833,
             "findings": [
               "MVC violations: 0",
-              "Cyclic dependency count: 0",
-              "Total import edges: 97",
-              "Dependency violation density: 0"
+              "Cyclic dependency count: 4",
+              "Total import edges: 192",
+              "Dependency violation density: 0.020833",
+              "Delta vs baseline: +0.020833"
             ],
             "raw_artifact_path": "artifacts/metrics/dependency-violation-density.json"
           },
@@ -970,23 +956,7 @@
             "raw_artifact_path": "artifacts/metrics/dto-validator-coverage.json"
           },
           {
-            "name": "BE-TEST-M-001-test-coverage",
-            "version": "0.1.0",
-            "status": "pass",
-            "score": {
-              "value": 38.44,
-              "unit": "percent",
-              "direction": "higher_is_better"
-            },
-            "delta_vs_baseline": 3.969999999999999,
-            "findings": [
-              "Backend line coverage: 38.44%",
-              "Delta vs baseline: +3.97 percentage points"
-            ],
-            "raw_artifact_path": "artifacts/metrics/test-coverage.json"
-          },
-          {
-            "name": "BE-MOCK-M-001-mock-per-test-case",
+            "name": "BE-TEST-M-001-mock-per-test-case",
             "version": "1.0.0",
             "status": "pass",
             "score": {
@@ -1652,7 +1622,7 @@
           "adapter_meta": {
             "frontend-static": {
               "status": "ok",
-              "duration_ms": 391,
+              "duration_ms": 485,
               "files_scanned": 104,
               "parse_errors": []
             }
@@ -2103,8 +2073,8 @@
           "name": "BE-DEP-M-001-dependency-violation-density",
           "scope": "backend",
           "from": 0,
-          "to": 0,
-          "delta": 0,
+          "to": 0.020833,
+          "delta": 0.020833,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -2139,18 +2109,8 @@
           "status": "available"
         },
         {
-          "key": "backend:BE-TEST-M-001-test-coverage",
-          "name": "BE-TEST-M-001-test-coverage",
-          "scope": "backend",
-          "from": 39.27,
-          "to": 38.44,
-          "delta": -0.8300000000000054,
-          "direction": "higher_is_better",
-          "status": "available"
-        },
-        {
-          "key": "backend:BE-MOCK-M-001-mock-per-test-case",
-          "name": "BE-MOCK-M-001-mock-per-test-case",
+          "key": "backend:BE-TEST-M-001-mock-per-test-case",
+          "name": "BE-TEST-M-001-mock-per-test-case",
           "scope": "backend",
           "from": 0,
           "to": 0,
@@ -2441,8 +2401,8 @@
           "name": "BE-DEP-M-001-dependency-violation-density",
           "scope": "backend",
           "from": 0,
-          "to": 0,
-          "delta": 0,
+          "to": 0.020833,
+          "delta": 0.020833,
           "direction": "lower_is_better",
           "status": "available"
         },
@@ -2477,18 +2437,8 @@
           "status": "available"
         },
         {
-          "key": "backend:BE-TEST-M-001-test-coverage",
-          "name": "BE-TEST-M-001-test-coverage",
-          "scope": "backend",
-          "from": 34.47,
-          "to": 38.44,
-          "delta": 3.969999999999999,
-          "direction": "higher_is_better",
-          "status": "available"
-        },
-        {
-          "key": "backend:BE-MOCK-M-001-mock-per-test-case",
-          "name": "BE-MOCK-M-001-mock-per-test-case",
+          "key": "backend:BE-TEST-M-001-mock-per-test-case",
+          "name": "BE-TEST-M-001-mock-per-test-case",
           "scope": "backend",
           "from": 0,
           "to": 0,
@@ -2630,7 +2580,7 @@
       "judgments": []
     }
   },
-  "duration_ms": 521346,
+  "duration_ms": 7652,
   "execution_status": "completed",
   "comparison_status": "valid",
   "errors": []

@@ -11,6 +11,8 @@ description: >
   Measures the share of frontend files that mix multiple styling mechanisms
   such as sx, className, style, or styled.
 
+formula: files_with_multiple_styling_mechanisms / total_frontend_production_files
+
 agent_facing_message: >
   Style mixing ratio is {value}. Lower values indicate a more consistent
   styling approach.

@@ -11,6 +11,8 @@ description: >
   Measures the share of context provider usages relative to all detected local
   state hooks and provider usages.
 
+formula: context_provider_usages / (local_state_hook_usages + context_provider_usages)
+
 agent_facing_message: >
   Context-provider ratio is {value}. Large shifts can indicate state-management
   drift.

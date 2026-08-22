@@ -9,7 +9,8 @@
       "total": 14,
       "passed": 14,
       "failed": 0,
-      "failed_ids": []
+      "failed_ids": [],
+      "coverage_dir": "coverage/backend"
     },
     {
       "suite_id": "frontend",
@@ -18,7 +19,8 @@
       "total": 2,
       "passed": 2,
       "failed": 0,
-      "failed_ids": []
+      "failed_ids": [],
+      "coverage_dir": "coverage/frontend"
     }
   ]
 }

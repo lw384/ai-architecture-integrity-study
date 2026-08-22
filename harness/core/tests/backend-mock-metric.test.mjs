@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { run } from '../../adapters/computed-metrics/implementations/backend/BE-MOCK-M-001.mjs';
+import { run } from '../../adapters/computed-metrics/implementations/backend/BE-TEST-M-001.mjs';
 
 function writeFiles(rootDir, files) {
     for (const [relativePath, content] of Object.entries(files)) {
@@ -15,7 +15,7 @@ function writeFiles(rootDir, files) {
 }
 
 async function runOn(files) {
-    const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'be-test-m-002-'));
+    const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'be-test-m-001-'));
     try {
         writeFiles(rootDir, files);
         return await run({ targetDir: rootDir, baselineDir: null, config: {} });

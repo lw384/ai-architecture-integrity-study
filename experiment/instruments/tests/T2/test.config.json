@@ -1,0 +1,47 @@
+{
+  "task_id": "T2",
+  "adapter_version": "v2",
+  "variant_coverage": ["minimal", "structured"],
+  "variant_coverage_note": "Both strategies share the same Section 4 behavioural acceptance standard. Documented helpers only normalize transport representations left open by Minimal and fixed by Structured.",
+  "db": {
+    "compose_file": "docker-compose.yml",
+    "compose_service": "postgres-test",
+    "compose_profile": "test",
+    "container_host": "host.docker.internal",
+    "host_port": 5435,
+    "health_check_timeout_seconds": 60
+  },
+  "suites": [
+    {
+      "id": "backend",
+      "spec_files": [
+        "relationships.e2e-spec.ts",
+        "relationships.migration.e2e-spec.ts"
+      ],
+      "workspace_subdir": "backend",
+      "overlay_dir": "test/acceptance/T2",
+      "commands": {
+        "install": "npm ci",
+        "test": "npx --no-install jest --config test/jest-e2e.json --rootDir=. --runInBand test/acceptance/T2 --json --outputFile=acceptance-report.json --coverage --coverageDirectory=coverage --collectCoverageFrom='src/**/*.{ts,js}' --collectCoverageFrom='!src/**/*.spec.ts' --collectCoverageFrom='!src/**/*.test.ts' --collectCoverageFrom='!src/main.ts'"
+      },
+      "json_report_file": "acceptance-report.json",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "timeout_seconds": 420
+    },
+    {
+      "id": "frontend",
+      "spec_files": ["relationships.render.test.jsx"],
+      "workspace_subdir": "frontend",
+      "overlay_dir": "src/test/acceptance/T2",
+      "commands": {
+        "install": "npm ci --legacy-peer-deps",
+        "test": "npx --no-install vitest run src/test/acceptance/T2 --reporter=json --outputFile=acceptance-report.json --coverage --coverage.reportOnFailure"
+      },
+      "json_report_file": "acceptance-report.json",
+      "env": {},
+      "timeout_seconds": 240
+    }
+  ]
+}

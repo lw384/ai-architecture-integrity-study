@@ -74,6 +74,7 @@ function pickAdapters(adapters = {}, rules = []) {
 async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry, runtimeContext }) {
     const events = [];
     const meta = {};
+    const rawOutputs = {};
 
     for (const [adapterId, adapter] of adapters) {
         try {
@@ -106,13 +107,16 @@ async function runAdapters({ targetDir, rulepackDir, adapters, adapterRegistry, 
 
             events.push(...(result.normalized_events ?? []));
             meta[adapterId] = result.execution_meta ?? { status: 'ok' };
+            if (result.raw_output !== undefined) {
+                rawOutputs[adapterId] = result.raw_output;
+            }
         } catch (error) {
             console.error(`[Harness Error] Adapter ${adapterId} failed: ${error.message}`);
             meta[adapterId] = { status: 'error', error: error.message };
         }
     }
 
-    return { events, meta };
+    return { events, meta, rawOutputs };
 }
 
 // Match normalized events against one rule's declared evidence sources.
@@ -176,7 +180,7 @@ export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapt
     }
 
     const adapters = pickAdapters(manifest.adapters, rules);
-    const { events, meta } = await runAdapters({
+    const { events, meta, rawOutputs } = await runAdapters({
         targetDir,
         rulepackDir,
         adapters,
@@ -194,5 +198,14 @@ export async function runConstraints({ targetDir, rulepackDir, taskConfig, adapt
         findingsByRule[rule.rule_id] = ruleFindings;
     }
 
-    return sumResult(rules, findings, findingsByRule, meta);
+    const result = sumResult(rules, findings, findingsByRule, meta);
+
+    // Let metrics reuse large adapter reports during this evaluation without
+    // serializing those transient reports into harness_evaluation.json.
+    Object.defineProperty(result, 'adapterRawOutputs', {
+        value: rawOutputs,
+        enumerable: false,
+    });
+
+    return result;
 }

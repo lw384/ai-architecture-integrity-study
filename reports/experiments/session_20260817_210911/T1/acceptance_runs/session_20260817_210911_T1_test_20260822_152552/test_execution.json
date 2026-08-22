@@ -1,0 +1,146 @@
+{
+  "run_id": "session_20260817_210911_T1_test_20260822_152552",
+  "started_at": "2026-08-22T14:25:52.108882+00:00",
+  "completed_at": "2026-08-22T14:27:52.917930+00:00",
+  "task_id": "T1",
+  "adapter_version": "v2",
+  "runtime": {
+    "type": "docker",
+    "image": "node:20-bookworm-slim"
+  },
+  "db": {
+    "status": "ok",
+    "container_name": "crm_baseline_db_test",
+    "started_by_runner": false
+  },
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "pass",
+      "reason": null,
+      "install": {
+        "command": "npm ci",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 748 packages, and audited 749 packages in 42s\n\n168 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 43.491
+      },
+      "test": {
+        "command": "npx --no-install jest --config test/jest-e2e.json --rootDir=. --runInBand test/acceptance/T1/deal.e2e-spec.ts --json --outputFile=acceptance-report.json --coverage --coverageDirectory=coverage --collectCoverageFrom='src/**/*.{ts,js}' --collectCoverageFrom='!src/**/*.spec.ts' --collectCoverageFrom='!src/**/*.test.ts' --collectCoverageFrom='!src/main.ts'",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "-----------------------------------------|---------|----------|---------|---------|----------------------\nFile                                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s    \n-----------------------------------------|---------|----------|---------|---------|----------------------\nAll files                                |   58.58 |    48.55 |   46.29 |   57.53 |                      \n src                                     |     100 |       50 |     100 |     100 |                      \n  app.module.ts                          |     100 |       50 |     100 |     100 | 9-10                 \n src/common/errors                       |     100 |       60 |     100 |     100 |                      \n  app-exception.ts                       |     100 |      100 |     100 |     100 |                      \n  error-codes.ts                         |     100 |      100 |     100 |     100 |                      \n  validation-exception.factory.ts        |     100 |       60 |     100 |     100 | 13-34                \n src/common/filter                       |      90 |       50 |   66.66 |   88.88 |                      \n  http-exception.filter.ts               |      90 |       50 |   66.66 |   88.88 | 61-68                \n src/common/pipes                        |   83.33 |      100 |      50 |   83.33 |                      \n  uuid-v4.pipe.ts                        |   83.33 |      100 |      50 |   83.33 | 9                    \n src/common/utils                        |   92.85 |       60 |     100 |   92.85 |                      \n  pagination.util.ts                     |   92.85 |       60 |     100 |   92.85 | 52                   \n src/core/database                       |   81.25 |    42.85 |       0 |   81.25 |                      \n  base.repository.ts                     |      50 |        0 |       0 |      50 | 25-36                \n  data-source.ts                         |     100 |       50 |     100 |     100 | 6-19                 \n src/core/database/migrations            |   61.11 |      100 |      50 |   61.11 |                      \n  20260722000100-AddContactsCompanyFk.ts |   66.66 |      100 |      50 |   66.66 | 22-26                \n  20260817000100-AddDealsForeignKeys.ts  |   58.33 |      100 |      50 |   58.33 | 40-57                \n src/core/seed                           |       0 |        0 |       0 |       0 |                      \n  seed.ts                                |       0 |        0 |       0 |       0 | 1-65                 \n  seed.utils.ts                          |       0 |        0 |       0 |       0 | 1-77                 \n src/core/seed/factories                 |       0 |        0 |       0 |       0 |                      \n  company.factory.ts                     |       0 |        0 |       0 |       0 | 1-68                 \n  contact.factory.ts                     |       0 |        0 |       0 |       0 | 1-53                 \n  deal.factory.ts                        |       0 |        0 |       0 |       0 | 1-38                 \n src/core/seed/scenarios                 |       0 |        0 |       0 |       0 |                      \n  demo.seed.ts                           |       0 |        0 |       0 |       0 | 1-151                \n  edge-case.seed.ts                      |       0 |        0 |       0 |       0 | 1-171                \n src/modules/company                     |      74 |       65 |      50 |   70.78 |                      \n  company.controller.ts                  |   78.94 |       75 |   33.33 |   76.47 | 40,49,61,67          \n  company.entity.ts                      |     100 |       80 |     100 |     100 | 77-91                \n  company.module.ts                      |     100 |      100 |     100 |     100 |                      \n  company.repository.ts                  |   42.85 |       30 |   33.33 |   36.84 | 19-57                \n  company.service.ts                     |   58.33 |       50 |      50 |   54.54 | 26,58-99             \n src/modules/company/dto                 |   89.36 |       75 |      25 |   93.02 |                      \n  create.dto.ts                          |    92.3 |       75 |      50 |    92.3 | 44                   \n  index.ts                               |     100 |      100 |     100 |     100 |                      \n  query.dto.ts                           |   69.23 |       75 |       0 |   81.81 | 7,13                 \n  response.dto.ts                        |     100 |       75 |     100 |     100 | 19-31                \n  update.dto.ts                          |     100 |      100 |     100 |     100 |                      \n src/modules/contact                     |    61.9 |     47.5 |    37.5 |   57.89 |                      \n  contact.controller.ts                  |   77.77 |       75 |   33.33 |      75 | 35,45,58,64          \n  contact.entity.ts                      |     100 |       75 |     100 |     100 | 46-60                \n  contact.module.ts                      |     100 |      100 |     100 |     100 |                      \n  contact.repository.ts                  |    37.5 |    16.66 |   33.33 |   31.81 | 14-47                \n  contact.service.ts                     |   46.15 |    30.76 |   42.85 |   43.24 | 23-35,46-51,89-127   \n src/modules/contact/dto                 |   61.53 |    55.55 |      25 |   66.66 |                      \n  create.dto.ts                          |      90 |       75 |       0 |      90 | 32                   \n  index.ts                               |     100 |      100 |     100 |     100 |                      \n  query.dto.ts                           |   65.38 |       50 |   28.57 |   77.27 | 37,44,58,63-68       \n  response.dto.ts                        |       0 |      100 |     100 |       0 | 1-26                 \n  update.dto.ts                          |     100 |      100 |     100 |     100 |                      \n src/modules/deal                        |   93.75 |    74.35 |   88.23 |   93.13 |                      \n  deal.controller.ts                     |   94.44 |       75 |   83.33 |   93.75 | 46                   \n  deal.entity.ts                         |     100 |       75 |     100 |     100 | 43-54                \n  deal.module.ts                         |     100 |      100 |     100 |     100 |                      \n  deal.repository.ts                     |     100 |     87.5 |     100 |     100 | 13                   \n  deal.service.ts                        |   88.46 |    71.05 |   88.88 |      88 | 81,91-92,129,145,174 \n src/modules/deal/dto                    |     100 |      100 |     100 |     100 |                      \n  create.dto.ts                          |     100 |      100 |     100 |     100 |                      \n  index.ts                               |     100 |      100 |     100 |     100 |                      \n  query.dto.ts                           |     100 |      100 |     100 |     100 |                      \n  update.dto.ts                          |     100 |      100 |     100 |     100 |                      \n-----------------------------------------|---------|----------|---------|---------|----------------------\n",
+        "stderr": "(node:20) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.\n(Use `node --trace-deprecation ...` to show where the warning was created)\nPASS test/acceptance/T1/deal.e2e-spec.ts (18.593 s)\n  Deal API (e2e)\n    checkpoint 1: creation\n      ✓ creates a Deal with all fields supplied and returns it on fetch (81 ms)\n      ✓ defaults stage to \"lead\" when omitted (21 ms)\n      ✓ rejects a request missing name, value, or companyId (16 ms)\n    checkpoint 2: referential integrity on create\n      ✓ rejects an unknown companyId (5 ms)\n      ✓ rejects an unknown contactId (10 ms)\n    checkpoint 3: list query\n      ✓ supports pagination, stage/companyId filters, and out-of-range pages (50 ms)\n    checkpoint 4: detail and update\n      ✓ returns the linked company summary on detail fetch (18 ms)\n      ✓ returns 404 for an unknown deal id (3 ms)\n      ✓ accepts a partial update and rejects an empty body (28 ms)\n      ✓ rejects updating with a field outside the Deal schema (12 ms)\n    checkpoint 5: value and null-field robustness\n      ✓ rejects a negative value (7 ms)\n      ✓ persists and returns contactId=null and expectedCloseDate=null without error (14 ms)\n  Deal seed scenarios (e2e)\n    ✓ creates at least 8 Deals across at least 4 distinct stages after the demo seed (8179 ms)\n    ✓ creates a Deal with contactId=null and a Deal with expectedCloseDate=null after the edge-case seed (5591 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       14 passed, 14 total\nSnapshots:   0 total\nTime:        19.72 s\nRan all test suites matching test/acceptance/T1/deal.e2e-spec.ts.\nTest results written to: acceptance-report.json\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 21.918
+      },
+      "summary": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0,
+        "failed_suites": 0,
+        "failed_ids": [],
+        "failed_details": []
+      },
+      "failure_classifications": [],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {
+          "deals": "/api/deals"
+        },
+        "method_resolved": {
+          "update Deal": "POST"
+        },
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "route",
+            "semantic_target": "deals",
+            "resolved": "/api/deals",
+            "attempts": [
+              {
+                "path": "/api/deals",
+                "status": 200
+              }
+            ]
+          },
+          {
+            "kind": "http_method",
+            "semantic_target": "update Deal",
+            "resolved": "POST",
+            "attempted": [
+              {
+                "method": "POST",
+                "status": 201
+              }
+            ]
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "pass",
+      "reason": null,
+      "install": {
+        "command": "npm ci --legacy-peer-deps",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "\nadded 487 packages, and audited 488 packages in 39s\n\n159 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+        "stderr": "npm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: '@testing-library/jest-dom@6.10.0',\nnpm warn EBADENGINE   required: { node: '>=22', npm: '>=6', yarn: '>=1' },\nnpm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }\nnpm warn EBADENGINE }\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 39.764
+      },
+      "test": {
+        "command": "npx --no-install vitest run src/test/acceptance/T1 --reporter=json --outputFile=acceptance-report.json --coverage --coverage.reportOnFailure",
+        "runtime": "docker",
+        "image": "node:20-bookworm-slim",
+        "exit_code": 0,
+        "stdout": "JSON report written to /workspace/frontend/acceptance-report.json\n\u001b[34m % \u001b[39m\u001b[2mCoverage report from \u001b[22m\u001b[33mv8\u001b[39m\n-------------------|---------|----------|---------|---------|-------------------\nFile               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-------------------|---------|----------|---------|---------|-------------------\nAll files          |   43.72 |    47.64 |   28.27 |   45.34 |                   \n api               |   60.52 |    42.85 |      35 |   60.52 |                   \n  companyApi.js    |   33.33 |      100 |      20 |   33.33 | 5-17              \n  contactApi.js    |   33.33 |       50 |      20 |   33.33 | 9-20              \n  dealApi.js       |   33.33 |      100 |      20 |   33.33 | 6-17              \n  request.js       |      85 |     42.1 |      80 |      85 | 21,60-61          \n ...ble/EmptyState |       0 |        0 |       0 |       0 |                   \n  EmptyState.jsx   |       0 |        0 |       0 |       0 | 4                 \n ...ble/Pagination |      50 |       75 |      40 |      50 |                   \n  Pagination.jsx   |      50 |       75 |      40 |      50 | 38,49-55          \n ...ts/Table/Shell |     100 |    90.47 |     100 |     100 |                   \n  Shell.jsx        |     100 |    90.47 |     100 |     100 | 45-47             \n .../Table/Toolbar |      50 |       50 |      50 |      50 |                   \n  Toolbar.jsx      |      50 |       50 |      50 |      50 | 33                \n  ...r.module.scss |       0 |        0 |       0 |       0 |                   \n pages/companies   |   22.72 |      100 |   23.52 |   22.72 |                   \n  ...anyQueries.js |   22.72 |      100 |   23.52 |   22.72 | 13-14,25-66       \n pages/contacts    |   26.08 |      100 |   23.52 |   26.08 |                   \n  ...actQueries.js |   26.08 |      100 |   23.52 |   26.08 | 13-14,26-62       \n pages/deals       |   46.05 |    40.15 |   27.02 |   48.92 |                   \n  DealForm.jsx     |      54 |    32.53 |   26.08 |   59.52 | ...31-149,207-255 \n  DealTable.jsx    |   64.28 |    66.66 |    62.5 |   64.28 | 33,45,66-73       \n  dealQueries.js   |      50 |      100 |   41.17 |      50 | ...38,49-52,61-63 \n  index.jsx        |   34.84 |    48.38 |    7.69 |    37.7 | ...44-147,169-284 \n routes            |    37.5 |      100 |   16.66 |    37.5 |                   \n  ...e-registry.js |    37.5 |      100 |   16.66 |    37.5 | 21-59,84          \n utils             |      30 |    33.33 |      50 |   28.57 |                   \n  formatDate.js    |      30 |    33.33 |      50 |   28.57 | 2-8               \n-------------------|---------|----------|---------|---------|-------------------\n",
+        "stderr": "npm notice\nnpm notice New major version of npm available! 10.8.2 -> 12.0.2\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2\nnpm notice To update run: npm install -g npm@12.0.2\nnpm notice\n",
+        "timed_out": false,
+        "duration_seconds": 9.39
+      },
+      "summary": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "failed_suites": 0,
+        "failed_ids": [],
+        "failed_details": []
+      },
+      "failure_classifications": [],
+      "adapter": {
+        "version": "v2",
+        "route_resolved": {
+          "deals": "deals"
+        },
+        "method_resolved": {},
+        "field_mappings_used": [],
+        "discoveries": [
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          },
+          {
+            "kind": "frontend_route",
+            "semantic_target": "deals",
+            "resolved": "deals"
+          }
+        ],
+        "unresolved": [],
+        "status": "resolved"
+      },
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
+}

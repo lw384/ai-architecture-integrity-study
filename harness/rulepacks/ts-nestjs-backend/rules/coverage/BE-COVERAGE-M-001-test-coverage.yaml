@@ -1,4 +1,4 @@
-rule_id: BE-TEST-M-001-test-coverage
+rule_id: BE-COVERAGE-M-001-test-coverage
 version: 0.1.0
 layer: metrics
 category: testability
@@ -9,6 +9,8 @@ adapter: test-coverage
 description: >
   Measures backend line coverage using the project's coverage-summary.json report.
   Value = lines.pct.
+
+formula: coverage_summary.total.lines.pct
 
 agent_facing_message: >
   Backend line coverage is {value}. Improve automated test coverage for production code paths.

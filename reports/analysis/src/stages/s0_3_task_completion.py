@@ -32,6 +32,14 @@ def compute_completion_gate(task_completion: pd.DataFrame) -> pd.DataFrame:
         | (gated["agent_reported_error"] == True)  # noqa: E712
     )
     gated["test_infrastructure_error"] = gated["test_status"] == "error"
+    if "adapter_unresolved_count" in gated:
+        gated["adapter_unresolved"] = (
+            pd.to_numeric(gated["adapter_unresolved_count"], errors="coerce")
+            .fillna(0)
+            .gt(0)
+        )
+    else:
+        gated["adapter_unresolved"] = False
     gated["has_acceptance_suite"] = ~gated["test_status"].isin(["skipped", "no_data"])
     return gated
 
@@ -45,9 +53,11 @@ def main() -> None:
 
     flagged = gate["flagged_for_review"].sum()
     infra_errors = gate["test_infrastructure_error"].sum()
+    unresolved = gate["adapter_unresolved"].sum()
     print(f"task_completion_gate.csv: {len(gate)} rows")
     print(f"Flagged for review (agent didn't finish cleanly): {flagged}")
     print(f"Acceptance-infrastructure errors (not architecture data problems): {infra_errors}")
+    print(f"Acceptance adapter unresolved targets (remain test failures): {unresolved}")
     print()
     print(
         gate.groupby(["task_id", "test_status"]).size()

@@ -1,7 +1,8 @@
 {
   "task_id": "T1",
-  "variant_coverage": ["structured"],
-  "variant_coverage_note": "Structured pins down the exact API Contract (routes/fields) this suite asserts against; Minimal leaves API shape up to the agent and is intentionally not covered.",
+  "adapter_version": "v2",
+  "variant_coverage": ["minimal", "structured"],
+  "variant_coverage_note": "Both strategies share the same Section 4 acceptance requirements. The suite uses one behavioural standard; a documented helper only normalizes the create-response id wrapper left open by Minimal and fixed by Structured.",
   "db": {
     "compose_file": "docker-compose.yml",
     "compose_service": "postgres-test",
@@ -18,7 +19,7 @@
       "overlay_dir": "test/acceptance/T1",
       "commands": {
         "install": "npm ci",
-        "test": "npx --no-install jest --config test/jest-e2e.json --runInBand test/acceptance/T1/deal.e2e-spec.ts --json --outputFile=acceptance-report.json"
+        "test": "npx --no-install jest --config test/jest-e2e.json --rootDir=. --runInBand test/acceptance/T1/deal.e2e-spec.ts --json --outputFile=acceptance-report.json --coverage --coverageDirectory=coverage --collectCoverageFrom='src/**/*.{ts,js}' --collectCoverageFrom='!src/**/*.spec.ts' --collectCoverageFrom='!src/**/*.test.ts' --collectCoverageFrom='!src/main.ts'"
       },
       "json_report_file": "acceptance-report.json",
       "env": { "NODE_ENV": "test" },
@@ -31,7 +32,7 @@
       "overlay_dir": "src/test/acceptance/T1",
       "commands": {
         "install": "npm ci --legacy-peer-deps",
-        "test": "npx --no-install vitest run src/test/acceptance/T1 --reporter=json --outputFile=acceptance-report.json"
+        "test": "npx --no-install vitest run src/test/acceptance/T1 --reporter=json --outputFile=acceptance-report.json --coverage --coverage.reportOnFailure"
       },
       "json_report_file": "acceptance-report.json",
       "env": {},

@@ -11,6 +11,8 @@ description: >
   Measures the average prop fanout of JSX elements that exceed the configured
   prop-drilling threshold.
 
+formula: total_prop_fanout_of_candidates / total_prop_drilling_candidates
+
 agent_facing_message: >
   Average prop-drilling candidate fanout is {value}. Lower values indicate
   narrower cross-component data flow.

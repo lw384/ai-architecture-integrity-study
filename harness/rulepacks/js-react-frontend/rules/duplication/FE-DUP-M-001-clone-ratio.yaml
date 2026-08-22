@@ -11,6 +11,8 @@ description: >
   Measures the share of token-bearing frontend production lines covered by
   Type-1 or token-normalized Type-2 code clones.
 
+formula: duplicated_lines_covered / total_token_bearing_production_lines
+
 agent_facing_message: >
   Frontend clone ratio is {value}. Lower values indicate less duplicated
   implementation logic.

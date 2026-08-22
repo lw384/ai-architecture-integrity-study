@@ -11,6 +11,8 @@ description: >
   Measures the share of backend endpoints violating /api prefix or kebab-case route rules.
   Value = violating endpoints / total endpoints.
 
+formula: violating_endpoints / total_endpoints
+
 agent_facing_message: >
   Backend route convention violation ratio is {value}. Normalize /api prefix and kebab-case routes.
 

@@ -112,7 +112,7 @@ Before the section-by-section list, three mistakes appear in *multiple* places a
 - Old: `these eighteen concerns are systematically partitioned` → New: `these nineteen concerns are systematically partitioned`
 - Old: `Backend Concerns (8 dimensions): Structural integrity, dependency direction, domain boundaries, transaction and error handling, data-contract stability, routing conventions, function complexity, and code duplication.`
 - New: `Backend Concerns (9 dimensions): structural integrity, dependency direction, domain boundaries, transaction and error handling, data-contract stability, routing conventions, unit complexity, resource/policy duplication, and test-construction discipline.`
-- (The missing 9th backend concern is **BE-TEST** / test-construction discipline — the rule files `BE-TEST-C-001` + `BE-MOCK-M-001` — absent from the draft's list entirely.)
+- (The missing 9th backend concern is **BE-TEST** / test-construction discipline — the rule files `BE-TEST-C-001` + `BE-TEST-M-001` — absent from the draft's list entirely.)
 - Frontend (7) and Cross-stack (3) counts are already correct; only the cross-stack IDs need the EP/TYPE/PROP naming when Table 3.3 is updated.
 
 **[GAP] Cross-stack pruning rationale.** The draft states three cross-stack concerns but never explains why *three*. Paste the pruning narrative already drafted in `chapter3-table3.2-revision.md` §3.4.2 (seven candidates → three retained; the four excluded — method/status alignment, naming consistency, error-code alignment, source-of-truth duplication — with the reason each was cut).

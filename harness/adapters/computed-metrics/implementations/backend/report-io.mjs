@@ -43,13 +43,26 @@ export function readOptionalReport(rootDir, reportPath) {
     return report;
 }
 
-export function resolveMetricReports({ targetDir, baselineDir, config = {}, baselineOptional = false }) {
+export function resolveMetricReports({
+    targetDir,
+    baselineDir,
+    config = {},
+    baselineOptional = false,
+    targetReportOverride = null,
+}) {
     const reportPath = config.report_path ?? 'reports/depcruise-raw.json';
+    const hasTargetOverride = targetReportOverride !== null && targetReportOverride !== undefined;
+
+    if (hasTargetOverride) {
+        ensureReportShape(targetReportOverride, 'Live target dep-cruiser report');
+    }
 
     return {
         baselineReport: baselineOptional
             ? readOptionalReport(baselineDir, reportPath)
             : readRequiredReport(baselineDir, reportPath, 'Baseline dep-cruiser report'),
-        targetReport: readRequiredReport(targetDir, reportPath),
+        targetReport: hasTargetOverride
+            ? targetReportOverride
+            : readRequiredReport(targetDir, reportPath),
     };
 }

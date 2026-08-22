@@ -26,10 +26,11 @@ metric_observations.csv) against the IQR fences s1_2_metric_distribution.py
 already computed (reused via its derived CSV, not recomputed here, so the
 two stages can never silently disagree on what "significant" means).
 
-BE-MOCK-M-001 is the metric Appendix A designates as representative for
-the BE-TEST concern; BE-TEST-M-001 (test coverage) is excluded from
-architectural analysis per §3.4.3 (reported separately in §4.8) and is
-never assigned to a concern here — see taxonomy.py.
+BE-TEST-M-001 (mock-per-test-case) is the metric Appendix A designates as
+representative for the BE-TEST concern; BE-COVERAGE-M-001 (test coverage)
+is excluded from architectural analysis per §3.4.3 (reported separately in
+§4.8) and is never assigned to a concern here. Legacy IDs from immutable
+historical outputs remain supported in taxonomy.py.
 
 Run s1_2_metric_distribution.py first. Reads data/runs.csv,
 data/constraint_findings.csv, data/metric_observations.csv, and

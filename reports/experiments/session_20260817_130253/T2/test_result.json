@@ -1,5 +1,31 @@
 {
-  "status": "skipped",
+  "status": "fail",
   "task_id": "T2",
-  "reason": "no acceptance suite defined for this task"
+  "suites": [
+    {
+      "suite_id": "backend",
+      "status": "pass",
+      "reason": null,
+      "total": 26,
+      "passed": 26,
+      "failed": 0,
+      "failed_ids": [],
+      "coverage_dir": "coverage/backend"
+    },
+    {
+      "suite_id": "frontend",
+      "status": "fail",
+      "reason": null,
+      "total": 7,
+      "passed": 3,
+      "failed": 4,
+      "failed_ids": [
+        "T2 relationship frontend acceptance renders a multi-Company Contact on the detail view without crashing",
+        "T2 relationship frontend acceptance shows a Contact on the detail page of its secondary Company",
+        "T2 relationship frontend acceptance renders Deals with multiple and zero linked Contacts on list and detail views",
+        "T2 relationship frontend acceptance exposes Company, Contact role, and primary controls in the Deal form"
+      ],
+      "coverage_dir": "coverage/frontend"
+    }
+  ]
 }

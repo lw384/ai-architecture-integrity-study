@@ -80,15 +80,19 @@ CONCERN_ORDER: list[tuple[str, str]] = [
     ("CROSS-PROP", "cross-stack"),
 ]
 
-# Appendix A designates BE-MOCK-M-001 as the *representative* metric for
-# the BE-TEST concern (Table 3.2) — its own rule_id prefix parses to
-# subject/category ("BE", "MOCK"), which is not one of the 19 concerns
-# above, so it needs an explicit override rather than the regex split.
-# BE-TEST-M-001 (test coverage) is excluded from architectural analysis
-# per §3.4.3 and reported separately under functional/efficiency outcomes
-# (§4.8) — it never gets assigned to a concern here.
+# BE-TEST-M-001 (mock-per-test-case) is the representative metric for the
+# BE-TEST concern (Table 3.2), so its current ID is classified correctly by
+# the regular prefix parser. Keep the former BE-MOCK-M-001 name as a legacy
+# override so the immutable historical experiment outputs remain analyzable.
+# BE-COVERAGE-M-001 (formerly BE-TEST-M-001-test-coverage) is excluded from
+# architectural analysis per §3.4.3 and reported separately under
+# functional/efficiency outcomes (§4.8). Keep both names in the exclusion
+# set for compatibility with historical observations.
 METRIC_CONCERN_OVERRIDES: dict[str, str] = {"BE-MOCK-M-001-mock-per-test-case": "BE-TEST"}
-ARCHITECTURAL_METRIC_EXCLUSIONS: frozenset[str] = frozenset({"BE-TEST-M-001-test-coverage"})
+ARCHITECTURAL_METRIC_EXCLUSIONS: frozenset[str] = frozenset({
+    "BE-COVERAGE-M-001-test-coverage",
+    "BE-TEST-M-001-test-coverage",
+})
 
 
 def metric_concern(metric_name: str) -> str:

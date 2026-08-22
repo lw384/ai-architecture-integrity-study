@@ -11,6 +11,8 @@ description: >
   Measures the share of detected network calls that stay inside approved
   frontend data-access modules.
 
+formula: network_calls_in_approved_data_access_modules / total_detected_network_calls
+
 agent_facing_message: >
   Approved data-access wrapping ratio is {value}. Higher values indicate better
   localization of network calls.
