@@ -1,0 +1,5 @@
+condition,session_id,agent,strategy,review_checkpoint,harness_checkpoint,review_status,absolute_finding_count,self_reported_finding_count,self_report_coverage,location_matches,location_observations,location_agreement,development_task_count,development_duration_seconds,development_duration_minutes,development_cost_usd,cost_basis
+Claude Minimal,session_20260817_130253,claude,minimal,T4,T3,issues_found,13,9,0.6923076923076923,2,9,0.2222222222222222,3,4058.8109999999997,67.64685,16.4164967,reported
+Claude Structured,session_20260817_160757,claude,structured,T4,T3,issues_found,13,5,0.38461538461538464,1,5,0.2,3,4347.199,72.45331666666667,16.4357311,reported
+Codex Minimal,session_20260817_210911,codex,minimal,T4,T3,issues_found,38,6,0.15789473684210525,5,6,0.8333333333333334,3,2030.0790000000002,33.83465,9.65167315,estimated_gpt-5.3-codex_pricing
+Codex Structured,session_20260817_221755,codex,structured,T4,T3,issues_found,24,5,0.20833333333333334,4,5,0.8,3,2200.25,36.670833333333334,10.96605125,estimated_gpt-5.3-codex_pricing

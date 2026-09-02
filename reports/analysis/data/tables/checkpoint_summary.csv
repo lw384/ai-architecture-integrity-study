@@ -1,0 +1,14 @@
+Agent,Prompt Condition,Task,Evaluation Checkpoint,Functional Acceptance,Task-Local Introduced Findings,Task-Local Resolved Findings,Baseline-Relative Introduced Findings
+Shared baseline,—,—,E0,N/A,N/A,N/A,0
+Claude,Minimal,T1,E1,"Pass — 16 passed, 0 failed (16 total)",11,0,11
+Claude,Minimal,T2,E2,"Pass — 33 passed, 0 failed (33 total)",9,9,12
+Claude,Minimal,T3,E3,"Fail — 68 passed, 1 failed (69 total)",2,5,9
+Claude,Structured,T1,E1,"Pass — 16 passed, 0 failed (16 total)",9,0,9
+Claude,Structured,T2,E2,"Fail — 7 passed, 26 failed (33 total)",8,8,10
+Claude,Structured,T3,E3,"Fail — 6 passed, 63 failed (69 total)",4,5,9
+Codex,Minimal,T1,E1,"Pass — 16 passed, 0 failed (16 total)",12,0,12
+Codex,Minimal,T2,E2,"Fail — 7 passed, 26 failed (33 total)",31,9,35
+Codex,Minimal,T3,E3,"Fail — 9 passed, 60 failed (69 total)",15,16,34
+Codex,Structured,T1,E1,"Fail — 15 passed, 1 failed (16 total)",11,0,11
+Codex,Structured,T2,E2,"Fail — 30 passed, 3 failed (33 total)",23,9,26
+Codex,Structured,T3,E3,"Pass — 69 passed, 0 failed (69 total)",13,19,20

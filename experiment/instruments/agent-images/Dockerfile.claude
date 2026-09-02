@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 全局安装 Anthropic 官方的 Claude Code CLI
-RUN npm install -g @anthropic-ai/claude-code && \
+RUN npm install -g @anthropic-ai/claude-code@2.1.197 && \
     npm cache clean --force
 
 # 创建非 root 用户 (提高沙盒安全性)

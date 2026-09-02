@@ -7,13 +7,15 @@ session_manifest.yaml. Every stage script downstream reads data/*.csv
 instead — if a raw artifact's schema changes, this is the one file that
 needs to change.
 
-Produces six tables:
+Produces seven tables:
   data/runs.csv                one row per harness evaluation (+ baseline)
   data/constraint_findings.csv one row per constraint finding
   data/metric_observations.csv one row per metric observation
   data/task_completion.csv     one row per agent execution attempt
                                 (T1-T3 acceptance-gate data; see
                                 docs/methodology/analysis.md §2.3)
+  data/acceptance_failures.csv one row per failed assertion, unresolved
+                                adapter target, or suite-level test error
   data/review_runs.csv         one row per T4 self-review (agent x strategy),
                                 even when it reported zero findings
   data/review_findings.csv     one row per T4 self-reported finding
@@ -380,6 +382,28 @@ def build_task_completion_record(
     unresolved = adapter.get("unresolved") or []
     suite_outcomes = [s.get("outcome") for s in suites if s.get("outcome")]
 
+    def sum_suite_test_cases(field: str) -> int | None:
+        """Sum a test-case count across selected acceptance suites.
+
+        Return None rather than zero when no suites exist or a suite omits the
+        requested count, so missing acceptance evidence is never presented as
+        a legitimate zero-test run.
+        """
+        values = [suite.get(field) for suite in suites]
+        if not values or not all(isinstance(value, (int, float)) for value in values):
+            return None
+        return int(sum(values))
+
+    test_cases_total = sum_suite_test_cases("total")
+    test_cases_passed = sum_suite_test_cases("passed")
+    test_cases_failed = sum_suite_test_cases("failed")
+    if all(value is not None for value in (test_cases_total, test_cases_passed, test_cases_failed)):
+        if test_cases_passed + test_cases_failed != test_cases_total:
+            raise ValueError(
+                f"Acceptance test counts do not reconcile for {session_id}/{task_id}: "
+                f"passed={test_cases_passed}, failed={test_cases_failed}, total={test_cases_total}"
+            )
+
     # Token accounting differs by agent, so normalize into a common
     # fresh/cached-input + output shape rather than dumping each SDK's raw
     # field names side by side:
@@ -444,6 +468,9 @@ def build_task_completion_record(
         "test_status": (test_result or {}).get("status") or ("no_data" if test_result is None else "unknown"),
         "test_reason": (test_result or {}).get("reason"),
         "test_suite_count": len(suites) if suites else ((test_execution or {}).get("suites") and len(test_execution["suites"])) or 0,
+        "test_cases_total": test_cases_total,
+        "test_cases_passed": test_cases_passed,
+        "test_cases_failed": test_cases_failed,
         "test_failed_suite_ids": " | ".join(str(s) for s in failed_suite_ids),
         "test_run_id": (test_result or {}).get("run_id"),
         "adapter_version": (test_result or {}).get("adapter_version") or adapter.get("version"),
@@ -451,6 +478,291 @@ def build_task_completion_record(
         "adapter_unresolved_count": len(unresolved),
         "test_result_source": test_result_source,
     }
+
+
+def _acceptance_execution_suite_lookup(
+    test_execution: dict[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    """Index detailed suite execution records by suite id."""
+    return {
+        str(suite.get("suite_id")): suite
+        for suite in (test_execution or {}).get("suites") or []
+        if suite.get("suite_id")
+    }
+
+
+def _failure_details_lookup(execution_suite: dict[str, Any]) -> dict[str, list[str]]:
+    """Map assertion/suite ids to the detailed Jest/Vitest failure messages."""
+    details = (execution_suite.get("summary") or {}).get("failed_details") or []
+    return {
+        str(detail.get("id")): [
+            str(message) for message in detail.get("failure_messages") or []
+        ]
+        for detail in details
+        if detail.get("id")
+    }
+
+
+def _failure_attribution(
+    *,
+    raw_classification: str,
+    suite_status: str,
+    suite_reason: str | None,
+    has_matching_unresolved: bool,
+) -> tuple[str, str, bool]:
+    """Conservative automatic attribution for acceptance failures.
+
+    This is deliberately not a binary oracle. An unresolved route/field may
+    mean either naming variance or a missing feature, so it stays indeterminate
+    until a human or a stronger semantic probe resolves it. Only failures that
+    occur after transport adaptation are labelled requirement-noncompliance
+    *candidates*, never confirmed defects.
+    """
+    if suite_status == "error":
+        return "infrastructure_error", "high", False
+    if suite_reason == "adapter_unresolved" or has_matching_unresolved:
+        return "interface_unresolved", "medium", True
+    if raw_classification in {"route_variance", "selector_variance", "field_variance"}:
+        return "interface_unresolved", "medium", True
+    if raw_classification == "status_variance":
+        return "interface_contract_variance", "medium", True
+    if raw_classification == "harness_context":
+        return "test_harness_context", "high", True
+    if raw_classification == "behaviour_or_unclassified":
+        return "requirement_noncompliance_candidate", "medium", True
+    return "unclassified", "low", True
+
+
+def extract_acceptance_failure_rows(
+    test_result: dict[str, Any] | None,
+    test_execution: dict[str, Any] | None,
+    session_id: str,
+    task_id: str,
+    config: dict[str, Any],
+    test_result_source: str | None,
+) -> list[dict[str, Any]]:
+    """Flatten selected acceptance evidence to one row per diagnostic event.
+
+    Assertion failures are joined to their full failure messages from
+    test_execution.json. Adapter targets that do not correspond to an assertion
+    become their own rows, as do suite-level infrastructure errors. This keeps
+    representation variance separate from behavioural noncompliance candidates.
+    """
+    if not test_result:
+        return []
+
+    agent = config.get("agent") or "unknown"
+    strategy = config.get("strategy") or "unknown"
+    run_id = test_result.get("run_id")
+    adapter_version = test_result.get("adapter_version") or (
+        (test_result.get("adapter") or {}).get("version")
+    )
+    execution_suites = _acceptance_execution_suite_lookup(test_execution)
+    global_unresolved = (test_result.get("adapter") or {}).get("unresolved") or []
+    unresolved_by_suite: dict[str, list[dict[str, Any]]] = {}
+    for item in global_unresolved:
+        unresolved_by_suite.setdefault(str(item.get("suite_id") or "unknown"), []).append(item)
+
+    rows: list[dict[str, Any]] = []
+    for suite in test_result.get("suites") or []:
+        suite_id = str(suite.get("suite_id") or "unknown")
+        suite_status = str(suite.get("status") or "unknown")
+        suite_reason = suite.get("reason")
+        execution_suite = execution_suites.get(suite_id, {})
+        details_by_id = _failure_details_lookup(execution_suite)
+        classifications = {
+            str(item.get("id")): item
+            for item in suite.get("failure_classifications") or []
+            if item.get("id")
+        }
+        failed_ids = {
+            str(value) for value in suite.get("failed_ids") or [] if value
+        }
+        failed_ids.update(classifications)
+        failed_ids.update(details_by_id)
+        suite_unresolved = unresolved_by_suite.get(suite_id, [])
+
+        total = suite.get("total")
+        failed = suite.get("failed")
+        failure_rate = (
+            failed / total
+            if isinstance(failed, (int, float))
+            and isinstance(total, (int, float))
+            and total > 0
+            else None
+        )
+        cascade_candidate = bool(
+            isinstance(failed, (int, float))
+            and failed >= 3
+            and failure_rate is not None
+            and failure_rate >= 0.5
+        )
+
+        emitted_unresolved: set[tuple[str, str]] = set()
+        for failure_id in sorted(failed_ids):
+            classification = classifications.get(failure_id) or {}
+            raw_classification = str(
+                classification.get("classification") or "behaviour_or_unclassified"
+            )
+            matching_unresolved = [
+                item
+                for item in suite_unresolved
+                if str(item.get("semantic_target") or "") == failure_id
+            ]
+            for item in matching_unresolved:
+                emitted_unresolved.add(
+                    (str(item.get("kind") or "unknown"), str(item.get("semantic_target") or ""))
+                )
+            attribution, confidence, manual_review = _failure_attribution(
+                raw_classification=raw_classification,
+                suite_status=suite_status,
+                suite_reason=suite_reason,
+                has_matching_unresolved=bool(matching_unresolved),
+            )
+            messages = details_by_id.get(failure_id, [])
+            rows.append(
+                {
+                    "session_id": session_id,
+                    "task_id": task_id,
+                    "task_order": task_order(task_id),
+                    "agent": agent,
+                    "strategy": strategy,
+                    "suite_id": suite_id,
+                    "event_type": "assertion_failure",
+                    "failure_id": failure_id,
+                    "checkpoint": (
+                        (re.search(r"checkpoint\s+(\d+)", failure_id, re.IGNORECASE) or [None, None])[1]
+                    ),
+                    "raw_classification": raw_classification,
+                    "final_attribution": attribution,
+                    "attribution_confidence": confidence,
+                    "review_required": bool(
+                        classification.get("review_required", manual_review)
+                    ),
+                    "suite_status": suite_status,
+                    "suite_outcome": suite.get("outcome"),
+                    "suite_reason": suite_reason,
+                    "suite_total": total,
+                    "suite_failed": failed,
+                    "suite_failure_rate": failure_rate,
+                    "cascade_candidate": cascade_candidate,
+                    "failure_message": "\n\n".join(messages),
+                    "adapter_unresolved_kind": " | ".join(
+                        str(item.get("kind") or "unknown") for item in matching_unresolved
+                    ),
+                    "adapter_version": adapter_version,
+                    "test_run_id": run_id,
+                    "test_result_source": test_result_source,
+                }
+            )
+
+        # Preserve unresolved adapter targets even when no assertion id exists
+        # (for example a missing adapter report or an undiscovered route).
+        for item in suite_unresolved:
+            unresolved_key = (
+                str(item.get("kind") or "unknown"),
+                str(item.get("semantic_target") or ""),
+            )
+            if unresolved_key in emitted_unresolved:
+                continue
+            rows.append(
+                {
+                    "session_id": session_id,
+                    "task_id": task_id,
+                    "task_order": task_order(task_id),
+                    "agent": agent,
+                    "strategy": strategy,
+                    "suite_id": suite_id,
+                    "event_type": "adapter_unresolved",
+                    "failure_id": item.get("semantic_target") or f"adapter:{item.get('kind', 'unknown')}",
+                    "checkpoint": None,
+                    "raw_classification": item.get("kind") or "adapter_unresolved",
+                    "final_attribution": "interface_unresolved",
+                    "attribution_confidence": "medium",
+                    "review_required": True,
+                    "suite_status": suite_status,
+                    "suite_outcome": suite.get("outcome"),
+                    "suite_reason": suite_reason,
+                    "suite_total": total,
+                    "suite_failed": failed,
+                    "suite_failure_rate": failure_rate,
+                    "cascade_candidate": cascade_candidate,
+                    "failure_message": json.dumps(item.get("attempted"), ensure_ascii=False),
+                    "adapter_unresolved_kind": item.get("kind"),
+                    "adapter_version": adapter_version,
+                    "test_run_id": run_id,
+                    "test_result_source": test_result_source,
+                }
+            )
+
+        if suite_status == "error" and not failed_ids:
+            install = execution_suite.get("install") or {}
+            test = execution_suite.get("test") or {}
+            reason = suite_reason or execution_suite.get("reason") or "suite_error"
+            evidence = [install.get("stderr"), test.get("stderr"), install.get("stdout"), test.get("stdout")]
+            rows.append(
+                {
+                    "session_id": session_id,
+                    "task_id": task_id,
+                    "task_order": task_order(task_id),
+                    "agent": agent,
+                    "strategy": strategy,
+                    "suite_id": suite_id,
+                    "event_type": "suite_error",
+                    "failure_id": f"suite:{suite_id}:{reason}",
+                    "checkpoint": None,
+                    "raw_classification": "infrastructure_error",
+                    "final_attribution": "infrastructure_error",
+                    "attribution_confidence": "high",
+                    "review_required": False,
+                    "suite_status": suite_status,
+                    "suite_outcome": suite.get("outcome"),
+                    "suite_reason": reason,
+                    "suite_total": total,
+                    "suite_failed": failed,
+                    "suite_failure_rate": failure_rate,
+                    "cascade_candidate": False,
+                    "failure_message": "\n\n".join(str(value) for value in evidence if value),
+                    "adapter_unresolved_kind": "",
+                    "adapter_version": adapter_version,
+                    "test_run_id": run_id,
+                    "test_result_source": test_result_source,
+                }
+            )
+
+    # A database failure occurs before suites exist.
+    if test_result.get("status") == "error" and not (test_result.get("suites") or []):
+        rows.append(
+            {
+                "session_id": session_id,
+                "task_id": task_id,
+                "task_order": task_order(task_id),
+                "agent": agent,
+                "strategy": strategy,
+                "suite_id": "all",
+                "event_type": "run_error",
+                "failure_id": f"run:{test_result.get('reason') or 'infrastructure_error'}",
+                "checkpoint": None,
+                "raw_classification": "infrastructure_error",
+                "final_attribution": "infrastructure_error",
+                "attribution_confidence": "high",
+                "review_required": False,
+                "suite_status": "error",
+                "suite_outcome": "infrastructure_error",
+                "suite_reason": test_result.get("reason"),
+                "suite_total": None,
+                "suite_failed": None,
+                "suite_failure_rate": None,
+                "cascade_candidate": False,
+                "failure_message": json.dumps((test_execution or {}).get("db"), ensure_ascii=False),
+                "adapter_unresolved_kind": "",
+                "adapter_version": adapter_version,
+                "test_run_id": run_id,
+                "test_result_source": test_result_source,
+            }
+        )
+
+    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -600,6 +912,7 @@ def collect(experiments_dir: Path, baseline_dir: Path) -> dict[str, list[dict[st
     constraint_rows: list[dict[str, Any]] = []
     metric_rows: list[dict[str, Any]] = []
     completion_rows: list[dict[str, Any]] = []
+    acceptance_failure_rows: list[dict[str, Any]] = []
     review_run_rows: list[dict[str, Any]] = []
     review_finding_rows: list[dict[str, Any]] = []
 
@@ -645,6 +958,16 @@ def collect(experiments_dir: Path, baseline_dir: Path) -> dict[str, list[dict[st
                     test_result_source,
                 )
             )
+            acceptance_failure_rows.extend(
+                extract_acceptance_failure_rows(
+                    test_result,
+                    test_execution,
+                    session_id,
+                    task_id,
+                    config,
+                    test_result_source,
+                )
+            )
 
         if task_id == "T4" and (task_dir / "review.md").exists() and (task_dir / "task_manifest.yaml").exists():
             review_run, findings = build_review_records(task_dir, session_id, config)
@@ -656,6 +979,7 @@ def collect(experiments_dir: Path, baseline_dir: Path) -> dict[str, list[dict[st
         "constraint_findings": constraint_rows,
         "metric_observations": metric_rows,
         "task_completion": completion_rows,
+        "acceptance_failures": acceptance_failure_rows,
         "review_runs": review_run_rows,
         "review_findings": review_finding_rows,
     }
@@ -667,6 +991,15 @@ def collect(experiments_dir: Path, baseline_dir: Path) -> dict[str, list[dict[st
 # at all, and every downstream pd.read_csv() on it raises EmptyDataError —
 # "no data yet" should read as an empty table, not a crash.
 TABLE_COLUMNS: dict[str, list[str]] = {
+    "acceptance_failures": [
+        "session_id", "task_id", "task_order", "agent", "strategy",
+        "suite_id", "event_type", "failure_id", "checkpoint",
+        "raw_classification", "final_attribution", "attribution_confidence",
+        "review_required", "suite_status", "suite_outcome", "suite_reason",
+        "suite_total", "suite_failed", "suite_failure_rate",
+        "cascade_candidate", "failure_message", "adapter_unresolved_kind",
+        "adapter_version", "test_run_id", "test_result_source",
+    ],
     "review_runs": [
         "session_id", "task_id", "agent", "strategy",
         "reviewed_from_tag", "reviewed_commit", "review_status", "n_findings",
@@ -707,6 +1040,7 @@ def main() -> None:
     write_csv(tables["constraint_findings"], output_dir / "constraint_findings.csv", "constraint_findings")
     write_csv(tables["metric_observations"], output_dir / "metric_observations.csv", "metric_observations")
     write_csv(tables["task_completion"], output_dir / "task_completion.csv", "task_completion")
+    write_csv(tables["acceptance_failures"], output_dir / "acceptance_failures.csv", "acceptance_failures")
     write_csv(tables["review_runs"], output_dir / "review_runs.csv", "review_runs")
     write_csv(tables["review_findings"], output_dir / "review_findings.csv", "review_findings")
 
@@ -714,6 +1048,7 @@ def main() -> None:
     print(f"constraint_findings.csv:  {len(tables['constraint_findings'])} rows")
     print(f"metric_observations.csv:  {len(tables['metric_observations'])} rows")
     print(f"task_completion.csv:      {len(tables['task_completion'])} rows")
+    print(f"acceptance_failures.csv:  {len(tables['acceptance_failures'])} rows")
     print(f"review_runs.csv:          {len(tables['review_runs'])} rows")
     print(f"review_findings.csv:      {len(tables['review_findings'])} rows")
     print(f"Written to {output_dir}")

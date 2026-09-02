@@ -1,5 +1,5 @@
 evaluation_id,session_id,task_id,agent,strategy,execution_status,comparison_status,backend_status,frontend_status,cross_status,scope_errors,metric_errors,metric_coverage,is_reliable
-baseline/Base,baseline,Base,baseline,baseline,completed,valid,completed,completed,completed,0,0,0.95,True
+baseline/Base,baseline,Base,baseline,baseline,completed,valid,completed,completed,completed,0,0,0.9473684210526316,True
 session_20260817_130253/T1,session_20260817_130253,T1,claude,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
 session_20260817_130253/T2,session_20260817_130253,T2,claude,minimal,completed,valid,completed,completed,completed,0,0,1.0,True
 session_20260817_130253/T3,session_20260817_130253,T3,claude,minimal,completed,valid,completed,completed,completed,0,0,1.0,True

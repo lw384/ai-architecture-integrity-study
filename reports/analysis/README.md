@@ -14,6 +14,7 @@ reports/analysis/
 │   ├── constraint_findings.csv   # one row per constraint finding
 │   ├── metric_observations.csv   # one row per metric observation
 │   ├── task_completion.csv       # one row per agent execution attempt
+│   ├── acceptance_failures.csv   # one row per failed assertion / adapter issue
 │   ├── review_runs.csv           # one row per T5 self-review
 │   ├── review_findings.csv       # one row per T5 self-reported finding
 │   └── derived/                  # one CSV/JSON per stage script (see below)
@@ -39,7 +40,8 @@ reports/analysis/
 │       ├── s4_3_metric_correlation.py  # §6.3 Metric correlation structure
 │       └── s4_4_review_calibration.py  # §6.4 Agent self-assessment calibration
 └── notebook/
-    └── analysis.ipynb            # the only place charts get rendered
+    ├── analysis.ipynb                    # architecture-integrity analysis
+    └── acceptance_failure_analysis.ipynb # functional-test failure attribution
 ```
 
 File names carry the doc's section numbers (`s2_1` ↔ `§4.1`) so you can
@@ -69,6 +71,15 @@ reports/baseline/harness_evaluation.json                   ─┘
               notebook/analysis.ipynb
          (reads data/ + data/derived/, draws charts only)
 ```
+
+`acceptance_failure_analysis.ipynb` is intentionally separate from the main
+architecture notebook. It combines `task_completion.csv` with the selected
+run's assertion-level evidence in `acceptance_failures.csv` to distinguish
+resolved interface variance, unresolved interface differences, likely
+requirement non-compliance, test-harness context problems, infrastructure
+errors, and high-failure-rate cascade candidates. These are conservative
+automatic attributions: unresolved interfaces and behavioural candidates stay
+flagged for human review instead of being promoted to confirmed agent defects.
 
 **Isolation rule**: stage scripts under `src/stages/` never `import` each
 other. Two stages (`s2_2_agent_profile.py` reading `s1_1`'s output,

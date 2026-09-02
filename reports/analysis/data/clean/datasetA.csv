@@ -1,0 +1,13 @@
+evaluation_id,condition,session_id,agent,strategy,task,task_order,execution_status,functional_acceptance,functional_test_cases_total,functional_test_cases_passed,functional_test_cases_failed,absolute_finding_count,task_local_introduced_findings,task_local_resolved_findings,task_local_net_change,baseline_relative_introduced_findings,baseline_relative_resolved_findings,baseline_relative_net_change
+session_20260817_130253/T1,Claude Minimal,session_20260817_130253,claude,minimal,T1,1,completed,pass,16,16,0,16,11,0,11,11,0,11
+session_20260817_130253/T2,Claude Minimal,session_20260817_130253,claude,minimal,T2,2,completed,pass,33,33,0,16,9,9,0,12,1,11
+session_20260817_130253/T3,Claude Minimal,session_20260817_130253,claude,minimal,T3,3,completed,fail,69,68,1,13,2,5,-3,9,1,8
+session_20260817_160757/T1,Claude Structured,session_20260817_160757,claude,structured,T1,1,completed,pass,16,16,0,14,9,0,9,9,0,9
+session_20260817_160757/T2,Claude Structured,session_20260817_160757,claude,structured,T2,2,completed,fail,33,7,26,14,8,8,0,10,1,9
+session_20260817_160757/T3,Claude Structured,session_20260817_160757,claude,structured,T3,3,completed,fail,69,6,63,13,4,5,-1,9,1,8
+session_20260817_210911/T1,Codex Minimal,session_20260817_210911,codex,minimal,T1,1,completed,pass,16,16,0,17,12,0,12,12,0,12
+session_20260817_210911/T2,Codex Minimal,session_20260817_210911,codex,minimal,T2,2,completed,fail,33,7,26,39,31,9,22,35,1,34
+session_20260817_210911/T3,Codex Minimal,session_20260817_210911,codex,minimal,T3,3,completed,fail,69,9,60,38,15,16,-1,34,1,33
+session_20260817_221755/T1,Codex Structured,session_20260817_221755,codex,structured,T1,1,completed,fail,16,15,1,16,11,0,11,11,0,11
+session_20260817_221755/T2,Codex Structured,session_20260817_221755,codex,structured,T2,2,completed,fail,33,30,3,30,23,9,14,26,1,25
+session_20260817_221755/T3,Codex Structured,session_20260817_221755,codex,structured,T3,3,completed,pass,69,69,0,24,13,19,-6,20,1,19

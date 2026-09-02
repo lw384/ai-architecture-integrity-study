@@ -1,0 +1,5 @@
+Condition,Harness-Detected Findings,Agent-Reported Findings,Reported-to-Harness Ratio,"Under-Reporting, n (%)",Location Agreement
+Claude – Minimal,13,9,69.2%,4 (30.8%),22.2%
+Claude – Structured,13,5,38.5%,8 (61.5%),20.0%
+Codex – Minimal,38,6,15.8%,32 (84.2%),83.3%
+Codex – Structured,24,5,20.8%,19 (79.2%),80.0%
