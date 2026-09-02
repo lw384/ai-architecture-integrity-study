@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def get_agent_config(agent_name: str, custom_model: str = None):
-    """获取指定 Agent 的运行配置，包含模型、挂载路径、工具指令等"""
+    """Return the runtime configuration for an agent, including its model, mount paths, and tool instructions."""
 
     configs = {
         "claude": {

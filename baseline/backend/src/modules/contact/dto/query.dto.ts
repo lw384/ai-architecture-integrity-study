@@ -63,7 +63,7 @@ export class ContactListQueryDto {
     return ((this.page || 1) - 1) * (this.pageSize || 10);
   }
 
-  // 计算 limit (take)
+  // Calculate the limit (take).
   get limit(): number {
     return this.pageSize || 10;
   }

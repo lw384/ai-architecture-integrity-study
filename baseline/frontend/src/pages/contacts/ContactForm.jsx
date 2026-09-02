@@ -47,7 +47,7 @@ export function ContactFormDialog({
 
   const phoneDigits = values.phone?.replace(/[^0-9]/g, '') || '';
 
-  // 校验逻辑：只针对姓名、邮箱、手机号三项必填项
+  // Validate only the three required fields: name, email, and phone number.
   const errors = {
     companyId: !values.companyId ? 'Company is required.' : '',
     name: !values.name?.trim() ? 'Name is required.' : '',
@@ -226,7 +226,7 @@ export function ContactFormDialog({
             />
           </Stack>
 
-          {/* 创建时间：仅在编辑模式下可见且不可更改 */}
+          {/* The creation time is visible only in edit mode and cannot be changed. */}
           {mode === 'edit' && initialValues?.createdAt && (
             <TextField
               disabled

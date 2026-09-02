@@ -1,8 +1,8 @@
 # experiment/instruments/agent-images/Dockerfile.claude
 FROM node:20-bookworm-slim
 
-# 安装系统基础工具
-# Claude 经常需要 git, ripgrep (rg) 和 jq 等工具来快速检索和阅读代码仓库
+# Install essential system tools
+# Claude often needs tools such as git, ripgrep (rg), and jq to search and inspect repositories quickly
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
@@ -11,15 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     && rm -rf /var/lib/apt/lists/*
 
-# 全局安装 Anthropic 官方的 Claude Code CLI
+# Install Anthropic's official Claude Code CLI globally
 RUN npm install -g @anthropic-ai/claude-code@2.1.197 && \
     npm cache clean --force
 
-# 创建非 root 用户 (提高沙盒安全性)
+# Create a non-root user to improve sandbox security
 RUN useradd -m -s /bin/bash codex_agent
 USER codex_agent
 
 WORKDIR /workspace
 
-# 默认命令
+# Default command
 CMD ["bash"]

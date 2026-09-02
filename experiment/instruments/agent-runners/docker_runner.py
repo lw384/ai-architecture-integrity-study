@@ -99,7 +99,7 @@ def build_base_docker_cmd(workspace_dir: Path, run_id: str, config: dict) -> lis
 
     return docker_cmd
 
-# 解析 agent 输出，返回 payload、agent_text、agent_reported_error
+# Parse agent output and return payload, agent_text, and agent_reported_error.
 def parse_agent_output(result, config, final_message_file):
     result_format = config["result_format"]
 
@@ -222,7 +222,7 @@ def run_agent_task(
     finished_at = time.monotonic()
     finished_at_utc = datetime.now(timezone.utc).isoformat()
 
-    # 解析输出
+    # Parse the output.
     parsed = parse_agent_output(result, config, final_message_file)
     final_message_file.unlink(missing_ok=True)
 

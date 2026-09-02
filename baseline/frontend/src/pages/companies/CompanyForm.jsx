@@ -214,7 +214,7 @@ export function CompanyFormDialog({
               field="createdAt"
               label="Created At"
               disabled
-              // 针对只读字段直接覆盖 value，跳过标准的 values[field] 读取
+              // Override value directly for read-only fields, bypassing the standard values[field] lookup.
               value={new Intl.DateTimeFormat('en', {
                 dateStyle: 'medium',
                 timeStyle: 'short'

@@ -64,7 +64,7 @@ function IndustryCell({ industry }) {
       <Chip
         label={industryLabels[industry] || industry}
         size="small"
-        variant="outlined" // 使用描边样式与 Status 区分开
+        variant="outlined" // Use an outlined style to distinguish this from Status.
       />
     </TableCell>
   );
@@ -102,7 +102,7 @@ export function CompanyTable({ companies, onDelete, onEdit, onView }) {
           <TableRow>
             <TableCell>Company</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Industry</TableCell> {/* 新增了行业列头 */}
+            <TableCell>Industry</TableCell> {/* Added the Industry column header. */}
             <TableCell>Status</TableCell>
             <TableCell>Last contacted</TableCell>
             <TableCell>Created</TableCell>

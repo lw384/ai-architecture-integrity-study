@@ -20,7 +20,7 @@ import { isTransportError } from 'api/request';
 import { DataTablePagination } from '../../components/Table/Pagination/Pagination';
 import { DataTableShell } from '../../components/Table/Shell/Shell';
 import { CompanyFormDialog } from './CompanyForm';
-import { useCompanyList, useDeleteCompany } from './companyQueries'; // 移除了 create/update hooks
+import { useCompanyList, useDeleteCompany } from './companyQueries'; // Removed the create/update hooks.
 import { CompanyTable } from './CompanyTable';
 
 function extractErrorMessage(error, fallbackMessage) {
